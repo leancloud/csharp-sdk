@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1E608FCD-9039-4FF7-8EE7-BA8B00E15D1C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>RTM.Unity</RootNamespace>
+    <AssemblyName>RTM.Unity</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\Libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="websocket-sharp">
+      <HintPath>..\..\Libs\websocket-sharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Source\Internal\AVIMCorePlugins.cs">
+      <Link>Internal\AVIMCorePlugins.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\IAVIMPlatformHooks.cs">
+      <Link>Internal\IAVIMPlatformHooks.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Command\AVIMCommand.cs">
+      <Link>Internal\Command\AVIMCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Command\AVIMCommandRunner.cs">
+      <Link>Internal\Command\AVIMCommandRunner.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Command\AckCommand.cs">
+      <Link>Internal\Command\AckCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Command\ConversationCommand.cs">
+      <Link>Internal\Command\ConversationCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Command\IAVIMCommandRunner.cs">
+      <Link>Internal\Command\IAVIMCommandRunner.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Command\MessageCommand.cs">
+      <Link>Internal\Command\MessageCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Command\PatchCommand.cs">
+      <Link>Internal\Command\PatchCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Command\ReadCommand.cs">
+      <Link>Internal\Command\ReadCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Command\SessionCommand.cs">
+      <Link>Internal\Command\SessionCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\DataEngine\Controller\DateTimeEngine.cs">
+      <Link>Internal\DataEngine\Controller\DateTimeEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\DataEngine\Controller\DictionaryEngine.cs">
+      <Link>Internal\DataEngine\Controller\DictionaryEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\DataEngine\Controller\StringEngine.cs">
+      <Link>Internal\DataEngine\Controller\StringEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Message\Subclassing\FreeStyleMessageClassInfo.cs">
+      <Link>Internal\Message\Subclassing\FreeStyleMessageClassInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Message\Subclassing\FreeStyleMessageClassingController.cs">
+      <Link>Internal\Message\Subclassing\FreeStyleMessageClassingController.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Message\Subclassing\IFreeStyleMessageClassingController.cs">
+      <Link>Internal\Message\Subclassing\IFreeStyleMessageClassingController.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Protocol\AVIMProtocol.cs">
+      <Link>Internal\Protocol\AVIMProtocol.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Router\AVRouterController.cs">
+      <Link>Internal\Router\AVRouterController.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Router\IAVRouterController.cs">
+      <Link>Internal\Router\IAVRouterController.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Router\State\RouterState.cs">
+      <Link>Internal\Router\State\RouterState.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Timer\IAVTimer.cs">
+      <Link>Internal\Timer\IAVTimer.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\Timer\Unity\AVTimer.Unity.cs">
+      <Link>Internal\Timer\Unity\AVTimer.Unity.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\WebSocket\IWebSocketClient.cs">
+      <Link>Internal\WebSocket\IWebSocketClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Internal\WebSocket\Unity\DefaultWebSocketClient.Unity.cs">
+      <Link>Internal\WebSocket\Unity\DefaultWebSocketClient.Unity.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMAudioMessage.cs">
+      <Link>Public\AVIMAudioMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMBinaryMessage.cs">
+      <Link>Public\AVIMBinaryMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMClient.cs">
+      <Link>Public\AVIMClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMConversation.cs">
+      <Link>Public\AVIMConversation.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMConversationQuery.cs">
+      <Link>Public\AVIMConversationQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMEnumerator.cs">
+      <Link>Public\AVIMEnumerator.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMEventArgs.cs">
+      <Link>Public\AVIMEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMException.cs">
+      <Link>Public\AVIMException.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMImageMessage.cs">
+      <Link>Public\AVIMImageMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMMessage.cs">
+      <Link>Public\AVIMMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMMessageClassNameAttribute.cs">
+      <Link>Public\AVIMMessageClassNameAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMMessageFieldNameAttribute.cs">
+      <Link>Public\AVIMMessageFieldNameAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMMessageListener.cs">
+      <Link>Public\AVIMMessageListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMNotice.cs">
+      <Link>Public\AVIMNotice.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMRecalledMessage.cs">
+      <Link>Public\AVIMRecalledMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMSignature.cs">
+      <Link>Public\AVIMSignature.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMTemporaryConversation.cs">
+      <Link>Public\AVIMTemporaryConversation.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMTextMessage.cs">
+      <Link>Public\AVIMTextMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMTypedMessage.cs">
+      <Link>Public\AVIMTypedMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVIMTypedMessageTypeIntAttribute.cs">
+      <Link>Public\AVIMTypedMessageTypeIntAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\AVRealtime.cs">
+      <Link>Public\AVRealtime.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\IAVIMListener.cs">
+      <Link>Public\IAVIMListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\IAVIMMessage.cs">
+      <Link>Public\IAVIMMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\ICacheEngine.cs">
+      <Link>Public\ICacheEngine.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\ISignatureFactory.cs">
+      <Link>Public\ISignatureFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\Listener\AVIMConversationListener.cs">
+      <Link>Public\Listener\AVIMConversationListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\Listener\ConversationUnreadListener.cs">
+      <Link>Public\Listener\ConversationUnreadListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\Listener\GoAwayListener.cs">
+      <Link>Public\Listener\GoAwayListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\Listener\MessagePatchListener.cs">
+      <Link>Public\Listener\MessagePatchListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\Listener\OfflineMessageListener.cs">
+      <Link>Public\Listener\OfflineMessageListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\Listener\SessionListener.cs">
+      <Link>Public\Listener\SessionListener.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Public\Unity\AVRealtimeBehavior.cs">
+      <Link>Public\Unity\AVRealtimeBehavior.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Source\Internal\WebSocket\Unity\websocket-sharp.dll">
+      <Link>Internal\WebSocket\Unity\websocket-sharp.dll</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Storage\Storage.Unity\Storage.Unity.csproj">
+      <Project>{A0D50BCB-E50E-4AAE-8E7D-24BF5AE33DAC}</Project>
+      <Name>Storage.Unity</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
