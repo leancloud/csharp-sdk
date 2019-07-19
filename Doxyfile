@@ -1,0 +1,19 @@
+DOXYFILE_ENCODING = UTF-8
+
+PROJECT_NAME = "LeanCloud C# SDK"
+
+OUTPUT_DIRECTORY = ./Doc/
+EXTRACT_ALL = yes
+EXTRACT_PRIVATE = no
+EXTRACT_STATIC = yes
+INPUT = ./Storage/Source/ ./RTM/Source/ ./LiveQuery/Source/
+#Do not add anything here unless you need to. Doxygen already covers all 
+#common formats like .c/.cc/.cxx/.c++/.cpp/.inl/.h/.hpp
+FILE_PATTERNS = 
+RECURSIVE = yes
+
+#for HTML jj
+GENERATE_HTML = YES
+HTML_FILE_EXTENSION = .html
+
+GENERATE_LATEX = NO
