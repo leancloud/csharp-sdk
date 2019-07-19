@@ -9,12 +9,12 @@ before_deploy:
 - sh ./script/package.sh
 deploy:
   provider: releases
-  api_key: 85c848bca12158cc6fd7a3262b64aec6956591bf
+  api_key:
+    secure: UDWe4Wl7zxcxeuNPn1M/HdzqKBajz0xao0EJ4VdW0h8dmo0yHj78msxiuLTRNgM2ISnri85UxoucIyg+uOCeo+MaDDQ8xZ5FlSUuxX+MHK/kngB/zxlaxw63k6YhPKnnxk3KKYfaBXEuSII2E2tyUrQeXWEZG+kYMLQwvyNopuHmHdXyObGaKsm0ej4ji/+AVsdR9jg6515PV/ABydomLvAkRy0O3ZxV5MqELbJDOaM6TbrUEWhEG1T3wtwUh7PVH65TupQN9FKQvku3ChQttDaIW0Iv3fVFa/bO34ty0dPZosqOf7Xr0gbGHVCZpTWiqWYlnJvxB5Lh2YCGzuzfgiHLn9JgJ833TyLBubEv+m1Cjl0VpYFhP1+lph+xbGTTrFq3dBKcjDI2AP1BSt3cgJ0aj0M6XhvfonYywWk52XuY/IBZ3+l0NigV6Ts4n2m1fLIb9X1YJTWYgx+S9ReYbsW6DJykVcDgvEPR8K0iKe9/gjveEz7I41O333AEkvE1dE5GfMQBQc1OgYiTuiII22iEHoHZH0kXdn/f3depfs9lvH2PJIyJAZg+VOV7b9nB/Oxefz48UzxPqXWlNpkuCBxOlT78iDLFCMwNAQTwsN0VGwVmTl46Hw/br2o8tGREvMrjyoBTvB75qIy0k62KyDBz7nKwYSooU2ci9xtMauk=
   file: LeanCloud-CSharp-SDK.zip
-  skip_cleanup: true
   on:
     repo: leancloud/csharp-sdk
-    # tags: true
+    branch: master
 after_deploy:
 - doxygen Doxyfile
 - sh ./script/deploy.sh
