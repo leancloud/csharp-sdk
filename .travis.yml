@@ -15,7 +15,7 @@ deploy:
   skip_cleanup: true
   on:
     repo: leancloud/csharp-sdk
-    tags: true
+    # tags: true
 after_deploy:
 - doxygen Doxyfile
 - sh ./script/deploy.sh
