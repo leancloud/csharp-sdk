@@ -1,7 +1,5 @@
 language: csharp
 solution: csharp-sdk.sln
-before_install:
-- sudo apt-get install doxygen
 addons:
   apt:
     update: true
@@ -10,13 +8,13 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: UDWe4Wl7zxcxeuNPn1M/HdzqKBajz0xao0EJ4VdW0h8dmo0yHj78msxiuLTRNgM2ISnri85UxoucIyg+uOCeo+MaDDQ8xZ5FlSUuxX+MHK/kngB/zxlaxw63k6YhPKnnxk3KKYfaBXEuSII2E2tyUrQeXWEZG+kYMLQwvyNopuHmHdXyObGaKsm0ej4ji/+AVsdR9jg6515PV/ABydomLvAkRy0O3ZxV5MqELbJDOaM6TbrUEWhEG1T3wtwUh7PVH65TupQN9FKQvku3ChQttDaIW0Iv3fVFa/bO34ty0dPZosqOf7Xr0gbGHVCZpTWiqWYlnJvxB5Lh2YCGzuzfgiHLn9JgJ833TyLBubEv+m1Cjl0VpYFhP1+lph+xbGTTrFq3dBKcjDI2AP1BSt3cgJ0aj0M6XhvfonYywWk52XuY/IBZ3+l0NigV6Ts4n2m1fLIb9X1YJTWYgx+S9ReYbsW6DJykVcDgvEPR8K0iKe9/gjveEz7I41O333AEkvE1dE5GfMQBQc1OgYiTuiII22iEHoHZH0kXdn/f3depfs9lvH2PJIyJAZg+VOV7b9nB/Oxefz48UzxPqXWlNpkuCBxOlT78iDLFCMwNAQTwsN0VGwVmTl46Hw/br2o8tGREvMrjyoBTvB75qIy0k62KyDBz7nKwYSooU2ci9xtMauk=
-  file: 
+    secure: U33UbFuAmwE/hsI3iYpUNLJ+3wkVBq5JxGd2Z03QU9jtYN+N1GCcBJ3oIsdyYZPDmwdqjcc/s2GGiy75NDljnaeI4/p+rfVw01e6Ht/CQPNioxqxmC3645YDsg8Iao0vrSP1aevurc/5Oq+DNk+s0DQn/sBK11ZxOO7dwxqBZqJSdYs6hXhenzC3qKMRw2Wu7Px/ETGbYSXlvVfmmMkw3CVutankT/QQPZM1u6uA8bJvcoPzOoUCuTMLfa+ie4O1WUYSwkyb+yYWjNkWhTo8b/scdVZjYmJ5tIIHP04AKump2kISBvXBysCdwScMvvZplJgVHc0x9qx+vvyGEWmKa3C4xDa5t0IwDHmApe6dPRc05WL9lwDh6KtiZ4vJEFvGfKPOXRmg4fDVnRIQHazMSFvFXgcwZoiPsMWnAvl45Cardbt1JLvlfGlnJ+wQ5RPev99LwvkXooJVqtEByR9AWozyGS8XFypbpFj2xpCe7ZJSmB8h0ElDsl2zmgWPeZkcOIFcVR2+2jl6B2XOnBWukxRUpeX1x+B4rDIKtTAHrkvtGNr5bb4Q6gUAQSqpvUDqV3gXdXW19H+yrlAImBFo6nS3qm/NzsVGmK+SaRzG6oOFfejW0NPnt2MdO0GV5s6L0CYp86Zpk/GrViO7AKjMqYfM2rwJS1rnLlxpTDoPcaA=
+  file:
     - LeanCloud-CSharp-SDK.zip
     - LeanCloud-Unity-SDK.zip
   on:
     repo: leancloud/csharp-sdk
-    branch: master
 after_deploy:
+- sudo apt-get install doxygen
 - doxygen Doxyfile
 - sh ./script/deploy.sh
