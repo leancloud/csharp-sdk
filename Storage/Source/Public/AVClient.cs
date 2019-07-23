@@ -102,7 +102,7 @@ namespace LeanCloud
             /// <summary>
             /// The LeanCloud application ID of your app.
             /// </summary>
-            public String ApplicationId { get; set; }
+            public string ApplicationId { get; set; }
 
             /// <summary>
             /// LeanCloud  C# SDK 支持的服务节点，目前支持华北，华东和北美公有云节点和私有节点，以及专属节点
@@ -120,13 +120,13 @@ namespace LeanCloud
             /// <summary>
             /// The LeanCloud application key for your app.
             /// </summary>
-            public String ApplicationKey { get; set; }
+            public string ApplicationKey { get; set; }
 
             /// <summary>
             /// The LeanCloud master key for your app.
             /// </summary>
             /// <value>The master key.</value>
-            public String MasterKey { get; set; }
+            public string MasterKey { get; set; }
 
             /// <summary>
             /// Gets or sets additional HTTP headers to be sent with network requests from the SDK.
@@ -139,28 +139,31 @@ namespace LeanCloud
             public VersionInformation VersionInfo { get; set; }
 
             /// <summary>
-            /// Gets or sets the engine server uri. The Uri must have no path port.
-            /// If this property is set, all LeanEngine cloud func calls will use this server as LeanEngine server.
-            /// </summary>
-            /// <value>The engine server uri.</value>
-            public Uri EngineServer { get; set; }
-
-            /// <summary>
-            /// Gets or sets the API server.
+            /// 存储服务器地址
             /// </summary>
             /// <value>The API server.</value>
-            public Uri ApiServer { get; set; }
+            public string ApiServer { get; set; }
 
             /// <summary>
-            /// Gets or sets the push server.
+            /// 云引擎服务器地址
             /// </summary>
-            /// <value>The push server.</value>
+            /// <value>The engine server uri.</value>
+            public string EngineServer { get; set; }
+
+            /// <summary>
+            /// 即时通信服务器地址
+            /// </summary>
+            /// <value>The RTMR outer.</value>
+            public string RTMServer { get; set; }
+
+            /// <summary>
+            /// 直连即时通信服务器地址
+            /// </summary>
+            /// <value>The realtime server.</value>
+            public string RealtimeServer { get; set; }
+
             public Uri PushServer { get; set; }
 
-            /// <summary>
-            /// Gets or sets the stats server.
-            /// </summary>
-            /// <value>The stats server.</value>
             public Uri StatsServer { get; set; }
         }
 

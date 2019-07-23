@@ -409,18 +409,6 @@ namespace LeanCloud.Realtime
             /// 登录的时候告知服务器，本次登录所使用的离线消息策略
             /// </summary>
             public OfflineMessageStrategy OfflineMessageStrategy { get; set; }
-
-            /// <summary>
-            /// Gets or sets the realtime server.
-            /// </summary>
-            /// <value>The realtime server.</value>
-            public Uri RealtimeServer { get; set; }
-
-            /// <summary>
-            /// Gets or sets the push router server.
-            /// </summary>
-            /// <value>The push router server.</value>
-            public Uri RTMRouter { get; set; }
         }
 
         /// <summary>
@@ -1086,26 +1074,26 @@ namespace LeanCloud.Realtime
                 return Task.FromResult(true);
             }
 
-            if (CurrentConfiguration.RealtimeServer != null)
+            if (AVClient.CurrentConfiguration.RealtimeServer != null)
             {
-                _wss = CurrentConfiguration.RealtimeServer.ToString();
+                _wss = AVClient.CurrentConfiguration.RealtimeServer;
                 AVRealtime.PrintLog("use configuration realtime server with url: " + _wss);
                 return OpenAsync(_wss, subprotocol, enforce);
             }
-            var routerUrl = CurrentConfiguration.RTMRouter != null ? CurrentConfiguration.RTMRouter.ToString() : null;
+            var routerUrl = AVClient.CurrentConfiguration.RTMServer;
             return RouterController.GetAsync(routerUrl, secure, cancellationToken).OnSuccess(r =>
+            {
+                var routerState = r.Result;
+                if (routerState == null)
                 {
-                    var routerState = r.Result;
-                    if (routerState == null)
-                    {
-                        return Task.FromResult(false);
-                    }
-                    _wss = routerState.server;
-                    _secondaryWss = routerState.secondary;
-                    state = Status.Connecting;
-                    AVRealtime.PrintLog("push router give a url :" + _wss);
-                    return OpenAsync(routerState.server, subprotocol, enforce);
-                }).Unwrap();
+                    return Task.FromResult(false);
+                }
+                _wss = routerState.server;
+                _secondaryWss = routerState.secondary;
+                state = Status.Connecting;
+                AVRealtime.PrintLog("push router give a url :" + _wss);
+                return OpenAsync(routerState.server, subprotocol, enforce);
+            }).Unwrap();
         }
 
         /// <summary>
@@ -1136,7 +1124,7 @@ namespace LeanCloud.Realtime
         /// <returns></returns>
         public Task<Tuple<int, IDictionary<string, object>>> RunCommandAsync(AVIMCommand command)
         {
-            command.AppId(this.CurrentConfiguration.ApplicationId);
+            command.AppId(AVClient.CurrentConfiguration.ApplicationId);
             return this.AVIMCommandRunner.RunCommandAsync(command);
         }
 
@@ -1146,7 +1134,7 @@ namespace LeanCloud.Realtime
         /// <param name="command"></param>
         public void RunCommand(AVIMCommand command)
         {
-            command.AppId(this.CurrentConfiguration.ApplicationId);
+            command.AppId(AVClient.CurrentConfiguration.ApplicationId);
             this.AVIMCommandRunner.RunCommand(command);
         }
 
