@@ -3,101 +3,58 @@ using System.Net;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using LeanCloud.Storage.Internal;
+using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal
 {
     public class AppRouterController : IAppRouterController
     {
         private AppRouterState currentState;
-        private object mutex = new object();
+        private readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
         /// <summary>
         /// Get current app's router state
         /// </summary>
         /// <returns></returns>
-        public AppRouterState Get()
-        {
-            if (string.IsNullOrEmpty(AVClient.CurrentConfiguration.ApplicationId))
-            {
+        public AppRouterState Get() {
+            if (string.IsNullOrEmpty(AVClient.CurrentConfiguration.ApplicationId)) {
                 throw new AVException(AVException.ErrorCode.NotInitialized, "ApplicationId can not be null.");
             }
-            AppRouterState state;
-            state = AppRouterState.GetInitial(AVClient.CurrentConfiguration.ApplicationId, AVClient.CurrentConfiguration.Region);
 
-            lock (mutex)
-            {
-                if (currentState != null)
-                {
-                    if (!currentState.isExpired())
-                        state = currentState;
+            try {
+                locker.EnterUpgradeableReadLock();
+                if (currentState != null && !currentState.IsExpired) {
+                    return currentState;
                 }
+                // 从 AppRouter 获取服务器地址，只触发，不等待
+                QueryAsync(CancellationToken.None).OnSuccess(t => {
+                    locker.EnterWriteLock();
+                    currentState = t.Result;
+                    currentState.Source = "router";
+                    locker.ExitWriteLock();
+                });
+                return AppRouterState.GetFallbackServers(AVClient.CurrentConfiguration.ApplicationId, AVClient.CurrentConfiguration.Region);
+            } finally {
+                locker.ExitUpgradeableReadLock();
             }
-
-            if (state.isExpired())
-            {
-                lock (mutex)
-                {
-                    state.FetchedAt = DateTime.Now + TimeSpan.FromMinutes(10);
-                }
-                Task.Factory.StartNew(RefreshAsync);
-            }
-            return state;
         }
 
-        public Task RefreshAsync()
-        {
-            return QueryAsync(CancellationToken.None).ContinueWith(t =>
-            {
-                if (!t.IsFaulted && !t.IsCanceled)
-                {
-                    lock (mutex)
-                    {
-                        currentState = t.Result;
-                    }
-                }
-            });
-        }
-
-        public Task<AppRouterState> QueryAsync(CancellationToken cancellationToken)
-        {
+        public async Task<AppRouterState> QueryAsync(CancellationToken cancellationToken) {
             string appId = AVClient.CurrentConfiguration.ApplicationId;
             string url = string.Format("https://app-router.leancloud.cn/2/route?appId={0}", appId);
 
-            return AVClient.HttpGetAsync(new Uri(url)).ContinueWith(t =>
-            {
-                var tcs = new TaskCompletionSource<AppRouterState>();
-                if (t.Result.Item1 != HttpStatusCode.OK)
-                {
-                    tcs.SetException(new AVException(AVException.ErrorCode.ConnectionFailed, "can not reach router.", null));
-                }
-                else
-                {
-                    var result = Json.Parse(t.Result.Item2) as IDictionary<String, Object>;
-                    tcs.SetResult(ParseAppRouterState(result));
-                }
-                return tcs.Task;
-            }).Unwrap();
+            var ret = await AVClient.HttpGetAsync(new Uri(url));
+            if (ret.Item1 != HttpStatusCode.OK) {
+                throw new AVException(AVException.ErrorCode.ConnectionFailed, "can not reach router.", null);
+            }
+
+            return await JsonUtils.DeserializeObjectAsync<AppRouterState>(ret.Item2);
         }
 
-        private static AppRouterState ParseAppRouterState(IDictionary<string, object> jsonObj)
-        {
-            var state = new AppRouterState()
-            {
-                TTL = (int)jsonObj["ttl"],
-                StatsServer = jsonObj["stats_server"] as string,
-                RealtimeRouterServer = jsonObj["rtm_router_server"] as string,
-                PushServer = jsonObj["push_server"] as string,
-                EngineServer = jsonObj["engine_server"] as string,
-                ApiServer = jsonObj["api_server"] as string,
-                Source = "network",
-            };
-            return state;
-        }
-
-        public void Clear()
-        {
+        public void Clear() {
+            locker.EnterWriteLock();
             currentState = null;
+            locker.ExitWriteLock();
         }
     }
 }

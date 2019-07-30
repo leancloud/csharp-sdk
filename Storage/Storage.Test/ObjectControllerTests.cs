@@ -26,6 +26,7 @@ namespace LeanCloudTests {
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
             Assert.NotNull(obj.UpdatedAt);
+            await Task.Delay(10000);
         } 
     }
 }
