@@ -34,17 +34,21 @@ namespace LeanCloud.Storage.Internal
             var urlTemplate = "https://{0}/{1}/{2}";
             AVClient.Configuration configuration = AVClient.CurrentConfiguration;
             var apiVersion = "1.1";
-            if (relativeUri.StartsWith("push") || relativeUri.StartsWith("installations")) {
+            if (relativeUri.StartsWith("push", StringComparison.Ordinal) ||
+                relativeUri.StartsWith("installations", StringComparison.Ordinal)) {
                 Uri = new Uri(string.Format(urlTemplate, state.PushServer, apiVersion, relativeUri));
                 if (configuration.PushServer != null) {
                     Uri = new Uri(string.Format("{0}{1}/{2}", configuration.PushServer, apiVersion, relativeUri));
                 }
-            } else if (relativeUri.StartsWith("stats") || relativeUri.StartsWith("always_collect") || relativeUri.StartsWith("statistics")) {
+            } else if (relativeUri.StartsWith("stats", StringComparison.Ordinal) ||
+                relativeUri.StartsWith("always_collect", StringComparison.Ordinal) ||
+                relativeUri.StartsWith("statistics", StringComparison.Ordinal)) {
                 Uri = new Uri(string.Format(urlTemplate, state.StatsServer, apiVersion, relativeUri));
                 if (configuration.StatsServer != null) {
                     Uri = new Uri(string.Format("{0}{1}/{2}", configuration.StatsServer, apiVersion, relativeUri));
                 }
-            } else if (relativeUri.StartsWith("functions") || relativeUri.StartsWith("call")) {
+            } else if (relativeUri.StartsWith("functions", StringComparison.Ordinal) ||
+                relativeUri.StartsWith("call", StringComparison.Ordinal)) {
                 Uri = new Uri(string.Format(urlTemplate, state.EngineServer, apiVersion, relativeUri));
 
                 if (configuration.EngineServer != null) {
