@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 using LeanCloud;
 
 namespace LeanCloudTests {
@@ -16,7 +15,6 @@ namespace LeanCloudTests {
         }
 
         [Test]
-        [AsyncStateMachine(typeof(ObjectControllerTests))]
         public async Task TestSave() {
             TestContext.Out.WriteLine($"before at {Thread.CurrentThread.ManagedThreadId}");
             var obj = AVObject.Create("Foo");
@@ -26,7 +24,6 @@ namespace LeanCloudTests {
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
             Assert.NotNull(obj.UpdatedAt);
-            await Task.Delay(10000);
         } 
     }
 }

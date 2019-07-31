@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -43,7 +44,13 @@ namespace LeanCloud.Storage.Internal
             string appId = AVClient.CurrentConfiguration.ApplicationId;
             string url = string.Format("https://app-router.leancloud.cn/2/route?appId={0}", appId);
 
-            var ret = await AVClient.HttpGetAsync(new Uri(url));
+            var request = new HttpRequest {
+                Uri = new Uri(url),
+                Method = HttpMethod.Get,
+                Headers = null,
+                Data = null
+            };
+            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
             if (ret.Item1 != HttpStatusCode.OK) {
                 throw new AVException(AVException.ErrorCode.ConnectionFailed, "can not reach router.", null);
             }

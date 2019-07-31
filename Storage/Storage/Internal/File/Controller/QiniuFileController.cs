@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -173,20 +174,32 @@ namespace LeanCloud.Storage.Internal
             return makeBlockHeaders;
         }
 
-        Task<Tuple<HttpStatusCode, string>> MakeBlock(FileState state, byte[] firstChunkBinary, long blcokSize = 4194304)
-        {
+        async Task<Tuple<HttpStatusCode, string>> MakeBlock(FileState state, byte[] firstChunkBinary, long blcokSize = 4194304) {
             MemoryStream firstChunkData = new MemoryStream(firstChunkBinary, 0, firstChunkBinary.Length);
-            return AVClient.RequestAsync(new Uri(new Uri(UP_HOST) + string.Format("mkblk/{0}", blcokSize)), "POST", GetQiniuRequestHeaders(state), firstChunkData, "application/octet-stream", CancellationToken.None);
+            var headers = GetQiniuRequestHeaders(state);
+            headers.Add(new KeyValuePair<string, string>("Content-Type", "application/octet-stream"));
+            var request = new HttpRequest {
+                Uri = new Uri(new Uri(UP_HOST) + string.Format("mkblk/{0}", blcokSize)),
+                Method = HttpMethod.Post,
+                Headers = headers,
+                Data = firstChunkData
+            };
+            return await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
         }
-        Task<Tuple<HttpStatusCode, string>> PutChunk(FileState state, byte[] chunkBinary, string LastChunkctx, long currentChunkOffsetInBlock)
-        {
+
+        async Task<Tuple<HttpStatusCode, string>> PutChunk(FileState state, byte[] chunkBinary, string LastChunkctx, long currentChunkOffsetInBlock) {
             MemoryStream chunkData = new MemoryStream(chunkBinary, 0, chunkBinary.Length);
-            return AVClient.RequestAsync(new Uri(new Uri(UP_HOST) + string.Format("bput/{0}/{1}", LastChunkctx,
-                currentChunkOffsetInBlock)), "POST",
-                GetQiniuRequestHeaders(state), chunkData,
-                "application/octet-stream", CancellationToken.None);
+            var request = new HttpRequest {
+                Uri = new Uri(new Uri(UP_HOST) + string.Format("bput/{0}/{1}", LastChunkctx, currentChunkOffsetInBlock)),
+                Method = HttpMethod.Post,
+                Headers = GetQiniuRequestHeaders(state),
+                Data = chunkData
+            };
+            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
+            return ret;
         }
-        internal Task<Tuple<HttpStatusCode, string>> QiniuMakeFile(FileState state, Stream dataStream, string upToken, string key, long fsize, string[] ctxes, CancellationToken cancellationToken)
+
+        internal async Task<Tuple<HttpStatusCode, string>> QiniuMakeFile(FileState state, Stream dataStream, string upToken, string key, long fsize, string[] ctxes, CancellationToken cancellationToken)
         {
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.AppendFormat("{0}/mkfile/{1}", UP_HOST, fsize);
@@ -208,6 +221,7 @@ namespace LeanCloud.Storage.Internal
 
             string authHead = "UpToken " + upToken;
             headers.Add(new KeyValuePair<string, string>("Authorization", authHead));
+            headers.Add(new KeyValuePair<string, string>("Content-Type", "text/plain"));
             int proCount = ctxes.Length;
             Stream body = new MemoryStream();
 
@@ -221,13 +235,14 @@ namespace LeanCloud.Storage.Internal
                 }
             }
             body.Seek(0, SeekOrigin.Begin);
-
-            var rtn = AVClient.RequestAsync(new Uri(urlBuilder.ToString()), "POST", headers, body, "text/plain", cancellationToken).OnSuccess(_ =>
-            {
-                var dic = AVClient.ReponseResolve(_.Result, CancellationToken.None);
-                return _.Result;
-            });
-            return rtn;
+            var request = new HttpRequest {
+                Uri = new Uri(urlBuilder.ToString()),
+                Method = HttpMethod.Post,
+                Headers = headers,
+                Data = body
+            };
+            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
+            return ret;
         }
         internal void MergeFromJSON(FileState state, IDictionary<string, object> jsonData)
         {

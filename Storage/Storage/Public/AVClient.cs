@@ -16,7 +16,7 @@ namespace LeanCloud
     /// AVClient contains static functions that handle global
     /// configuration for the LeanCloud library.
     /// </summary>
-    public static partial class AVClient
+    public static class AVClient
     {
         public static readonly string[] DateFormatStrings = {
             // Official ISO format
@@ -367,37 +367,37 @@ namespace LeanCloud
             return Json.Encode(jsonData);
         }
 
-        public static Task<Tuple<HttpStatusCode, string>> HttpGetAsync(Uri uri)
-        {
-            return RequestAsync(uri, "GET", null, body: null, contentType: null, cancellationToken: CancellationToken.None);
-        }
+        //public static Task<Tuple<HttpStatusCode, string>> HttpGetAsync(Uri uri)
+        //{
+        //    return RequestAsync(uri, "GET", null, body: null, contentType: null, cancellationToken: CancellationToken.None);
+        //}
 
-        public static Task<Tuple<HttpStatusCode, string>> RequestAsync(Uri uri, string method, IList<KeyValuePair<string, string>> headers, IDictionary<string, object> body, string contentType, CancellationToken cancellationToken)
-        {
-            var dataStream = body != null ? new MemoryStream(Encoding.UTF8.GetBytes(Json.Encode(body))) : null;
-            return AVClient.RequestAsync(uri, method, headers, dataStream, contentType, cancellationToken);
-            //return AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, cancellationToken);
-        }
+        //public static Task<Tuple<HttpStatusCode, string>> RequestAsync(Uri uri, string method, IList<KeyValuePair<string, string>> headers, IDictionary<string, object> body, string contentType, CancellationToken cancellationToken)
+        //{
+        //    var dataStream = body != null ? new MemoryStream(Encoding.UTF8.GetBytes(Json.Encode(body))) : null;
+        //    return AVClient.RequestAsync(uri, method, headers, dataStream, contentType, cancellationToken);
+        //    //return AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, cancellationToken);
+        //}
 
-        public static Task<Tuple<HttpStatusCode, string>> RequestAsync(Uri uri, string method, IList<KeyValuePair<string, string>> headers, Stream data, string contentType, CancellationToken cancellationToken)
-        {
-            HttpRequest request = new HttpRequest()
-            {
-                Data = data != null ? data : null,
-                Headers = headers,
-                Method = method,
-                Uri = uri
-            };
-            return AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, cancellationToken).OnSuccess(t =>
-            {
-                var response = t.Result;
-                var contentString = response.Item2;
-                int responseCode = (int)response.Item1;
-                var responseLog = responseCode + ";" + contentString;
-                PrintLog(responseLog);
-                return response;
-            });
-        }
+        //public static Task<Tuple<HttpStatusCode, string>> RequestAsync(Uri uri, string method, IList<KeyValuePair<string, string>> headers, Stream data, string contentType, CancellationToken cancellationToken)
+        //{
+        //    HttpRequest request = new HttpRequest()
+        //    {
+        //        Data = data != null ? data : null,
+        //        Headers = headers,
+        //        Method = method,
+        //        Uri = uri
+        //    };
+        //    return AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, cancellationToken).OnSuccess(t =>
+        //    {
+        //        var response = t.Result;
+        //        var contentString = response.Item2;
+        //        int responseCode = (int)response.Item1;
+        //        var responseLog = responseCode + ";" + contentString;
+        //        PrintLog(responseLog);
+        //        return response;
+        //    });
+        //}
 
         internal static Tuple<HttpStatusCode, IDictionary<string, object>> ReponseResolve(Tuple<HttpStatusCode, string> response, CancellationToken cancellationToken)
         {
@@ -477,21 +477,8 @@ namespace LeanCloud
 
             try
             {
-                if (request is AVCommand)
-                {
-                    var command = (AVCommand)request;
-                    if (command.DataObject != null)
-                    {
-                        var bodyLog = "Body:" + Json.Encode(command.DataObject);
-                        sb.AppendLine(bodyLog);
-                    }
-                }
-                else
-                {
-                    StreamReader reader = new StreamReader(request.Data);
-                    string bodyLog = reader.ReadToEnd();
-                    sb.AppendLine(bodyLog);
-                }
+                var bodyLog = "Body:" + Json.Encode(request.Data);
+                sb.AppendLine(bodyLog);
             }
             catch (Exception)
             {

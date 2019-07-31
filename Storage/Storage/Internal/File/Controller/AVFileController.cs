@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Storage.Internal;
 using System.Net;
+using System.Net.Http;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,55 +33,36 @@ namespace LeanCloud.Storage.Internal
         /// <param name="sessionToken">Session token.</param>
         /// <param name="progress">Progress.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public virtual Task<FileState> SaveAsync(FileState state,
-        Stream dataStream,
-        String sessionToken,
-        IProgress<AVUploadProgressEventArgs> progress,
-        CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (state.Url != null)
-            {
+        public virtual async Task<FileState> SaveAsync(FileState state,
+            Stream dataStream,
+            String sessionToken,
+            IProgress<AVUploadProgressEventArgs> progress,
+            CancellationToken cancellationToken = default(CancellationToken)) {
+            if (state.Url != null) {
                 // !isDirty
-                return Task<FileState>.FromResult(state);
+                return state;
             }
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                var tcs = new TaskCompletionSource<FileState>();
-                tcs.TrySetCanceled();
-                return tcs.Task;
+            if (cancellationToken.IsCancellationRequested) {
+                return null;
             }
 
             var oldPosition = dataStream.Position;
-            var command = new AVCommand("files/" + state.Name,
-                method: "POST",
-                sessionToken: sessionToken,
-                contentType: state.MimeType,
-                stream: dataStream);
 
-            return commandRunner.RunCommandAsync(command,
-                uploadProgress: progress,
-                cancellationToken: cancellationToken).OnSuccess(uploadTask =>
-                {
-                    var result = uploadTask.Result;
-                    var jsonData = result.Item2;
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    return new FileState
-                    {
-                        Name = jsonData["name"] as string,
-                        Url = new Uri(jsonData["url"] as string, UriKind.Absolute),
-                        MimeType = state.MimeType
-                    };
-                }).ContinueWith(t =>
-                {
-                    // Rewind the stream on failure or cancellation (if possible)
-                    if ((t.IsFaulted || t.IsCanceled) && dataStream.CanSeek)
-                    {
-                        dataStream.Seek(oldPosition, SeekOrigin.Begin);
-                    }
-                    return t;
-                }).Unwrap();
+            var request = new HttpRequest {
+                Uri = new Uri("files/" + state.Name),
+                Method = HttpMethod.Post,
+                Headers = new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("Content-Type", state.MimeType)
+                }
+            };
+            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
+            var jsonData = Json.Parse(ret.Item2) as Dictionary<string, object>;
+            return new FileState {
+                Name = jsonData["name"] as string,
+                Url = new Uri(jsonData["url"] as string, UriKind.Absolute),
+                MimeType = state.MimeType
+            };
         }
         public Task DeleteAsync(FileState state, string sessionToken, CancellationToken cancellationToken)
         {

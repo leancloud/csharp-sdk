@@ -41,18 +41,17 @@ namespace LeanCloud.Storage.Internal {
             IProgress<AVUploadProgressEventArgs> uploadProgress,
             IProgress<AVDownloadProgressEventArgs> downloadProgress,
             CancellationToken cancellationToken) {
-
-            HttpMethod httpMethod = new HttpMethod(httpRequest.Method);
+            
+            HttpMethod httpMethod = httpRequest.Method;
             HttpRequestMessage message = new HttpRequestMessage(httpMethod, httpRequest.Uri);
 
             // Fill in zero-length data if method is post.
-            Stream data = httpRequest.Data;
-            if (httpRequest.Data == null && httpRequest.Method.ToLower().Equals("post")) {
-                data = new MemoryStream(new byte[0]);
+            if (httpRequest.Data == null && httpRequest.Method == HttpMethod.Post) {
+                message.Content = new StreamContent(new MemoryStream(new byte[0]));
             }
 
-            if (data != null) {
-                message.Content = new StreamContent(data);
+            if (httpRequest.Data != null) {
+                message.Content = new StreamContent(httpRequest.Data);
             }
 
             if (httpRequest.Headers != null) {
@@ -74,6 +73,7 @@ namespace LeanCloud.Storage.Internal {
             uploadProgress?.Report(new AVUploadProgressEventArgs { Progress = 0 });
             var response = await client.SendAsync(message, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             uploadProgress?.Report(new AVUploadProgressEventArgs { Progress = 1 });
+            message.Dispose();
 
             var resultString = await response.Content.ReadAsStringAsync();
             response.Dispose();

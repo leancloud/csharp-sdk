@@ -35,7 +35,7 @@ namespace LeanCloud.Storage.Internal
         /// <param name="downloadProgress"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<Tuple<HttpStatusCode, IDictionary<string, object>>> RunCommandAsync(AVCommand command,
+        public Task<Tuple<HttpStatusCode, IDictionary<string, object>>> RunCommandAsync(HttpRequest command,
             IProgress<AVUploadProgressEventArgs> uploadProgress = null,
             IProgress<AVDownloadProgressEventArgs> downloadProgress = null,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -99,11 +99,11 @@ namespace LeanCloud.Storage.Internal
         }
 
         private const string revocableSessionTokenTrueValue = "1";
-        private Task<AVCommand> PrepareCommand(AVCommand command)
+        private Task<HttpRequest> PrepareCommand(HttpRequest command)
         {
-            AVCommand newCommand = new AVCommand(command);
+            HttpRequest newCommand = command;
 
-            Task<AVCommand> installationIdTask = installationIdController.GetAsync().ContinueWith(t =>
+            Task<HttpRequest> installationIdTask = installationIdController.GetAsync().ContinueWith(t =>
             {
                 newCommand.Headers.Add(new KeyValuePair<string, string>("X-LC-Installation-Id", t.Result.ToString()));
                 return newCommand;

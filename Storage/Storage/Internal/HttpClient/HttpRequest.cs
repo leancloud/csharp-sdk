@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -10,16 +11,12 @@ namespace LeanCloud.Storage.Internal
     public class HttpRequest
     {
         public Uri Uri { get; set; }
+
         public IList<KeyValuePair<string, string>> Headers { get; set; }
 
-        /// <summary>
-        /// Data stream to be uploaded.
-        /// </summary>
-        public virtual Stream Data { get; set; }
+        // HttpMethod
+        public HttpMethod Method { get; set; }
 
-        /// <summary>
-        /// HTTP method. One of <c>DELETE</c>, <c>GET</c>, <c>HEAD</c>, <c>POST</c> or <c>PUT</c>
-        /// </summary>
-        public string Method { get; set; }
+        public virtual Stream Data { get; set; }
     }
 }

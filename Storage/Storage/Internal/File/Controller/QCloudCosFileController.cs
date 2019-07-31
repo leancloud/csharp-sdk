@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -159,7 +160,7 @@ namespace LeanCloud.Storage.Internal
 
             return HexStringFromBytes(hashBytes);
         }
-        Task<Tuple<HttpStatusCode, IDictionary<string, object>>> PostToQCloud(
+        async Task<Tuple<HttpStatusCode, IDictionary<string, object>>> PostToQCloud(
             Dictionary<string, object> body,
             byte[] sliceFile,
             CancellationToken cancellationToken)
@@ -174,14 +175,15 @@ namespace LeanCloud.Storage.Internal
 
             sliceHeaders.Add(new KeyValuePair<string, string>("Content-Type", contentType));
 
-            var rtn = AVClient.RequestAsync(new Uri(this.uploadUrl), "POST", sliceHeaders, tempStream, null, cancellationToken).OnSuccess(_ =>
-            {
-                var dic = AVClient.ReponseResolve(_.Result, CancellationToken.None);
-
-                return dic;
-            });
-
-            return rtn;
+            var request = new HttpRequest {
+                Uri = new Uri(this.uploadUrl),
+                Method = HttpMethod.Post,
+                Headers = sliceHeaders,
+                Data = tempStream
+            };
+            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
+            var result = new Tuple<HttpStatusCode, IDictionary<string, object>>(ret.Item1, Json.Parse(ret.Item2) as Dictionary<string, object>);
+            return result;
         }
         public static Stream HttpUploadFile(byte[] file, string fileName, out string contentType, out long contentLength, IDictionary<string, object> nvc)
         {

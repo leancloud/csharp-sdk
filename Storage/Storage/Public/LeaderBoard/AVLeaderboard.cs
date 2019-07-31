@@ -211,9 +211,7 @@ namespace LeanCloud {
             if (overwrite) {
                 path = string.Format("{0}?overwrite=1", path);
             }
-            var dataStr = Json.Encode(data);
-            var dataStream = new MemoryStream(Encoding.UTF8.GetBytes(dataStr));
-            var command = new AVCommand(path, "POST", contentType: "application/json", sessionToken: user.SessionToken, stream: dataStream);
+            var command = new AVCommand(path, "POST", user.SessionToken, data: data);
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
                 try {
                     List<AVStatistic> statisticList = new List<AVStatistic>();
