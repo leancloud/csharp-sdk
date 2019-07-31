@@ -178,9 +178,9 @@ namespace LeanCloud.Storage.Internal
                     { "path", r.Uri.AbsolutePath },
                 };
 
-                if (r.DataObject != null)
+                if (r.Body != null)
                 {
-                    results["body"] = r.DataObject;
+                    results["body"] = r.Body;
                 }
                 return results;
             }).Cast<object>().ToList();

@@ -14,8 +14,6 @@ namespace LeanCloud.Storage.Internal
     /// </summary>
     public class AVCommand : HttpRequest
     {
-        public IDictionary<string, object> DataObject { get; private set; }
-
         public object Body {
             get; set;
         }
@@ -160,7 +158,6 @@ namespace LeanCloud.Storage.Internal
         {
             this.Uri = other.Uri;
             this.Method = other.Method;
-            this.DataObject = other.DataObject;
             this.Headers = new List<KeyValuePair<string, string>>(other.Headers);
             this.Body = other.Data;
         }
