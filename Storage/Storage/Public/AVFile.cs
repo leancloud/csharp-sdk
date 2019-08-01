@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -355,14 +355,18 @@ namespace LeanCloud
             };
             AVCommand cmd = null;
 
-            if (!string.IsNullOrEmpty(this.ObjectId))
-            {
-                cmd = new AVCommand("files/" + this.ObjectId,
-                       method: "PUT", sessionToken: AVUser.CurrentSessionToken, data: strs);
-            }
-            else
-            {
-                cmd = new AVCommand("files", method: "POST", sessionToken: AVUser.CurrentSessionToken, data: strs);
+            if (!string.IsNullOrEmpty(this.ObjectId)) {
+                cmd = new AVCommand {
+                    Path = $"files/{ObjectId}",
+                    Method = HttpMethod.Put,
+                    Content = strs
+                };
+            } else {
+                cmd = new AVCommand {
+                    Path = "files",
+                    Method = HttpMethod.Post,
+                    Content = strs
+                };
             }
 
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(cmd).ContinueWith(t =>

@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using LeanCloud.Storage.Internal;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal
 {
     /// <summary>
     /// Command Runner.
     /// </summary>
-    public class AVCommandRunner : IAVCommandRunner
-    {
-        private readonly IHttpClient httpClient;
+    public class AVCommandRunner : IAVCommandRunner {
+        public const string APPLICATION_JSON = "application/json";
+
+        private readonly System.Net.Http.HttpClient httpClient;
         private readonly IInstallationIdController installationIdController;
 
         /// <summary>
@@ -23,7 +26,7 @@ namespace LeanCloud.Storage.Internal
         /// <param name="installationIdController"></param>
         public AVCommandRunner(IHttpClient httpClient, IInstallationIdController installationIdController)
         {
-            this.httpClient = httpClient;
+            this.httpClient = new System.Net.Http.HttpClient();
             this.installationIdController = installationIdController;
         }
 
@@ -35,133 +38,113 @@ namespace LeanCloud.Storage.Internal
         /// <param name="downloadProgress"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<Tuple<HttpStatusCode, IDictionary<string, object>>> RunCommandAsync(HttpRequest command,
+        public async Task<Tuple<HttpStatusCode, IDictionary<string, object>>> RunCommandAsync(AVCommand command,
             IProgress<AVUploadProgressEventArgs> uploadProgress = null,
             IProgress<AVDownloadProgressEventArgs> downloadProgress = null,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return PrepareCommand(command).ContinueWith(commandTask =>
-            {
-                var requestLog = commandTask.Result.ToLog();
-                AVClient.PrintLog("http=>" + requestLog);
+            CancellationToken cancellationToken = default(CancellationToken)) {
+            
+            var request = new HttpRequestMessage {
+                RequestUri = command.Uri,
+                Method = command.Method,
+                Content = new StringContent(Json.Encode(command.Content))
+            };
 
-                return httpClient.ExecuteAsync(commandTask.Result, uploadProgress, downloadProgress, cancellationToken).OnSuccess(t =>
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
+            var headers = await GetHeadersAsync();
+            foreach (var header in headers) {
+                if (!string.IsNullOrEmpty(header.Value)) {
+                    request.Headers.Add(header.Key, header.Value);
+                }
+            }
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(APPLICATION_JSON);
 
-                    var response = t.Result;
-                    var contentString = response.Item2;
-                    int responseCode = (int)response.Item1;
+            PrintRequest(command, headers);
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            request.Dispose();
 
-                    var responseLog = responseCode + ";" + contentString;
-                    AVClient.PrintLog("http<=" + responseLog);
+            var resultString = await response.Content.ReadAsStringAsync();
+            response.Dispose();
+            PrintResponse(response, resultString);
 
-                    if (responseCode >= 500)
-                    {
-                        // Server error, return InternalServerError.
-                        throw new AVException(AVException.ErrorCode.InternalServerError, response.Item2);
+            var ret = new Tuple<HttpStatusCode, string>(response.StatusCode, resultString);
+
+            var responseCode = ret.Item1;
+            var contentString = ret.Item2;
+
+            if (responseCode >= HttpStatusCode.InternalServerError) {
+                // Server error, return InternalServerError.
+                throw new AVException(AVException.ErrorCode.InternalServerError, contentString);
+            }
+
+            if (contentString != null) {
+                IDictionary<string, object> contentJson = null;
+                try {
+                    if (contentString.StartsWith("[", StringComparison.Ordinal)) {
+                        var arrayJson = Json.Parse(contentString);
+                        contentJson = new Dictionary<string, object> { { "results", arrayJson } };
+                    } else {
+                        contentJson = Json.Parse(contentString) as IDictionary<string, object>;
                     }
-                    else if (contentString != null)
-                    {
-                        IDictionary<string, object> contentJson = null;
-                        try
-                        {
-                            if (contentString.StartsWith("["))
-                            {
-                                var arrayJson = Json.Parse(contentString);
-                                contentJson = new Dictionary<string, object> { { "results", arrayJson } };
-                            }
-                            else
-                            {
-                                contentJson = Json.Parse(contentString) as IDictionary<string, object>;
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            throw new AVException(AVException.ErrorCode.OtherCause,
-                                "Invalid response from server", e);
-                        }
-                        if (responseCode < 200 || responseCode > 299)
-                        {
-                            AVClient.PrintLog("error response code:" + responseCode);
-                            int code = (int)(contentJson.ContainsKey("code") ? (int)contentJson["code"] : (int)AVException.ErrorCode.OtherCause);
-                            string error = contentJson.ContainsKey("error") ?
-                                contentJson["error"] as string : contentString;
-                            AVException.ErrorCode ec = (AVException.ErrorCode)code;
-                            throw new AVException(ec, error);
-                        }
-                        return new Tuple<HttpStatusCode, IDictionary<string, object>>(response.Item1,
-                            contentJson);
-                    }
-                    return new Tuple<HttpStatusCode, IDictionary<string, object>>(response.Item1, null);
-                });
-            }).Unwrap();
+                } catch (Exception e) {
+                    throw new AVException(AVException.ErrorCode.OtherCause,
+                        "Invalid response from server", e);
+                }
+                if (responseCode < HttpStatusCode.OK || responseCode > HttpStatusCode.PartialContent) {
+                    AVClient.PrintLog("error response code:" + responseCode);
+                    int code = (int)(contentJson.ContainsKey("code") ? (int)contentJson["code"] : (int)AVException.ErrorCode.OtherCause);
+                    string error = contentJson.ContainsKey("error") ?
+                        contentJson["error"] as string : contentString;
+                    AVException.ErrorCode ec = (AVException.ErrorCode)code;
+                    throw new AVException(ec, error);
+                }
+                return new Tuple<HttpStatusCode, IDictionary<string, object>>(responseCode, contentJson);
+            }
+
+            return new Tuple<HttpStatusCode, IDictionary<string, object>>(responseCode, null);
         }
 
         private const string revocableSessionTokenTrueValue = "1";
-        private Task<HttpRequest> PrepareCommand(HttpRequest command)
-        {
-            HttpRequest newCommand = command;
 
-            Task<HttpRequest> installationIdTask = installationIdController.GetAsync().ContinueWith(t =>
-            {
-                newCommand.Headers.Add(new KeyValuePair<string, string>("X-LC-Installation-Id", t.Result.ToString()));
-                return newCommand;
-            });
-
-            AVClient.Configuration configuration = AVClient.CurrentConfiguration;
-            newCommand.Headers.Add(new KeyValuePair<string, string>("X-LC-Id", configuration.ApplicationId));
-
+        async Task<Dictionary<string, string>> GetHeadersAsync() {
+            var headers = new Dictionary<string, string>();
+            var installationId = await installationIdController.GetAsync();
+            headers.Add("X-LC-Installation-Id", installationId.ToString());
+            var conf = AVClient.CurrentConfiguration;
+            headers.Add("X-LC-Id", conf.ApplicationId);
             long timestamp = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
-            if (!string.IsNullOrEmpty(configuration.MasterKey) && AVClient.UseMasterKey)
-            {
-                string sign = MD5.GetMd5String(timestamp + configuration.MasterKey);
-                newCommand.Headers.Add(new KeyValuePair<string, string>("X-LC-Sign", string.Format("{0},{1},master", sign, timestamp)));
+            if (!string.IsNullOrEmpty(conf.MasterKey) && AVClient.UseMasterKey) {
+                string sign = MD5.GetMd5String(timestamp + conf.MasterKey);
+                headers.Add("X-LC-Sign", $"{sign},{timestamp},master");
+            } else {
+                string sign = MD5.GetMd5String(timestamp + conf.ApplicationKey);
+                headers.Add("X-LC-Sign", $"{sign},{timestamp}");
             }
-            else
-            {
-                string sign = MD5.GetMd5String(timestamp + configuration.ApplicationKey);
-                newCommand.Headers.Add(new KeyValuePair<string, string>("X-LC-Sign", string.Format("{0},{1}", sign, timestamp)));
-            }
+            // TODO 重新设计版本号
+            headers.Add("X-LC-Client-Version", AVClient.VersionString);
+            headers.Add("X-LC-App-Build-Version", conf.VersionInfo.BuildVersion);
+            headers.Add("X-LC-App-Display-Version", conf.VersionInfo.DisplayVersion);
+            headers.Add("X-LC-OS-Version", conf.VersionInfo.OSVersion);
+            headers.Add("X-LeanCloud-Revocable-Session", revocableSessionTokenTrueValue);
+            return headers;
+        }
 
-            newCommand.Headers.Add(new KeyValuePair<string, string>("X-LC-Client-Version", AVClient.VersionString));
+        static void PrintRequest(AVCommand request, Dictionary<string, string> headers) {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("=== HTTP Request Start ===");
+            sb.AppendLine($"URL: {request.Uri}");
+            sb.AppendLine($"Method: {request.Method}");
+            sb.AppendLine($"Headers: {JsonConvert.SerializeObject(headers)}");
+            sb.AppendLine($"Content: {JsonConvert.SerializeObject(request.Content)}");
+            sb.AppendLine("=== HTTP Request End ===");
+            AVClient.PrintLog(sb.ToString());
+        }
 
-            if (!string.IsNullOrEmpty(configuration.VersionInfo.BuildVersion))
-            {
-                newCommand.Headers.Add(new KeyValuePair<string, string>("X-LC-App-Build-Version", configuration.VersionInfo.BuildVersion));
-            }
-            if (!string.IsNullOrEmpty(configuration.VersionInfo.DisplayVersion))
-            {
-                newCommand.Headers.Add(new KeyValuePair<string, string>("X-LC-App-Display-Version", configuration.VersionInfo.DisplayVersion));
-            }
-            if (!string.IsNullOrEmpty(configuration.VersionInfo.OSVersion))
-            {
-                newCommand.Headers.Add(new KeyValuePair<string, string>("X-LC-OS-Version", configuration.VersionInfo.OSVersion));
-            }
-
-            if (AVUser.IsRevocableSessionEnabled)
-            {
-                newCommand.Headers.Add(new KeyValuePair<string, string>("X-LeanCloud-Revocable-Session", revocableSessionTokenTrueValue));
-            }
-
-            if (configuration.AdditionalHTTPHeaders != null)
-            {
-                var headersDictionary = newCommand.Headers.ToDictionary(kv => kv.Key, kv => kv.Value);
-                foreach (var header in configuration.AdditionalHTTPHeaders)
-                {
-                    if (headersDictionary.ContainsKey(header.Key))
-                    {
-                        headersDictionary[header.Key] = header.Value;
-                    }
-                    else
-                    {
-                        newCommand.Headers.Add(header);
-                    }
-                }
-                newCommand.Headers = headersDictionary.ToList();
-            }
-
-            return installationIdTask;
+        static void PrintResponse(HttpResponseMessage response, string content) {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("=== HTTP Response Start ===");
+            sb.AppendLine($"URL: {response.RequestMessage.RequestUri}");
+            sb.AppendLine($"Content: {content}");
+            sb.AppendLine("=== HTTP Response End ===");
+            AVClient.PrintLog(sb.ToString());
         }
     }
 }

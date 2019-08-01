@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using LeanCloud.Storage.Internal;
+using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal {
   public class AVSessionController : IAVSessionController {
@@ -13,31 +13,28 @@ namespace LeanCloud.Storage.Internal {
     }
 
     public Task<IObjectState> GetSessionAsync(string sessionToken, CancellationToken cancellationToken) {
-      var command = new AVCommand("sessions/me",
-          method: "GET",
-          sessionToken: sessionToken,
-          data: null);
-
+            var command = new AVCommand {
+                Path = "sessions/me",
+                Method = HttpMethod.Get
+            };
       return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t => {
         return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
       });
     }
 
     public Task RevokeAsync(string sessionToken, CancellationToken cancellationToken) {
-      var command = new AVCommand("logout",
-          method: "POST",
-          sessionToken: sessionToken,
-          data: new Dictionary<string, object>());
-
+            var command = new AVCommand {
+                Path = "logout",
+                Method = HttpMethod.Post
+            };
       return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken);
     }
 
     public Task<IObjectState> UpgradeToRevocableSessionAsync(string sessionToken, CancellationToken cancellationToken) {
-      var command = new AVCommand("upgradeToRevocableSession",
-          method: "POST",
-          sessionToken: sessionToken,
-          data: new Dictionary<string, object>());
-
+            var command = new AVCommand {
+                Path = "upgradeToRevocableSession",
+                Method = HttpMethod.Post,
+            };
       return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t => {
         return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
       });

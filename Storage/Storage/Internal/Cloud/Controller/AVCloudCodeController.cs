@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Utilities;
-using LeanCloud.Storage.Internal;
+using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -21,11 +21,11 @@ namespace LeanCloud.Storage.Internal
             string sessionToken,
             CancellationToken cancellationToken)
         {
-            var command = new AVCommand(string.Format("functions/{0}", Uri.EscapeUriString(name)),
-                method: "POST",
-                sessionToken: sessionToken,
-                data: NoObjectsEncoder.Instance.Encode(parameters) as IDictionary<string, object>);
-
+            var command = new EngineCommand {
+                Path = $"functions/{Uri.EscapeUriString(name)}",
+                Method = HttpMethod.Post,
+                Content = parameters
+            };
             return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
@@ -39,11 +39,11 @@ namespace LeanCloud.Storage.Internal
 
         public Task<T> RPCFunction<T>(string name, IDictionary<string, object> parameters, string sessionToken, CancellationToken cancellationToken)
         {
-            var command = new AVCommand(string.Format("call/{0}", Uri.EscapeUriString(name)),
-                method: "POST",
-                sessionToken: sessionToken,
-                data: PointerOrLocalIdEncoder.Instance.Encode(parameters) as IDictionary<string, object>);
-
+            var command = new EngineCommand {
+                Path = $"call/{Uri.EscapeUriString(name)}",
+                Method = HttpMethod.Post,
+                Content = parameters
+            };
             return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;

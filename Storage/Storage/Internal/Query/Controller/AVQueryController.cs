@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using LeanCloud.Storage.Internal;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -75,14 +74,10 @@ namespace LeanCloud.Storage.Internal
             string sessionToken,
             CancellationToken cancellationToken)
         {
-
-            var command = new AVCommand(string.Format("{0}?{1}",
-                relativeUri,
-                AVClient.BuildQueryString(parameters)),
-               method: "GET",
-               sessionToken: sessionToken,
-               data: null);
-
+            var command = new AVCommand {
+                Path = $"{relativeUri}?{AVClient.BuildQueryString(parameters)}",
+                Method = HttpMethod.Get
+            };
             return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 return t.Result.Item2;

@@ -12,158 +12,30 @@ namespace LeanCloud.Storage.Internal
     /// AVCommand is an <see cref="HttpRequest"/> with pre-populated
     /// headers.
     /// </summary>
-    public class AVCommand : HttpRequest
-    {
-        public object Body {
+    public class AVCommand {
+        // 不同服务对应的服务器地址不同
+        public virtual string Server => AVClient.CurrentConfiguration.ApiServer;
+
+        public string Path {
             get; set;
         }
 
-        public override Stream Data {
+        public HttpMethod Method {
+            get; set;
+        }
+
+        public Dictionary<string, string> Headers {
+            get; set;
+        }
+
+        public object Content {
+            get; set;
+        }
+
+        public Uri Uri {
             get {
-                return new MemoryStream(Encoding.UTF8.GetBytes(Json.Encode(Body)));
+                return new Uri($"{Server}/{AVClient.APIVersion}/{Path}");
             }
-        }
-
-        public AVCommand(string relativeUri,
-            string method,
-            string sessionToken = null,
-            IList<KeyValuePair<string, string>> headers = null,
-            object data = null)
-        {
-            var state = AVPlugins.Instance.AppRouterController.Get();
-            var urlTemplate = "https://{0}/{1}/{2}";
-            AVClient.Configuration configuration = AVClient.CurrentConfiguration;
-            var apiVersion = "1.1";
-            if (relativeUri.StartsWith("push", StringComparison.Ordinal) ||
-                relativeUri.StartsWith("installations", StringComparison.Ordinal)) {
-                Uri = new Uri(string.Format(urlTemplate, state.PushServer, apiVersion, relativeUri));
-                if (configuration.PushServer != null) {
-                    Uri = new Uri(string.Format("{0}{1}/{2}", configuration.PushServer, apiVersion, relativeUri));
-                }
-            } else if (relativeUri.StartsWith("stats", StringComparison.Ordinal) ||
-                relativeUri.StartsWith("always_collect", StringComparison.Ordinal) ||
-                relativeUri.StartsWith("statistics", StringComparison.Ordinal)) {
-                Uri = new Uri(string.Format(urlTemplate, state.StatsServer, apiVersion, relativeUri));
-                if (configuration.StatsServer != null) {
-                    Uri = new Uri(string.Format("{0}{1}/{2}", configuration.StatsServer, apiVersion, relativeUri));
-                }
-            } else if (relativeUri.StartsWith("functions", StringComparison.Ordinal) ||
-                relativeUri.StartsWith("call", StringComparison.Ordinal)) {
-                Uri = new Uri(string.Format(urlTemplate, state.EngineServer, apiVersion, relativeUri));
-
-                if (configuration.EngineServer != null) {
-                    Uri = new Uri(string.Format("{0}{1}/{2}", configuration.EngineServer, apiVersion, relativeUri));
-                }
-            } else {
-                Uri = new Uri(string.Format(urlTemplate, state.ApiServer, apiVersion, relativeUri));
-
-                if (configuration.ApiServer != null) {
-                    Uri = new Uri(string.Format("{0}{1}/{2}", configuration.ApiServer, apiVersion, relativeUri));
-                }
-            }
-            switch (method) {
-                case "GET":
-                    Method = HttpMethod.Get;
-                    break;
-                case "POST":
-                    Method = HttpMethod.Post;
-                    break;
-                case "DELETE":
-                    Method = HttpMethod.Delete;
-                    break;
-                case "PUT":
-                    Method = HttpMethod.Put;
-                    break;
-                case "HEAD":
-                    Method = HttpMethod.Head;
-                    break;
-                case "TRACE":
-                    Method = HttpMethod.Trace;
-                    break;
-                default:
-                    break;
-            }
-            Body = data;
-            Headers = new List<KeyValuePair<string, string>>(headers ?? Enumerable.Empty<KeyValuePair<string, string>>());
-
-            string useProduction = AVClient.UseProduction ? "1" : "0";
-            Headers.Add(new KeyValuePair<string, string>("X-LC-Prod", useProduction));
-
-            if (!string.IsNullOrEmpty(sessionToken)) {
-                Headers.Add(new KeyValuePair<string, string>("X-LC-Session", sessionToken));
-            }
-
-            Headers.Add(new KeyValuePair<string, string>("Content-Type", "application/json"));
-        }
-
-        //public AVCommand(string relativeUri,
-        //        string method,
-        //        string sessionToken = null,
-        //        IList<KeyValuePair<string, string>> headers = null,
-        //        Stream stream = null,
-        //        string contentType = null)
-        //{
-        //    var state = AVPlugins.Instance.AppRouterController.Get();
-        //    var urlTemplate = "https://{0}/{1}/{2}";
-        //    AVClient.Configuration configuration = AVClient.CurrentConfiguration;
-        //    var apiVersion = "1.1";
-        //    if (relativeUri.StartsWith("push") || relativeUri.StartsWith("installations"))
-        //    {
-        //        Uri = new Uri(string.Format(urlTemplate, state.PushServer, apiVersion, relativeUri));
-        //        if (configuration.PushServer != null)
-        //        {
-        //            Uri = new Uri(string.Format("{0}{1}/{2}", configuration.PushServer, apiVersion, relativeUri));
-        //        }
-        //    }
-        //    else if (relativeUri.StartsWith("stats") || relativeUri.StartsWith("always_collect") || relativeUri.StartsWith("statistics"))
-        //    {
-        //        Uri = new Uri(string.Format(urlTemplate, state.StatsServer, apiVersion, relativeUri));
-        //        if (configuration.StatsServer != null)
-        //        {
-        //            Uri = new Uri(string.Format("{0}{1}/{2}", configuration.StatsServer, apiVersion, relativeUri));
-        //        }
-        //    }
-        //    else if (relativeUri.StartsWith("functions") || relativeUri.StartsWith("call"))
-        //    {
-        //        Uri = new Uri(string.Format(urlTemplate, state.EngineServer, apiVersion, relativeUri));
-
-        //        if (configuration.EngineServer != null)
-        //        {
-        //            Uri = new Uri(string.Format("{0}{1}/{2}", configuration.EngineServer, apiVersion, relativeUri));
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Uri = new Uri(string.Format(urlTemplate, state.ApiServer, apiVersion, relativeUri));
-
-        //        if (configuration.ApiServer != null)
-        //        {
-        //            Uri = new Uri(string.Format("{0}{1}/{2}", configuration.ApiServer, apiVersion, relativeUri));
-        //        }
-        //    }
-        //    Method = method;
-        //    Data = stream;
-        //    Headers = new List<KeyValuePair<string, string>>(headers ?? Enumerable.Empty<KeyValuePair<string, string>>());
-
-        //    string useProduction = AVClient.UseProduction ? "1" : "0";
-        //    Headers.Add(new KeyValuePair<string, string>("X-LC-Prod", useProduction));
-
-        //    if (!string.IsNullOrEmpty(sessionToken))
-        //    {
-        //        Headers.Add(new KeyValuePair<string, string>("X-LC-Session", sessionToken));
-        //    }
-        //    if (!string.IsNullOrEmpty(contentType))
-        //    {
-        //        Headers.Add(new KeyValuePair<string, string>("Content-Type", contentType));
-        //    }
-        //}
-
-        public AVCommand(AVCommand other)
-        {
-            this.Uri = other.Uri;
-            this.Method = other.Method;
-            this.Headers = new List<KeyValuePair<string, string>>(other.Headers);
-            this.Body = other.Data;
         }
     }
 }

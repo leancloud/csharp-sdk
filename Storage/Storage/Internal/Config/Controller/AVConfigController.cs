@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Threading;
-using LeanCloud.Storage.Internal;
+using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal {
   /// <summary>
@@ -22,10 +22,10 @@ namespace LeanCloud.Storage.Internal {
     public IAVCurrentConfigController CurrentConfigController { get; internal set; }
 
     public Task<AVConfig> FetchConfigAsync(String sessionToken, CancellationToken cancellationToken) {
-      var command = new AVCommand("config",
-          method: "GET",
-          sessionToken: sessionToken,
-          data: null);
+            var command = new AVCommand {
+                Path = "config",
+                Method = HttpMethod.Post,
+            };
 
       return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(task => {
         cancellationToken.ThrowIfCancellationRequested();

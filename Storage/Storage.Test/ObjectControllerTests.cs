@@ -10,6 +10,7 @@ namespace LeanCloudTests {
             AVClient.Initialize(new AVClient.Configuration {
                 ApplicationId = "BMYV4RKSTwo8WSqt8q9ezcWF-gzGzoHsz",
                 ApplicationKey = "pbf6Nk5seyjilexdpyrPwjSp",
+                ApiServer = "https://avoscloud.com"
             });
             AVClient.HttpLog(TestContext.Out.WriteLine);
         }

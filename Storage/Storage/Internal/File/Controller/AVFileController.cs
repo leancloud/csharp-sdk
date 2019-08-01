@@ -15,7 +15,7 @@ namespace LeanCloud.Storage.Internal
     /// </summary>
     public class AVFileController : IAVFileController
     {
-        private readonly IAVCommandRunner commandRunner;
+        protected readonly IAVCommandRunner commandRunner;
         /// <summary>
         /// Initializes a new instance of the <see cref="T:LeanCloud.Storage.Internal.AVFileController"/> class.
         /// </summary>
@@ -66,14 +66,13 @@ namespace LeanCloud.Storage.Internal
         }
         public Task DeleteAsync(FileState state, string sessionToken, CancellationToken cancellationToken)
         {
-            var command = new AVCommand("files/" + state.ObjectId,
-               method: "DELETE",
-               sessionToken: sessionToken,
-               data: null);
-
+            var command = new AVCommand {
+                Path = $"files/{state.ObjectId}",
+                Method = HttpMethod.Delete
+            };
             return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken);
         }
-        internal static Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken)
+        internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken)
         {
             Task<Tuple<HttpStatusCode, IDictionary<string, object>>> rtn;
             string currentSessionToken = AVUser.CurrentSessionToken;
@@ -85,17 +84,19 @@ namespace LeanCloud.Storage.Internal
             parameters.Add("mime_type", AVFile.GetMIMEType(str));
             parameters.Add("metaData", fileState.MetaData);
 
-            rtn = AVClient.RequestAsync("POST", new Uri("fileTokens", UriKind.Relative), currentSessionToken, parameters, cancellationToken);
-
-            return rtn;
+            var command = new AVCommand {
+                Path = "fileTokens",
+                Method = HttpMethod.Post,
+                Content = parameters
+            };
+            return commandRunner.RunCommandAsync(command);
         }
         public Task<FileState> GetAsync(string objectId, string sessionToken, CancellationToken cancellationToken)
         {
-            var command = new AVCommand("files/" + objectId,
-                method: "GET",
-                sessionToken: sessionToken,
-                data: null);
-
+            var command = new AVCommand {
+                Path = $"files/{objectId}",
+                Method = HttpMethod.Get
+            };
             return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(_ =>
             {
                 var result = _.Result;

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Storage.Internal;
+using System.Net.Http;
 
 namespace LeanCloud
 {
@@ -209,7 +208,7 @@ namespace LeanCloud
             }).Unwrap().OnSuccess(t =>
             {
                 IObjectState state = t.Result;
-                return state == null ? default(T) : AVObject.FromState<T>(state, ClassName);
+                return state == null ? default : AVObject.FromState<T>(state, ClassName);
             });
         }
 
@@ -310,11 +309,10 @@ namespace LeanCloud
 
         internal static Task<IEnumerable<T>> rebuildObjectFromCloudQueryResult(string queryString)
         {
-            var command = new AVCommand(queryString,
-              method: "GET",
-              sessionToken: AVUser.CurrentSessionToken,
-              data: null);
-
+            var command = new AVCommand {
+                Path = queryString,
+                Method = HttpMethod.Get
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: CancellationToken.None).OnSuccess(t =>
             {
                 var items = t.Result.Item2["results"] as IList<object>;

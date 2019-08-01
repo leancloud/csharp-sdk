@@ -2,8 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using LeanCloud.Storage.Internal;
-using System.IO;
-using System.Text;
+using System.Net.Http;
 
 namespace LeanCloud {
     /// <summary>
@@ -153,7 +152,11 @@ namespace LeanCloud {
                 { "versionChangeInterval", versionChangeInterval.ToString().ToLower() },
                 { "updateStrategy", updateStrategy.ToString().ToLower() },
             };
-            var command = new AVCommand("leaderboard/leaderboards", "POST", data: data);
+            var command = new AVCommand {
+                Path = "leaderboard/leaderboards",
+                Method = HttpMethod.Post,
+                Content = data
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
                 try {
                     var leaderboard = Parse(t.Result.Item2);
@@ -211,7 +214,11 @@ namespace LeanCloud {
             if (overwrite) {
                 path = string.Format("{0}?overwrite=1", path);
             }
-            var command = new AVCommand(path, "POST", user.SessionToken, data: data);
+            var command = new AVCommand {
+                Path = path,
+                Method = HttpMethod.Post,
+                Content = data
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
                 try {
                     List<AVStatistic> statisticList = new List<AVStatistic>();
@@ -242,7 +249,10 @@ namespace LeanCloud {
                 path = string.Format("{0}?statistics={1}", path, names);
             }
             var sessionToken = AVUser.CurrentUser?.SessionToken;
-            var command = new AVCommand(path, "GET", sessionToken, data: null);
+            var command = new AVCommand {
+                Path = path,
+                Method = HttpMethod.Post
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => { 
                 try {
                     List<AVStatistic> statisticList = new List<AVStatistic>();
@@ -272,7 +282,10 @@ namespace LeanCloud {
             var path = string.Format("leaderboard/users/{0}/statistics", user.ObjectId);
             var names = string.Join(",", statisticNames.ToArray());
             path = string.Format("{0}?statistics={1}", path, names);
-            var command = new AVCommand(path, "DELETE", sessionToken: user.SessionToken, data: null);
+            var command = new AVCommand {
+                Path = path,
+                Method = HttpMethod.Delete,
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command);
         }
 
@@ -285,7 +298,10 @@ namespace LeanCloud {
         public Task<List<AVLeaderboardArchive>> GetArchives(int skip = 0, int limit = 10) {
             var path = string.Format("leaderboard/leaderboards/{0}/archives", StatisticName);
             path = string.Format("{0}?skip={1}&limit={2}", path, skip, limit);
-            var command = new AVCommand(path, "GET", data: null);
+            var command = new AVCommand {
+                Path = path,
+                Method = HttpMethod.Get
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
                 List<AVLeaderboardArchive> archives = new List<AVLeaderboardArchive>();
                 List<object> list = t.Result.Item2["results"] as List<object>;
@@ -342,7 +358,10 @@ namespace LeanCloud {
                 var statistics = string.Join(",", includeStatistics.ToArray());
                 path = string.Format("{0}&includeStatistics={1}", path, statistics);
             }
-            var command = new AVCommand(path, "GET", data: null);
+            var command = new AVCommand {
+                Path = path,
+                Method = HttpMethod.Get
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
                 try {
                     List<AVRanking> rankingList = new List<AVRanking>();
@@ -389,7 +408,11 @@ namespace LeanCloud {
 
         Task<IDictionary<string,object>> Update(Dictionary<string, object> data) {
             var path = string.Format("leaderboard/leaderboards/{0}", StatisticName);
-            var command = new AVCommand(path, "PUT", data: data);
+            var command = new AVCommand {
+                Path = path,
+                Method = HttpMethod.Put,
+                Content = data
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
                 return t.Result.Item2;
             });
@@ -401,7 +424,10 @@ namespace LeanCloud {
         /// <returns>排行榜对象</returns>
         public Task<AVLeaderboard> Fetch() {
             var path = string.Format("leaderboard/leaderboards/{0}", StatisticName);
-            var command = new AVCommand(path, "GET", data: null);
+            var command = new AVCommand {
+                Path = path,
+                Method = HttpMethod.Get
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => { 
                 try {
                     // 反序列化 Leaderboard 对象
@@ -419,7 +445,10 @@ namespace LeanCloud {
         /// <returns>排行榜对象</returns>
         public Task<AVLeaderboard> Reset() {
             var path = string.Format("leaderboard/leaderboards/{0}/incrementVersion", StatisticName);
-            var command = new AVCommand(path, "PUT", data: null);
+            var command = new AVCommand {
+                Path = path,
+                Method = HttpMethod.Put
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => { 
                 try {
                     Init(t.Result.Item2);
@@ -435,7 +464,10 @@ namespace LeanCloud {
         /// </summary>
         public Task Destroy() {
             var path = string.Format("leaderboard/leaderboards/{0}", StatisticName);
-            var command = new AVCommand(path, "DELETE", data: null);
+            var command = new AVCommand {
+                Path = path,
+                Method = HttpMethod.Delete
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command);
         }
 

@@ -1,9 +1,7 @@
 ﻿using LeanCloud.Storage.Internal;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -69,9 +67,10 @@ namespace LeanCloud
                     return Task.FromResult(false);
                 }
             }
-            var command = new AVCommand(String.Format("users/me?session_token={0}", CurrentSessionToken),
-                method: "GET",
-                data: null);
+            var command = new AVCommand {
+                Path = $"users/me?session_token={CurrentSessionToken}",
+                Method = HttpMethod.Get
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
@@ -297,10 +296,11 @@ namespace LeanCloud
             {
                 data = this.EncodeForSaving(data);
             }
-            var command = new AVCommand(string.Format("users/{0}/friendship/{1}", this.ObjectId, userObjectId),
-              method: "POST",
-              sessionToken: CurrentSessionToken,
-              data: data);
+            var command = new AVCommand {
+                Path = $"users/{ObjectId}/friendship/{userObjectId}",
+                Method = HttpMethod.Post,
+                Content = data
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
@@ -314,10 +314,10 @@ namespace LeanCloud
         /// <returns></returns>
         public Task<bool> UnfollowAsync(string userObjectId)
         {
-            var command = new AVCommand(string.Format("users/{0}/friendship/{1}", this.ObjectId, userObjectId),
-             method: "DELETE",
-             sessionToken: CurrentSessionToken,
-             data: null);
+            var command = new AVCommand {
+                Path = $"users/{ObjectId}/friendship/{userObjectId}",
+                Method = HttpMethod.Delete
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
@@ -1045,10 +1045,11 @@ namespace LeanCloud
             {
                 strs.Add("validate_token", validateToken);
             }
-            var command = new AVCommand("requestLoginSmsCode",
-                method: "POST",
-                sessionToken: CurrentSessionToken,
-                data: strs);
+            var command = new AVCommand {
+                Path = "requestLoginSmsCode",
+                Method = HttpMethod.Post,
+                Content = strs
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
@@ -1183,10 +1184,11 @@ namespace LeanCloud
             {
                 strs.Add("validate_token", validateToken);
             }
-            var command = new AVCommand("requestPasswordResetBySmsCode",
-                method: "POST",
-                sessionToken: currentSessionToken,
-                data: strs);
+            var command = new AVCommand {
+                Path = "requestPasswordResetBySmsCode",
+                Method = HttpMethod.Post,
+                Content = strs
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
@@ -1218,10 +1220,11 @@ namespace LeanCloud
             {
                 { "password", newPassword }
             };
-            var command = new AVCommand("resetPasswordBySmsCode/" + smsCode,
-                method: "PUT",
-                sessionToken: currentSessionToken,
-                data: strs);
+            var command = new AVCommand {
+                Path = $"resetPasswordBySmsCode/{smsCode}",
+                Method = HttpMethod.Put,
+                Content = strs
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
@@ -1278,10 +1281,11 @@ namespace LeanCloud
             {
                 strs.Add("validate_token", validateToken);
             }
-            var command = new AVCommand("requestMobilePhoneVerify",
-                method: "POST",
-                sessionToken: currentSessionToken,
-                data: strs);
+            var command = new AVCommand {
+                Path = "requestMobilePhoneVerify",
+                Method = HttpMethod.Post,
+                Content = strs
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
@@ -1308,10 +1312,10 @@ namespace LeanCloud
         /// <returns></returns>
         public static Task<bool> VerifyMobilePhoneAsync(string code, string mobilePhoneNumber, CancellationToken cancellationToken)
         {
-            var command = new AVCommand("verifyMobilePhone/" + code.Trim() + "?mobilePhoneNumber=" + mobilePhoneNumber.Trim(),
-                method: "POST",
-                sessionToken: null,
-                data: null);
+            var command = new AVCommand {
+                Path = $"verifyMobilePhone/{code.Trim()}?mobilePhoneNumber={mobilePhoneNumber.Trim()}",
+                Method = HttpMethod.Post
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
@@ -1325,11 +1329,10 @@ namespace LeanCloud
         /// <returns></returns>
         public static Task<bool> VerifyMobilePhoneAsync(string code)
         {
-            var command = new AVCommand("verifyMobilePhone/" + code.Trim(),
-                method: "POST",
-                sessionToken: null,
-                data: null);
-
+            var command = new AVCommand {
+                Path = $"verifyMobilePhone/{code.Trim()}",
+                Method = HttpMethod.Post
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
@@ -1363,10 +1366,11 @@ namespace LeanCloud
             {
                 { "email", email }
             };
-            var command = new AVCommand("requestEmailVerify",
-                method: "POST",
-                sessionToken: null,
-                data: strs);
+            var command = new AVCommand {
+                Path = "requestEmailVerify",
+                Method = HttpMethod.Post,
+                Content = strs
+            };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);

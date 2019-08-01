@@ -190,6 +190,12 @@ namespace LeanCloud
             }
         }
 
+        internal static string APIVersion {
+            get {
+                return "1.1";
+            }
+        }
+
         private static readonly string versionString;
         /// <summary>
         /// 当前 SDK 版本号
@@ -431,16 +437,6 @@ namespace LeanCloud
             cancellationToken.ThrowIfCancellationRequested();
             return new Tuple<HttpStatusCode, IDictionary<string, object>>(code, strs);
         }
-        internal static Task<Tuple<HttpStatusCode, IDictionary<string, object>>> RequestAsync(string method, Uri relativeUri, string sessionToken, IDictionary<string, object> data, CancellationToken cancellationToken)
-        {
-
-            var command = new AVCommand(relativeUri.ToString(),
-            method: method,
-            sessionToken: sessionToken,
-                data: data);
-
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken);
-        }
 
         internal static Task<Tuple<HttpStatusCode, IDictionary<string, object>>> RunCommandAsync(AVCommand command)
         {
@@ -451,43 +447,6 @@ namespace LeanCloud
         {
             var codeValue = (int)responseStatus;
             return (codeValue > 199) && (codeValue < 204);
-        }
-
-        public static string ToLog(this HttpRequest request)
-        {
-            StringBuilder sb = new StringBuilder();
-            var start = "===HTTP Request Start===";
-            sb.AppendLine(start);
-            var urlLog = "Url: " + request.Uri;
-            sb.AppendLine(urlLog);
-
-            var methodLog = "Method: " + request.Method;
-            sb.AppendLine(methodLog);
-
-            try
-            {
-                var headers = request.Headers.ToDictionary(x => x.Key, x => x.Value as object);
-                var headersLog = "Headers: " + Json.Encode(headers);
-                sb.AppendLine(headersLog);
-            }
-            catch (Exception)
-            {
-
-            }
-
-            try
-            {
-                var bodyLog = "Body:" + Json.Encode(request.Data);
-                sb.AppendLine(bodyLog);
-            }
-            catch (Exception)
-            {
-
-            }
-
-            var end = "===HTTP Request End===";
-            sb.AppendLine(end);
-            return sb.ToString();
         }
     }
 }

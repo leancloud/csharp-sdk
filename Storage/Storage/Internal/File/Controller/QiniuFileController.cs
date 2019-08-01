@@ -161,9 +161,12 @@ namespace LeanCloud.Storage.Internal
 
             parameters.Add("metaData", state.MetaData);
 
-            rtn = AVClient.RequestAsync("POST", new Uri("qiniu", UriKind.Relative), currentSessionToken, parameters, cancellationToken);
-
-            return rtn;
+            var command = new AVCommand {
+                Path = "qiniu",
+                Method = HttpMethod.Post,
+                Content = parameters
+            };
+            return commandRunner.RunCommandAsync(command);
         }
         IList<KeyValuePair<string, string>> GetQiniuRequestHeaders(FileState state)
         {

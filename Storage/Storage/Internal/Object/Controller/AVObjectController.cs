@@ -4,32 +4,24 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Utilities;
-using LeanCloud.Storage.Internal;
+using System.Net.Http;
 
-namespace LeanCloud.Storage.Internal
-{
-    public class AVObjectController : IAVObjectController
-    {
+namespace LeanCloud.Storage.Internal {
+    public class AVObjectController : IAVObjectController {
         private readonly IAVCommandRunner commandRunner;
 
-        public AVObjectController(IAVCommandRunner commandRunner)
-        {
+        public AVObjectController(IAVCommandRunner commandRunner) {
             this.commandRunner = commandRunner;
         }
 
         public Task<IObjectState> FetchAsync(IObjectState state,
             string sessionToken,
-            CancellationToken cancellationToken)
-        {
-            var command = new AVCommand(string.Format("classes/{0}/{1}",
-                    Uri.EscapeDataString(state.ClassName),
-                    Uri.EscapeDataString(state.ObjectId)),
-                method: "GET",
-                sessionToken: sessionToken,
-                data: null);
-
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
-            {
+            CancellationToken cancellationToken) {
+            var command = new AVCommand {
+                Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}",
+                Method = HttpMethod.Get
+            };
+            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
             });
         }
@@ -37,18 +29,12 @@ namespace LeanCloud.Storage.Internal
         public Task<IObjectState> FetchAsync(IObjectState state,
             IDictionary<string, object> queryString,
             string sessionToken,
-            CancellationToken cancellationToken)
-        {
-            var command = new AVCommand(string.Format("classes/{0}/{1}?{2}",
-                    Uri.EscapeDataString(state.ClassName),
-                    Uri.EscapeDataString(state.ObjectId),
-                    AVClient.BuildQueryString(queryString)),
-                method: "GET",
-                sessionToken: sessionToken,
-                data: null);
-
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
-            {
+            CancellationToken cancellationToken) {
+            var command = new AVCommand {
+                Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}?{AVClient.BuildQueryString(queryString)}",
+                Method = HttpMethod.Get
+            };
+            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
             });
         }
@@ -56,22 +42,16 @@ namespace LeanCloud.Storage.Internal
         public Task<IObjectState> SaveAsync(IObjectState state,
             IDictionary<string, IAVFieldOperation> operations,
             string sessionToken,
-            CancellationToken cancellationToken)
-        {
+            CancellationToken cancellationToken) {
             var objectJSON = AVObject.ToJSONObjectForSaving(operations);
-
-            var command = new AVCommand((state.ObjectId == null ?
-                    string.Format("classes/{0}", Uri.EscapeDataString(state.ClassName)) :
-                    string.Format("classes/{0}/{1}", Uri.EscapeDataString(state.ClassName), state.ObjectId)),
-                method: (state.ObjectId == null ? "POST" : "PUT"),
-                sessionToken: sessionToken,
-                data: objectJSON);
-
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
-            {
+            var command = new AVCommand {
+                Path = state.ObjectId == null ? $"classes/{Uri.EscapeDataString(state.ClassName)}" : $"classes/{Uri.EscapeDataString(state.ClassName)}/{state.ObjectId}",
+                Method = state.ObjectId == null ? HttpMethod.Post : HttpMethod.Put,
+                Content = objectJSON
+            };
+            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
-                serverState = serverState.MutatedClone(mutableClone =>
-                {
+                serverState = serverState.MutatedClone(mutableClone => {
                     mutableClone.IsNew = t.Result.Item1 == System.Net.HttpStatusCode.Created;
                 });
                 return serverState;
@@ -81,24 +61,20 @@ namespace LeanCloud.Storage.Internal
         public IList<Task<IObjectState>> SaveAllAsync(IList<IObjectState> states,
             IList<IDictionary<string, IAVFieldOperation>> operationsList,
             string sessionToken,
-            CancellationToken cancellationToken)
-        {
-
+            CancellationToken cancellationToken) {
+            
             var requests = states
-              .Zip(operationsList, (item, ops) => new AVCommand(
-                item.ObjectId == null
-                  ? string.Format("classes/{0}", Uri.EscapeDataString(item.ClassName))
-                  : string.Format("classes/{0}/{1}", Uri.EscapeDataString(item.ClassName), Uri.EscapeDataString(item.ObjectId)),
-                method: item.ObjectId == null ? "POST" : "PUT",
-                data: AVObject.ToJSONObjectForSaving(ops)))
+              .Zip(operationsList, (item, ops) => new AVCommand {
+                  Path = item.ObjectId == null ? $"classes/{Uri.EscapeDataString(item.ClassName)}" : $"classes/{Uri.EscapeDataString(item.ClassName)}/{Uri.EscapeDataString(item.ObjectId)}",
+                  Method = item.ObjectId == null ? HttpMethod.Post : HttpMethod.Put,
+                  Content = AVObject.ToJSONObjectForSaving(ops)
+              })
               .ToList();
 
             var batchTasks = ExecuteBatchRequests(requests, sessionToken, cancellationToken);
             var stateTasks = new List<Task<IObjectState>>();
-            foreach (var task in batchTasks)
-            {
-                stateTasks.Add(task.OnSuccess(t =>
-                {
+            foreach (var task in batchTasks) {
+                stateTasks.Add(task.OnSuccess(t => {
                     return AVObjectCoder.Instance.Decode(t.Result, AVDecoder.Instance);
                 }));
             }
@@ -108,27 +84,23 @@ namespace LeanCloud.Storage.Internal
 
         public Task DeleteAsync(IObjectState state,
             string sessionToken,
-            CancellationToken cancellationToken)
-        {
-            var command = new AVCommand(string.Format("classes/{0}/{1}",
-                    state.ClassName, state.ObjectId),
-                method: "DELETE",
-                sessionToken: sessionToken,
-                data: null);
-
+            CancellationToken cancellationToken) {
+            var command = new AVCommand {
+                Path = $"classes/{state.ClassName}/{state.ObjectId}",
+                Method = HttpMethod.Delete
+            };
             return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken);
         }
 
         public IList<Task> DeleteAllAsync(IList<IObjectState> states,
             string sessionToken,
-            CancellationToken cancellationToken)
-        {
+            CancellationToken cancellationToken) {
             var requests = states
               .Where(item => item.ObjectId != null)
-              .Select(item => new AVCommand(
-                string.Format("classes/{0}/{1}", Uri.EscapeDataString(item.ClassName), Uri.EscapeDataString(item.ObjectId)),
-                  method: "DELETE",
-                  data: null))
+              .Select(item => new AVCommand {
+                  Path = $"classes/{Uri.EscapeDataString(item.ClassName)}/{Uri.EscapeDataString(item.ObjectId)}",
+                  Method = HttpMethod.Delete
+              })
               .ToList();
             return ExecuteBatchRequests(requests, sessionToken, cancellationToken).Cast<Task>().ToList();
         }
@@ -137,14 +109,12 @@ namespace LeanCloud.Storage.Internal
         private const int MaximumBatchSize = 50;
         internal IList<Task<IDictionary<string, object>>> ExecuteBatchRequests(IList<AVCommand> requests,
             string sessionToken,
-            CancellationToken cancellationToken)
-        {
+            CancellationToken cancellationToken) {
             var tasks = new List<Task<IDictionary<string, object>>>();
             int batchSize = requests.Count;
 
             IEnumerable<AVCommand> remaining = requests;
-            while (batchSize > MaximumBatchSize)
-            {
+            while (batchSize > MaximumBatchSize) {
                 var process = remaining.Take(MaximumBatchSize).ToList();
                 remaining = remaining.Skip(MaximumBatchSize);
 
@@ -159,48 +129,40 @@ namespace LeanCloud.Storage.Internal
 
         private IList<Task<IDictionary<string, object>>> ExecuteBatchRequest(IList<AVCommand> requests,
             string sessionToken,
-            CancellationToken cancellationToken)
-        {
+            CancellationToken cancellationToken) {
             var tasks = new List<Task<IDictionary<string, object>>>();
             int batchSize = requests.Count;
             var tcss = new List<TaskCompletionSource<IDictionary<string, object>>>();
-            for (int i = 0; i < batchSize; ++i)
-            {
+            for (int i = 0; i < batchSize; ++i) {
                 var tcs = new TaskCompletionSource<IDictionary<string, object>>();
                 tcss.Add(tcs);
                 tasks.Add(tcs.Task);
             }
 
-            var encodedRequests = requests.Select(r =>
-            {
+            var encodedRequests = requests.Select(r => {
                 var results = new Dictionary<string, object> {
                     { "method", r.Method },
-                    { "path", r.Uri.AbsolutePath },
+                    { "path", r.Path },
                 };
 
-                if (r.Body != null)
-                {
-                    results["body"] = r.Body;
+                if (r.Content != null) {
+                    results["body"] = r.Content;
                 }
                 return results;
             }).Cast<object>().ToList();
-            var command = new AVCommand("batch",
-              method: "POST",
-              sessionToken: sessionToken,
-              data: new Dictionary<string, object> { { "requests", encodedRequests } });
-
-            commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).ContinueWith(t =>
-            {
-                if (t.IsFaulted || t.IsCanceled)
-                {
-                    foreach (var tcs in tcss)
-                    {
-                        if (t.IsFaulted)
-                        {
+            var command = new AVCommand {
+                Path = "batch",
+                Method = HttpMethod.Post,
+                Content = new Dictionary<string, object> {
+                    { "requests", encodedRequests }
+                }
+            };
+            commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).ContinueWith(t => {
+                if (t.IsFaulted || t.IsCanceled) {
+                    foreach (var tcs in tcss) {
+                        if (t.IsFaulted) {
                             tcs.TrySetException(t.Exception);
-                        }
-                        else if (t.IsCanceled)
-                        {
+                        } else if (t.IsCanceled) {
                             tcs.TrySetCanceled();
                         }
                     }
@@ -209,33 +171,25 @@ namespace LeanCloud.Storage.Internal
 
                 var resultsArray = Conversion.As<IList<object>>(t.Result.Item2["results"]);
                 int resultLength = resultsArray.Count;
-                if (resultLength != batchSize)
-                {
-                    foreach (var tcs in tcss)
-                    {
+                if (resultLength != batchSize) {
+                    foreach (var tcs in tcss) {
                         tcs.TrySetException(new InvalidOperationException(
                             "Batch command result count expected: " + batchSize + " but was: " + resultLength + "."));
                     }
                     return;
                 }
 
-                for (int i = 0; i < batchSize; ++i)
-                {
+                for (int i = 0; i < batchSize; ++i) {
                     var result = resultsArray[i] as Dictionary<string, object>;
                     var tcs = tcss[i];
 
-                    if (result.ContainsKey("success"))
-                    {
+                    if (result.ContainsKey("success")) {
                         tcs.TrySetResult(result["success"] as IDictionary<string, object>);
-                    }
-                    else if (result.ContainsKey("error"))
-                    {
+                    } else if (result.ContainsKey("error")) {
                         var error = result["error"] as IDictionary<string, object>;
                         long errorCode = long.Parse(error["code"].ToString());
                         tcs.TrySetException(new AVException((AVException.ErrorCode)errorCode, error["error"] as string));
-                    }
-                    else
-                    {
+                    } else {
                         tcs.TrySetException(new InvalidOperationException(
                             "Invalid batch command response."));
                     }
