@@ -17,7 +17,8 @@ namespace LeanCloudTests {
 
         [Test]
         public async Task TestQuery() {
-            var query = new AVQuery<AVObject>("Foo").WhereEqualTo("content", "hello");
+            var query = new AVQuery<AVObject>("Foo");
+            query.WhereEqualTo("content", "hello");
             var results = await query.FindAsync();
             foreach (var result in results) {
                 TestContext.Out.WriteLine(result.ObjectId);
@@ -26,7 +27,8 @@ namespace LeanCloudTests {
 
         [Test]
         public async Task TestQueryCount() {
-            var query = new AVQuery<AVObject>("Foo").WhereEqualTo("content", "hello, world");
+            var query = new AVQuery<AVObject>("Foo");
+            query.WhereEqualTo("content", "hello, world");
             var count = await query.CountAsync();
             Assert.Greater(count, 8);
         }

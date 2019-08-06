@@ -1,83 +1,65 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using LeanCloud.Storage.Internal;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using LeanCloud.Storage.Internal;
 
 namespace LeanCloud
 {
+    public class AVQuery<T> where T : AVObject {
+        public string ClassName {
+            get; internal set;
+        }
 
-    /// <summary>
-    /// The AVQuery class defines a query that is used to fetch AVObjects. The
-    /// most common use case is finding all objects that match a query through the
-    /// <see cref="FindAsync()"/> method.
-    /// </summary>
-    /// <example>
-    /// This sample code fetches all objects of
-    /// class <c>"MyClass"</c>:
-    ///
-    /// <code>
-    /// AVQuery query = new AVQuery("MyClass");
-    /// IEnumerable&lt;AVObject&gt; result = await query.FindAsync();
-    /// </code>
-    ///
-    /// A AVQuery can also be used to retrieve a single object whose id is known,
-    /// through the <see cref="GetAsync(string)"/> method. For example, this sample code
-    /// fetches an object of class <c>"MyClass"</c> and id <c>myId</c>.
-    ///
-    /// <code>
-    /// AVQuery query = new AVQuery("MyClass");
-    /// AVObject result = await query.GetAsync(myId);
-    /// </code>
-    ///
-    /// A AVQuery can also be used to count the number of objects that match the
-    /// query without retrieving all of those objects. For example, this sample code
-    /// counts the number of objects of the class <c>"MyClass"</c>.
-    ///
-    /// <code>
-    /// AVQuery query = new AVQuery("MyClass");
-    /// int count = await query.CountAsync();
-    /// </code>
-    /// </example>
-    public class AVQuery<T> : AVQueryPair<AVQuery<T>, T>, IAVQuery
-        where T : AVObject
-    {
-        internal static IAVQueryController QueryController
-        {
-            get
-            {
+        private string path;
+        public string Path {
+            get {
+                if (string.IsNullOrEmpty(path)) {
+                    return $"classes/{Uri.EscapeDataString(ClassName)}";
+                }
+                return path;
+            } set {
+                path = value;
+            }
+        }
+
+        internal IDictionary<string, object> where;
+        internal ReadOnlyCollection<string> orderBy;
+        internal ReadOnlyCollection<string> includes;
+        internal ReadOnlyCollection<string> selectedKeys;
+        internal string redirectClassNameForKey;
+        internal int? skip;
+        internal int? limit;
+
+        internal static IAVQueryController QueryController {
+            get {
                 return AVPlugins.Instance.QueryController;
             }
         }
 
-        internal static IObjectSubclassingController SubclassingController
-        {
-            get
-            {
+        internal static IObjectSubclassingController SubclassingController {
+            get {
                 return AVPlugins.Instance.SubclassingController;
             }
         }
 
-        /// <summary>
-        /// 调试时可以用来查看最终的发送的查询语句
-        /// </summary>
-        private string JsonString
-        {
-            get
-            {
-                return JsonConvert.SerializeObject(BuildParameters(true));
-            }
+        public AVQuery()
+            : this(SubclassingController.GetClassName(typeof(T))) {
         }
 
-        /// <summary>
-        /// Private constructor for composition of queries. A Source query is required,
-        /// but the remaining values can be null if they won't be changed in this
-        /// composition.
-        /// </summary>
+        public AVQuery(string className) {
+            if (string.IsNullOrEmpty(className)) {
+                throw new ArgumentNullException(nameof(className));
+            }
+            ClassName = className;
+        }
+
         private AVQuery(AVQuery<T> source,
             IDictionary<string, object> where = null,
             IEnumerable<string> replacementOrderBy = null,
@@ -86,64 +68,90 @@ namespace LeanCloud
             int? limit = null,
             IEnumerable<string> includes = null,
             IEnumerable<string> selectedKeys = null,
-            String redirectClassNameForKey = null)
-            : base(source, where, replacementOrderBy, thenBy, skip, limit, includes, selectedKeys, redirectClassNameForKey)
-        {
+            string redirectClassNameForKey = null) {
 
+            if (source == null) {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            ClassName = source.ClassName;
+            this.where = source.where;
+            this.orderBy = source.orderBy;
+            this.skip = source.skip;
+            this.limit = source.limit;
+            this.includes = source.includes;
+            this.selectedKeys = source.selectedKeys;
+            this.redirectClassNameForKey = source.redirectClassNameForKey;
+
+            if (where != null) {
+                var newWhere = MergeWhereClauses(where);
+                this.where = new Dictionary<string, object>(newWhere);
+            }
+
+            if (replacementOrderBy != null) {
+                this.orderBy = new ReadOnlyCollection<string>(replacementOrderBy.ToList());
+            }
+
+            if (thenBy != null) {
+                if (this.orderBy == null) {
+                    throw new ArgumentException("You must call OrderBy before calling ThenBy.");
+                }
+                var newOrderBy = new List<string>(this.orderBy);
+                newOrderBy.AddRange(thenBy);
+                this.orderBy = new ReadOnlyCollection<string>(newOrderBy);
+            }
+
+            // Remove duplicates.
+            if (this.orderBy != null) {
+                var newOrderBy = new HashSet<string>(this.orderBy);
+                this.orderBy = new ReadOnlyCollection<string>(newOrderBy.ToList<string>());
+            }
+
+            if (skip != null) {
+                this.skip = (this.skip ?? 0) + skip;
+            }
+
+            if (limit != null) {
+                this.limit = limit;
+            }
+
+            if (includes != null) {
+                var newIncludes = MergeIncludes(includes);
+                this.includes = new ReadOnlyCollection<string>(newIncludes.ToList());
+            }
+
+            if (selectedKeys != null) {
+                var newSelectedKeys = MergeSelectedKeys(selectedKeys);
+                this.selectedKeys = new ReadOnlyCollection<string>(newSelectedKeys.ToList());
+            }
+
+            if (redirectClassNameForKey != null) {
+                this.redirectClassNameForKey = redirectClassNameForKey;
+            }
         }
 
-        //internal override AVQuery<T> CreateInstance(
-        //    AVQuery<T> source,
-        //    IDictionary<string, object> where = null,
-        //    IEnumerable<string> replacementOrderBy = null,
-        //    IEnumerable<string> thenBy = null,
-        //    int? skip = null,
-        //    int? limit = null,
-        //    IEnumerable<string> includes = null,
-        //    IEnumerable<string> selectedKeys = null,
-        //    String redirectClassNameForKey = null)
-        //{
-        //    return new AVQuery<T>(this, where, replacementOrderBy, thenBy, skip, limit, includes, selectedKeys, redirectClassNameForKey);
-        //}
-
-        public override AVQuery<T> CreateInstance(
-            IDictionary<string, object> where = null,
-            IEnumerable<string> replacementOrderBy = null,
-            IEnumerable<string> thenBy = null,
-            int? skip = null,
-            int? limit = null,
-            IEnumerable<string> includes = null,
-            IEnumerable<string> selectedKeys = null,
-            String redirectClassNameForKey = null)
-        {
-            return new AVQuery<T>(this, where, replacementOrderBy, thenBy, skip, limit, includes, selectedKeys, redirectClassNameForKey);
+        HashSet<string> MergeIncludes(IEnumerable<string> otherIncludes) {
+            if (includes == null) {
+                return new HashSet<string>(otherIncludes);
+            }
+            var newIncludes = new HashSet<string>(includes);
+            foreach (var item in otherIncludes) {
+                newIncludes.Add(item);
+            }
+            return newIncludes;
         }
 
-
-        /// <summary>
-        /// Constructs a query based upon the AVObject subclass used as the generic parameter for the AVQuery.
-        /// </summary>
-        public AVQuery()
-          : this(SubclassingController.GetClassName(typeof(T)))
-        {
+        HashSet<string> MergeSelectedKeys(IEnumerable<string> otherSelectedKeys) {
+            if (selectedKeys == null) {
+                return new HashSet<string>(otherSelectedKeys);
+            }
+            var newSelectedKeys = new HashSet<string>(selectedKeys);
+            foreach (var item in otherSelectedKeys) {
+                newSelectedKeys.Add(item);
+            }
+            return newSelectedKeys;
         }
 
-        /// <summary>
-        /// Constructs a query. A default query with no further parameters will retrieve
-        /// all <see cref="AVObject"/>s of the provided class.
-        /// </summary>
-        /// <param name="className">The name of the class to retrieve AVObjects for.</param>
-        public AVQuery(string className)
-            : base(className)
-        {
-
-        }
-
-        /// <summary>
-        /// Constructs a query that is the or of the given queries.
-        /// </summary>
-        /// <param name="queries">The list of AVQueries to 'or' together.</param>
-        /// <returns>A AVQquery that is the 'or' of the passed in queries.</returns>
         public static AVQuery<T> Or(IEnumerable<AVQuery<T>> queries)
         {
             string className = null;
@@ -153,12 +161,12 @@ namespace LeanCloud
             foreach (var obj in nonGenericQueries)
             {
                 var q = (AVQuery<T>)obj;
-                if (className != null && q.className != className)
+                if (className != null && q.ClassName != className)
                 {
                     throw new ArgumentException(
                         "All of the queries in an or query must be on the same class.");
                 }
-                className = q.className;
+                className = q.ClassName;
                 var parameters = q.BuildParameters();
                 if (parameters.Count == 0)
                 {
@@ -178,12 +186,7 @@ namespace LeanCloud
               });
         }
 
-        /// <summary>
-        /// Retrieves a list of AVObjects that satisfy this query from LeanCloud.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The list of AVObjects that match this query.</returns>
-        public override Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken)
+        public Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken = default)
         {
             return AVUser.GetCurrentUserAsync().OnSuccess(t =>
             {
@@ -196,12 +199,7 @@ namespace LeanCloud
             });
         }
 
-        /// <summary>
-        /// Retrieves at most one AVObject that satisfies this query.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A single AVObject that satisfies this query, or else null.</returns>
-        public override Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken)
+        public Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
         {
             return AVUser.GetCurrentUserAsync().OnSuccess(t =>
             {
@@ -213,13 +211,7 @@ namespace LeanCloud
             });
         }
 
-        /// <summary>
-        /// Retrieves at most one AVObject that satisfies this query.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A single AVObject that satisfies this query.</returns>
-        /// <exception cref="AVException">If no results match the query.</exception>
-        public override Task<T> FirstAsync(CancellationToken cancellationToken)
+        public Task<T> FirstAsync(CancellationToken cancellationToken)
         {
             return FirstOrDefaultAsync(cancellationToken).OnSuccess(t =>
             {
@@ -232,29 +224,16 @@ namespace LeanCloud
             });
         }
 
-        /// <summary>
-        /// Counts the number of objects that match this query.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The number of objects that match this query.</returns>
-        public override Task<int> CountAsync(CancellationToken cancellationToken)
+        public Task<int> CountAsync(CancellationToken cancellationToken = default)
         {
-            return AVUser.GetCurrentUserAsync().OnSuccess(t =>
-            {
+            return AVUser.GetCurrentUserAsync().OnSuccess(t => {
                 return QueryController.CountAsync<T>(this, t.Result, cancellationToken);
             }).Unwrap();
         }
 
-        /// <summary>
-        /// Constructs a AVObject whose id is already known by fetching data
-        /// from the server.
-        /// </summary>
-        /// <param name="objectId">ObjectId of the AVObject to fetch.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The AVObject for the given objectId.</returns>
-        public override Task<T> GetAsync(string objectId, CancellationToken cancellationToken)
+        public Task<T> GetAsync(string objectId, CancellationToken cancellationToken)
         {
-            AVQuery<T> singleItemQuery = new AVQuery<T>(className)
+            AVQuery<T> singleItemQuery = new AVQuery<T>(ClassName)
                 .WhereEqualTo("objectId", objectId);
             singleItemQuery = new AVQuery<T>(singleItemQuery, includes: this.includes, selectedKeys: this.selectedKeys, limit: 1);
             return singleItemQuery.FindAsync(cancellationToken).OnSuccess(t =>
@@ -329,31 +308,384 @@ namespace LeanCloud
 
         #endregion
 
+        IDictionary<string, object> MergeWhereClauses(IDictionary<string, object> otherWhere) {
+            if (where == null) {
+                where = otherWhere;
+                return where;
+            }
+            var newWhere = new Dictionary<string, object>(where);
+            foreach (var pair in otherWhere) {
+                var condition = pair.Value as IDictionary<string, object>;
+                if (newWhere.ContainsKey(pair.Key)) {
+                    var oldCondition = newWhere[pair.Key] as IDictionary<string, object>;
+                    if (oldCondition == null || condition == null) {
+                        throw new ArgumentException("More than one where clause for the given key provided.");
+                    }
+                    var newCondition = new Dictionary<string, object>(oldCondition);
+                    foreach (var conditionPair in condition) {
+                        if (newCondition.ContainsKey(conditionPair.Key)) {
+                            throw new ArgumentException("More than one condition for the given key provided.");
+                        }
+                        newCondition[conditionPair.Key] = conditionPair.Value;
+                    }
+                    newWhere[pair.Key] = newCondition;
+                } else {
+                    newWhere[pair.Key] = pair.Value;
+                }
+            }
+            where = newWhere;
+            return where;
+        }
+
+        /// <summary>
+        /// 构建查询字符串
+        /// </summary>
+        /// <param name="includeClassName">是否包含 ClassName </param>
+        /// <returns></returns>
+        public IDictionary<string, object> BuildParameters(bool includeClassName = false) {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            if (where != null) {
+                result["where"] = PointerOrLocalIdEncoder.Instance.Encode(where);
+            }
+            if (orderBy != null) {
+                result["order"] = string.Join(",", orderBy.ToArray());
+            }
+            if (skip != null) {
+                result["skip"] = skip.Value;
+            }
+            if (limit != null) {
+                result["limit"] = limit.Value;
+            }
+            if (includes != null) {
+                result["include"] = string.Join(",", includes.ToArray());
+            }
+            if (selectedKeys != null) {
+                result["keys"] = string.Join(",", selectedKeys.ToArray());
+            }
+            if (includeClassName) {
+                result["className"] = ClassName;
+            }
+            if (redirectClassNameForKey != null) {
+                result["redirectClassNameForKey"] = redirectClassNameForKey;
+            }
+            return result;
+        }
+
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
         /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c></returns>
-        public override bool Equals(object obj)
-        {
-            if (obj == null || !(obj is AVQuery<T>))
-            {
+        public override bool Equals(object obj) {
+            if (obj == null || !(obj is AVQuery<T>)) {
                 return false;
             }
 
             var other = obj as AVQuery<T>;
-            return Object.Equals(this.className, other.ClassName) &&
+            return ClassName.Equals(other.ClassName) &&
                    this.where.CollectionsEqual(other.where) &&
                    this.orderBy.CollectionsEqual(other.orderBy) &&
                    this.includes.CollectionsEqual(other.includes) &&
                    this.selectedKeys.CollectionsEqual(other.selectedKeys) &&
-                   Object.Equals(this.skip, other.skip) &&
-                   Object.Equals(this.limit, other.limit);
+                   object.Equals(this.skip, other.skip) &&
+                   object.Equals(this.limit, other.limit);
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return base.GetHashCode();
+        }
+
+        #region Order By
+
+        public AVQuery<T> OrderBy(string key) {
+            orderBy = new ReadOnlyCollection<string>(new List<string> { key });
+            return this;
+        }
+
+        public AVQuery<T> OrderByDescending(string key) {
+            orderBy = new ReadOnlyCollection<string>(new List<string> { "-" + key });
+            return this;
+        }
+
+        public AVQuery<T> ThenBy(string key) {
+            if (orderBy == null) {
+                throw new ArgumentException("You must call OrderBy before calling ThenBy");
+            }
+            List<string> newOrderBy = orderBy.ToList();
+            newOrderBy.Add(key);
+            orderBy = new ReadOnlyCollection<string>(newOrderBy);
+            return this;
+        }
+
+        public AVQuery<T> ThenByDescending(string key) {
+            if (orderBy == null) {
+                throw new ArgumentException("You must call OrderBy before calling ThenBy");
+            }
+            List<string> newOrderBy = orderBy.ToList();
+            newOrderBy.Add($"-{key}");
+            orderBy = new ReadOnlyCollection<string>(newOrderBy);
+            return this;
+        }
+
+        #endregion
+
+        public AVQuery<T> Include(string key) {
+            includes = new ReadOnlyCollection<string>(new List<string> { key });
+            return this;
+        }
+
+        public AVQuery<T> Select(string key) {
+            selectedKeys = new ReadOnlyCollection<string>(new List<string> { key });
+            return this;
+        }
+
+        public AVQuery<T> Skip(int count) {
+            skip = count;
+            return this;
+        }
+
+        public AVQuery<T> Limit(int count) {
+            limit = count;
+            return this;
+        }
+
+        internal AVQuery<T> RedirectClassName(string key) {
+            redirectClassNameForKey = key;
+            return this;
+        }
+
+        #region Where
+
+        public AVQuery<T> WhereContainedIn<TIn>(string key, IEnumerable<TIn> values) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$in", values.ToList() } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereContainsAll<TIn>(string key, IEnumerable<TIn> values) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$all", values.ToList() } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereContains(string key, string substring) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$regex", RegexQuote(substring) } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereDoesNotExist(string key) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$exists", false } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereDoesNotMatchQuery<TOther>(string key, AVQuery<TOther> query)
+            where TOther : AVObject {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$notInQuery", query.BuildParameters(true) } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereEndsWith(string key, string suffix) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$regex", RegexQuote(suffix) + "$" } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereEqualTo(string key, object value) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, value }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereSizeEqualTo(string key, uint size) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$size", size } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereExists(string key) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$exists", true } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereGreaterThan(string key, object value) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$gt", value } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereGreaterThanOrEqualTo(string key, object value) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$gte", value } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereLessThan(string key, object value) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$lt", value } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereLessThanOrEqualTo(string key, object value) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$lte", value } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereMatches(string key, Regex regex, string modifiers) {
+            if (!regex.Options.HasFlag(RegexOptions.ECMAScript)) {
+                throw new ArgumentException(
+                  "Only ECMAScript-compatible regexes are supported. Please use the ECMAScript RegexOptions flag when creating your regex.");
+            }
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { key, EncodeRegex(regex, modifiers) } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereMatches(string key, Regex regex) {
+            return WhereMatches(key, regex, null);
+        }
+
+        public AVQuery<T> WhereMatches(string key, string pattern, string modifiers = null) {
+            return WhereMatches(key, new Regex(pattern, RegexOptions.ECMAScript), modifiers);
+        }
+
+        public AVQuery<T> WhereMatches(string key, string pattern) {
+            return WhereMatches(key, pattern, null);
+        }
+
+        public AVQuery<T> WhereMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query)
+            where TOther : AVObject {
+            var parameters = new Dictionary<string, object> {
+                { "query", query.BuildParameters(true)},
+                { "key", keyInQuery}
+            };
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$select", parameters } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereDoesNotMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query)
+            where TOther : AVObject {
+            var parameters = new Dictionary<string, object> {
+                { "query", query.BuildParameters(true)},
+                { "key", keyInQuery}
+            };
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$dontSelect", parameters } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereMatchesQuery<TOther>(string key, AVQuery<TOther> query)
+            where TOther : AVObject {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$inQuery", query.BuildParameters(true) } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereNear(string key, AVGeoPoint point) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$nearSphere", point } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereNotContainedIn<TIn>(string key, IEnumerable<TIn> values) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$nin", values.ToList() } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereNotEqualTo(string key, object value) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$ne", value } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereStartsWith(string key, string suffix) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$regex", "^" + RegexQuote(suffix) } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereWithinGeoBox(string key, AVGeoPoint southwest, AVGeoPoint northeast) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$within",
+                            new Dictionary<string, object> {
+                                { "$box", new[] {southwest, northeast}}
+                            } } } }
+            });
+            return this;
+        }
+
+        public AVQuery<T> WhereWithinDistance(string key, AVGeoPoint point, AVGeoDistance maxDistance) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$nearSphere", point } } }
+            });
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$maxDistance", maxDistance.Radians } } }
+            });
+            return this;
+        }
+
+        internal AVQuery<T> WhereRelatedTo(AVObject parent, string key) {
+            MergeWhereClauses(new Dictionary<string, object> {
+                { key, new Dictionary<string, object>{ { "$relatedTo", new Dictionary<string, object> {
+                        { "object", parent},
+                        { "key", key}
+                    } } } }
+            });
+            return this;
+        }
+
+        #endregion
+
+        private string RegexQuote(string input) {
+            return "\\Q" + input.Replace("\\E", "\\E\\\\E\\Q") + "\\E";
+        }
+
+        private IDictionary<string, object> EncodeRegex(Regex regex, string modifiers) {
+            var options = GetRegexOptions(regex, modifiers);
+            var dict = new Dictionary<string, object>();
+            dict["$regex"] = regex.ToString();
+            if (!string.IsNullOrEmpty(options)) {
+                dict["$options"] = options;
+            }
+            return dict;
+        }
+
+        private string GetRegexOptions(Regex regex, string modifiers) {
+            string result = modifiers ?? "";
+            if (regex.Options.HasFlag(RegexOptions.IgnoreCase) && !modifiers.Contains("i")) {
+                result += "i";
+            }
+            if (regex.Options.HasFlag(RegexOptions.Multiline) && !modifiers.Contains("m")) {
+                result += "m";
+            }
+            return result;
         }
     }
 }

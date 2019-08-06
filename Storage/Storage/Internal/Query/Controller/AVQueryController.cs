@@ -22,7 +22,7 @@ namespace LeanCloud.Storage.Internal
         {
             string sessionToken = user != null ? user.SessionToken : null;
 
-            return FindAsync(query.RelativeUri, query.BuildParameters(), sessionToken, cancellationToken).OnSuccess(t =>
+            return FindAsync(query.Path, query.BuildParameters(), sessionToken, cancellationToken).OnSuccess(t =>
             {
                 var items = t.Result["results"] as IList<object>;
 
@@ -40,7 +40,7 @@ namespace LeanCloud.Storage.Internal
             parameters["limit"] = 0;
             parameters["count"] = 1;
 
-            return FindAsync(query.RelativeUri, parameters, sessionToken, cancellationToken).OnSuccess(t =>
+            return FindAsync(query.Path, parameters, sessionToken, cancellationToken).OnSuccess(t =>
             {
                 return Convert.ToInt32(t.Result["count"]);
             });
@@ -54,7 +54,7 @@ namespace LeanCloud.Storage.Internal
             var parameters = query.BuildParameters();
             parameters["limit"] = 1;
 
-            return FindAsync(query.RelativeUri, parameters, sessionToken, cancellationToken).OnSuccess(t =>
+            return FindAsync(query.Path, parameters, sessionToken, cancellationToken).OnSuccess(t =>
             {
                 var items = t.Result["results"] as IList<object>;
                 var item = items.FirstOrDefault() as IDictionary<string, object>;
@@ -69,13 +69,13 @@ namespace LeanCloud.Storage.Internal
             });
         }
 
-        private Task<IDictionary<string, object>> FindAsync(string relativeUri,
+        private Task<IDictionary<string, object>> FindAsync(string path,
             IDictionary<string, object> parameters,
             string sessionToken,
             CancellationToken cancellationToken)
         {
             var command = new AVCommand {
-                Path = $"{relativeUri}?{AVClient.BuildQueryString(parameters)}",
+                Path = $"{path}?{AVClient.BuildQueryString(parameters)}",
                 Method = HttpMethod.Get
             };
             return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>

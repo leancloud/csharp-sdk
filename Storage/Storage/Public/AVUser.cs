@@ -322,7 +322,7 @@ namespace LeanCloud
         public AVQuery<AVUser> GetFollowerQuery()
         {
             AVQuery<AVUser> query = new AVQuery<AVUser> {
-                RelativeUri = string.Format("users/{0}/followers", this.ObjectId)
+                Path = $"users/{ObjectId}/followers"
             };
             return query;
         }
@@ -333,8 +333,9 @@ namespace LeanCloud
         /// <returns></returns>
         public AVQuery<AVUser> GetFolloweeQuery()
         {
-            AVQuery<AVUser> query = new AVQuery<AVUser>();
-            query.RelativeUri = string.Format("users/{0}/followees", this.ObjectId);
+            AVQuery<AVUser> query = new AVQuery<AVUser> {
+                Path = $"users/{ObjectId}/followees"
+            };
             return query;
         }
 
@@ -344,8 +345,9 @@ namespace LeanCloud
         /// <returns></returns>
         public AVQuery<AVUser> GetFollowersAndFolloweesQuery()
         {
-            AVQuery<AVUser> query = new AVQuery<AVUser>();
-            query.RelativeUri = string.Format("users/{0}/followersAndFollowees", this.ObjectId);
+            AVQuery<AVUser> query = new AVQuery<AVUser> {
+                Path = $"users/{ObjectId}/followersAndFollowees"
+            };
             return query;
         }
 
@@ -355,7 +357,7 @@ namespace LeanCloud
         /// <returns></returns>
         public Task<IEnumerable<AVUser>> GetFollowersAsync()
         {
-            return this.GetFollowerQuery().FindAsync();
+            return GetFollowerQuery().FindAsync(CancellationToken.None);
         }
 
         /// <summary>
@@ -364,7 +366,7 @@ namespace LeanCloud
         /// <returns></returns>
         public Task<IEnumerable<AVUser>> GetFolloweesAsync()
         {
-            return this.GetFolloweeQuery().FindAsync();
+            return GetFolloweeQuery().FindAsync(CancellationToken.None);
         }
 
 
