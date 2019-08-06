@@ -157,7 +157,7 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
                 try {
                     var leaderboard = Parse(t.Result.Item2);
                     return leaderboard;
@@ -219,7 +219,7 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
                 try {
                     List<AVStatistic> statisticList = new List<AVStatistic>();
                     List<object> list = t.Result.Item2["results"] as List<object>;
@@ -253,7 +253,7 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Post
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => { 
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => { 
                 try {
                     List<AVStatistic> statisticList = new List<AVStatistic>();
                     List<object> list = t.Result.Item2["results"] as List<object>;
@@ -286,7 +286,7 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Delete,
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command);
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
                 List<AVLeaderboardArchive> archives = new List<AVLeaderboardArchive>();
                 List<object> list = t.Result.Item2["results"] as List<object>;
                 foreach (object obj in list) {
@@ -362,7 +362,7 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
                 try {
                     List<AVRanking> rankingList = new List<AVRanking>();
                     List<object> list = t.Result.Item2["results"] as List<object>;
@@ -413,7 +413,7 @@ namespace LeanCloud {
                 Method = HttpMethod.Put,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
                 return t.Result.Item2;
             });
         }
@@ -428,7 +428,7 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => { 
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => { 
                 try {
                     // 反序列化 Leaderboard 对象
                     var leaderboard = Parse(t.Result.Item2);
@@ -449,7 +449,7 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Put
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t => { 
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => { 
                 try {
                     Init(t.Result.Item2);
                     return this;
@@ -468,7 +468,7 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Delete
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command);
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         static AVLeaderboard Parse(IDictionary<string, object> data) {

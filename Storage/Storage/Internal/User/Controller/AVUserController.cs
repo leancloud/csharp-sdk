@@ -25,7 +25,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = objectJSON
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
                 serverState = serverState.MutatedClone(mutableClone =>
@@ -54,7 +54,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
                 serverState = serverState.MutatedClone(mutableClone =>
@@ -80,7 +80,7 @@ namespace LeanCloud.Storage.Internal
                     { "authData", authData}
                 }
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
                 serverState = serverState.MutatedClone(mutableClone =>
@@ -97,7 +97,7 @@ namespace LeanCloud.Storage.Internal
                 Path = "users/me",
                 Method = HttpMethod.Get
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
             });
@@ -112,7 +112,7 @@ namespace LeanCloud.Storage.Internal
                     { "email", email}
                 }
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken);
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
         }
 
         public Task<IObjectState> LogInWithParametersAsync(string relativeUrl, IDictionary<string, object> data,
@@ -123,7 +123,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
                 serverState = serverState.MutatedClone(mutableClone =>
@@ -144,7 +144,7 @@ namespace LeanCloud.Storage.Internal
                     { "new_password", newPassword },
                 }
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken);
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
         }
 
         public Task<IObjectState> RefreshSessionTokenAsync(string userId, string sessionToken,
@@ -154,7 +154,7 @@ namespace LeanCloud.Storage.Internal
                 Path = $"users/{userId}/refreshSessionToken",
                 Method = HttpMethod.Put
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).OnSuccess(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t =>
             {
                 var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
                 return serverState;

@@ -6,8 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using LeanCloud.Storage.Internal;
+using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -182,7 +181,8 @@ namespace LeanCloud.Storage.Internal
                 Data = tempStream
             };
             var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
-            var result = new Tuple<HttpStatusCode, IDictionary<string, object>>(ret.Item1, Json.Parse(ret.Item2) as Dictionary<string, object>);
+            var result = new Tuple<HttpStatusCode, IDictionary<string, object>>(ret.Item1,
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(ret.Item2, new LeanCloudJsonConverter()));
             return result;
         }
         public static Stream HttpUploadFile(byte[] file, string fileName, out string contentType, out long contentLength, IDictionary<string, object> nvc)

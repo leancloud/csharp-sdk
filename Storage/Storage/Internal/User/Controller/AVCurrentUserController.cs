@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Storage.Internal;
+using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -66,7 +67,7 @@ namespace LeanCloud.Storage.Internal
 
                 saveTask = storageController
                   .LoadAsync()
-                  .OnSuccess(t => t.Result.AddAsync("CurrentUser", Json.Encode(data)))
+                  .OnSuccess(t => t.Result.AddAsync("CurrentUser", JsonConvert.SerializeObject(data)))
                   .Unwrap();
             }
             CurrentUser = user;
@@ -96,7 +97,7 @@ namespace LeanCloud.Storage.Internal
                 AVUser user = null;
                 if (userDataString != null)
                 {
-                    var userData = Json.Parse(userDataString) as IDictionary<string, object>;
+                    var userData = JsonConvert.DeserializeObject<Dictionary<string, object>>(userDataString, new LeanCloudJsonConverter());
                     var state = AVObjectCoder.Instance.Decode(userData, AVDecoder.Instance);
                     user = AVObject.FromState<AVUser>(state, "_User");
                 }

@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -57,7 +58,7 @@ namespace LeanCloud.Storage.Internal
                 }
             };
             var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
-            var jsonData = Json.Parse(ret.Item2) as Dictionary<string, object>;
+            var jsonData = JsonConvert.DeserializeObject<Dictionary<string, object>>(ret.Item2, new LeanCloudJsonConverter());
             return new FileState {
                 Name = jsonData["name"] as string,
                 Url = new Uri(jsonData["url"] as string, UriKind.Absolute),
@@ -70,7 +71,7 @@ namespace LeanCloud.Storage.Internal
                 Path = $"files/{state.ObjectId}",
                 Method = HttpMethod.Delete
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken);
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
         }
         internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken)
         {
@@ -89,7 +90,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = parameters
             };
-            return commandRunner.RunCommandAsync(command);
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
         public Task<FileState> GetAsync(string objectId, string sessionToken, CancellationToken cancellationToken)
         {
@@ -97,7 +98,7 @@ namespace LeanCloud.Storage.Internal
                 Path = $"files/{objectId}",
                 Method = HttpMethod.Get
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(_ =>
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(_ =>
             {
                 var result = _.Result;
                 var jsonData = result.Item2;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Net.Http;
@@ -27,7 +28,7 @@ namespace LeanCloud.Storage.Internal {
                 Method = HttpMethod.Post,
             };
 
-      return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(task => {
+      return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(task => {
         cancellationToken.ThrowIfCancellationRequested();
         return new AVConfig(task.Result.Item2);
       }).OnSuccess(task => {

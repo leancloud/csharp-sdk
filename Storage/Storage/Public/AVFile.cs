@@ -369,7 +369,7 @@ namespace LeanCloud
                 };
             }
 
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(cmd).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(cmd).ContinueWith(t =>
             {
                 var result = t.Result.Item2;
                 this.state.ObjectId = result["objectId"].ToString();

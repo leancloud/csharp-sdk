@@ -21,7 +21,7 @@ namespace LeanCloudTests {
             var obj = AVObject.Create("Foo");
             obj["content"] = "hello, world";
             await obj.SaveAsync();
-            TestContext.Out.WriteLine($"saved at {Thread.CurrentThread.ManagedThreadId}");
+            TestContext.Out.WriteLine($"{obj.ObjectId} saved at {Thread.CurrentThread.ManagedThreadId}");
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
             Assert.NotNull(obj.UpdatedAt);

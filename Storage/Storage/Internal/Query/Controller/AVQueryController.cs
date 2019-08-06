@@ -50,7 +50,7 @@ namespace LeanCloud.Storage.Internal
             AVUser user,
             CancellationToken cancellationToken) where T : AVObject
         {
-            string sessionToken = user != null ? user.SessionToken : null;
+            string sessionToken = user?.SessionToken;
             var parameters = query.BuildParameters();
             parameters["limit"] = 1;
 
@@ -78,7 +78,7 @@ namespace LeanCloud.Storage.Internal
                 Path = $"{relativeUri}?{AVClient.BuildQueryString(parameters)}",
                 Method = HttpMethod.Get
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 return t.Result.Item2;
             });

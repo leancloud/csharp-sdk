@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Storage.Internal;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace LeanCloud
 {
@@ -301,7 +302,7 @@ namespace LeanCloud
         public static Task<IEnumerable<T>> DoCloudQueryAsync(string cqlTeamplate, params object[] pvalues)
         {
             string queryStringTemplate = "cloudQuery?cql={0}&pvalues={1}";
-            string pSrting = Json.Encode(pvalues);
+            string pSrting = JsonConvert.SerializeObject(pvalues);
             string queryString = string.Format(queryStringTemplate, Uri.EscapeDataString(cqlTeamplate), Uri.EscapeDataString(pSrting));
 
             return rebuildObjectFromCloudQueryResult(queryString);
@@ -313,7 +314,7 @@ namespace LeanCloud
                 Path = queryString,
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: CancellationToken.None).OnSuccess(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: CancellationToken.None).OnSuccess(t =>
             {
                 var items = t.Result.Item2["results"] as IList<object>;
                 var className = t.Result.Item2["className"].ToString();

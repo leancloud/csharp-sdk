@@ -71,7 +71,7 @@ namespace LeanCloud
                 Path = $"users/me?session_token={CurrentSessionToken}",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -301,7 +301,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -318,7 +318,7 @@ namespace LeanCloud
                 Path = $"users/{ObjectId}/friendship/{userObjectId}",
                 Method = HttpMethod.Delete
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -1050,7 +1050,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -1189,7 +1189,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -1225,7 +1225,7 @@ namespace LeanCloud
                 Method = HttpMethod.Put,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -1286,7 +1286,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -1316,7 +1316,7 @@ namespace LeanCloud
                 Path = $"verifyMobilePhone/{code.Trim()}?mobilePhoneNumber={mobilePhoneNumber.Trim()}",
                 Method = HttpMethod.Post
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -1333,7 +1333,7 @@ namespace LeanCloud
                 Path = $"verifyMobilePhone/{code.Trim()}",
                 Method = HttpMethod.Post
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -1371,7 +1371,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });

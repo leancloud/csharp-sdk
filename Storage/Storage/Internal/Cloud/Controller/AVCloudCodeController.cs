@@ -26,7 +26,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = parameters
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
                 if (!decoded.ContainsKey("result"))
@@ -44,7 +44,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = parameters
             };
-            return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
                 if (!decoded.ContainsKey("result"))

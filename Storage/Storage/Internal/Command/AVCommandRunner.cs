@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -38,15 +39,15 @@ namespace LeanCloud.Storage.Internal
         /// <param name="downloadProgress"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<Tuple<HttpStatusCode, IDictionary<string, object>>> RunCommandAsync(AVCommand command,
+        public async Task<Tuple<HttpStatusCode, T>> RunCommandAsync<T>(AVCommand command,
             IProgress<AVUploadProgressEventArgs> uploadProgress = null,
             IProgress<AVDownloadProgressEventArgs> downloadProgress = null,
-            CancellationToken cancellationToken = default(CancellationToken)) {
+            CancellationToken cancellationToken = default) {
             
             var request = new HttpRequestMessage {
                 RequestUri = command.Uri,
                 Method = command.Method,
-                Content = new StringContent(Json.Encode(command.Content))
+                Content = new StringContent(JsonConvert.SerializeObject(command.Content))
             };
 
             var headers = await GetHeadersAsync();
@@ -66,7 +67,7 @@ namespace LeanCloud.Storage.Internal
             PrintResponse(response, resultString);
 
             var ret = new Tuple<HttpStatusCode, string>(response.StatusCode, resultString);
-
+            
             var responseCode = ret.Item1;
             var contentString = ret.Item2;
 
@@ -75,31 +76,29 @@ namespace LeanCloud.Storage.Internal
                 throw new AVException(AVException.ErrorCode.InternalServerError, contentString);
             }
 
+            if (responseCode < HttpStatusCode.OK || responseCode > HttpStatusCode.PartialContent) {
+                // 错误处理
+                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(contentString, new LeanCloudJsonConverter());
+                if (data.TryGetValue("code", out object codeObj)) {
+                    AVException.ErrorCode code = (AVException.ErrorCode)codeObj;
+                    string detail = data["error"] as string;
+                    throw new AVException(code, detail);
+                } else {
+                    throw new AVException(AVException.ErrorCode.OtherCause, contentString);
+                }
+            }
+
             if (contentString != null) {
-                IDictionary<string, object> contentJson = null;
                 try {
-                    if (contentString.StartsWith("[", StringComparison.Ordinal)) {
-                        var arrayJson = Json.Parse(contentString);
-                        contentJson = new Dictionary<string, object> { { "results", arrayJson } };
-                    } else {
-                        contentJson = Json.Parse(contentString) as IDictionary<string, object>;
-                    }
+                    var data = JsonConvert.DeserializeObject<object>(contentString, new LeanCloudJsonConverter());
+                    return new Tuple<HttpStatusCode, T>(responseCode, (T)data);
                 } catch (Exception e) {
                     throw new AVException(AVException.ErrorCode.OtherCause,
                         "Invalid response from server", e);
                 }
-                if (responseCode < HttpStatusCode.OK || responseCode > HttpStatusCode.PartialContent) {
-                    AVClient.PrintLog("error response code:" + responseCode);
-                    int code = (int)(contentJson.ContainsKey("code") ? (int)contentJson["code"] : (int)AVException.ErrorCode.OtherCause);
-                    string error = contentJson.ContainsKey("error") ?
-                        contentJson["error"] as string : contentString;
-                    AVException.ErrorCode ec = (AVException.ErrorCode)code;
-                    throw new AVException(ec, error);
-                }
-                return new Tuple<HttpStatusCode, IDictionary<string, object>>(responseCode, contentJson);
             }
 
-            return new Tuple<HttpStatusCode, IDictionary<string, object>>(responseCode, null);
+            return new Tuple<HttpStatusCode, T>(responseCode, default);
         }
 
         private const string revocableSessionTokenTrueValue = "1";

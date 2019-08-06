@@ -17,7 +17,7 @@ namespace LeanCloud.Storage.Internal {
                 Path = "sessions/me",
                 Method = HttpMethod.Get
             };
-      return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t => {
+      return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
         return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
       });
     }
@@ -27,7 +27,7 @@ namespace LeanCloud.Storage.Internal {
                 Path = "logout",
                 Method = HttpMethod.Post
             };
-      return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken);
+      return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
     }
 
     public Task<IObjectState> UpgradeToRevocableSessionAsync(string sessionToken, CancellationToken cancellationToken) {
@@ -35,7 +35,7 @@ namespace LeanCloud.Storage.Internal {
                 Path = "upgradeToRevocableSession",
                 Method = HttpMethod.Post,
             };
-      return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t => {
+      return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
         return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
       });
     }

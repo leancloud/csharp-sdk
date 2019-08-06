@@ -45,11 +45,11 @@ namespace LeanCloud.Storage.Internal
             });
             DateTime? createdAt = extractFromDictionary<DateTime?>(mutableData, "createdAt", (obj) =>
             {
-                return AVDecoder.ParseDate(obj as string);
+                return (DateTime)obj;
             });
             DateTime? updatedAt = extractFromDictionary<DateTime?>(mutableData, "updatedAt", (obj) =>
             {
-                return AVDecoder.ParseDate(obj as string);
+                return (DateTime)obj;
             });
 
             if (mutableData.ContainsKey("ACL"))

@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -29,7 +30,7 @@ namespace LeanCloud.Storage.Internal
             {
                 string json;
                 locker.EnterReadLock();
-                json = Json.Encode(dictionary);
+                json = JsonConvert.SerializeObject(dictionary);
                 locker.ExitReadLock();
                 using (var sw = new StreamWriter(filePath)) {
                     return sw.WriteAsync(json);
@@ -42,7 +43,7 @@ namespace LeanCloud.Storage.Internal
                     var text = await sr.ReadToEndAsync();
                     Dictionary<string, object> result = null;
                     try {
-                        result = Json.Parse(text) as Dictionary<string, object>;
+                        result = JsonConvert.DeserializeObject<Dictionary<string, object>>(text, new LeanCloudJsonConverter());
                     } catch (Exception e) {
                         AVClient.PrintLog(e.Message);
                     }

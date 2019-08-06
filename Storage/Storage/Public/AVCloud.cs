@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Storage.Internal;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace LeanCloud {
     /// <summary>
@@ -129,7 +130,7 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -203,7 +204,7 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -233,7 +234,7 @@ namespace LeanCloud {
                 Content = body
             };
 
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -262,7 +263,7 @@ namespace LeanCloud {
             var command = new AVCommand {
                 Path = $"verifySmsCode/{code.Trim()}?mobilePhoneNumber={mobilePhoneNumber.Trim()}",
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t =>
             {
                 return AVClient.IsSuccessStatusCode(t.Result.Item1);
             });
@@ -309,7 +310,7 @@ namespace LeanCloud {
                 Path = $"requestCaptcha?width={width}&height={height}",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
                 return new Captcha()
@@ -338,7 +339,7 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t =>
             {
                 if (!t.Result.Item2.ContainsKey("validate_token"))
                     throw new KeyNotFoundException("validate_token");
@@ -357,7 +358,7 @@ namespace LeanCloud {
                 Path = $"statistics/apps/{AVClient.CurrentConfiguration.ApplicationId}/sendPolicy",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var settings = t.Result.Item2;
                 var CloudParameters = settings["parameters"] as IDictionary<string, object>;
@@ -390,7 +391,7 @@ namespace LeanCloud {
                     { "session_token", user.SessionToken }
                 }
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).ContinueWith(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t =>
             {
                 var body = t.Result.Item2;
                 return new RealtimeSignature()
@@ -471,8 +472,9 @@ namespace LeanCloud {
                 {
                     _encode = n =>
                     {
-                        if (n != null)
-                            return Json.Parse(n.ToString()) as IDictionary<string, object>;
+                        if (n != null) {
+                            return JsonConvert.DeserializeObject<Dictionary<string, object>>(n.ToString(), new LeanCloudJsonConverter());
+                        }
                         return null;
                     };
                 }

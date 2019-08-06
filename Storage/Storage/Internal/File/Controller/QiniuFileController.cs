@@ -166,7 +166,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = parameters
             };
-            return commandRunner.RunCommandAsync(command);
+            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
         IList<KeyValuePair<string, string>> GetQiniuRequestHeaders(FileState state)
         {

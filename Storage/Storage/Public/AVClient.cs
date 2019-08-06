@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace LeanCloud
 {
@@ -348,7 +349,7 @@ namespace LeanCloud
                                      select string.Format("{0}={1}",
                                        Uri.EscapeDataString(pair.Key),
                                        Uri.EscapeDataString(string.IsNullOrEmpty(valueString) ?
-                                          Json.Encode(pair.Value) : valueString)))
+                                          JsonConvert.SerializeObject(pair.Value) : valueString)))
                                        .ToArray());
         }
 
@@ -365,12 +366,12 @@ namespace LeanCloud
 
         internal static IDictionary<string, object> DeserializeJsonString(string jsonData)
         {
-            return Json.Parse(jsonData) as IDictionary<string, object>;
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonData, new LeanCloudJsonConverter());
         }
 
         internal static string SerializeJsonString(IDictionary<string, object> jsonData)
         {
-            return Json.Encode(jsonData);
+            return JsonConvert.SerializeObject(jsonData);
         }
 
         //public static Task<Tuple<HttpStatusCode, string>> HttpGetAsync(Uri uri)
@@ -419,10 +420,11 @@ namespace LeanCloud
             IDictionary<string, object> strs = null;
             try
             {
-                strs = (!item2.StartsWith("[", StringComparison.Ordinal) ? AVClient.DeserializeJsonString(item2) : new Dictionary<string, object>()
+                
+                strs = !item2.StartsWith("[", StringComparison.Ordinal) ? AVClient.DeserializeJsonString(item2) : new Dictionary<string, object>()
                     {
-                        { "results", Json.Parse(item2) }
-                    });
+                        { "results", JsonConvert.DeserializeObject<Dictionary<string, object>>(item2, new LeanCloudJsonConverter()) }
+                    };
             }
             catch (Exception exception)
             {
@@ -440,13 +442,11 @@ namespace LeanCloud
 
         internal static Task<Tuple<HttpStatusCode, IDictionary<string, object>>> RunCommandAsync(AVCommand command)
         {
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync(command);
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
-        internal static bool IsSuccessStatusCode(HttpStatusCode responseStatus)
-        {
-            var codeValue = (int)responseStatus;
-            return (codeValue > 199) && (codeValue < 204);
+        internal static bool IsSuccessStatusCode(HttpStatusCode responseStatus) {
+            return (responseStatus >= HttpStatusCode.OK) && (responseStatus <= HttpStatusCode.PartialContent);
         }
     }
 }
