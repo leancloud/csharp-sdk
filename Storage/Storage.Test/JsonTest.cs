@@ -47,7 +47,7 @@ namespace LeanCloudTests {
         public void DeserializeList() {
             var json = "[1, \"hello\", [2, 3, 4], { \"count\": 22 }]";
             TestContext.Out.WriteLine(JsonConvert.DeserializeObject(json).GetType());
-            var obj = JsonConvert.DeserializeObject<object>(json, new LeanCloudJsonConverter());
+            var obj = JsonConvert.DeserializeObject<IList<object>>(json, new LeanCloudJsonConverter());
             if (obj is IList<object>) {
                 var arr = obj as List<object>;
                 TestContext.Out.WriteLine(arr.GetType());

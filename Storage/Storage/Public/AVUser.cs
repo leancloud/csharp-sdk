@@ -58,7 +58,7 @@ namespace LeanCloud
         /// Whether the AVUser has been authenticated on this device, and the AVUser's session token is expired.
         /// Only an authenticated AVUser can be saved and deleted.
         /// </summary>
-        public Task<bool> IsAuthenticatedAsync()
+        public Task IsAuthenticatedAsync()
         {
             lock (mutex)
             {
@@ -71,10 +71,7 @@ namespace LeanCloud
                 Path = $"users/me?session_token={CurrentSessionToken}",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -279,9 +276,9 @@ namespace LeanCloud
         /// </summary>
         /// <param name="userObjectId">被关注的用户</param>
         /// <returns></returns>
-        public Task<bool> FollowAsync(string userObjectId)
+        public Task FollowAsync(string userObjectId)
         {
-            return this.FollowAsync(userObjectId, null);
+            return FollowAsync(userObjectId, null);
         }
 
         /// <summary>
@@ -290,7 +287,7 @@ namespace LeanCloud
         /// <param name="userObjectId">被关注的用户Id</param>
         /// <param name="data">关注的时候附加属性</param>
         /// <returns></returns>
-        public Task<bool> FollowAsync(string userObjectId, IDictionary<string, object> data)
+        public Task FollowAsync(string userObjectId, IDictionary<string, object> data)
         {
             if (data != null)
             {
@@ -301,10 +298,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -312,16 +306,13 @@ namespace LeanCloud
         /// </summary>
         /// <param name="userObjectId"></param>
         /// <returns></returns>
-        public Task<bool> UnfollowAsync(string userObjectId)
+        public Task UnfollowAsync(string userObjectId)
         {
             var command = new AVCommand {
                 Path = $"users/{ObjectId}/friendship/{userObjectId}",
                 Method = HttpMethod.Delete
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -330,8 +321,9 @@ namespace LeanCloud
         /// <returns></returns>
         public AVQuery<AVUser> GetFollowerQuery()
         {
-            AVQuery<AVUser> query = new AVQuery<AVUser>();
-            query.RelativeUri = string.Format("users/{0}/followers", this.ObjectId);
+            AVQuery<AVUser> query = new AVQuery<AVUser> {
+                RelativeUri = string.Format("users/{0}/followers", this.ObjectId)
+            };
             return query;
         }
 
@@ -1001,9 +993,9 @@ namespace LeanCloud
         /// </summary>
         /// <param name="mobilePhoneNumber">The mobile phone number.</param>
         /// <returns></returns>
-        public static Task<bool> RequestLogInSmsCodeAsync(string mobilePhoneNumber)
+        public static Task RequestLogInSmsCodeAsync(string mobilePhoneNumber)
         {
-            return AVUser.RequestLogInSmsCodeAsync(mobilePhoneNumber, CancellationToken.None);
+            return RequestLogInSmsCodeAsync(mobilePhoneNumber, CancellationToken.None);
         }
 
         /// <summary>
@@ -1012,9 +1004,9 @@ namespace LeanCloud
         /// <param name="mobilePhoneNumber">The mobile phone number.</param>
         /// <param name="validateToken">Validate token.</param>
         /// <returns></returns>
-        public static Task<bool> RequestLogInSmsCodeAsync(string mobilePhoneNumber, string validateToken)
+        public static Task RequestLogInSmsCodeAsync(string mobilePhoneNumber, string validateToken)
         {
-            return AVUser.RequestLogInSmsCodeAsync(mobilePhoneNumber, null, CancellationToken.None);
+            return RequestLogInSmsCodeAsync(mobilePhoneNumber, null, CancellationToken.None);
         }
 
         /// <summary>
@@ -1023,7 +1015,7 @@ namespace LeanCloud
         /// <param name="mobilePhoneNumber">The mobile phone number.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        public static Task<bool> RequestLogInSmsCodeAsync(string mobilePhoneNumber, CancellationToken cancellationToken)
+        public static Task RequestLogInSmsCodeAsync(string mobilePhoneNumber, CancellationToken cancellationToken)
         {
             return RequestLogInSmsCodeAsync(mobilePhoneNumber, null, cancellationToken);
         }
@@ -1035,7 +1027,7 @@ namespace LeanCloud
         /// <param name="validateToken">Validate token.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        public static Task<bool> RequestLogInSmsCodeAsync(string mobilePhoneNumber, string validateToken, CancellationToken cancellationToken)
+        public static Task RequestLogInSmsCodeAsync(string mobilePhoneNumber, string validateToken, CancellationToken cancellationToken)
         {
             Dictionary<string, object> strs = new Dictionary<string, object>()
             {
@@ -1050,10 +1042,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -1189,10 +1178,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -1201,9 +1187,9 @@ namespace LeanCloud
         /// <param name="newPassword">新密码</param>
         /// <param name="smsCode">6位数验证码</param>
         /// <returns></returns>
-        public static Task<bool> ResetPasswordBySmsCodeAsync(string newPassword, string smsCode)
+        public static Task ResetPasswordBySmsCodeAsync(string newPassword, string smsCode)
         {
-            return AVUser.ResetPasswordBySmsCodeAsync(newPassword, smsCode, CancellationToken.None);
+            return ResetPasswordBySmsCodeAsync(newPassword, smsCode, CancellationToken.None);
         }
 
         /// <summary>
@@ -1213,7 +1199,7 @@ namespace LeanCloud
         /// <param name="smsCode">6位数验证码</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
-        public static Task<bool> ResetPasswordBySmsCodeAsync(string newPassword, string smsCode, CancellationToken cancellationToken)
+        public static Task ResetPasswordBySmsCodeAsync(string newPassword, string smsCode, CancellationToken cancellationToken)
         {
             string currentSessionToken = AVUser.CurrentSessionToken;
             Dictionary<string, object> strs = new Dictionary<string, object>()
@@ -1225,10 +1211,7 @@ namespace LeanCloud
                 Method = HttpMethod.Put,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -1236,9 +1219,9 @@ namespace LeanCloud
         /// </summary>
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <returns></returns>
-        public static Task<bool> RequestMobilePhoneVerifyAsync(string mobilePhoneNumber)
+        public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber)
         {
-            return AVUser.RequestMobilePhoneVerifyAsync(mobilePhoneNumber, null, CancellationToken.None);
+            return RequestMobilePhoneVerifyAsync(mobilePhoneNumber, null, CancellationToken.None);
         }
 
         /// <summary>
@@ -1247,9 +1230,9 @@ namespace LeanCloud
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="validateToken">Validate token.</param>
         /// <returns></returns>
-        public static Task<bool> RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, string validateToken)
+        public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, string validateToken)
         {
-            return AVUser.RequestMobilePhoneVerifyAsync(mobilePhoneNumber, validateToken, CancellationToken.None);
+            return RequestMobilePhoneVerifyAsync(mobilePhoneNumber, validateToken, CancellationToken.None);
         }
 
         /// <summary>
@@ -1258,7 +1241,7 @@ namespace LeanCloud
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns></returns>
-        public static Task<bool> RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, CancellationToken cancellationToken)
+        public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, CancellationToken cancellationToken)
         {
             return RequestMobilePhoneVerifyAsync(mobilePhoneNumber, null, cancellationToken);
         }
@@ -1270,15 +1253,13 @@ namespace LeanCloud
         /// <param name="validateToken">Validate token.</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns></returns>
-        public static Task<bool> RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, string validateToken, CancellationToken cancellationToken)
+        public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, string validateToken, CancellationToken cancellationToken)
         {
             string currentSessionToken = AVUser.CurrentSessionToken;
-            Dictionary<string, object> strs = new Dictionary<string, object>()
-            {
+            Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber }
             };
-            if (String.IsNullOrEmpty(validateToken))
-            {
+            if (!string.IsNullOrEmpty(validateToken)) {
                 strs.Add("validate_token", validateToken);
             }
             var command = new AVCommand {
@@ -1286,10 +1267,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -1298,9 +1276,9 @@ namespace LeanCloud
         /// <param name="code">手机收到的验证码</param>
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <returns></returns>
-        public static Task<bool> VerifyMobilePhoneAsync(string code, string mobilePhoneNumber)
+        public static Task VerifyMobilePhoneAsync(string code, string mobilePhoneNumber)
         {
-            return AVUser.VerifyMobilePhoneAsync(code, mobilePhoneNumber, CancellationToken.None);
+            return VerifyMobilePhoneAsync(code, mobilePhoneNumber, CancellationToken.None);
         }
 
         /// <summary>
@@ -1310,16 +1288,13 @@ namespace LeanCloud
         /// <param name="mobilePhoneNumber">手机号，可选</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<bool> VerifyMobilePhoneAsync(string code, string mobilePhoneNumber, CancellationToken cancellationToken)
+        public static Task VerifyMobilePhoneAsync(string code, string mobilePhoneNumber, CancellationToken cancellationToken)
         {
             var command = new AVCommand {
                 Path = $"verifyMobilePhone/{code.Trim()}?mobilePhoneNumber={mobilePhoneNumber.Trim()}",
                 Method = HttpMethod.Post
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -1327,16 +1302,13 @@ namespace LeanCloud
         /// </summary>
         /// <param name="code">手机收到的验证码</param>
         /// <returns></returns>
-        public static Task<bool> VerifyMobilePhoneAsync(string code)
+        public static Task VerifyMobilePhoneAsync(string code)
         {
             var command = new AVCommand {
                 Path = $"verifyMobilePhone/{code.Trim()}",
                 Method = HttpMethod.Post
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -1360,7 +1332,7 @@ namespace LeanCloud
         /// </summary>
         /// <param name="email">邮箱地址</param>
         /// <returns></returns>
-        public static Task<bool> RequestEmailVerifyAsync(string email)
+        public static Task RequestEmailVerifyAsync(string email)
         {
             Dictionary<string, object> strs = new Dictionary<string, object>()
             {
@@ -1371,10 +1343,7 @@ namespace LeanCloud
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
         #endregion
 

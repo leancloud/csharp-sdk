@@ -87,7 +87,7 @@ namespace LeanCloud {
         /// <param name="op">进行的操作名称。</param>
         /// <param name="ttl">验证码失效时间。</param>
         /// <returns></returns>
-        public static Task<bool> RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10)
+        public static Task RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10)
         {
             return RequestSMSCodeAsync(mobilePhoneNumber, name, op, ttl, CancellationToken.None);
         }
@@ -102,7 +102,7 @@ namespace LeanCloud {
         /// <param name="op">进行的操作名称。</param>
         /// <param name="ttl">验证码失效时间。</param>
         /// <param name="cancellationToken">Cancellation token。</param>
-        public static Task<bool> RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(mobilePhoneNumber))
             {
@@ -130,10 +130,7 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -141,9 +138,9 @@ namespace LeanCloud {
         /// </summary>
         /// <returns>是否发送成功。</returns>
         /// <param name="mobilePhoneNumber">手机号。</param>
-        public static Task<bool> RequestSMSCodeAsync(string mobilePhoneNumber)
+        public static Task RequestSMSCodeAsync(string mobilePhoneNumber)
         {
-            return AVCloud.RequestSMSCodeAsync(mobilePhoneNumber, CancellationToken.None);
+            return RequestSMSCodeAsync(mobilePhoneNumber, CancellationToken.None);
         }
 
 
@@ -153,9 +150,9 @@ namespace LeanCloud {
         /// <returns>是否发送成功。</returns>
         /// <param name="mobilePhoneNumber">手机号。</param>
         /// <param name="cancellationToken">Cancellation Token.</param>
-        public static Task<bool> RequestSMSCodeAsync(string mobilePhoneNumber, CancellationToken cancellationToken)
+        public static Task RequestSMSCodeAsync(string mobilePhoneNumber, CancellationToken cancellationToken)
         {
-            return AVCloud.RequestSMSCodeAsync(mobilePhoneNumber, null, null, 0, cancellationToken);
+            return RequestSMSCodeAsync(mobilePhoneNumber, null, null, 0, cancellationToken);
         }
 
         /// <summary>
@@ -169,7 +166,7 @@ namespace LeanCloud {
         /// <param name="sign">Sms's sign.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
-        public static Task<bool> RequestSMSCodeAsync(
+        public static Task RequestSMSCodeAsync(
             string mobilePhoneNumber,
             string template,
             IDictionary<string, object> env,
@@ -204,10 +201,7 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = strs
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -215,7 +209,7 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="mobilePhoneNumber"></param>
         /// <returns></returns>
-        public static Task<bool> RequestVoiceCodeAsync(string mobilePhoneNumber)
+        public static Task RequestVoiceCodeAsync(string mobilePhoneNumber)
         {
             if (string.IsNullOrEmpty(mobilePhoneNumber))
             {
@@ -234,10 +228,7 @@ namespace LeanCloud {
                 Content = body
             };
 
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -246,9 +237,9 @@ namespace LeanCloud {
         /// <returns>是否验证通过。</returns>
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="code">验证码。</param>
-        public static Task<bool> VerifySmsCodeAsync(string code, string mobilePhoneNumber)
+        public static Task VerifySmsCodeAsync(string code, string mobilePhoneNumber)
         {
-            return AVCloud.VerifySmsCodeAsync(code, mobilePhoneNumber, CancellationToken.None);
+            return VerifySmsCodeAsync(code, mobilePhoneNumber, CancellationToken.None);
         }
 
         /// <summary>
@@ -258,15 +249,12 @@ namespace LeanCloud {
         /// <param name="code">验证码。</param>
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public static Task<bool> VerifySmsCodeAsync(string code, string mobilePhoneNumber, CancellationToken cancellationToken)
+        public static Task VerifySmsCodeAsync(string code, string mobilePhoneNumber, CancellationToken cancellationToken)
         {
             var command = new AVCommand {
                 Path = $"verifySmsCode/{code.Trim()}?mobilePhoneNumber={mobilePhoneNumber.Trim()}",
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t =>
-            {
-                return AVClient.IsSuccessStatusCode(t.Result.Item1);
-            });
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -499,8 +487,7 @@ namespace LeanCloud {
                     Method = HttpMethod.Post,
                     Content = encodedParameters
                 };
-                return AVClient.RunCommandAsync(command);
-
+                return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             }).Unwrap().OnSuccess(s =>
             {
                 var responseBody = s.Result.Item2;

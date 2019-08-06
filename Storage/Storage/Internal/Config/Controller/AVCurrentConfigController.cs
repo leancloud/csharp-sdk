@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
-using LeanCloud.Storage.Internal;
+using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal {
   /// <summary>
@@ -34,7 +33,7 @@ namespace LeanCloud.Storage.Internal {
 
             string propertiesString = tmp as string;
             if (propertiesString != null) {
-              var dictionary = AVClient.DeserializeJsonString(propertiesString);
+              var dictionary = JsonConvert.DeserializeObject<IDictionary<string, object>>(propertiesString);
               currentConfig = new AVConfig(dictionary);
             } else {
               currentConfig = new AVConfig();
@@ -53,7 +52,7 @@ namespace LeanCloud.Storage.Internal {
         currentConfig = config;
 
         var jsonObject = ((IJsonConvertible)config).ToJSON();
-        var jsonString = AVClient.SerializeJsonString(jsonObject);
+        var jsonString = JsonConvert.SerializeObject(jsonObject);
 
         return storageController.LoadAsync().OnSuccess(t => t.Result.AddAsync(CurrentConfigKey, jsonString));
       }).Unwrap().Unwrap(), CancellationToken.None);

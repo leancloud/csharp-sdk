@@ -69,7 +69,7 @@ namespace LeanCloud
         {
             get
             {
-                return AVClient.SerializeJsonString(this.BuildParameters(true));
+                return JsonConvert.SerializeObject(BuildParameters(true));
             }
         }
 

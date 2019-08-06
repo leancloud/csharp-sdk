@@ -170,11 +170,7 @@ namespace LeanCloud
 
         private static readonly object mutex = new object();
 
-        static AVClient()
-        {
-            versionString = "net-portable-" + Version;
-
-            //AVModuleController.Instance.ScanForModules();
+        static AVClient() {
         }
 
         /// <summary>
@@ -197,7 +193,6 @@ namespace LeanCloud
             }
         }
 
-        private static readonly string versionString;
         /// <summary>
         /// 当前 SDK 版本号
         /// </summary>
@@ -205,7 +200,7 @@ namespace LeanCloud
         {
             get
             {
-                return versionString;
+                return "net-v0.1.0";
             }
         }
 
@@ -244,40 +239,19 @@ namespace LeanCloud
         /// <param name="log"></param>
         public static void PrintLog(string log)
         {
-            if (AVClient.LogTracker != null)
-            {
-                AVClient.LogTracker(log);
-            }
+            LogTracker?.Invoke(log);
         }
 
-        static bool useProduction = true;
         /// <summary>
         /// Gets or sets a value indicating whether send the request to production server or staging server.
         /// </summary>
         /// <value><c>true</c> if use production; otherwise, <c>false</c>.</value>
-        public static bool UseProduction
-        {
-            get
-            {
-                return useProduction;
-            }
-            set
-            {
-                useProduction = value;
-            }
+        public static bool UseProduction {
+            get; set;
         }
 
-        static bool useMasterKey = false;
-        public static bool UseMasterKey
-        {
-            get
-            {
-                return useMasterKey;
-            }
-            set
-            {
-                useMasterKey = value;
-            }
+        public static bool UseMasterKey {
+            get; set;
         }
 
         /// <summary>
@@ -362,91 +336,6 @@ namespace LeanCloud
                 dict[parts[0]] = parts.Length == 2 ? Uri.UnescapeDataString(parts[1].Replace("+", " ")) : null;
             }
             return dict;
-        }
-
-        internal static IDictionary<string, object> DeserializeJsonString(string jsonData)
-        {
-            return JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonData, new LeanCloudJsonConverter());
-        }
-
-        internal static string SerializeJsonString(IDictionary<string, object> jsonData)
-        {
-            return JsonConvert.SerializeObject(jsonData);
-        }
-
-        //public static Task<Tuple<HttpStatusCode, string>> HttpGetAsync(Uri uri)
-        //{
-        //    return RequestAsync(uri, "GET", null, body: null, contentType: null, cancellationToken: CancellationToken.None);
-        //}
-
-        //public static Task<Tuple<HttpStatusCode, string>> RequestAsync(Uri uri, string method, IList<KeyValuePair<string, string>> headers, IDictionary<string, object> body, string contentType, CancellationToken cancellationToken)
-        //{
-        //    var dataStream = body != null ? new MemoryStream(Encoding.UTF8.GetBytes(Json.Encode(body))) : null;
-        //    return AVClient.RequestAsync(uri, method, headers, dataStream, contentType, cancellationToken);
-        //    //return AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, cancellationToken);
-        //}
-
-        //public static Task<Tuple<HttpStatusCode, string>> RequestAsync(Uri uri, string method, IList<KeyValuePair<string, string>> headers, Stream data, string contentType, CancellationToken cancellationToken)
-        //{
-        //    HttpRequest request = new HttpRequest()
-        //    {
-        //        Data = data != null ? data : null,
-        //        Headers = headers,
-        //        Method = method,
-        //        Uri = uri
-        //    };
-        //    return AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, cancellationToken).OnSuccess(t =>
-        //    {
-        //        var response = t.Result;
-        //        var contentString = response.Item2;
-        //        int responseCode = (int)response.Item1;
-        //        var responseLog = responseCode + ";" + contentString;
-        //        PrintLog(responseLog);
-        //        return response;
-        //    });
-        //}
-
-        internal static Tuple<HttpStatusCode, IDictionary<string, object>> ReponseResolve(Tuple<HttpStatusCode, string> response, CancellationToken cancellationToken)
-        {
-            Tuple<HttpStatusCode, string> result = response;
-            HttpStatusCode code = result.Item1;
-            string item2 = result.Item2;
-
-            if (item2 == null)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                return new Tuple<HttpStatusCode, IDictionary<string, object>>(code, null);
-            }
-            IDictionary<string, object> strs = null;
-            try
-            {
-                
-                strs = !item2.StartsWith("[", StringComparison.Ordinal) ? AVClient.DeserializeJsonString(item2) : new Dictionary<string, object>()
-                    {
-                        { "results", JsonConvert.DeserializeObject<Dictionary<string, object>>(item2, new LeanCloudJsonConverter()) }
-                    };
-            }
-            catch (Exception exception)
-            {
-                throw new AVException(AVException.ErrorCode.OtherCause, "Invalid response from server", exception);
-            }
-            var codeValue = (int)code;
-            if (codeValue > 203 || codeValue < 200)
-            {
-                throw new AVException((AVException.ErrorCode)((int)((strs.ContainsKey("code") ? (long)strs["code"] : (long)-1))), (strs.ContainsKey("error") ? strs["error"] as string : item2), null);
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-            return new Tuple<HttpStatusCode, IDictionary<string, object>>(code, strs);
-        }
-
-        internal static Task<Tuple<HttpStatusCode, IDictionary<string, object>>> RunCommandAsync(AVCommand command)
-        {
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
-        }
-
-        internal static bool IsSuccessStatusCode(HttpStatusCode responseStatus) {
-            return (responseStatus >= HttpStatusCode.OK) && (responseStatus <= HttpStatusCode.PartialContent);
         }
     }
 }

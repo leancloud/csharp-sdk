@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal
 {
@@ -83,12 +84,10 @@ namespace LeanCloud.Storage.Internal
                 var blockSize = remainingSize > BLOCKSIZE ? BLOCKSIZE : remainingSize;
                 return MakeBlock(state, firstChunkBinary, blockSize).ContinueWith(t =>
                 {
-
-                    var dic = AVClient.ReponseResolve(t.Result, CancellationToken.None);
-                    var ctx = dic.Item2["ctx"].ToString();
-
-                    offset = long.Parse(dic.Item2["offset"].ToString());
-                    var host = dic.Item2["host"].ToString();
+                    var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(t.Result.Item2, new LeanCloudJsonConverter());
+                    var ctx = dict["ctx"].ToString();
+                    offset = long.Parse(dict["offset"].ToString());
+                    var host = dict["host"].ToString();
 
                     state.completed += firstChunkBinary.Length;
                     if (state.completed % BLOCKSIZE == 0 || state.completed == totalSize)
@@ -105,11 +104,11 @@ namespace LeanCloud.Storage.Internal
                 var chunkBinary = GetChunkBinary(state.completed, dataStream);
                 return PutChunk(state, chunkBinary, context, offset).ContinueWith(t =>
                 {
-                    var dic = AVClient.ReponseResolve(t.Result, CancellationToken.None);
-                    var ctx = dic.Item2["ctx"].ToString();
+                    var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(t.Result.Item2, new LeanCloudJsonConverter());
+                    var ctx = dict["ctx"].ToString();
 
-                    offset = long.Parse(dic.Item2["offset"].ToString());
-                    var host = dic.Item2["host"].ToString();
+                    offset = long.Parse(dict["offset"].ToString());
+                    var host = dict["host"].ToString();
                     state.completed += chunkBinary.Length;
                     if (state.completed % BLOCKSIZE == 0 || state.completed == totalSize)
                     {
