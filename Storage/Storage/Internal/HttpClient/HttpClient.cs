@@ -10,7 +10,7 @@ using System.IO;
 using NetHttpClient = System.Net.Http.HttpClient;
 
 namespace LeanCloud.Storage.Internal {
-    public class HttpClient : IHttpClient {
+    public class HttpClient {
         static readonly HashSet<string> HttpContentHeaders = new HashSet<string> {
             { "Allow" },
             { "Content-Disposition" },
@@ -41,7 +41,7 @@ namespace LeanCloud.Storage.Internal {
             IProgress<AVUploadProgressEventArgs> uploadProgress,
             IProgress<AVDownloadProgressEventArgs> downloadProgress,
             CancellationToken cancellationToken) {
-            
+
             HttpMethod httpMethod = httpRequest.Method;
             HttpRequestMessage message = new HttpRequestMessage(httpMethod, httpRequest.Uri);
 

@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
-using LeanCloud.Storage.Internal;
 
-namespace LeanCloud.Storage.Internal
-{
-    internal class ObjectSubclassingController : IObjectSubclassingController
-    {
+namespace LeanCloud.Storage.Internal {
+    public class ObjectSubclassingController {
         // Class names starting with _ are documented to be reserved. Use this one
         // here to allow us to 'inherit' certain properties.
         private static readonly string avObjectClassName = "_AVObject";
 
         private readonly ReaderWriterLockSlim mutex;
-        private readonly IDictionary<String, ObjectSubclassInfo> registeredSubclasses;
-        private Dictionary<String, Action> registerActions;
+        private readonly IDictionary<string, ObjectSubclassInfo> registeredSubclasses;
+        private Dictionary<string, Action> registerActions;
 
-        public ObjectSubclassingController()
-        {
+        public ObjectSubclassingController() {
             mutex = new ReaderWriterLockSlim();
             registeredSubclasses = new Dictionary<String, ObjectSubclassInfo>();
             registerActions = new Dictionary<string, Action>();
@@ -28,15 +23,13 @@ namespace LeanCloud.Storage.Internal
             RegisterSubclass(typeof(AVObject));
         }
 
-        public String GetClassName(Type type)
-        {
+        public string GetClassName(Type type) {
             return type == typeof(AVObject)
               ? avObjectClassName
               : ObjectSubclassInfo.GetClassName(type.GetTypeInfo());
         }
 
-        public Type GetType(String className)
-        {
+        public Type GetType(string className) {
             ObjectSubclassInfo info = null;
             mutex.EnterReadLock();
             registeredSubclasses.TryGetValue(className, out info);
@@ -47,8 +40,7 @@ namespace LeanCloud.Storage.Internal
               : null;
         }
 
-        public bool IsTypeValid(String className, Type type)
-        {
+        public bool IsTypeValid(string className, Type type) {
             ObjectSubclassInfo subclassInfo = null;
 
             mutex.EnterReadLock();
@@ -60,39 +52,30 @@ namespace LeanCloud.Storage.Internal
               : subclassInfo.TypeInfo == type.GetTypeInfo();
         }
 
-        public void RegisterSubclass(Type type)
-        {
+        public void RegisterSubclass(Type type) {
             TypeInfo typeInfo = type.GetTypeInfo();
-            if (!typeof(AVObject).GetTypeInfo().IsAssignableFrom(typeInfo))
-            {
+            if (!typeof(AVObject).GetTypeInfo().IsAssignableFrom(typeInfo)) {
                 throw new ArgumentException("Cannot register a type that is not a subclass of AVObject");
             }
 
-            String className = GetClassName(type);
+            string className = GetClassName(type);
 
-            try
-            {
+            try {
                 // Perform this as a single independent transaction, so we can never get into an
                 // intermediate state where we *theoretically* register the wrong class due to a
                 // TOCTTOU bug.
                 mutex.EnterWriteLock();
 
                 ObjectSubclassInfo previousInfo = null;
-                if (registeredSubclasses.TryGetValue(className, out previousInfo))
-                {
-                    if (typeInfo.IsAssignableFrom(previousInfo.TypeInfo))
-                    {
+                if (registeredSubclasses.TryGetValue(className, out previousInfo)) {
+                    if (typeInfo.IsAssignableFrom(previousInfo.TypeInfo)) {
                         // Previous subclass is more specific or equal to the current type, do nothing.
                         return;
-                    }
-                    else if (previousInfo.TypeInfo.IsAssignableFrom(typeInfo))
-                    {
+                    } else if (previousInfo.TypeInfo.IsAssignableFrom(typeInfo)) {
                         // Previous subclass is parent of new child, fallthrough and actually register
                         // this class.
                         /* Do nothing */
-                    }
-                    else
-                    {
+                    } else {
                         throw new ArgumentException(
                           "Tried to register both " + previousInfo.TypeInfo.FullName + " and " + typeInfo.FullName +
                           " as the AVObject subclass of " + className + ". Cannot determine the right class " +
@@ -102,15 +85,12 @@ namespace LeanCloud.Storage.Internal
                 }
 
                 ConstructorInfo constructor = type.FindConstructor();
-                if (constructor == null)
-                {
+                if (constructor == null) {
                     throw new ArgumentException("Cannot register a type that does not implement the default constructor!");
                 }
 
                 registeredSubclasses[className] = new ObjectSubclassInfo(type, constructor);
-            }
-            finally
-            {
+            } finally {
                 mutex.ExitWriteLock();
             }
 
@@ -120,28 +100,24 @@ namespace LeanCloud.Storage.Internal
             registerActions.TryGetValue(className, out toPerform);
             mutex.ExitReadLock();
 
-            if (toPerform != null)
-            {
+            if (toPerform != null) {
                 toPerform();
             }
         }
 
-        public void UnregisterSubclass(Type type)
-        {
+        public void UnregisterSubclass(Type type) {
             mutex.EnterWriteLock();
             registeredSubclasses.Remove(GetClassName(type));
             mutex.ExitWriteLock();
         }
 
-        public void AddRegisterHook(Type t, Action action)
-        {
+        public void AddRegisterHook(Type t, Action action) {
             mutex.EnterWriteLock();
             registerActions.Add(GetClassName(t), action);
             mutex.ExitWriteLock();
         }
 
-        public AVObject Instantiate(String className)
-        {
+        public AVObject Instantiate(String className) {
             ObjectSubclassInfo info = null;
 
             mutex.EnterReadLock();
@@ -153,13 +129,11 @@ namespace LeanCloud.Storage.Internal
               : new AVObject(className);
         }
 
-        public IDictionary<String, String> GetPropertyMappings(String className)
-        {
+        public IDictionary<String, String> GetPropertyMappings(String className) {
             ObjectSubclassInfo info = null;
             mutex.EnterReadLock();
             registeredSubclasses.TryGetValue(className, out info);
-            if (info == null)
-            {
+            if (info == null) {
                 registeredSubclasses.TryGetValue(avObjectClassName, out info);
             }
             mutex.ExitReadLock();

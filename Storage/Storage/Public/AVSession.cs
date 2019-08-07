@@ -41,7 +41,7 @@ namespace LeanCloud
             }
         }
 
-        internal static IAVSessionController SessionController
+        internal static AVSessionController SessionController
         {
             get
             {

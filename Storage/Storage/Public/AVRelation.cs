@@ -31,7 +31,7 @@ namespace LeanCloud
             this.targetClassName = targetClassName;
         }
 
-        internal static IObjectSubclassingController SubclassingController
+        internal static ObjectSubclassingController SubclassingController
         {
             get
             {

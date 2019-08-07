@@ -21,12 +21,9 @@ namespace LeanCloud {
     ///     await AVCloud.CallFunctionAsync&lt;IDictionary&lt;string, object&gt;&gt;("validateGame", parameters);
     /// </code>
     /// </example>
-    public static class AVCloud
-    {
-        internal static IAVCloudCodeController CloudCodeController
-        {
-            get
-            {
+    public static class AVCloud {
+        internal static AVCloudCodeController CloudCodeController {
+            get {
                 return AVPlugins.Instance.CloudCodeController;
             }
         }
@@ -44,12 +41,10 @@ namespace LeanCloud {
         /// <param name="sesstionToken"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The result of the cloud call.</returns>
-        public static Task<T> CallFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
+        public static Task<T> CallFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken)) {
             var sessionTokenTask = AVUser.TakeSessionToken(sesstionToken);
 
-            return sessionTokenTask.OnSuccess(s =>
-            {
+            return sessionTokenTask.OnSuccess(s => {
                 return CloudCodeController.CallFunctionAsync<T>(name,
                     parameters, s.Result,
                     cancellationToken);
@@ -66,12 +61,10 @@ namespace LeanCloud {
         /// <param name="sesstionToken"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<T> RPCFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
+        public static Task<T> RPCFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken)) {
             var sessionTokenTask = AVUser.TakeSessionToken(sesstionToken);
 
-            return sessionTokenTask.OnSuccess(s =>
-            {
+            return sessionTokenTask.OnSuccess(s => {
                 return CloudCodeController.RPCFunction<T>(name,
                     parameters,
                     s.Result,
@@ -87,8 +80,7 @@ namespace LeanCloud {
         /// <param name="op">进行的操作名称。</param>
         /// <param name="ttl">验证码失效时间。</param>
         /// <returns></returns>
-        public static Task RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10)
-        {
+        public static Task RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10) {
             return RequestSMSCodeAsync(mobilePhoneNumber, name, op, ttl, CancellationToken.None);
         }
 
@@ -102,10 +94,8 @@ namespace LeanCloud {
         /// <param name="op">进行的操作名称。</param>
         /// <param name="ttl">验证码失效时间。</param>
         /// <param name="cancellationToken">Cancellation token。</param>
-        public static Task RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (string.IsNullOrEmpty(mobilePhoneNumber))
-            {
+        public static Task RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (string.IsNullOrEmpty(mobilePhoneNumber)) {
                 throw new AVException(AVException.ErrorCode.MobilePhoneInvalid, "Moblie Phone number is invalid.", null);
             }
 
@@ -113,16 +103,13 @@ namespace LeanCloud {
             {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
-            if (!string.IsNullOrEmpty(name))
-            {
+            if (!string.IsNullOrEmpty(name)) {
                 strs.Add("name", name);
             }
-            if (!string.IsNullOrEmpty(op))
-            {
+            if (!string.IsNullOrEmpty(op)) {
                 strs.Add("op", op);
             }
-            if (ttl > 0)
-            {
+            if (ttl > 0) {
                 strs.Add("TTL", ttl);
             }
             var command = new EngineCommand {
@@ -138,8 +125,7 @@ namespace LeanCloud {
         /// </summary>
         /// <returns>是否发送成功。</returns>
         /// <param name="mobilePhoneNumber">手机号。</param>
-        public static Task RequestSMSCodeAsync(string mobilePhoneNumber)
-        {
+        public static Task RequestSMSCodeAsync(string mobilePhoneNumber) {
             return RequestSMSCodeAsync(mobilePhoneNumber, CancellationToken.None);
         }
 
@@ -150,8 +136,7 @@ namespace LeanCloud {
         /// <returns>是否发送成功。</returns>
         /// <param name="mobilePhoneNumber">手机号。</param>
         /// <param name="cancellationToken">Cancellation Token.</param>
-        public static Task RequestSMSCodeAsync(string mobilePhoneNumber, CancellationToken cancellationToken)
-        {
+        public static Task RequestSMSCodeAsync(string mobilePhoneNumber, CancellationToken cancellationToken) {
             return RequestSMSCodeAsync(mobilePhoneNumber, null, null, 0, cancellationToken);
         }
 
@@ -172,11 +157,9 @@ namespace LeanCloud {
             IDictionary<string, object> env,
             string sign = "",
             string validateToken = "",
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
+            CancellationToken cancellationToken = default(CancellationToken)) {
 
-            if (string.IsNullOrEmpty(mobilePhoneNumber))
-            {
+            if (string.IsNullOrEmpty(mobilePhoneNumber)) {
                 throw new AVException(AVException.ErrorCode.MobilePhoneInvalid, "Moblie Phone number is invalid.", null);
             }
             Dictionary<string, object> strs = new Dictionary<string, object>()
@@ -184,16 +167,13 @@ namespace LeanCloud {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
             strs.Add("template", template);
-            if (String.IsNullOrEmpty(sign))
-            {
+            if (String.IsNullOrEmpty(sign)) {
                 strs.Add("sign", sign);
             }
-            if (String.IsNullOrEmpty(validateToken))
-            {
+            if (String.IsNullOrEmpty(validateToken)) {
                 strs.Add("validate_token", validateToken);
             }
-            foreach (var key in env.Keys)
-            {
+            foreach (var key in env.Keys) {
                 strs.Add(key, env[key]);
             }
             var command = new EngineCommand {
@@ -209,10 +189,8 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="mobilePhoneNumber"></param>
         /// <returns></returns>
-        public static Task RequestVoiceCodeAsync(string mobilePhoneNumber)
-        {
-            if (string.IsNullOrEmpty(mobilePhoneNumber))
-            {
+        public static Task RequestVoiceCodeAsync(string mobilePhoneNumber) {
+            if (string.IsNullOrEmpty(mobilePhoneNumber)) {
                 throw new AVException(AVException.ErrorCode.MobilePhoneInvalid, "Moblie Phone number is invalid.", null);
             }
             Dictionary<string, object> body = new Dictionary<string, object>()
@@ -237,8 +215,7 @@ namespace LeanCloud {
         /// <returns>是否验证通过。</returns>
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="code">验证码。</param>
-        public static Task VerifySmsCodeAsync(string code, string mobilePhoneNumber)
-        {
+        public static Task VerifySmsCodeAsync(string code, string mobilePhoneNumber) {
             return VerifySmsCodeAsync(code, mobilePhoneNumber, CancellationToken.None);
         }
 
@@ -249,8 +226,7 @@ namespace LeanCloud {
         /// <param name="code">验证码。</param>
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public static Task VerifySmsCodeAsync(string code, string mobilePhoneNumber, CancellationToken cancellationToken)
-        {
+        public static Task VerifySmsCodeAsync(string code, string mobilePhoneNumber, CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"verifySmsCode/{code.Trim()}?mobilePhoneNumber={mobilePhoneNumber.Trim()}",
             };
@@ -260,8 +236,7 @@ namespace LeanCloud {
         /// <summary>
         /// Stands for a captcha result.
         /// </summary>
-        public class Captcha
-        {
+        public class Captcha {
             /// <summary>
             /// Used for captcha verify.
             /// </summary>
@@ -278,8 +253,7 @@ namespace LeanCloud {
             /// <param name="code">User's input of this captcha.</param>
             /// <param name="cancellationToken">CancellationToken.</param>
             /// <returns></returns>
-            public Task VerifyAsync(string code, CancellationToken cancellationToken = default(CancellationToken))
-            {
+            public Task VerifyAsync(string code, CancellationToken cancellationToken = default(CancellationToken)) {
                 return AVCloud.VerifyCaptchaAsync(code, Token);
             }
         }
@@ -291,18 +265,15 @@ namespace LeanCloud {
         /// <param name="height">captcha image height.</param>
         /// <param name="cancellationToken">CancellationToken.</param>
         /// <returns>an instance of Captcha.</returns>
-        public static Task<Captcha> RequestCaptchaAsync(int width = 85, int height = 30, CancellationToken cancellationToken = default(CancellationToken))
-        {
+        public static Task<Captcha> RequestCaptchaAsync(int width = 85, int height = 30, CancellationToken cancellationToken = default(CancellationToken)) {
             var path = String.Format("requestCaptcha?width={0}&height={1}", width, height);
             var command = new AVCommand {
                 Path = $"requestCaptcha?width={width}&height={height}",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
-            {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
-                return new Captcha()
-                {
+                return new Captcha() {
                     Token = decoded["captcha_token"] as string,
                     Url = decoded["captcha_url"] as string,
                 };
@@ -316,8 +287,7 @@ namespace LeanCloud {
         /// <param name="code">User's input of this captcha.</param>
         /// <param name="cancellationToken">CancellationToken.</param>
         /// <returns></returns>
-        public static Task<string> VerifyCaptchaAsync(string code, string token, CancellationToken cancellationToken = default(CancellationToken))
-        {
+        public static Task<string> VerifyCaptchaAsync(string code, string token, CancellationToken cancellationToken = default(CancellationToken)) {
             var data = new Dictionary<string, object> {
                 { "captcha_token", token },
                 { "captcha_code", code },
@@ -327,8 +297,7 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t =>
-            {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t => {
                 if (!t.Result.Item2.ContainsKey("validate_token"))
                     throw new KeyNotFoundException("validate_token");
                 return t.Result.Item2["validate_token"] as string;
@@ -340,38 +309,32 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<IDictionary<string, object>> GetCustomParametersAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
+        public static Task<IDictionary<string, object>> GetCustomParametersAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             var command = new AVCommand {
                 Path = $"statistics/apps/{AVClient.CurrentConfiguration.ApplicationId}/sendPolicy",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
-            {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 var settings = t.Result.Item2;
                 var CloudParameters = settings["parameters"] as IDictionary<string, object>;
                 return CloudParameters;
             });
         }
 
-        public class RealtimeSignature
-        {
+        public class RealtimeSignature {
             public string Nonce { internal set; get; }
             public long Timestamp { internal set; get; }
             public string ClientId { internal set; get; }
             public string Signature { internal set; get; }
         }
 
-        public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return AVUser.GetCurrentUserAsync(cancellationToken).OnSuccess(t =>
-            {
+        public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            return AVUser.GetCurrentUserAsync(cancellationToken).OnSuccess(t => {
                 return RequestRealtimeSignatureAsync(t.Result, cancellationToken);
             }).Unwrap();
         }
 
-        public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(AVUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
+        public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(AVUser user, CancellationToken cancellationToken = default(CancellationToken)) {
             var command = new AVCommand {
                 Path = "rtm/sign",
                 Method = HttpMethod.Post,
@@ -379,11 +342,9 @@ namespace LeanCloud {
                     { "session_token", user.SessionToken }
                 }
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t =>
-            {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t => {
                 var body = t.Result.Item2;
-                return new RealtimeSignature()
-                {
+                return new RealtimeSignature() {
                     Nonce = body["nonce"] as string,
                     Timestamp = (long)body["timestamp"],
                     ClientId = body["client_id"] as string,
@@ -396,8 +357,7 @@ namespace LeanCloud {
         /// Gets the LeanEngine hosting URL for current app async.
         /// </summary>
         /// <returns>The lean engine hosting URL async.</returns>
-        public static Task<string> GetLeanEngineHostingUrlAsync()
-        {
+        public static Task<string> GetLeanEngineHostingUrlAsync() {
             return CallFunctionAsync<string>("_internal_extensions_get_domain");
         }
 
@@ -407,8 +367,7 @@ namespace LeanCloud {
     /// <summary>
     /// AVRPCC loud function base.
     /// </summary>
-    public class AVRPCCloudFunctionBase<P, R>
-    {
+    public class AVRPCCloudFunctionBase<P, R> {
         /// <summary>
         /// AVRPCD eserialize.
         /// </summary>
@@ -419,17 +378,13 @@ namespace LeanCloud {
         public delegate IDictionary<string, object> AVRPCSerialize<P>(P parameters);
 
         public AVRPCCloudFunctionBase()
-            : this(true)
-        {
+            : this(true) {
 
         }
 
-        public AVRPCCloudFunctionBase(bool noneParameters)
-        {
-            if (noneParameters)
-            {
-                this.Encode = n =>
-                {
+        public AVRPCCloudFunctionBase(bool noneParameters) {
+            if (noneParameters) {
+                this.Encode = n => {
                     return null;
                 };
             }
@@ -438,28 +393,21 @@ namespace LeanCloud {
 
 
         private AVRPCDeserialize<R> _decode;
-        public AVRPCDeserialize<R> Decode
-        {
-            get
-            {
+        public AVRPCDeserialize<R> Decode {
+            get {
                 return _decode;
             }
-            set
-            {
+            set {
                 _decode = value;
             }
         }
 
 
         private AVRPCSerialize<P> _encode;
-        public AVRPCSerialize<P> Encode
-        {
-            get
-            {
-                if (_encode == null)
-                {
-                    _encode = n =>
-                    {
+        public AVRPCSerialize<P> Encode {
+            get {
+                if (_encode == null) {
+                    _encode = n => {
                         if (n != null) {
                             return JsonConvert.DeserializeObject<Dictionary<string, object>>(n.ToString(), new LeanCloudJsonConverter());
                         }
@@ -468,18 +416,15 @@ namespace LeanCloud {
                 }
                 return _encode;
             }
-            set
-            {
+            set {
                 _encode = value;
             }
 
         }
         public string FunctionName { get; set; }
 
-        public Task<R> ExecuteAsync(P parameters)
-        {
-            return AVUser.GetCurrentAsync().OnSuccess(t =>
-            {
+        public Task<R> ExecuteAsync(P parameters) {
+            return AVUser.GetCurrentAsync().OnSuccess(t => {
                 var user = t.Result;
                 var encodedParameters = Encode(parameters);
                 var command = new EngineCommand {
@@ -488,11 +433,9 @@ namespace LeanCloud {
                     Content = encodedParameters
                 };
                 return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
-            }).Unwrap().OnSuccess(s =>
-            {
+            }).Unwrap().OnSuccess(s => {
                 var responseBody = s.Result.Item2;
-                if (!responseBody.ContainsKey("result"))
-                {
+                if (!responseBody.ContainsKey("result")) {
                     return default(R);
                 }
 
@@ -503,31 +446,24 @@ namespace LeanCloud {
     }
 
 
-    public class AVObjectRPCCloudFunction : AVObjectRPCCloudFunction<AVObject>
-    {
+    public class AVObjectRPCCloudFunction : AVObjectRPCCloudFunction<AVObject> {
 
     }
-    public class AVObjectListRPCCloudFunction : AVObjectListRPCCloudFunction<AVObject>
-    {
+    public class AVObjectListRPCCloudFunction : AVObjectListRPCCloudFunction<AVObject> {
 
     }
 
-    public class AVObjectListRPCCloudFunction<R> : AVRPCCloudFunctionBase<object, IList<R>> where R : AVObject
-    {
+    public class AVObjectListRPCCloudFunction<R> : AVRPCCloudFunctionBase<object, IList<R>> where R : AVObject {
         public AVObjectListRPCCloudFunction()
-            : base(true)
-        {
+            : base(true) {
             this.Decode = this.AVObjectListDeserializer();
         }
 
-        public AVRPCDeserialize<IList<R>> AVObjectListDeserializer()
-        {
-            AVRPCDeserialize<IList<R>> del = data =>
-            {
+        public AVRPCDeserialize<IList<R>> AVObjectListDeserializer() {
+            AVRPCDeserialize<IList<R>> del = data => {
                 var items = data["result"] as IList<object>;
 
-                return items.Select(item =>
-                {
+                return items.Select(item => {
                     var state = AVObjectCoder.Instance.Decode(item as IDictionary<string, object>, AVDecoder.Instance);
                     return AVObject.FromState<AVObject>(state, state.ClassName);
                 }).ToList() as IList<R>;
@@ -537,19 +473,15 @@ namespace LeanCloud {
         }
     }
 
-    public class AVObjectRPCCloudFunction<R> : AVRPCCloudFunctionBase<object, R> where R : AVObject
-    {
+    public class AVObjectRPCCloudFunction<R> : AVRPCCloudFunctionBase<object, R> where R : AVObject {
         public AVObjectRPCCloudFunction()
-            : base(true)
-        {
+            : base(true) {
             this.Decode = this.AVObjectDeserializer();
         }
 
 
-        public AVRPCDeserialize<R> AVObjectDeserializer()
-        {
-            AVRPCDeserialize<R> del = data =>
-            {
+        public AVRPCDeserialize<R> AVObjectDeserializer() {
+            AVRPCDeserialize<R> del = data => {
                 var item = data["result"] as object;
                 var state = AVObjectCoder.Instance.Decode(item as IDictionary<string, object>, AVDecoder.Instance);
 

@@ -47,21 +47,12 @@ namespace LeanCloud.Storage.Internal
             FetchedAt = DateTime.Now;
         }
 
-        /// <summary>
-        /// Is this app router state expired.
-        /// </summary>
         public bool IsExpired {
             get {
                 return DateTime.Now > FetchedAt + TimeSpan.FromSeconds(TTL);
             }
         }
 
-        /// <summary>
-        /// Get the initial usable router state
-        /// </summary>
-        /// <param name="appId">Current app's appId</param>
-        /// <param name="region">Current app's region</param>
-        /// <returns>Initial app router state</returns>
         public static AppRouterState GetFallbackServers(string appId, AVClient.Configuration.AVRegion region) {
             var regionValue = (int)region;
             var prefix = appId.Substring(0, 8).ToLower();

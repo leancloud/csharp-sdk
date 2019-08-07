@@ -7,15 +7,8 @@ using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal
 {
-    public class AVCloudCodeController : IAVCloudCodeController
+    public class AVCloudCodeController
     {
-        private readonly IAVCommandRunner commandRunner;
-
-        public AVCloudCodeController(IAVCommandRunner commandRunner)
-        {
-            this.commandRunner = commandRunner;
-        }
-
         public Task<T> CallFunctionAsync<T>(String name,
             IDictionary<string, object> parameters,
             string sessionToken,
@@ -26,7 +19,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = parameters
             };
-            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
                 if (!decoded.ContainsKey("result"))
@@ -44,7 +37,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = parameters
             };
-            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
                 if (!decoded.ContainsKey("result"))

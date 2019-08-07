@@ -9,17 +9,9 @@ using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal
 {
-    public class AVCurrentUserController : IAVCurrentUserController
+    public class AVCurrentUserController
     {
         private readonly object mutex = new object();
-        private readonly TaskQueue taskQueue = new TaskQueue();
-
-        private IStorageController storageController;
-
-        public AVCurrentUserController(IStorageController storageController)
-        {
-            this.storageController = storageController;
-        }
 
         private AVUser currentUser;
         public AVUser CurrentUser
@@ -45,7 +37,7 @@ namespace LeanCloud.Storage.Internal
             Task saveTask = null;
             if (user == null)
             {
-                saveTask = storageController
+                saveTask = AVPlugins.Instance.StorageController
                   .LoadAsync()
                   .OnSuccess(t => t.Result.RemoveAsync("CurrentUser"))
                   .Unwrap();
@@ -65,7 +57,7 @@ namespace LeanCloud.Storage.Internal
                       CultureInfo.InvariantCulture);
                 }
 
-                saveTask = storageController
+                saveTask = AVPlugins.Instance.StorageController
                   .LoadAsync()
                   .OnSuccess(t => t.Result.AddAsync("CurrentUser", JsonConvert.SerializeObject(data)))
                   .Unwrap();
@@ -89,7 +81,7 @@ namespace LeanCloud.Storage.Internal
                 return Task<AVUser>.FromResult(cachedCurrent);
             }
 
-            return storageController.LoadAsync().OnSuccess(t =>
+            return AVPlugins.Instance.StorageController.LoadAsync().OnSuccess(t =>
             {
                 object temp;
                 t.Result.TryGetValue("CurrentUser", out temp);
@@ -114,7 +106,7 @@ namespace LeanCloud.Storage.Internal
                 return Task<bool>.FromResult(true);
             }
 
-            return storageController.LoadAsync().OnSuccess(t => t.Result.ContainsKey("CurrentUser"));
+            return AVPlugins.Instance.StorageController.LoadAsync().OnSuccess(t => t.Result.ContainsKey("CurrentUser"));
         }
 
         public bool IsCurrent(AVUser user)
@@ -136,7 +128,7 @@ namespace LeanCloud.Storage.Internal
             {
                 ClearFromMemory();
 
-                storageController.LoadAsync().OnSuccess(t => t.Result.RemoveAsync("CurrentUser"));
+                AVPlugins.Instance.StorageController.LoadAsync().OnSuccess(t => t.Result.RemoveAsync("CurrentUser"));
             }
         }
 

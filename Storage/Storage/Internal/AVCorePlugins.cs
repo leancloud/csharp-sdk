@@ -1,30 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using LeanCloud.Storage.Internal;
-
-namespace LeanCloud.Storage.Internal
-{
-    public class AVPlugins : IAVCorePlugins
-    {
+﻿
+namespace LeanCloud.Storage.Internal {
+    public class AVPlugins {
         private static readonly object instanceMutex = new object();
-        private static IAVCorePlugins instance;
-        public static IAVCorePlugins Instance
-        {
-            get
-            {
-                lock (instanceMutex)
-                {
+        private static AVPlugins instance;
+        public static AVPlugins Instance {
+            get {
+                lock (instanceMutex) {
                     instance = instance ?? new AVPlugins();
                     return instance;
-                }
-            }
-            set
-            {
-                lock (instanceMutex)
-                {
-                    instance = value;
                 }
             }
         }
@@ -33,33 +16,30 @@ namespace LeanCloud.Storage.Internal
 
         #region Server Controllers
 
-        private IHttpClient httpClient;
-        private IAppRouterController appRouterController;
-        private IAVCommandRunner commandRunner;
-        private IStorageController storageController;
+        private HttpClient httpClient;
+        private AppRouterController appRouterController;
+        private AVCommandRunner commandRunner;
+        private StorageController storageController;
 
-        private IAVCloudCodeController cloudCodeController;
-        private IAVConfigController configController;
-        private IAVFileController fileController;
-        private IAVObjectController objectController;
-        private IAVQueryController queryController;
-        private IAVSessionController sessionController;
-        private IAVUserController userController;
-        private IObjectSubclassingController subclassingController;
+        private AVCloudCodeController cloudCodeController;
+        private AVFileController fileController;
+        private AVObjectController objectController;
+        private AVQueryController queryController;
+        private AVSessionController sessionController;
+        private AVUserController userController;
+        private ObjectSubclassingController subclassingController;
 
         #endregion
 
         #region Current Instance Controller
 
-        private IAVCurrentUserController currentUserController;
-        private IInstallationIdController installationIdController;
+        private AVCurrentUserController currentUserController;
+        private InstallationIdController installationIdController;
 
         #endregion
 
-        public void Reset()
-        {
-            lock (mutex)
-            {
+        public void Reset() {
+            lock (mutex) {
                 HttpClient = null;
                 AppRouterController = null;
                 CommandRunner = null;
@@ -77,305 +57,217 @@ namespace LeanCloud.Storage.Internal
             }
         }
 
-        public IHttpClient HttpClient
-        {
-            get
-            {
-                lock (mutex)
-                {
+        public HttpClient HttpClient {
+            get {
+                lock (mutex) {
                     httpClient = httpClient ?? new HttpClient();
                     return httpClient;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     httpClient = value;
                 }
             }
         }
 
-        public IAppRouterController AppRouterController
-        {
-            get
-            {
-                lock (mutex)
-                {
+        public AppRouterController AppRouterController {
+            get {
+                lock (mutex) {
                     appRouterController = appRouterController ?? new AppRouterController();
                     return appRouterController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     appRouterController = value;
                 }
             }
         }
 
-        public IAVCommandRunner CommandRunner
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    commandRunner = commandRunner ?? new AVCommandRunner(HttpClient, InstallationIdController);
+        public AVCommandRunner CommandRunner {
+            get {
+                lock (mutex) {
+                    commandRunner = commandRunner ?? new AVCommandRunner();
                     return commandRunner;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     commandRunner = value;
                 }
             }
         }
 
-#if !UNITY
-        public IStorageController StorageController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    storageController = storageController ?? new StorageController(AVClient.CurrentConfiguration.ApplicationId);
-                    return storageController;
-                }
-            }
-            set
-            {
-                lock (mutex)
-                {
-                    storageController = value;
-                }
-            }
-        }
-#endif
 #if UNITY
-        public IStorageController StorageController
-        {
-            get
-            {
-                lock (mutex)
-                {
+        public StorageController StorageController {
+            get {
+                lock (mutex) {
                     storageController = storageController ?? new StorageController(AVInitializeBehaviour.IsWebPlayer, AVClient.CurrentConfiguration.ApplicationId);
                     return storageController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
+                    storageController = value;
+                }
+            }
+        }
+#else
+        public StorageController StorageController {
+            get {
+                lock (mutex) {
+                    storageController = storageController ?? new StorageController(AVClient.CurrentConfiguration.ApplicationId);
+                    return storageController;
+                }
+            }
+            set {
+                lock (mutex) {
                     storageController = value;
                 }
             }
         }
 #endif
 
-        public IAVCloudCodeController CloudCodeController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    cloudCodeController = cloudCodeController ?? new AVCloudCodeController(CommandRunner);
+        public AVCloudCodeController CloudCodeController {
+            get {
+                lock (mutex) {
+                    cloudCodeController = cloudCodeController ?? new AVCloudCodeController();
                     return cloudCodeController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     cloudCodeController = value;
                 }
             }
         }
 
-        public IAVFileController FileController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    if (AVClient.CurrentConfiguration.RegionValue == 0)
-                        fileController = fileController ?? new QiniuFileController(CommandRunner);
-                    else if (AVClient.CurrentConfiguration.RegionValue == 2)
-                        fileController = fileController ?? new QCloudCosFileController(CommandRunner);
-                    else if (AVClient.CurrentConfiguration.RegionValue == 1)
-                        fileController = fileController ?? new AWSS3FileController(CommandRunner);
-
+        public AVFileController FileController {
+            get {
+                if (fileController != null) {
+                    return fileController;
+                }
+                lock (mutex) {
+                    switch (AVClient.CurrentConfiguration.RegionValue) {
+                        case 0:
+                            fileController = new QiniuFileController();
+                            break;
+                        case 2:
+                            fileController = new QCloudCosFileController();
+                            break;
+                        case 1:
+                            fileController = new AWSS3FileController();
+                            break;
+                    }
                     return fileController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     fileController = value;
                 }
             }
         }
 
-        public IAVConfigController ConfigController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    if (configController == null)
-                    {
-                        configController = new AVConfigController(CommandRunner, StorageController);
-                    }
-                    return configController;
-                }
-            }
-            set
-            {
-                lock (mutex)
-                {
-                    configController = value;
-                }
-            }
-        }
-
-        public IAVObjectController ObjectController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    objectController = objectController ?? new AVObjectController(CommandRunner);
+        public AVObjectController ObjectController {
+            get {
+                lock (mutex) {
+                    objectController = objectController ?? new AVObjectController();
                     return objectController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     objectController = value;
                 }
             }
         }
 
-        public IAVQueryController QueryController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    if (queryController == null)
-                    {
-                        queryController = new AVQueryController(CommandRunner);
+        public AVQueryController QueryController {
+            get {
+                lock (mutex) {
+                    if (queryController == null) {
+                        queryController = new AVQueryController();
                     }
                     return queryController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     queryController = value;
                 }
             }
         }
 
-        public IAVSessionController SessionController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    sessionController = sessionController ?? new AVSessionController(CommandRunner);
+        public AVSessionController SessionController {
+            get {
+                lock (mutex) {
+                    sessionController = sessionController ?? new AVSessionController();
                     return sessionController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     sessionController = value;
                 }
             }
         }
 
-        public IAVUserController UserController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    userController = userController ?? new AVUserController(CommandRunner);
+        public AVUserController UserController {
+            get {
+                lock (mutex) {
+                    userController = userController ?? new AVUserController();
                     return userController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     userController = value;
                 }
             }
         }
 
-        public IAVCurrentUserController CurrentUserController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    currentUserController = currentUserController ?? new AVCurrentUserController(StorageController);
+        public AVCurrentUserController CurrentUserController {
+            get {
+                lock (mutex) {
+                    currentUserController = currentUserController ?? new AVCurrentUserController();
                     return currentUserController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     currentUserController = value;
                 }
             }
         }
 
-        public IObjectSubclassingController SubclassingController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    if (subclassingController == null)
-                    {
+        public ObjectSubclassingController SubclassingController {
+            get {
+                lock (mutex) {
+                    if (subclassingController == null) {
                         subclassingController = new ObjectSubclassingController();
                         subclassingController.AddRegisterHook(typeof(AVUser), () => CurrentUserController.ClearFromMemory());
                     }
                     return subclassingController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     subclassingController = value;
                 }
             }
         }
 
-        public IInstallationIdController InstallationIdController
-        {
-            get
-            {
-                lock (mutex)
-                {
-                    installationIdController = installationIdController ?? new InstallationIdController(StorageController);
+        public InstallationIdController InstallationIdController {
+            get {
+                lock (mutex) {
+                    installationIdController = installationIdController ?? new InstallationIdController();
                     return installationIdController;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     installationIdController = value;
                 }
             }

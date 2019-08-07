@@ -6,28 +6,23 @@ using System.Collections.Generic;
 using System.Threading;
 using Newtonsoft.Json;
 
-namespace LeanCloud.Storage.Internal
-{
+namespace LeanCloud.Storage.Internal {
     /// <summary>
     /// Implements `IStorageController` for PCL targets, based off of PCLStorage.
     /// </summary>
-    public class StorageController : IStorageController
-    {
-        private class StorageDictionary : IStorageDictionary<string, object>
-        {
+    public class StorageController {
+        public class StorageDictionary : IEnumerable<KeyValuePair<string, object>> {
             private readonly string filePath;
 
-            private Dictionary<string, object> dictionary;            
+            private Dictionary<string, object> dictionary;
             readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
-            public StorageDictionary(string filePath)
-            {
+            public StorageDictionary(string filePath) {
                 this.filePath = filePath;
                 dictionary = new Dictionary<string, object>();
             }
 
-            internal Task SaveAsync()
-            {
+            internal Task SaveAsync() {
                 string json;
                 locker.EnterReadLock();
                 json = JsonConvert.SerializeObject(dictionary);
@@ -37,8 +32,7 @@ namespace LeanCloud.Storage.Internal
                 }
             }
 
-            internal async Task LoadAsync()
-            {
+            internal async Task LoadAsync() {
                 using (var sr = new StreamReader(filePath)) {
                     var text = await sr.ReadToEndAsync();
                     Dictionary<string, object> result = null;
@@ -54,31 +48,27 @@ namespace LeanCloud.Storage.Internal
                 }
             }
 
-            internal void Update(IDictionary<string, object> contents)
-            {
+            internal void Update(IDictionary<string, object> contents) {
                 locker.EnterWriteLock();
                 dictionary = contents.ToDictionary(p => p.Key, p => p.Value);
                 locker.ExitWriteLock();
             }
 
-            public Task AddAsync(string key, object value)
-            {
+            public Task AddAsync(string key, object value) {
                 locker.EnterWriteLock();
                 dictionary[key] = value;
                 locker.ExitWriteLock();
                 return SaveAsync();
             }
 
-            public Task RemoveAsync(string key)
-            {
+            public Task RemoveAsync(string key) {
                 locker.EnterWriteLock();
                 dictionary.Remove(key);
                 locker.ExitWriteLock();
                 return SaveAsync();
             }
 
-            public bool ContainsKey(string key)
-            {
+            public bool ContainsKey(string key) {
                 try {
                     locker.EnterReadLock();
                     return dictionary.ContainsKey(key);
@@ -87,8 +77,7 @@ namespace LeanCloud.Storage.Internal
                 }
             }
 
-            public IEnumerable<string> Keys
-            {
+            public IEnumerable<string> Keys {
                 get {
                     try {
                         locker.EnterReadLock();
@@ -99,8 +88,7 @@ namespace LeanCloud.Storage.Internal
                 }
             }
 
-            public bool TryGetValue(string key, out object value)
-            {
+            public bool TryGetValue(string key, out object value) {
                 try {
                     locker.EnterReadLock();
                     return dictionary.TryGetValue(key, out value);
@@ -109,8 +97,7 @@ namespace LeanCloud.Storage.Internal
                 }
             }
 
-            public IEnumerable<object> Values
-            {
+            public IEnumerable<object> Values {
                 get {
                     try {
                         locker.EnterReadLock();
@@ -121,8 +108,7 @@ namespace LeanCloud.Storage.Internal
                 }
             }
 
-            public object this[string key]
-            {
+            public object this[string key] {
                 get {
                     try {
                         locker.EnterReadLock();
@@ -133,8 +119,7 @@ namespace LeanCloud.Storage.Internal
                 }
             }
 
-            public int Count
-            {
+            public int Count {
                 get {
                     try {
                         locker.EnterReadLock();
@@ -145,8 +130,7 @@ namespace LeanCloud.Storage.Internal
                 }
             }
 
-            public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-            {
+            public IEnumerator<KeyValuePair<string, object>> GetEnumerator() {
                 try {
                     locker.EnterReadLock();
                     return dictionary.GetEnumerator();
@@ -155,8 +139,7 @@ namespace LeanCloud.Storage.Internal
                 }
             }
 
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
                 try {
                     locker.EnterReadLock();
                     return dictionary.GetEnumerator();
@@ -171,46 +154,38 @@ namespace LeanCloud.Storage.Internal
         private readonly Task<string> fileTask;
         private StorageDictionary storageDictionary;
 
-        public StorageController(string fileNamePrefix)
-        {
-            fileTask = taskQueue.Enqueue(t => t.ContinueWith(_ =>
-            {
+        public StorageController(string fileNamePrefix) {
+            fileTask = taskQueue.Enqueue(t => t.ContinueWith(_ => {
                 string path = $"{fileNamePrefix}_{LeanCloudStorageFileName}";
                 File.CreateText(path);
                 return path;
             }), CancellationToken.None);
         }
 
-        public Task<IStorageDictionary<string, object>> LoadAsync()
-        {
-            return taskQueue.Enqueue(toAwait =>
-            {
-                return toAwait.ContinueWith(_ =>
-                {
-                    if (storageDictionary != null)
-                    {
-                        return Task.FromResult<IStorageDictionary<string, object>>(storageDictionary);
+        public Task<StorageDictionary> LoadAsync() {
+            return taskQueue.Enqueue(toAwait => {
+                return toAwait.ContinueWith(_ => {
+                    if (storageDictionary != null) {
+                        return Task.FromResult(storageDictionary);
                     }
 
                     storageDictionary = new StorageDictionary(fileTask.Result);
-                    return storageDictionary.LoadAsync().OnSuccess(__ => storageDictionary as IStorageDictionary<string, object>);
+                    return storageDictionary.LoadAsync()
+                        .OnSuccess(__ => storageDictionary);
                 }).Unwrap();
             }, CancellationToken.None);
         }
 
-        public Task<IStorageDictionary<string, object>> SaveAsync(IDictionary<string, object> contents)
-        {
-            return taskQueue.Enqueue(toAwait =>
-            {
-                return toAwait.ContinueWith(_ =>
-                {
-                    if (storageDictionary == null)
-                    {
+        public Task<StorageDictionary> SaveAsync(IDictionary<string, object> contents) {
+            return taskQueue.Enqueue(toAwait => {
+                return toAwait.ContinueWith(_ => {
+                    if (storageDictionary == null) {
                         storageDictionary = new StorageDictionary(fileTask.Result);
                     }
 
                     storageDictionary.Update(contents);
-                    return storageDictionary.SaveAsync().OnSuccess(__ => storageDictionary as IStorageDictionary<string, object>);
+                    return storageDictionary.SaveAsync()
+                        .OnSuccess(__ => storageDictionary);
                 }).Unwrap();
             }, CancellationToken.None);
         }

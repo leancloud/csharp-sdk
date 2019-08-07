@@ -7,13 +7,7 @@ using LeanCloud.Utilities;
 using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal {
-    public class AVObjectController : IAVObjectController {
-        private readonly IAVCommandRunner commandRunner;
-
-        public AVObjectController(IAVCommandRunner commandRunner) {
-            this.commandRunner = commandRunner;
-        }
-
+    public class AVObjectController {
         public Task<IObjectState> FetchAsync(IObjectState state,
             string sessionToken,
             CancellationToken cancellationToken) {
@@ -21,7 +15,7 @@ namespace LeanCloud.Storage.Internal {
                 Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}",
                 Method = HttpMethod.Get
             };
-            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
             });
         }
@@ -34,7 +28,7 @@ namespace LeanCloud.Storage.Internal {
                 Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}?{AVClient.BuildQueryString(queryString)}",
                 Method = HttpMethod.Get
             };
-            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
             });
         }
@@ -49,7 +43,7 @@ namespace LeanCloud.Storage.Internal {
                 Method = state.ObjectId == null ? HttpMethod.Post : HttpMethod.Put,
                 Content = objectJSON
             };
-            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
                 serverState = serverState.MutatedClone(mutableClone => {
                     mutableClone.IsNew = t.Result.Item1 == System.Net.HttpStatusCode.Created;
@@ -62,7 +56,7 @@ namespace LeanCloud.Storage.Internal {
             IList<IDictionary<string, IAVFieldOperation>> operationsList,
             string sessionToken,
             CancellationToken cancellationToken) {
-            
+
             var requests = states
               .Zip(operationsList, (item, ops) => new AVCommand {
                   Path = item.ObjectId == null ? $"classes/{Uri.EscapeDataString(item.ClassName)}" : $"classes/{Uri.EscapeDataString(item.ClassName)}/{Uri.EscapeDataString(item.ObjectId)}",
@@ -89,7 +83,7 @@ namespace LeanCloud.Storage.Internal {
                 Path = $"classes/{state.ClassName}/{state.ObjectId}",
                 Method = HttpMethod.Delete
             };
-            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
         }
 
         public IList<Task> DeleteAllAsync(IList<IObjectState> states,
@@ -157,7 +151,7 @@ namespace LeanCloud.Storage.Internal {
                     { "requests", encodedRequests }
                 }
             };
-            commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t => {
+            AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t => {
                 if (t.IsFaulted || t.IsCanceled) {
                     foreach (var tcs in tcss) {
                         if (t.IsFaulted) {

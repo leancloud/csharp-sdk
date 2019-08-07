@@ -7,29 +7,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
-namespace LeanCloud.Storage.Internal
-{
+namespace LeanCloud.Storage.Internal {
     /// <summary>
     /// Command Runner.
     /// </summary>
-    public class AVCommandRunner : IAVCommandRunner {
+    public class AVCommandRunner {
         public const string APPLICATION_JSON = "application/json";
 
-        private readonly System.Net.Http.HttpClient httpClient;
-        private readonly IInstallationIdController installationIdController;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="httpClient"></param>
-        /// <param name="installationIdController"></param>
-        public AVCommandRunner(IHttpClient httpClient, IInstallationIdController installationIdController)
-        {
-            this.httpClient = new System.Net.Http.HttpClient();
-            this.installationIdController = installationIdController;
-        }
+        private readonly System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient();
 
         /// <summary>
         /// 
@@ -43,7 +29,7 @@ namespace LeanCloud.Storage.Internal
             IProgress<AVUploadProgressEventArgs> uploadProgress = null,
             IProgress<AVDownloadProgressEventArgs> downloadProgress = null,
             CancellationToken cancellationToken = default) {
-            
+
             var request = new HttpRequestMessage {
                 RequestUri = command.Uri,
                 Method = command.Method,
@@ -67,7 +53,7 @@ namespace LeanCloud.Storage.Internal
             PrintResponse(response, resultString);
 
             var ret = new Tuple<HttpStatusCode, string>(response.StatusCode, resultString);
-            
+
             var responseCode = ret.Item1;
             var contentString = ret.Item2;
 
@@ -105,7 +91,7 @@ namespace LeanCloud.Storage.Internal
 
         async Task<Dictionary<string, string>> GetHeadersAsync() {
             var headers = new Dictionary<string, string>();
-            var installationId = await installationIdController.GetAsync();
+            var installationId = await AVPlugins.Instance.InstallationIdController.GetAsync();
             headers.Add("X-LC-Installation-Id", installationId.ToString());
             var conf = AVClient.CurrentConfiguration;
             headers.Add("X-LC-Id", conf.ApplicationId);

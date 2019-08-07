@@ -20,7 +20,7 @@ namespace LeanCloud
             "sessionToken", "isNew"
         };
 
-        internal static IAVUserController UserController
+        internal static AVUserController UserController
         {
             get
             {
@@ -28,7 +28,7 @@ namespace LeanCloud
             }
         }
 
-        internal static IAVCurrentUserController CurrentUserController
+        internal static AVCurrentUserController CurrentUserController
         {
             get
             {

@@ -5,25 +5,13 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LeanCloud.Storage.Internal
-{
-    internal class AVQueryController : IAVQueryController
-    {
-        private readonly IAVCommandRunner commandRunner;
-
-        public AVQueryController(IAVCommandRunner commandRunner)
-        {
-            this.commandRunner = commandRunner;
-        }
-
-        public Task<IEnumerable<IObjectState>> FindAsync<T>(AVQuery<T> query,
-            AVUser user,
-            CancellationToken cancellationToken) where T : AVObject
-        {
+namespace LeanCloud.Storage.Internal {
+    public class AVQueryController {
+        public Task<IEnumerable<IObjectState>> FindAsync<T>(AVQuery<T> query, AVUser user,
+            CancellationToken cancellationToken) where T : AVObject {
             string sessionToken = user != null ? user.SessionToken : null;
 
-            return FindAsync(query.Path, query.BuildParameters(), sessionToken, cancellationToken).OnSuccess(t =>
-            {
+            return FindAsync(query.Path, query.BuildParameters(), sessionToken, cancellationToken).OnSuccess(t => {
                 var items = t.Result["results"] as IList<object>;
 
                 return (from item in items
@@ -33,35 +21,30 @@ namespace LeanCloud.Storage.Internal
 
         public Task<int> CountAsync<T>(AVQuery<T> query,
             AVUser user,
-            CancellationToken cancellationToken) where T : AVObject
-        {
+            CancellationToken cancellationToken) where T : AVObject {
             string sessionToken = user != null ? user.SessionToken : null;
             var parameters = query.BuildParameters();
             parameters["limit"] = 0;
             parameters["count"] = 1;
 
-            return FindAsync(query.Path, parameters, sessionToken, cancellationToken).OnSuccess(t =>
-            {
+            return FindAsync(query.Path, parameters, sessionToken, cancellationToken).OnSuccess(t => {
                 return Convert.ToInt32(t.Result["count"]);
             });
         }
 
         public Task<IObjectState> FirstAsync<T>(AVQuery<T> query,
             AVUser user,
-            CancellationToken cancellationToken) where T : AVObject
-        {
+            CancellationToken cancellationToken) where T : AVObject {
             string sessionToken = user?.SessionToken;
             var parameters = query.BuildParameters();
             parameters["limit"] = 1;
 
-            return FindAsync(query.Path, parameters, sessionToken, cancellationToken).OnSuccess(t =>
-            {
+            return FindAsync(query.Path, parameters, sessionToken, cancellationToken).OnSuccess(t => {
                 var items = t.Result["results"] as IList<object>;
                 var item = items.FirstOrDefault() as IDictionary<string, object>;
 
                 // Not found. Return empty state.
-                if (item == null)
-                {
+                if (item == null) {
                     return (IObjectState)null;
                 }
 
@@ -72,34 +55,14 @@ namespace LeanCloud.Storage.Internal
         private Task<IDictionary<string, object>> FindAsync(string path,
             IDictionary<string, object> parameters,
             string sessionToken,
-            CancellationToken cancellationToken)
-        {
+            CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"{path}?{AVClient.BuildQueryString(parameters)}",
                 Method = HttpMethod.Get
             };
-            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t =>
-            {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 return t.Result.Item2;
             });
         }
-
-        //private Task<IDictionary<string, object>> FindAsync(string className,
-        //    IDictionary<string, object> parameters,
-        //    string sessionToken,
-        //    CancellationToken cancellationToken)
-        //{
-        //    var command = new AVCommand(string.Format("classes/{0}?{1}",
-        //            Uri.EscapeDataString(className),
-        //            AVClient.BuildQueryString(parameters)),
-        //        method: "GET",
-        //        sessionToken: sessionToken,
-        //        data: null);
-
-        //    return commandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
-        //    {
-        //        return t.Result.Item2;
-        //    });
-        //}
     }
 }

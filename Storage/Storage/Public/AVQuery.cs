@@ -37,13 +37,13 @@ namespace LeanCloud
         internal int? skip;
         internal int? limit;
 
-        internal static IAVQueryController QueryController {
+        internal static AVQueryController QueryController {
             get {
                 return AVPlugins.Instance.QueryController;
             }
         }
 
-        internal static IObjectSubclassingController SubclassingController {
+        internal static ObjectSubclassingController SubclassingController {
             get {
                 return AVPlugins.Instance.SubclassingController;
             }

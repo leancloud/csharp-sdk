@@ -272,7 +272,7 @@ namespace LeanCloud
             }
         }
 
-        internal static IAVFileController FileController
+        internal static AVFileController FileController
         {
             get
             {

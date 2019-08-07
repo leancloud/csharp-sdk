@@ -11,8 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
 
-namespace LeanCloud
-{
+namespace LeanCloud {
     /// <summary>
     /// The AVObject is a local representation of data that can be saved and
     /// retrieved from the LeanCloud cloud.</summary>
@@ -27,8 +26,7 @@ namespace LeanCloud
     /// to specify which existing data to retrieve.
     /// </para>
     /// </remarks>
-    public class AVObject : IEnumerable<KeyValuePair<string, object>>, INotifyPropertyChanged, INotifyPropertyUpdated, INotifyCollectionPropertyUpdated
-    {
+    public class AVObject : IEnumerable<KeyValuePair<string, object>>, INotifyPropertyChanged, INotifyPropertyUpdated, INotifyCollectionPropertyUpdated {
         private static readonly string AutoClassName = "_Automatic";
 
 #if UNITY
@@ -51,10 +49,8 @@ namespace LeanCloud
         internal TaskQueue taskQueue = new TaskQueue();
 
         private IObjectState state;
-        internal void MutateState(Action<MutableObjectState> func)
-        {
-            lock (mutex)
-            {
+        internal void MutateState(Action<MutableObjectState> func) {
+            lock (mutex) {
                 state = state.MutatedClone(func);
 
                 // Refresh the estimated data.
@@ -62,32 +58,25 @@ namespace LeanCloud
             }
         }
 
-        public IObjectState State
-        {
-            get
-            {
+        public IObjectState State {
+            get {
                 return state;
             }
         }
 
-        internal static IAVObjectController ObjectController
-        {
-            get
-            {
+        internal static AVObjectController ObjectController {
+            get {
                 return AVPlugins.Instance.ObjectController;
             }
         }
 
-        internal static IObjectSubclassingController SubclassingController
-        {
-            get
-            {
+        internal static ObjectSubclassingController SubclassingController {
+            get {
                 return AVPlugins.Instance.SubclassingController;
             }
         }
 
-        public static string GetSubClassName<TAVObject>()
-        {
+        public static string GetSubClassName<TAVObject>() {
             return SubclassingController.GetClassName(typeof(TAVObject));
         }
 
@@ -97,8 +86,7 @@ namespace LeanCloud
         /// Constructor for use in AVObject subclasses. Subclasses must specify a AVClassName attribute.
         /// </summary>
         protected AVObject()
-          : this(AutoClassName)
-        {
+          : this(AutoClassName) {
         }
 
         /// <summary>
@@ -111,8 +99,7 @@ namespace LeanCloud
         /// to name classes in CamelCaseLikeThis.
         /// </remarks>
         /// <param name="className">The className for this AVObject.</param>
-        public AVObject(string className)
-        {
+        public AVObject(string className) {
             // We use a ThreadLocal rather than passing a parameter so that createWithoutData can do the
             // right thing with subclasses. It's ugly and terrible, but it does provide the development
             // experience we generally want, so... yeah. Sorry to whomever has to deal with this in the
@@ -120,35 +107,28 @@ namespace LeanCloud
             var isPointer = isCreatingPointer.Value;
             isCreatingPointer.Value = false;
 
-            if (className == null)
-            {
+            if (className == null) {
                 throw new ArgumentException("You must specify a LeanCloud class name when creating a new AVObject.");
             }
-            if (AutoClassName.Equals(className))
-            {
+            if (AutoClassName.Equals(className)) {
                 className = SubclassingController.GetClassName(GetType());
             }
             // If this is supposed to be created by a factory but wasn't, throw an exception
-            if (!SubclassingController.IsTypeValid(className, GetType()))
-            {
+            if (!SubclassingController.IsTypeValid(className, GetType())) {
                 throw new ArgumentException(
                   "You must create this type of AVObject using AVObject.Create() or the proper subclass.");
             }
-            state = new MutableObjectState
-            {
+            state = new MutableObjectState {
                 ClassName = className
             };
             OnPropertyChanged("ClassName");
 
             operationSetQueue.AddLast(new Dictionary<string, IAVFieldOperation>());
-            if (!isPointer)
-            {
+            if (!isPointer) {
                 hasBeenFetched = true;
                 IsDirty = true;
                 SetDefaultValues();
-            }
-            else
-            {
+            } else {
                 IsDirty = false;
                 hasBeenFetched = false;
             }
@@ -160,8 +140,7 @@ namespace LeanCloud
         /// </summary>
         /// <param name="className">The class of object to create.</param>
         /// <returns>A new AVObject for the given class name.</returns>
-        public static AVObject Create(string className)
-        {
+        public static AVObject Create(string className) {
             return SubclassingController.Instantiate(className);
         }
 
@@ -174,23 +153,18 @@ namespace LeanCloud
         /// <param name="className">The object's class.</param>
         /// <param name="objectId">The object id for the referenced object.</param>
         /// <returns>A AVObject without data.</returns>
-        public static AVObject CreateWithoutData(string className, string objectId)
-        {
+        public static AVObject CreateWithoutData(string className, string objectId) {
             isCreatingPointer.Value = true;
-            try
-            {
+            try {
                 var result = SubclassingController.Instantiate(className);
                 result.ObjectId = objectId;
                 result.IsDirty = false;
-                if (result.IsDirty)
-                {
+                if (result.IsDirty) {
                     throw new InvalidOperationException(
                       "A AVObject subclass default constructor must not make changes to the object that cause it to be dirty.");
                 }
                 return result;
-            }
-            finally
-            {
+            } finally {
                 isCreatingPointer.Value = false;
             }
         }
@@ -199,8 +173,7 @@ namespace LeanCloud
         /// Creates a new AVObject based upon a given subclass type.
         /// </summary>
         /// <returns>A new AVObject for the given class name.</returns>
-        public static T Create<T>() where T : AVObject
-        {
+        public static T Create<T>() where T : AVObject {
             return (T)SubclassingController.Instantiate(SubclassingController.GetClassName(typeof(T)));
         }
 
@@ -212,8 +185,7 @@ namespace LeanCloud
         /// </summary>
         /// <param name="objectId">The object id for the referenced object.</param>
         /// <returns>A AVObject without data.</returns>
-        public static T CreateWithoutData<T>(string objectId) where T : AVObject
-        {
+        public static T CreateWithoutData<T>(string objectId) where T : AVObject {
             return (T)CreateWithoutData(SubclassingController.GetClassName(typeof(T)), objectId);
         }
 
@@ -222,8 +194,7 @@ namespace LeanCloud
         /// </summary>
         /// <param name="state">IObjectState after encode from Dictionary.</param>
         /// <param name="defaultClassName">The name of the subclass.</param>
-        public static T FromState<T>(IObjectState state, string defaultClassName) where T : AVObject
-        {
+        public static T FromState<T>(IObjectState state, string defaultClassName) where T : AVObject {
             string className = state.ClassName ?? defaultClassName;
 
             T obj = (T)CreateWithoutData(className, state.ObjectId);
@@ -234,13 +205,11 @@ namespace LeanCloud
 
         #endregion
 
-        public static IDictionary<String, String> GetPropertyMappings(string className)
-        {
+        public static IDictionary<String, String> GetPropertyMappings(string className) {
             return SubclassingController.GetPropertyMappings(className);
         }
 
-        private static string GetFieldForPropertyName(string className, string propertyName)
-        {
+        private static string GetFieldForPropertyName(string className, string propertyName) {
             String fieldName = null;
             SubclassingController.GetPropertyMappings(className).TryGetValue(propertyName, out fieldName);
             return fieldName;
@@ -258,8 +227,7 @@ namespace LeanCloud
 #else
  string propertyName
 #endif
-)
-        {
+) {
             this[GetFieldForPropertyName(ClassName, propertyName)] = value;
         }
 
@@ -275,8 +243,7 @@ namespace LeanCloud
 #else
 string propertyName
 #endif
-) where T : AVObject
-        {
+) where T : AVObject {
             return GetRelation<T>(GetFieldForPropertyName(ClassName, propertyName));
         }
 
@@ -292,8 +259,7 @@ string propertyName
 #else
 string propertyName
 #endif
-)
-        {
+) {
             return GetProperty<T>(default(T), propertyName);
         }
 
@@ -310,11 +276,9 @@ string propertyName
 #else
  string propertyName
 #endif
-)
-        {
+) {
             T result;
-            if (TryGetValue<T>(GetFieldForPropertyName(ClassName, propertyName), out result))
-            {
+            if (TryGetValue<T>(GetFieldForPropertyName(ClassName, propertyName), out result)) {
                 return result;
             }
             return defaultValue;
@@ -323,8 +287,7 @@ string propertyName
         /// <summary>
         /// Allows subclasses to set values for non-pointer construction.
         /// </summary>
-        internal virtual void SetDefaultValues()
-        {
+        internal virtual void SetDefaultValues() {
         }
 
         /// <summary>
@@ -333,26 +296,21 @@ string propertyName
         /// backed by AVObject fields should have AVFieldName attributes supplied.
         /// </summary>
         /// <typeparam name="T">The AVObject subclass type to register.</typeparam>
-        public static void RegisterSubclass<T>() where T : AVObject, new()
-        {
+        public static void RegisterSubclass<T>() where T : AVObject, new() {
             SubclassingController.RegisterSubclass(typeof(T));
         }
 
-        internal static void UnregisterSubclass<T>() where T : AVObject, new()
-        {
+        internal static void UnregisterSubclass<T>() where T : AVObject, new() {
             SubclassingController.UnregisterSubclass(typeof(T));
         }
 
         /// <summary>
         /// Clears any changes to this object made since the last call to <see cref="SaveAsync()"/>.
         /// </summary>
-        public void Revert()
-        {
-            lock (mutex)
-            {
+        public void Revert() {
+            lock (mutex) {
                 bool wasDirty = CurrentOperations.Count > 0;
-                if (wasDirty)
-                {
+                if (wasDirty) {
                     CurrentOperations.Clear();
                     RebuildEstimatedData();
                     OnPropertyChanged("IsDirty");
@@ -360,50 +318,39 @@ string propertyName
             }
         }
 
-        internal virtual void HandleFetchResult(IObjectState serverState)
-        {
-            lock (mutex)
-            {
+        internal virtual void HandleFetchResult(IObjectState serverState) {
+            lock (mutex) {
                 MergeFromServer(serverState);
             }
         }
 
         internal void HandleFailedSave(
-            IDictionary<string, IAVFieldOperation> operationsBeforeSave)
-        {
-            lock (mutex)
-            {
+            IDictionary<string, IAVFieldOperation> operationsBeforeSave) {
+            lock (mutex) {
                 var opNode = operationSetQueue.Find(operationsBeforeSave);
                 var nextOperations = opNode.Next.Value;
                 bool wasDirty = nextOperations.Count > 0;
                 operationSetQueue.Remove(opNode);
                 // Merge the data from the failed save into the next save.
-                foreach (var pair in operationsBeforeSave)
-                {
+                foreach (var pair in operationsBeforeSave) {
                     var operation1 = pair.Value;
                     IAVFieldOperation operation2 = null;
                     nextOperations.TryGetValue(pair.Key, out operation2);
-                    if (operation2 != null)
-                    {
+                    if (operation2 != null) {
                         operation2 = operation2.MergeWithPrevious(operation1);
-                    }
-                    else
-                    {
+                    } else {
                         operation2 = operation1;
                     }
                     nextOperations[pair.Key] = operation2;
                 }
-                if (!wasDirty && nextOperations == CurrentOperations && operationsBeforeSave.Count > 0)
-                {
+                if (!wasDirty && nextOperations == CurrentOperations && operationsBeforeSave.Count > 0) {
                     OnPropertyChanged("IsDirty");
                 }
             }
         }
 
-        internal virtual void HandleSave(IObjectState serverState)
-        {
-            lock (mutex)
-            {
+        internal virtual void HandleSave(IObjectState serverState) {
+            lock (mutex) {
                 var operationsBeforeSave = operationSetQueue.First.Value;
                 operationSetQueue.RemoveFirst();
 
@@ -417,28 +364,23 @@ string propertyName
             }
         }
 
-        public virtual void MergeFromServer(IObjectState serverState)
-        {
+        public virtual void MergeFromServer(IObjectState serverState) {
             // Make a new serverData with fetched values.
             var newServerData = serverState.ToDictionary(t => t.Key, t => t.Value);
 
-            lock (mutex)
-            {
+            lock (mutex) {
                 // Trigger handler based on serverState
-                if (serverState.ObjectId != null)
-                {
+                if (serverState.ObjectId != null) {
                     // If the objectId is being merged in, consider this object to be fetched.
                     hasBeenFetched = true;
                     OnPropertyChanged("IsDataAvailable");
                 }
 
-                if (serverState.UpdatedAt != null)
-                {
+                if (serverState.UpdatedAt != null) {
                     OnPropertyChanged("UpdatedAt");
                 }
 
-                if (serverState.CreatedAt != null)
-                {
+                if (serverState.CreatedAt != null) {
                     OnPropertyChanged("CreatedAt");
                 }
 
@@ -446,15 +388,12 @@ string propertyName
                 // the fetched objects into Pointers.
                 IDictionary<string, AVObject> fetchedObject = CollectFetchedObjects();
 
-                foreach (var pair in serverState)
-                {
+                foreach (var pair in serverState) {
                     var value = pair.Value;
-                    if (value is AVObject)
-                    {
+                    if (value is AVObject) {
                         // Resolve fetched object.
                         var avObject = value as AVObject;
-                        if (fetchedObject.ContainsKey(avObject.ObjectId))
-                        {
+                        if (fetchedObject.ContainsKey(avObject.ObjectId)) {
                             value = fetchedObject[avObject.ObjectId];
                         }
                     }
@@ -462,53 +401,42 @@ string propertyName
                 }
 
                 IsDirty = false;
-                serverState = serverState.MutatedClone(mutableClone =>
-                {
+                serverState = serverState.MutatedClone(mutableClone => {
                     mutableClone.ServerData = newServerData;
                 });
-                MutateState(mutableClone =>
-                {
+                MutateState(mutableClone => {
                     mutableClone.Apply(serverState);
                 });
             }
         }
 
-        internal void MergeFromObject(AVObject other)
-        {
-            lock (mutex)
-            {
+        internal void MergeFromObject(AVObject other) {
+            lock (mutex) {
                 // If they point to the same instance, we don't need to merge
-                if (this == other)
-                {
+                if (this == other) {
                     return;
                 }
             }
 
             // Clear out any changes on this object.
-            if (operationSetQueue.Count != 1)
-            {
+            if (operationSetQueue.Count != 1) {
                 throw new InvalidOperationException("Attempt to MergeFromObject during save.");
             }
             operationSetQueue.Clear();
-            foreach (var operationSet in other.operationSetQueue)
-            {
+            foreach (var operationSet in other.operationSetQueue) {
                 operationSetQueue.AddLast(operationSet.ToDictionary(entry => entry.Key,
                                                                     entry => entry.Value));
             }
 
-            lock (mutex)
-            {
+            lock (mutex) {
                 state = other.State;
             }
             RebuildEstimatedData();
         }
 
-        private bool HasDirtyChildren
-        {
-            get
-            {
-                lock (mutex)
-                {
+        private bool HasDirtyChildren {
+            get {
+                lock (mutex) {
                     return FindUnsavedChildren().FirstOrDefault() != null;
                 }
             }
@@ -523,57 +451,41 @@ string propertyName
         /// <param name="yieldRoot">Whether to include the root in the result</param>
         /// <returns></returns>
         internal static IEnumerable<object> DeepTraversal(
-            object root, bool traverseAVObjects = false, bool yieldRoot = false)
-        {
+            object root, bool traverseAVObjects = false, bool yieldRoot = false) {
             var items = DeepTraversalInternal(root,
                 traverseAVObjects,
                 new HashSet<object>(new IdentityEqualityComparer<object>()));
-            if (yieldRoot)
-            {
+            if (yieldRoot) {
                 return new[] { root }.Concat(items);
-            }
-            else
-            {
+            } else {
                 return items;
             }
         }
 
         private static IEnumerable<object> DeepTraversalInternal(
-            object root, bool traverseAVObjects, ICollection<object> seen)
-        {
+            object root, bool traverseAVObjects, ICollection<object> seen) {
             seen.Add(root);
             var itemsToVisit = isCompiledByIL2CPP ? (System.Collections.IEnumerable)null : (IEnumerable<object>)null;
             var dict = Conversion.As<IDictionary<string, object>>(root);
-            if (dict != null)
-            {
+            if (dict != null) {
                 itemsToVisit = dict.Values;
-            }
-            else
-            {
+            } else {
                 var list = Conversion.As<IList<object>>(root);
-                if (list != null)
-                {
+                if (list != null) {
                     itemsToVisit = list;
-                }
-                else if (traverseAVObjects)
-                {
+                } else if (traverseAVObjects) {
                     var obj = root as AVObject;
-                    if (obj != null)
-                    {
+                    if (obj != null) {
                         itemsToVisit = obj.Keys.ToList().Select(k => obj[k]);
                     }
                 }
             }
-            if (itemsToVisit != null)
-            {
-                foreach (var i in itemsToVisit)
-                {
-                    if (!seen.Contains(i))
-                    {
+            if (itemsToVisit != null) {
+                foreach (var i in itemsToVisit) {
+                    if (!seen.Contains(i)) {
                         yield return i;
                         var children = DeepTraversalInternal(i, traverseAVObjects, seen);
-                        foreach (var child in children)
-                        {
+                        foreach (var child in children) {
                             yield return child;
                         }
                     }
@@ -581,8 +493,7 @@ string propertyName
             }
         }
 
-        private IEnumerable<AVObject> FindUnsavedChildren()
-        {
+        private IEnumerable<AVObject> FindUnsavedChildren() {
             return DeepTraversal(estimatedData)
                 .OfType<AVObject>()
                 .Where(o => o.IsDirty);
@@ -594,8 +505,7 @@ string propertyName
         /// refreshing or saving.
         /// </summary>
         /// <returns>Map of objectId to AVObject which have been fetched.</returns>
-        private IDictionary<string, AVObject> CollectFetchedObjects()
-        {
+        private IDictionary<string, AVObject> CollectFetchedObjects() {
             return DeepTraversal(estimatedData)
                .OfType<AVObject>()
                .Where(o => o.ObjectId != null && o.IsDataAvailable)
@@ -604,11 +514,9 @@ string propertyName
         }
 
         public static IDictionary<string, object> ToJSONObjectForSaving(
-            IDictionary<string, IAVFieldOperation> operations)
-        {
+            IDictionary<string, IAVFieldOperation> operations) {
             var result = new Dictionary<string, object>();
-            foreach (var pair in operations)
-            {
+            foreach (var pair in operations) {
                 // AVRPCSerialize the data
                 var operation = pair.Value;
 
@@ -617,13 +525,10 @@ string propertyName
             return result;
         }
 
-        internal IDictionary<string, object> EncodeForSaving(IDictionary<string, object> data)
-        {
+        internal IDictionary<string, object> EncodeForSaving(IDictionary<string, object> data) {
             var result = new Dictionary<string, object>();
-            lock (this.mutex)
-            {
-                foreach (var key in data.Keys)
-                {
+            lock (this.mutex) {
+                foreach (var key in data.Keys) {
                     var value = data[key];
                     result.Add(key, PointerOrLocalIdEncoder.Instance.Encode(value));
                 }
@@ -633,8 +538,7 @@ string propertyName
         }
 
 
-        internal IDictionary<string, object> ServerDataToJSONObjectForSerialization()
-        {
+        internal IDictionary<string, object> ServerDataToJSONObjectForSerialization() {
             return PointerOrLocalIdEncoder.Instance.Encode(state.ToDictionary(t => t.Key, t => t.Value))
                 as IDictionary<string, object>;
         }
@@ -644,10 +548,8 @@ string propertyName
         /// <summary>
         /// Pushes new operations onto the queue and returns the current set of operations.
         /// </summary>
-        public IDictionary<string, IAVFieldOperation> StartSave()
-        {
-            lock (mutex)
-            {
+        public IDictionary<string, IAVFieldOperation> StartSave() {
+            lock (mutex) {
                 var currentOperations = CurrentOperations;
                 operationSetQueue.AddLast(new Dictionary<string, IAVFieldOperation>());
                 OnPropertyChanged("IsDirty");
@@ -656,18 +558,15 @@ string propertyName
         }
 
         protected virtual Task SaveAsync(Task toAwait,
-            CancellationToken cancellationToken)
-        {
+            CancellationToken cancellationToken) {
             IDictionary<string, IAVFieldOperation> currentOperations = null;
-            if (!IsDirty)
-            {
+            if (!IsDirty) {
                 return Task.FromResult(0);
             }
 
             Task deepSaveTask;
             string sessionToken;
-            lock (mutex)
-            {
+            lock (mutex) {
                 // Get the JSON representation of the object.
                 currentOperations = StartSave();
 
@@ -676,23 +575,17 @@ string propertyName
                 deepSaveTask = DeepSaveAsync(estimatedData, sessionToken, cancellationToken);
             }
 
-            return deepSaveTask.OnSuccess(_ =>
-            {
+            return deepSaveTask.OnSuccess(_ => {
                 return toAwait;
-            }).Unwrap().OnSuccess(_ =>
-            {
+            }).Unwrap().OnSuccess(_ => {
                 return ObjectController.SaveAsync(state,
                     currentOperations,
                     sessionToken,
                     cancellationToken);
-            }).Unwrap().ContinueWith(t =>
-            {
-                if (t.IsFaulted || t.IsCanceled)
-                {
+            }).Unwrap().ContinueWith(t => {
+                if (t.IsFaulted || t.IsCanceled) {
                     HandleFailedSave(currentOperations);
-                }
-                else
-                {
+                } else {
                     var serverState = t.Result;
                     HandleSave(serverState);
                 }
@@ -703,8 +596,7 @@ string propertyName
         /// <summary>
         /// Saves this object to the server.
         /// </summary>
-        public virtual Task SaveAsync()
-        {
+        public virtual Task SaveAsync() {
             return SaveAsync(CancellationToken.None);
         }
 
@@ -712,8 +604,7 @@ string propertyName
         /// Saves this object to the server.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public virtual Task SaveAsync(CancellationToken cancellationToken)
-        {
+        public virtual Task SaveAsync(CancellationToken cancellationToken) {
             return taskQueue.Enqueue(toAwait => SaveAsync(toAwait, cancellationToken),
                 cancellationToken);
         }
@@ -721,29 +612,23 @@ string propertyName
         internal virtual Task<AVObject> FetchAsyncInternal(
               Task toAwait,
               IDictionary<string, object> queryString,
-              CancellationToken cancellationToken)
-        {
-            return toAwait.OnSuccess(_ =>
-            {
-                if (ObjectId == null)
-                {
+              CancellationToken cancellationToken) {
+            return toAwait.OnSuccess(_ => {
+                if (ObjectId == null) {
                     throw new InvalidOperationException("Cannot refresh an object that hasn't been saved to the server.");
                 }
-                if (queryString == null)
-                {
+                if (queryString == null) {
                     queryString = new Dictionary<string, object>();
                 }
 
                 return ObjectController.FetchAsync(state, queryString, AVUser.CurrentSessionToken, cancellationToken);
-            }).Unwrap().OnSuccess(t =>
-            {
+            }).Unwrap().OnSuccess(t => {
                 HandleFetchResult(t.Result);
                 return this;
             });
         }
 
-        private static Task DeepSaveAsync(object obj, string sessionToken, CancellationToken cancellationToken)
-        {
+        private static Task DeepSaveAsync(object obj, string sessionToken, CancellationToken cancellationToken) {
             var objects = new List<AVObject>();
             CollectDirtyChildren(obj, objects);
 
@@ -755,11 +640,9 @@ string propertyName
                 .Where(f => f.IsDirty)
                 .Select(f => f.SaveAsync(cancellationToken)).ToList();
 
-            return Task.WhenAll(saveDirtyFileTasks).OnSuccess(_ =>
-            {
+            return Task.WhenAll(saveDirtyFileTasks).OnSuccess(_ => {
                 IEnumerable<AVObject> remaining = new List<AVObject>(uniqueObjects);
-                return InternalExtensions.WhileAsync(() => Task.FromResult(remaining.Any()), () =>
-                {
+                return InternalExtensions.WhileAsync(() => Task.FromResult(remaining.Any()), () => {
                     // Partition the objects into two sets: those that can be saved immediately,
                     // and those that rely on other objects to be created first.
                     var current = (from item in remaining
@@ -770,8 +653,7 @@ string propertyName
                                      select item).ToList();
                     remaining = nextBatch;
 
-                    if (current.Count == 0)
-                    {
+                    if (current.Count == 0) {
                         // We do cycle-detection when building the list of objects passed to this
                         // function, so this should never get called. But we should check for it
                         // anyway, so that we get an exception instead of an infinite loop.
@@ -780,10 +662,8 @@ string propertyName
                     }
 
                     // Save all of the objects in current.
-                    return AVObject.EnqueueForAll<object>(current, toAwait =>
-                    {
-                        return toAwait.OnSuccess(__ =>
-                        {
+                    return AVObject.EnqueueForAll<object>(current, toAwait => {
+                        return toAwait.OnSuccess(__ => {
                             var states = (from item in current
                                           select item.state).ToList();
                             var operationsList = (from item in current
@@ -794,20 +674,14 @@ string propertyName
                                 sessionToken,
                                 cancellationToken);
 
-                            return Task.WhenAll(saveTasks).ContinueWith(t =>
-                            {
-                                if (t.IsFaulted || t.IsCanceled)
-                                {
-                                    foreach (var pair in current.Zip(operationsList, (item, ops) => new { item, ops }))
-                                    {
+                            return Task.WhenAll(saveTasks).ContinueWith(t => {
+                                if (t.IsFaulted || t.IsCanceled) {
+                                    foreach (var pair in current.Zip(operationsList, (item, ops) => new { item, ops })) {
                                         pair.item.HandleFailedSave(pair.ops);
                                     }
-                                }
-                                else
-                                {
+                                } else {
                                     var serverStates = t.Result;
-                                    foreach (var pair in current.Zip(serverStates, (item, state) => new { item, state }))
-                                    {
+                                    foreach (var pair in current.Zip(serverStates, (item, state) => new { item, state })) {
                                         pair.item.HandleSave(pair.state);
                                     }
                                 }
@@ -824,8 +698,7 @@ string propertyName
         /// Saves each object in the provided list.
         /// </summary>
         /// <param name="objects">The objects to save.</param>
-        public static Task SaveAllAsync<T>(IEnumerable<T> objects) where T : AVObject
-        {
+        public static Task SaveAllAsync<T>(IEnumerable<T> objects) where T : AVObject {
             return SaveAllAsync(objects, CancellationToken.None);
         }
 
@@ -835,8 +708,7 @@ string propertyName
         /// <param name="objects">The objects to save.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         public static Task SaveAllAsync<T>(
-            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject
-        {
+            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
             return DeepSaveAsync(objects.ToList(), AVUser.CurrentSessionToken, cancellationToken);
         }
 
@@ -848,22 +720,18 @@ string propertyName
         /// Fetches this object with the data from the server.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        internal Task<AVObject> FetchAsyncInternal(CancellationToken cancellationToken)
-        {
+        internal Task<AVObject> FetchAsyncInternal(CancellationToken cancellationToken) {
             return FetchAsyncInternal(null, cancellationToken);
         }
 
-        internal Task<AVObject> FetchAsyncInternal(IDictionary<string, object> queryString, CancellationToken cancellationToken)
-        {
+        internal Task<AVObject> FetchAsyncInternal(IDictionary<string, object> queryString, CancellationToken cancellationToken) {
             return taskQueue.Enqueue(toAwait => FetchAsyncInternal(toAwait, queryString, cancellationToken),
                cancellationToken);
         }
 
         internal Task<AVObject> FetchIfNeededAsyncInternal(
-            Task toAwait, CancellationToken cancellationToken)
-        {
-            if (!IsDataAvailable)
-            {
+            Task toAwait, CancellationToken cancellationToken) {
+            if (!IsDataAvailable) {
                 return FetchAsyncInternal(toAwait, null, cancellationToken);
             }
             return Task.FromResult(this);
@@ -874,8 +742,7 @@ string propertyName
         /// false), fetches this object with the data from the server.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        internal Task<AVObject> FetchIfNeededAsyncInternal(CancellationToken cancellationToken)
-        {
+        internal Task<AVObject> FetchIfNeededAsyncInternal(CancellationToken cancellationToken) {
             return taskQueue.Enqueue(toAwait => FetchIfNeededAsyncInternal(toAwait, cancellationToken),
               cancellationToken);
         }
@@ -885,8 +752,7 @@ string propertyName
         /// </summary>
         /// <returns>The list passed in for convenience.</returns>
         public static Task<IEnumerable<T>> FetchAllIfNeededAsync<T>(
-            IEnumerable<T> objects) where T : AVObject
-        {
+            IEnumerable<T> objects) where T : AVObject {
             return FetchAllIfNeededAsync(objects, CancellationToken.None);
         }
 
@@ -897,10 +763,8 @@ string propertyName
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The list passed in for convenience.</returns>
         public static Task<IEnumerable<T>> FetchAllIfNeededAsync<T>(
-            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject
-        {
-            return AVObject.EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) =>
-            {
+            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
+            return AVObject.EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) => {
                 return FetchAllInternalAsync(objects, false, toAwait, cancellationToken);
             }, cancellationToken);
         }
@@ -911,8 +775,7 @@ string propertyName
         /// <param name="objects">The objects to fetch.</param>
         /// <returns>The list passed in for convenience.</returns>
         public static Task<IEnumerable<T>> FetchAllAsync<T>(
-            IEnumerable<T> objects) where T : AVObject
-        {
+            IEnumerable<T> objects) where T : AVObject {
             return FetchAllAsync(objects, CancellationToken.None);
         }
 
@@ -923,10 +786,8 @@ string propertyName
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The list passed in for convenience.</returns>
         public static Task<IEnumerable<T>> FetchAllAsync<T>(
-            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject
-        {
-            return AVObject.EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) =>
-            {
+            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
+            return AVObject.EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) => {
                 return FetchAllInternalAsync(objects, true, toAwait, cancellationToken);
             }, cancellationToken);
         }
@@ -940,12 +801,9 @@ string propertyName
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The list passed in for convenience.</returns>
         private static Task<IEnumerable<T>> FetchAllInternalAsync<T>(
-            IEnumerable<T> objects, bool force, Task toAwait, CancellationToken cancellationToken) where T : AVObject
-        {
-            return toAwait.OnSuccess(_ =>
-            {
-                if (objects.Any(obj => { return obj.state.ObjectId == null; }))
-                {
+            IEnumerable<T> objects, bool force, Task toAwait, CancellationToken cancellationToken) where T : AVObject {
+            return toAwait.OnSuccess(_ => {
+                if (objects.Any(obj => { return obj.state.ObjectId == null; })) {
                     throw new InvalidOperationException("You cannot fetch objects that haven't already been saved.");
                 }
 
@@ -953,8 +811,7 @@ string propertyName
                                       where force || !obj.IsDataAvailable
                                       select obj).ToList();
 
-                if (objectsToFetch.Count == 0)
-                {
+                if (objectsToFetch.Count == 0) {
                     return Task.FromResult(objects);
                 }
 
@@ -963,8 +820,7 @@ string propertyName
                   (from obj in objectsToFetch
                    group obj.ObjectId by obj.ClassName into classGroup
                    where classGroup.Count() > 0
-                   select new
-                   {
+                   select new {
                        ClassName = classGroup.Key,
                        FindTask = new AVQuery<AVObject>(classGroup.Key)
                        .WhereContainedIn("objectId", classGroup)
@@ -972,10 +828,8 @@ string propertyName
                    }).ToDictionary(pair => pair.ClassName, pair => pair.FindTask);
 
                 // Wait for all the Finds to complete.
-                return Task.WhenAll(findsByClass.Values.ToList()).OnSuccess(__ =>
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
+                return Task.WhenAll(findsByClass.Values.ToList()).OnSuccess(__ => {
+                    if (cancellationToken.IsCancellationRequested) {
                         return objects;
                     }
 
@@ -984,8 +838,7 @@ string propertyName
                                 from result in findsByClass[obj.ClassName].Result
                                 where result.ObjectId == obj.ObjectId
                                 select new { obj, result };
-                    foreach (var pair in pairs)
-                    {
+                    foreach (var pair in pairs) {
                         pair.obj.MergeFromObject(pair.result);
                         pair.obj.hasBeenFetched = true;
                     }
@@ -999,17 +852,14 @@ string propertyName
 
         #region Delete Object
 
-        internal Task DeleteAsync(Task toAwait, CancellationToken cancellationToken)
-        {
-            if (ObjectId == null)
-            {
+        internal Task DeleteAsync(Task toAwait, CancellationToken cancellationToken) {
+            if (ObjectId == null) {
                 return Task.FromResult(0);
             }
 
             string sessionToken = AVUser.CurrentSessionToken;
 
-            return toAwait.OnSuccess(_ =>
-            {
+            return toAwait.OnSuccess(_ => {
                 return ObjectController.DeleteAsync(State, sessionToken, cancellationToken);
             }).Unwrap().OnSuccess(_ => IsDirty = true);
         }
@@ -1017,8 +867,7 @@ string propertyName
         /// <summary>
         /// Deletes this object on the server.
         /// </summary>
-        public Task DeleteAsync()
-        {
+        public Task DeleteAsync() {
             return DeleteAsync(CancellationToken.None);
         }
 
@@ -1026,8 +875,7 @@ string propertyName
         /// Deletes this object on the server.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public Task DeleteAsync(CancellationToken cancellationToken)
-        {
+        public Task DeleteAsync(CancellationToken cancellationToken) {
             return taskQueue.Enqueue(toAwait => DeleteAsync(toAwait, cancellationToken),
               cancellationToken);
         }
@@ -1036,8 +884,7 @@ string propertyName
         /// Deletes each object in the provided list.
         /// </summary>
         /// <param name="objects">The objects to delete.</param>
-        public static Task DeleteAllAsync<T>(IEnumerable<T> objects) where T : AVObject
-        {
+        public static Task DeleteAllAsync<T>(IEnumerable<T> objects) where T : AVObject {
             return DeleteAllAsync(objects, CancellationToken.None);
         }
 
@@ -1047,26 +894,21 @@ string propertyName
         /// <param name="objects">The objects to delete.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         public static Task DeleteAllAsync<T>(
-            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject
-        {
+            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
             var uniqueObjects = new HashSet<AVObject>(objects.OfType<AVObject>().ToList(),
               new IdentityEqualityComparer<AVObject>());
 
-            return AVObject.EnqueueForAll<object>(uniqueObjects, toAwait =>
-            {
+            return AVObject.EnqueueForAll<object>(uniqueObjects, toAwait => {
                 var states = uniqueObjects.Select(t => t.state).ToList();
-                return toAwait.OnSuccess(_ =>
-                {
+                return toAwait.OnSuccess(_ => {
                     var deleteTasks = ObjectController.DeleteAllAsync(states,
                       AVUser.CurrentSessionToken,
                       cancellationToken);
 
                     return Task.WhenAll(deleteTasks);
-                }).Unwrap().OnSuccess(t =>
-                {
+                }).Unwrap().OnSuccess(t => {
                     // Dirty all objects in memory.
-                    foreach (var obj in uniqueObjects)
-                    {
+                    foreach (var obj in uniqueObjects) {
                         obj.IsDirty = true;
                     }
 
@@ -1080,21 +922,15 @@ string propertyName
         private static void CollectDirtyChildren(object node,
             IList<AVObject> dirtyChildren,
             ICollection<AVObject> seen,
-            ICollection<AVObject> seenNew)
-        {
-            foreach (var obj in DeepTraversal(node).OfType<AVObject>())
-            {
+            ICollection<AVObject> seenNew) {
+            foreach (var obj in DeepTraversal(node).OfType<AVObject>()) {
                 ICollection<AVObject> scopedSeenNew;
                 // Check for cycles of new objects. Any such cycle means it will be impossible to save
                 // this collection of objects, so throw an exception.
-                if (obj.ObjectId != null)
-                {
+                if (obj.ObjectId != null) {
                     scopedSeenNew = new HashSet<AVObject>(new IdentityEqualityComparer<AVObject>());
-                }
-                else
-                {
-                    if (seenNew.Contains(obj))
-                    {
+                } else {
+                    if (seenNew.Contains(obj)) {
                         throw new InvalidOperationException("Found a circular dependency while saving");
                     }
                     scopedSeenNew = new HashSet<AVObject>(seenNew, new IdentityEqualityComparer<AVObject>());
@@ -1103,8 +939,7 @@ string propertyName
 
                 // Check for cycles of any object. If this occurs, then there's no problem, but
                 // we shouldn't recurse any deeper, because it would be an infinite recursion.
-                if (seen.Contains(obj))
-                {
+                if (seen.Contains(obj)) {
                     return;
                 }
                 seen.Add(obj);
@@ -1114,8 +949,7 @@ string propertyName
                 // because that's the only data that might need to be saved now.
                 CollectDirtyChildren(obj.estimatedData, dirtyChildren, seen, scopedSeenNew);
 
-                if (obj.CheckIsDirty(false))
-                {
+                if (obj.CheckIsDirty(false)) {
                     dirtyChildren.Add(obj);
                 }
             }
@@ -1125,8 +959,7 @@ string propertyName
         /// Helper version of CollectDirtyChildren so that callers don't have to add the internally
         /// used parameters.
         /// </summary>
-        private static void CollectDirtyChildren(object node, IList<AVObject> dirtyChildren)
-        {
+        private static void CollectDirtyChildren(object node, IList<AVObject> dirtyChildren) {
             CollectDirtyChildren(node,
                 dirtyChildren,
                 new HashSet<AVObject>(new IdentityEqualityComparer<AVObject>()),
@@ -1137,23 +970,19 @@ string propertyName
         /// Returns true if the given object can be serialized for saving as a value
         /// that is pointed to by a AVObject.
         /// </summary>
-        private static bool CanBeSerializedAsValue(object value)
-        {
+        private static bool CanBeSerializedAsValue(object value) {
             return DeepTraversal(value, yieldRoot: true)
               .OfType<AVObject>()
               .All(o => o.ObjectId != null);
         }
 
-        private bool CanBeSerialized
-        {
-            get
-            {
+        private bool CanBeSerialized {
+            get {
                 // This method is only used for batching sets of objects for saveAll
                 // and when saving children automatically. Since it's only used to
                 // determine whether or not save should be called on them, it only
                 // needs to examine their current values, so we use estimatedData.
-                lock (mutex)
-                {
+                lock (mutex) {
                     return CanBeSerializedAsValue(estimatedData);
                 }
             }
@@ -1163,8 +992,7 @@ string propertyName
         /// Adds a task to the queue for all of the given objects.
         /// </summary>
         private static Task<T> EnqueueForAll<T>(IEnumerable<AVObject> objects,
-            Func<Task, Task<T>> taskStart, CancellationToken cancellationToken)
-        {
+            Func<Task, Task<T>> taskStart, CancellationToken cancellationToken) {
             // The task that will be complete when all of the child queues indicate they're ready to start.
             var readyToStart = new TaskCompletionSource<object>();
 
@@ -1176,8 +1004,7 @@ string propertyName
             var lockSet = new LockSet(objects.Select(o => o.taskQueue.Mutex));
 
             lockSet.Enter();
-            try
-            {
+            try {
 
                 // The task produced by taskStart. By running this immediately, we allow everything prior
                 // to toAwait to run before waiting for all of the queues on all of the objects.
@@ -1185,25 +1012,20 @@ string propertyName
 
                 // Add fullTask to each of the objects' queues.
                 var childTasks = new List<Task>();
-                foreach (AVObject obj in objects)
-                {
-                    obj.taskQueue.Enqueue((Task task) =>
-                    {
+                foreach (AVObject obj in objects) {
+                    obj.taskQueue.Enqueue((Task task) => {
                         childTasks.Add(task);
                         return fullTask;
                     }, cancellationToken);
                 }
 
                 // When all of the objects' queues are ready, signal fullTask that it's ready to go on.
-                Task.WhenAll(childTasks.ToArray()).ContinueWith((Task task) =>
-                {
+                Task.WhenAll(childTasks.ToArray()).ContinueWith((Task task) => {
                     readyToStart.SetResult(null);
                 });
 
                 return fullTask;
-            }
-            finally
-            {
+            } finally {
                 lockSet.Exit();
             }
         }
@@ -1212,10 +1034,8 @@ string propertyName
         /// Removes a key from the object's data if it exists.
         /// </summary>
         /// <param name="key">The key to remove.</param>
-        public virtual void Remove(string key)
-        {
-            lock (mutex)
-            {
+        public virtual void Remove(string key) {
+            lock (mutex) {
                 CheckKeyIsMutable(key);
 
                 PerformOperation(key, AVDeleteOperation.Instance);
@@ -1225,22 +1045,16 @@ string propertyName
 
         private IEnumerable<string> ApplyOperations(IDictionary<string,
             IAVFieldOperation> operations,
-            IDictionary<string, object> map)
-        {
+            IDictionary<string, object> map) {
             List<string> appliedKeys = new List<string>();
-            lock (mutex)
-            {
-                foreach (var pair in operations)
-                {
+            lock (mutex) {
+                foreach (var pair in operations) {
                     object oldValue;
                     map.TryGetValue(pair.Key, out oldValue);
                     var newValue = pair.Value.Apply(oldValue, pair.Key);
-                    if (newValue != AVDeleteOperation.DeleteToken)
-                    {
+                    if (newValue != AVDeleteOperation.DeleteToken) {
                         map[pair.Key] = newValue;
-                    }
-                    else
-                    {
+                    } else {
                         map.Remove(pair.Key);
                     }
                     appliedKeys.Add(pair.Key);
@@ -1252,27 +1066,20 @@ string propertyName
         /// <summary>
         /// Regenerates the estimatedData map from the serverData and operations.
         /// </summary>
-        internal void RebuildEstimatedData()
-        {
+        internal void RebuildEstimatedData() {
             IEnumerable<string> changedKeys = null;
 
-            lock (mutex)
-            {
+            lock (mutex) {
                 //estimatedData.Clear();
                 List<string> converdKeys = new List<string>();
-                foreach (var item in state)
-                {
+                foreach (var item in state) {
                     var key = item.Key;
                     var value = item.Value;
-                    if (!estimatedData.ContainsKey(key))
-                    {
+                    if (!estimatedData.ContainsKey(key)) {
                         converdKeys.Add(key);
-                    }
-                    else
-                    {
+                    } else {
                         var oldValue = estimatedData[key];
-                        if (oldValue != value)
-                        {
+                        if (oldValue != value) {
                             converdKeys.Add(key);
                         }
                         estimatedData.Remove(key);
@@ -1280,8 +1087,7 @@ string propertyName
                     estimatedData.Add(item);
                 }
                 changedKeys = converdKeys;
-                foreach (var operations in operationSetQueue)
-                {
+                foreach (var operations in operationSetQueue) {
                     var appliedKeys = ApplyOperations(operations, estimatedData);
                     changedKeys = converdKeys.Concat(appliedKeys);
                 }
@@ -1296,20 +1102,15 @@ string propertyName
         /// PerformOperation is like setting a value at an index, but instead of
         /// just taking a new value, it takes a AVFieldOperation that modifies the value.
         /// </summary>
-        internal void PerformOperation(string key, IAVFieldOperation operation)
-        {
-            lock (mutex)
-            {
+        internal void PerformOperation(string key, IAVFieldOperation operation) {
+            lock (mutex) {
                 var ifDirtyBeforePerform = this.IsDirty;
                 object oldValue;
                 estimatedData.TryGetValue(key, out oldValue);
                 object newValue = operation.Apply(oldValue, key);
-                if (newValue != AVDeleteOperation.DeleteToken)
-                {
+                if (newValue != AVDeleteOperation.DeleteToken) {
                     estimatedData[key] = newValue;
-                }
-                else
-                {
+                } else {
                     estimatedData.Remove(key);
                 }
 
@@ -1318,11 +1119,9 @@ string propertyName
                 CurrentOperations.TryGetValue(key, out oldOperation);
                 var newOperation = operation.MergeWithPrevious(oldOperation);
                 CurrentOperations[key] = newOperation;
-                if (!wasDirty)
-                {
+                if (!wasDirty) {
                     OnPropertyChanged("IsDirty");
-                    if (ifDirtyBeforePerform != wasDirty)
-                    {
+                    if (ifDirtyBeforePerform != wasDirty) {
                         OnPropertyUpdated("IsDirty", ifDirtyBeforePerform, wasDirty);
                     }
                 }
@@ -1336,10 +1135,8 @@ string propertyName
         /// Override to run validations on key/value pairs. Make sure to still
         /// call the base version.
         /// </summary>
-        internal virtual void OnSettingValue(ref string key, ref object value)
-        {
-            if (key == null)
-            {
+        internal virtual void OnSettingValue(ref string key, ref object value) {
+            if (key == null) {
                 throw new ArgumentNullException("key");
             }
         }
@@ -1353,12 +1150,9 @@ string propertyName
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">The property is
         /// retrieved and <paramref name="key"/> is not found.</exception>
         /// <returns>The value for the key.</returns>
-        virtual public object this[string key]
-        {
-            get
-            {
-                lock (mutex)
-                {
+        virtual public object this[string key] {
+            get {
+                lock (mutex) {
                     CheckGetAccess(key);
 
                     var value = estimatedData[key];
@@ -1366,18 +1160,15 @@ string propertyName
                     // A relation may be deserialized without a parent or key. Either way,
                     // make sure it's consistent.
                     var relation = value as AVRelationBase;
-                    if (relation != null)
-                    {
+                    if (relation != null) {
                         relation.EnsureParentAndKey(this, key);
                     }
 
                     return value;
                 }
             }
-            set
-            {
-                lock (mutex)
-                {
+            set {
+                lock (mutex) {
                     CheckKeyIsMutable(key);
 
                     Set(key, value);
@@ -1390,14 +1181,11 @@ string propertyName
         /// </summary>
         /// <param name="key">key for the object.</param>
         /// <param name="value">the value for the key.</param>
-        internal void Set(string key, object value)
-        {
-            lock (mutex)
-            {
+        internal void Set(string key, object value) {
+            lock (mutex) {
                 OnSettingValue(ref key, ref value);
 
-                if (!AVEncoder.IsValidType(value))
-                {
+                if (!AVEncoder.IsValidType(value)) {
                     throw new ArgumentException("Invalid type for value: " + value.GetType().ToString());
                 }
 
@@ -1405,20 +1193,16 @@ string propertyName
             }
         }
 
-        internal void SetIfDifferent<T>(string key, T value)
-        {
+        internal void SetIfDifferent<T>(string key, T value) {
             T current;
             bool hasCurrent = TryGetValue<T>(key, out current);
-            if (value == null)
-            {
-                if (hasCurrent)
-                {
+            if (value == null) {
+                if (hasCurrent) {
                     PerformOperation(key, AVDeleteOperation.Instance);
                 }
                 return;
             }
-            if (!hasCurrent || !value.Equals(current))
-            {
+            if (!hasCurrent || !value.Equals(current)) {
                 Set(key, value);
             }
         }
@@ -1429,8 +1213,7 @@ string propertyName
         /// Atomically increments the given key by 1.
         /// </summary>
         /// <param name="key">The key to increment.</param>
-        public void Increment(string key)
-        {
+        public void Increment(string key) {
             Increment(key, 1);
         }
 
@@ -1439,10 +1222,8 @@ string propertyName
         /// </summary>
         /// <param name="key">The key to increment.</param>
         /// <param name="amount">The amount to increment by.</param>
-        public void Increment(string key, long amount)
-        {
-            lock (mutex)
-            {
+        public void Increment(string key, long amount) {
+            lock (mutex) {
                 CheckKeyIsMutable(key);
 
                 PerformOperation(key, new AVIncrementOperation(amount));
@@ -1454,10 +1235,8 @@ string propertyName
         /// </summary>
         /// <param name="key">The key to increment.</param>
         /// <param name="amount">The amount to increment by.</param>
-        public void Increment(string key, double amount)
-        {
-            lock (mutex)
-            {
+        public void Increment(string key, double amount) {
+            lock (mutex) {
                 CheckKeyIsMutable(key);
 
                 PerformOperation(key, new AVIncrementOperation(amount));
@@ -1471,8 +1250,7 @@ string propertyName
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The object to add.</param>
-        public void AddToList(string key, object value)
-        {
+        public void AddToList(string key, object value) {
             AddRangeToList(key, new[] { value });
         }
 
@@ -1481,10 +1259,8 @@ string propertyName
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="values">The objects to add.</param>
-        public void AddRangeToList<T>(string key, IEnumerable<T> values)
-        {
-            lock (mutex)
-            {
+        public void AddRangeToList<T>(string key, IEnumerable<T> values) {
+            lock (mutex) {
                 CheckKeyIsMutable(key);
 
                 PerformOperation(key, new AVAddOperation(values.Cast<object>()));
@@ -1500,8 +1276,7 @@ string propertyName
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The object to add.</param>
-        public void AddUniqueToList(string key, object value)
-        {
+        public void AddUniqueToList(string key, object value) {
             AddRangeUniqueToList(key, new object[] { value });
         }
 
@@ -1512,10 +1287,8 @@ string propertyName
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="values">The objects to add.</param>
-        public void AddRangeUniqueToList<T>(string key, IEnumerable<T> values)
-        {
-            lock (mutex)
-            {
+        public void AddRangeUniqueToList<T>(string key, IEnumerable<T> values) {
+            lock (mutex) {
                 CheckKeyIsMutable(key);
 
                 PerformOperation(key, new AVAddUniqueOperation(values.Cast<object>()));
@@ -1528,10 +1301,8 @@ string propertyName
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="values">The objects to remove.</param>
-        public void RemoveAllFromList<T>(string key, IEnumerable<T> values)
-        {
-            lock (mutex)
-            {
+        public void RemoveAllFromList<T>(string key, IEnumerable<T> values) {
+            lock (mutex) {
                 CheckKeyIsMutable(key);
 
                 PerformOperation(key, new AVRemoveOperation(values.Cast<object>()));
@@ -1544,10 +1315,8 @@ string propertyName
         /// Returns whether this object has a particular key.
         /// </summary>
         /// <param name="key">The key to check for</param>
-        public bool ContainsKey(string key)
-        {
-            lock (mutex)
-            {
+        public bool ContainsKey(string key) {
+            lock (mutex) {
                 return estimatedData.ContainsKey(key);
             }
         }
@@ -1561,8 +1330,7 @@ string propertyName
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">The property is
         /// retrieved and <paramref name="key"/> is not found.</exception>
         /// </summary>
-        public T Get<T>(string key)
-        {
+        public T Get<T>(string key) {
             return Conversion.To<T>(this[key]);
         }
 
@@ -1572,8 +1340,7 @@ string propertyName
         /// <typeparam name="T">The type of object to create a relation for.</typeparam>
         /// <param name="key">The key for the relation field.</param>
         /// <returns>A AVRelation for the key.</returns>
-        public AVRelation<T> GetRelation<T>(string key) where T : AVObject
-        {
+        public AVRelation<T> GetRelation<T>(string key) where T : AVObject {
             // All the sanity checking is done when add or remove is called.
             AVRelation<T> relation = null;
             TryGetValue(key, out relation);
@@ -1587,14 +1354,11 @@ string propertyName
         /// <param name="parentClassName">parent className</param>
         /// <param name="key">key</param>
         /// <returns></returns>
-        public AVQuery<T> GetRelationRevserseQuery<T>(string parentClassName, string key) where T : AVObject
-        {
-            if (string.IsNullOrEmpty(parentClassName))
-            {
+        public AVQuery<T> GetRelationRevserseQuery<T>(string parentClassName, string key) where T : AVObject {
+            if (string.IsNullOrEmpty(parentClassName)) {
                 throw new ArgumentNullException("parentClassName", "can not query a relation without parentClassName.");
             }
-            if (string.IsNullOrEmpty(key))
-            {
+            if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException("key", "can not query a relation without key.");
             }
             return new AVQuery<T>(parentClassName).WhereEqualTo(key, this);
@@ -1609,20 +1373,14 @@ string propertyName
         /// requested type, or null if unsuccessful.</param>
         /// <returns>true if the lookup and conversion succeeded, otherwise
         /// false.</returns>
-        public virtual bool TryGetValue<T>(string key, out T result)
-        {
-            lock (mutex)
-            {
-                if (ContainsKey(key))
-                {
-                    try
-                    {
+        public virtual bool TryGetValue<T>(string key, out T result) {
+            lock (mutex) {
+                if (ContainsKey(key)) {
+                    try {
                         var temp = Conversion.To<T>(this[key]);
                         result = temp;
                         return true;
-                    }
-                    catch (InvalidCastException)
-                    {
+                    } catch (InvalidCastException) {
                         result = default(T);
                         return false;
                     }
@@ -1635,48 +1393,37 @@ string propertyName
         /// <summary>
         /// Gets whether the AVObject has been fetched.
         /// </summary>
-        public bool IsDataAvailable
-        {
-            get
-            {
-                lock (mutex)
-                {
+        public bool IsDataAvailable {
+            get {
+                lock (mutex) {
                     return hasBeenFetched;
                 }
             }
         }
 
-        private bool CheckIsDataAvailable(string key)
-        {
-            lock (mutex)
-            {
+        private bool CheckIsDataAvailable(string key) {
+            lock (mutex) {
                 return IsDataAvailable || estimatedData.ContainsKey(key);
             }
         }
 
-        private void CheckGetAccess(string key)
-        {
-            lock (mutex)
-            {
-                if (!CheckIsDataAvailable(key))
-                {
+        private void CheckGetAccess(string key) {
+            lock (mutex) {
+                if (!CheckIsDataAvailable(key)) {
                     throw new InvalidOperationException(
                         "AVObject has no data for this key. Call FetchIfNeededAsync() to get the data.");
                 }
             }
         }
 
-        private void CheckKeyIsMutable(string key)
-        {
-            if (!IsKeyMutable(key))
-            {
+        private void CheckKeyIsMutable(string key) {
+            if (!IsKeyMutable(key)) {
                 throw new InvalidOperationException(
                   "Cannot change the `" + key + "` property of a `" + ClassName + "` object.");
             }
         }
 
-        protected virtual bool IsKeyMutable(string key)
-        {
+        protected virtual bool IsKeyMutable(string key) {
             return true;
         }
 
@@ -1684,22 +1431,17 @@ string propertyName
         /// A helper function for checking whether two AVObjects point to
         /// the same object in the cloud.
         /// </summary>
-        public bool HasSameId(AVObject other)
-        {
-            lock (mutex)
-            {
+        public bool HasSameId(AVObject other) {
+            lock (mutex) {
                 return other != null &&
                     object.Equals(ClassName, other.ClassName) &&
                     object.Equals(ObjectId, other.ObjectId);
             }
         }
 
-        internal IDictionary<string, IAVFieldOperation> CurrentOperations
-        {
-            get
-            {
-                lock (mutex)
-                {
+        internal IDictionary<string, IAVFieldOperation> CurrentOperations {
+            get {
+                lock (mutex) {
                     return operationSetQueue.Last.Value;
                 }
             }
@@ -1709,12 +1451,9 @@ string propertyName
         /// Gets a set view of the keys contained in this object. This does not include createdAt,
         /// updatedAt, or objectId. It does include things like username and ACL.
         /// </summary>
-        public ICollection<string> Keys
-        {
-            get
-            {
-                lock (mutex)
-                {
+        public ICollection<string> Keys {
+            get {
+                lock (mutex) {
                     return estimatedData.Keys;
                 }
             }
@@ -1724,8 +1463,7 @@ string propertyName
         /// Gets or sets the AVACL governing this object.
         /// </summary>
         [AVFieldName("ACL")]
-        public AVACL ACL
-        {
+        public AVACL ACL {
             get { return GetProperty<AVACL>(null, "ACL"); }
             set { SetProperty(value, "ACL"); }
         }
@@ -1740,19 +1478,15 @@ string propertyName
 #else
     internal
 #endif
- bool IsNew
-        {
-            get
-            {
+ bool IsNew {
+            get {
                 return state.IsNew;
             }
 #if !UNITY
             internal
 #endif
-      set
-            {
-                MutateState(mutableClone =>
-                {
+      set {
+                MutateState(mutableClone => {
                     mutableClone.IsNew = value;
                 });
                 OnPropertyChanged("IsNew");
@@ -1766,10 +1500,8 @@ string propertyName
         /// changed locally.
         /// </summary>
         [AVFieldName("updatedAt")]
-        public DateTime? UpdatedAt
-        {
-            get
-            {
+        public DateTime? UpdatedAt {
+            get {
                 return state.UpdatedAt;
             }
         }
@@ -1781,10 +1513,8 @@ string propertyName
         /// the time the object was created locally.
         /// </summary>
         [AVFieldName("createdAt")]
-        public DateTime? CreatedAt
-        {
-            get
-            {
+        public DateTime? CreatedAt {
+            get {
                 return state.CreatedAt;
             }
         }
@@ -1792,16 +1522,12 @@ string propertyName
         /// <summary>
         /// Indicates whether this AVObject has unsaved changes.
         /// </summary>
-        public bool IsDirty
-        {
-            get
-            {
+        public bool IsDirty {
+            get {
                 lock (mutex) { return CheckIsDirty(true); }
             }
-            internal set
-            {
-                lock (mutex)
-                {
+            internal set {
+                lock (mutex) {
                     dirty = value;
                     OnPropertyChanged("IsDirty");
                 }
@@ -1814,18 +1540,14 @@ string propertyName
         /// <param name="key">The key to check for.</param>
         /// <returns><c>true</c> if the key has been altered and not saved yet, otherwise
         /// <c>false</c>.</returns>
-        public bool IsKeyDirty(string key)
-        {
-            lock (mutex)
-            {
+        public bool IsKeyDirty(string key) {
+            lock (mutex) {
                 return CurrentOperations.ContainsKey(key);
             }
         }
 
-        private bool CheckIsDirty(bool considerChildren)
-        {
-            lock (mutex)
-            {
+        private bool CheckIsDirty(bool considerChildren) {
+            lock (mutex) {
                 return (dirty || CurrentOperations.Count > 0 || (considerChildren && HasDirtyChildren));
             }
         }
@@ -1836,14 +1558,11 @@ string propertyName
         /// <see cref="ObjectId"/> uniquely identifies an object in your application.
         /// </summary>
         [AVFieldName("objectId")]
-        public string ObjectId
-        {
-            get
-            {
+        public string ObjectId {
+            get {
                 return state.ObjectId;
             }
-            set
-            {
+            set {
                 IsDirty = true;
                 SetObjectIdInternal(value);
             }
@@ -1852,12 +1571,9 @@ string propertyName
         /// Sets the objectId without marking dirty.
         /// </summary>
         /// <param name="objectId">The new objectId</param>
-        private void SetObjectIdInternal(string objectId)
-        {
-            lock (mutex)
-            {
-                MutateState(mutableClone =>
-                {
+        private void SetObjectIdInternal(string objectId) {
+            lock (mutex) {
+                MutateState(mutableClone => {
                     mutableClone.ObjectId = objectId;
                 });
                 OnPropertyChanged("ObjectId");
@@ -1867,10 +1583,8 @@ string propertyName
         /// <summary>
         /// Gets the class name for the AVObject.
         /// </summary>
-        public string ClassName
-        {
-            get
-            {
+        public string ClassName {
+            get {
                 return state.ClassName;
             }
         }
@@ -1893,12 +1607,9 @@ string propertyName
         /// </remarks>
         /// <param name="key">The key for which a value should be set.</param>
         /// <param name="value">The value for the key.</param>
-        public void Add(string key, object value)
-        {
-            lock (mutex)
-            {
-                if (this.ContainsKey(key))
-                {
+        public void Add(string key, object value) {
+            lock (mutex) {
+                if (this.ContainsKey(key)) {
                     throw new ArgumentException("Key already exists", key);
                 }
                 this[key] = value;
@@ -1906,18 +1617,14 @@ string propertyName
         }
 
         IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>
-            .GetEnumerator()
-        {
-            lock (mutex)
-            {
+            .GetEnumerator() {
+            lock (mutex) {
                 return estimatedData.GetEnumerator();
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            lock (mutex)
-            {
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+            lock (mutex) {
                 return ((IEnumerable<KeyValuePair<string, object>>)this).GetEnumerator();
             }
         }
@@ -1928,15 +1635,13 @@ string propertyName
         /// </summary>
         /// <param name="className">The class name of the object.</param>
         /// <returns>A new <see cref="AVQuery{AVObject}"/>.</returns>
-        public static AVQuery<AVObject> GetQuery(string className)
-        {
+        public static AVQuery<AVObject> GetQuery(string className) {
             // Since we can't return a AVQuery<AVUser> (due to strong-typing with
             // generics), we'll require you to go through subclasses. This is a better
             // experience anyway, especially with LINQ integration, since you'll get
             // strongly-typed queries and compile-time checking of property names and
             // types.
-            if (SubclassingController.GetType(className) != null)
-            {
+            if (SubclassingController.GetType(className) != null) {
                 throw new ArgumentException(
                   "Use the class-specific query properties for class " + className, "className");
             }
@@ -1948,28 +1653,21 @@ string propertyName
         /// field names. If fieldNames is null, this will notify for all known field-linked
         /// properties (e.g. this happens when we recalculate all estimated data from scratch)
         /// </summary>
-        protected virtual void OnFieldsChanged(IEnumerable<string> fieldNames)
-        {
+        protected virtual void OnFieldsChanged(IEnumerable<string> fieldNames) {
             var mappings = SubclassingController.GetPropertyMappings(ClassName);
             IEnumerable<String> properties;
 
-            if (fieldNames != null && mappings != null)
-            {
+            if (fieldNames != null && mappings != null) {
                 properties = from m in mappings
                              join f in fieldNames on m.Value equals f
                              select m.Key;
-            }
-            else if (mappings != null)
-            {
+            } else if (mappings != null) {
                 properties = mappings.Keys;
-            }
-            else
-            {
+            } else {
                 properties = Enumerable.Empty<String>();
             }
 
-            foreach (var property in properties)
-            {
+            foreach (var property in properties) {
                 OnPropertyChanged(property);
             }
             OnPropertyChanged("Item[]");
@@ -1987,8 +1685,7 @@ string propertyName
 #else
 string propertyName
 #endif
-)
-        {
+) {
             propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
@@ -1997,14 +1694,11 @@ string propertyName
         /// <summary>
         /// Occurs when a property value changes.
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged
-        {
-            add
-            {
+        public event PropertyChangedEventHandler PropertyChanged {
+            add {
                 propertyChanged.Add(value);
             }
-            remove
-            {
+            remove {
                 propertyChanged.Remove(value);
             }
         }
@@ -2012,64 +1706,51 @@ string propertyName
         private SynchronizedEventHandler<PropertyUpdatedEventArgs> propertyUpdated =
     new SynchronizedEventHandler<PropertyUpdatedEventArgs>();
 
-        public event PropertyUpdatedEventHandler PropertyUpdated
-        {
-            add
-            {
+        public event PropertyUpdatedEventHandler PropertyUpdated {
+            add {
                 propertyUpdated.Add(value);
             }
-            remove
-            {
+            remove {
                 propertyUpdated.Remove(value);
             }
         }
 
-        protected virtual void OnPropertyUpdated(string propertyName, object newValue, object oldValue)
-        {
+        protected virtual void OnPropertyUpdated(string propertyName, object newValue, object oldValue) {
             propertyUpdated.Invoke(this, new PropertyUpdatedEventArgs(propertyName, oldValue, newValue));
         }
 
         private SynchronizedEventHandler<CollectionPropertyUpdatedEventArgs> collectionUpdated =
 new SynchronizedEventHandler<CollectionPropertyUpdatedEventArgs>();
 
-        public event CollectionPropertyUpdatedEventHandler CollectionPropertyUpdated
-        {
-            add
-            {
+        public event CollectionPropertyUpdatedEventHandler CollectionPropertyUpdated {
+            add {
                 collectionUpdated.Add(value);
             }
-            remove
-            {
+            remove {
                 collectionUpdated.Remove(value);
             }
         }
 
-        protected virtual void OnCollectionPropertyUpdated(string propertyName, NotifyCollectionUpdatedAction action, IEnumerable oldValues, IEnumerable newValues)
-        {
+        protected virtual void OnCollectionPropertyUpdated(string propertyName, NotifyCollectionUpdatedAction action, IEnumerable oldValues, IEnumerable newValues) {
             collectionUpdated?.Invoke(this, new CollectionPropertyUpdatedEventArgs(propertyName, action, oldValues, newValues));
         }
     }
 
-    public interface INotifyPropertyUpdated
-    {
+    public interface INotifyPropertyUpdated {
         event PropertyUpdatedEventHandler PropertyUpdated;
     }
 
-    public interface INotifyCollectionPropertyUpdated
-    {
+    public interface INotifyCollectionPropertyUpdated {
         event CollectionPropertyUpdatedEventHandler CollectionPropertyUpdated;
     }
 
-    public enum NotifyCollectionUpdatedAction
-    {
+    public enum NotifyCollectionUpdatedAction {
         Add,
         Remove
     }
 
-    public class CollectionPropertyUpdatedEventArgs : PropertyChangedEventArgs
-    {
-        public CollectionPropertyUpdatedEventArgs(string propertyName, NotifyCollectionUpdatedAction collectionAction, IEnumerable oldValues, IEnumerable newValues) : base(propertyName)
-        {
+    public class CollectionPropertyUpdatedEventArgs : PropertyChangedEventArgs {
+        public CollectionPropertyUpdatedEventArgs(string propertyName, NotifyCollectionUpdatedAction collectionAction, IEnumerable oldValues, IEnumerable newValues) : base(propertyName) {
             CollectionAction = collectionAction;
             OldValues = oldValues;
             NewValues = newValues;
@@ -2082,10 +1763,8 @@ new SynchronizedEventHandler<CollectionPropertyUpdatedEventArgs>();
         public NotifyCollectionUpdatedAction CollectionAction { get; set; }
     }
 
-    public class PropertyUpdatedEventArgs : PropertyChangedEventArgs
-    {
-        public PropertyUpdatedEventArgs(string propertyName, object oldValue, object newValue) : base(propertyName)
-        {
+    public class PropertyUpdatedEventArgs : PropertyChangedEventArgs {
+        public PropertyUpdatedEventArgs(string propertyName, object oldValue, object newValue) : base(propertyName) {
             OldValue = oldValue;
             NewValue = newValue;
         }

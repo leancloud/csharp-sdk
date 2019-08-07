@@ -6,28 +6,14 @@ using LeanCloud.Storage.Internal;
 using System.Collections.Generic;
 using System.Net.Http;
 
-namespace LeanCloud.Storage.Internal
-{
-    internal class AWSS3FileController : AVFileController
-    {
-
-        private object mutex = new object();
-
-
-        public AWSS3FileController(IAVCommandRunner commandRunner) : base(commandRunner)
-        {
-
-        }
-
-        public override Task<FileState> SaveAsync(FileState state, Stream dataStream, string sessionToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken = default(System.Threading.CancellationToken))
-        {
-            if (state.Url != null)
-            {
+namespace LeanCloud.Storage.Internal {
+    internal class AWSS3FileController : AVFileController {
+        public override Task<FileState> SaveAsync(FileState state, Stream dataStream, string sessionToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken = default(System.Threading.CancellationToken)) {
+            if (state.Url != null) {
                 return Task.FromResult(state);
             }
 
-            return GetFileToken(state, cancellationToken).OnSuccess(t =>
-            {
+            return GetFileToken(state, cancellationToken).OnSuccess(t => {
                 var fileToken = t.Result.Item2;
                 var uploadUrl = fileToken["upload_url"].ToString();
                 state.ObjectId = fileToken["objectId"].ToString();
@@ -35,14 +21,12 @@ namespace LeanCloud.Storage.Internal
                 state.Url = new Uri(url, UriKind.Absolute);
                 return PutFile(state, uploadUrl, dataStream);
 
-            }).Unwrap().OnSuccess(s =>
-            {
+            }).Unwrap().OnSuccess(s => {
                 return s.Result;
             });
         }
 
-        internal async Task<FileState> PutFile(FileState state, string uploadUrl, Stream dataStream)
-        {
+        internal async Task<FileState> PutFile(FileState state, string uploadUrl, Stream dataStream) {
             IList<KeyValuePair<string, string>> makeBlockHeaders = new List<KeyValuePair<string, string>>();
             makeBlockHeaders.Add(new KeyValuePair<string, string>("Content-Type", state.MimeType));
             var request = new HttpRequest {

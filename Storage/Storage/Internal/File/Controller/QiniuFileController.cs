@@ -31,11 +31,6 @@ namespace LeanCloud.Storage.Internal
         internal static string UP_HOST = "https://up.qbox.me";
         private object mutex = new object();
 
-        public QiniuFileController(IAVCommandRunner commandRunner) : base(commandRunner)
-        {
-
-        }
-
         public override Task<FileState> SaveAsync(FileState state,
         Stream dataStream,
         String sessionToken,
@@ -165,7 +160,7 @@ namespace LeanCloud.Storage.Internal
                 Method = HttpMethod.Post,
                 Content = parameters
             };
-            return commandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
         IList<KeyValuePair<string, string>> GetQiniuRequestHeaders(FileState state)
         {

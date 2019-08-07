@@ -6,17 +6,11 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http;
 
-namespace LeanCloud.Storage.Internal
-{
-    public class AppRouterController : IAppRouterController
-    {
+namespace LeanCloud.Storage.Internal {
+    public class AppRouterController {
         private AppRouterState currentState;
         private readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
-        /// <summary>
-        /// Get current app's router state
-        /// </summary>
-        /// <returns></returns>
         public AppRouterState Get() {
             if (string.IsNullOrEmpty(AVClient.CurrentConfiguration.ApplicationId)) {
                 throw new AVException(AVException.ErrorCode.NotInitialized, "ApplicationId can not be null.");
