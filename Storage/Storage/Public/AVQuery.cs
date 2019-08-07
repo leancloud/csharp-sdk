@@ -152,38 +152,54 @@ namespace LeanCloud
             return newSelectedKeys;
         }
 
-        public static AVQuery<T> Or(IEnumerable<AVQuery<T>> queries)
-        {
+        public static AVQuery<T> Or(IEnumerable<AVQuery<T>> queries) {
             string className = null;
             var orValue = new List<IDictionary<string, object>>();
             // We need to cast it to non-generic IEnumerable because of AOT-limitation
             var nonGenericQueries = (IEnumerable)queries;
-            foreach (var obj in nonGenericQueries)
-            {
+            foreach (var obj in nonGenericQueries) {
                 var q = (AVQuery<T>)obj;
-                if (className != null && q.ClassName != className)
-                {
-                    throw new ArgumentException(
-                        "All of the queries in an or query must be on the same class.");
+                if (className != null && q.ClassName != className) {
+                    throw new ArgumentException("All of the queries in an or query must be on the same class.");
                 }
                 className = q.ClassName;
                 var parameters = q.BuildParameters();
-                if (parameters.Count == 0)
-                {
+                if (parameters.Count == 0) {
                     continue;
                 }
-                object where;
-                if (!parameters.TryGetValue("where", out where) || parameters.Count > 1)
-                {
-                    throw new ArgumentException(
-                        "None of the queries in an or query can have non-filtering clauses");
+                if (!parameters.TryGetValue("where", out object where) || parameters.Count > 1) {
+                    throw new ArgumentException("None of the queries in an or query can have non-filtering clauses");
                 }
                 orValue.Add(where as IDictionary<string, object>);
             }
-            return new AVQuery<T>(new AVQuery<T>(className),
-              where: new Dictionary<string, object> {
-                  { "$or", orValue}
-              });
+            return new AVQuery<T>(new AVQuery<T>(className), new Dictionary<string, object> {
+                  { "$or", orValue }
+            });
+        }
+
+        public static AVQuery<T> And(IEnumerable<AVQuery<T>> queries) {
+            string className = null;
+            var andValue = new List<IDictionary<string, object>>();
+            // We need to cast it to non-generic IEnumerable because of AOT-limitation
+            var nonGenericQueries = (IEnumerable)queries;
+            foreach (var obj in nonGenericQueries) {
+                var q = (AVQuery<T>)obj;
+                if (className != null && q.ClassName != className) {
+                    throw new ArgumentException("All of the queries in an or query must be on the same class.");
+                }
+                className = q.ClassName;
+                var parameters = q.BuildParameters();
+                if (parameters.Count == 0) {
+                    continue;
+                }
+                if (!parameters.TryGetValue("where", out object where) || parameters.Count > 1) {
+                    throw new ArgumentException("None of the queries in an or query can have non-filtering clauses");
+                }
+                andValue.Add(where as IDictionary<string, object>);
+            }
+            return new AVQuery<T>(new AVQuery<T>(className), new Dictionary<string, object> {
+                  { "$and", andValue }
+            });
         }
 
         public Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken = default)
