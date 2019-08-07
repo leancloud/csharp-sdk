@@ -255,11 +255,9 @@ namespace LeanCloud
         /// <param name="cql">CQL 语句</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>返回符合条件的对象集合</returns>
-        public static Task<IEnumerable<T>> DoCloudQueryAsync(string cql, CancellationToken cancellationToken)
-        {
-            var queryString = string.Format("cloudQuery?cql={0}", Uri.EscapeDataString(cql));
-
-            return rebuildObjectFromCloudQueryResult(queryString);
+        public static Task<IEnumerable<T>> DoCloudQueryAsync(string cql, CancellationToken cancellationToken) {
+            var queryString = $"cloudQuery?cql={Uri.EscapeDataString(cql)}";
+            return RebuildObjectFromCloudQueryResult(queryString);
         }
 
         /// <summary>
@@ -267,8 +265,7 @@ namespace LeanCloud
         /// </summary>
         /// <param name="cql"></param>
         /// <returns></returns>
-        public static Task<IEnumerable<T>> DoCloudQueryAsync(string cql)
-        {
+        public static Task<IEnumerable<T>> DoCloudQueryAsync(string cql) {
             return DoCloudQueryAsync(cql, CancellationToken.None);
         }
 
@@ -278,17 +275,15 @@ namespace LeanCloud
         /// <param name="cqlTeamplate">带有占位符的模板 cql 语句</param>
         /// <param name="pvalues">占位符对应的参数数组</param>
         /// <returns></returns>
-        public static Task<IEnumerable<T>> DoCloudQueryAsync(string cqlTeamplate, params object[] pvalues)
-        {
+        public static Task<IEnumerable<T>> DoCloudQueryAsync(string cqlTeamplate, params object[] pvalues) {
             string queryStringTemplate = "cloudQuery?cql={0}&pvalues={1}";
             string pSrting = JsonConvert.SerializeObject(pvalues);
             string queryString = string.Format(queryStringTemplate, Uri.EscapeDataString(cqlTeamplate), Uri.EscapeDataString(pSrting));
 
-            return rebuildObjectFromCloudQueryResult(queryString);
+            return RebuildObjectFromCloudQueryResult(queryString);
         }
 
-        internal static Task<IEnumerable<T>> rebuildObjectFromCloudQueryResult(string queryString)
-        {
+        internal static Task<IEnumerable<T>> RebuildObjectFromCloudQueryResult(string queryString) {
             var command = new AVCommand {
                 Path = queryString,
                 Method = HttpMethod.Get
@@ -383,12 +378,12 @@ namespace LeanCloud
 
             var other = obj as AVQuery<T>;
             return ClassName.Equals(other.ClassName) &&
-                   this.where.CollectionsEqual(other.where) &&
-                   this.orderBy.CollectionsEqual(other.orderBy) &&
-                   this.includes.CollectionsEqual(other.includes) &&
-                   this.selectedKeys.CollectionsEqual(other.selectedKeys) &&
-                   object.Equals(this.skip, other.skip) &&
-                   object.Equals(this.limit, other.limit);
+                   where.CollectionsEqual(other.where) &&
+                   orderBy.CollectionsEqual(other.orderBy) &&
+                   includes.CollectionsEqual(other.includes) &&
+                   selectedKeys.CollectionsEqual(other.selectedKeys) &&
+                   Equals(skip, other.skip) &&
+                   Equals(limit, other.limit);
         }
 
         public override int GetHashCode() {
@@ -554,7 +549,7 @@ namespace LeanCloud
                   "Only ECMAScript-compatible regexes are supported. Please use the ECMAScript RegexOptions flag when creating your regex.");
             }
             MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { key, EncodeRegex(regex, modifiers) } } }
+                { key, EncodeRegex(regex, modifiers) }
             });
             return this;
         }
@@ -563,7 +558,7 @@ namespace LeanCloud
             return WhereMatches(key, regex, null);
         }
 
-        public AVQuery<T> WhereMatches(string key, string pattern, string modifiers = null) {
+        public AVQuery<T> WhereMatches(string key, string pattern, string modifiers) {
             return WhereMatches(key, new Regex(pattern, RegexOptions.ECMAScript), modifiers);
         }
 
