@@ -66,7 +66,7 @@ namespace LeanCloud.Storage.Internal {
                 // 错误处理
                 var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(contentString, new LeanCloudJsonConverter());
                 if (data.TryGetValue("code", out object codeObj)) {
-                    AVException.ErrorCode code = (AVException.ErrorCode)codeObj;
+                    AVException.ErrorCode code = (AVException.ErrorCode)Enum.ToObject(typeof(AVException.ErrorCode), codeObj);
                     string detail = data["error"] as string;
                     throw new AVException(code, detail);
                 } else {
