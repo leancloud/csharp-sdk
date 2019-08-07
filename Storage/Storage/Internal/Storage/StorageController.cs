@@ -7,9 +7,6 @@ using System.Threading;
 using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal {
-    /// <summary>
-    /// Implements `IStorageController` for PCL targets, based off of PCLStorage.
-    /// </summary>
     public class StorageController {
         public class StorageDictionary : IEnumerable<KeyValuePair<string, object>> {
             private readonly string filePath;
