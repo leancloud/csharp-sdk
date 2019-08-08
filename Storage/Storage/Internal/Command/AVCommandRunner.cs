@@ -36,7 +36,7 @@ namespace LeanCloud.Storage.Internal {
                 Content = new StringContent(JsonConvert.SerializeObject(command.Content))
             };
 
-            var headers = await GetHeadersAsync();
+            var headers = GetHeadersAsync();
             foreach (var header in headers) {
                 if (!string.IsNullOrEmpty(header.Value)) {
                     request.Headers.Add(header.Key, header.Value);
@@ -89,10 +89,10 @@ namespace LeanCloud.Storage.Internal {
 
         private const string revocableSessionTokenTrueValue = "1";
 
-        async Task<Dictionary<string, string>> GetHeadersAsync() {
+        Dictionary<string, string> GetHeadersAsync() {
             var headers = new Dictionary<string, string>();
-            var installationId = await AVPlugins.Instance.InstallationIdController.GetAsync();
-            headers.Add("X-LC-Installation-Id", installationId.ToString());
+            var installationId = AVPlugins.Instance.InstallationIdController.Get();
+            headers.Add("X-LC-Installation-Id", installationId);
             var conf = AVClient.CurrentConfiguration;
             headers.Add("X-LC-Id", conf.ApplicationId);
             long timestamp = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;

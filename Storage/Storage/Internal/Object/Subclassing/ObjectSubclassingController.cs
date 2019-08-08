@@ -30,14 +30,11 @@ namespace LeanCloud.Storage.Internal {
         }
 
         public Type GetType(string className) {
-            ObjectSubclassInfo info = null;
             mutex.EnterReadLock();
-            registeredSubclasses.TryGetValue(className, out info);
+            registeredSubclasses.TryGetValue(className, out ObjectSubclassInfo info);
             mutex.ExitReadLock();
 
-            return info != null
-              ? info.TypeInfo.AsType()
-              : null;
+            return info?.TypeInfo.AsType();
         }
 
         public bool IsTypeValid(string className, Type type) {

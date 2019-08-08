@@ -19,13 +19,13 @@ namespace LeanCloud.Storage.Internal {
                 dictionary = new Dictionary<string, object>();
             }
 
-            internal Task SaveAsync() {
+            internal async Task SaveAsync() {
                 string json;
                 locker.EnterReadLock();
-                json = JsonConvert.SerializeObject(dictionary);
+                json = await JsonUtils.SerializeObjectAsync(dictionary);
                 locker.ExitReadLock();
                 using (var sw = new StreamWriter(filePath)) {
-                    return sw.WriteAsync(json);
+                    await sw.WriteAsync(json);
                 }
             }
 
@@ -150,6 +150,7 @@ namespace LeanCloud.Storage.Internal {
         private readonly TaskQueue taskQueue = new TaskQueue();
         private readonly Task<string> fileTask;
         private StorageDictionary storageDictionary;
+        private IDictionary<string, object> storage;
 
         public StorageController(string fileNamePrefix) {
             fileTask = taskQueue.Enqueue(t => t.ContinueWith(_ => {

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Net;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal {
