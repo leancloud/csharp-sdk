@@ -1,10 +1,11 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace LeanCloud.Storage.Internal
-{
-    public class AppRouterState
-    {
+namespace LeanCloud.Storage.Internal {
+    public class AppRouterState {
+        const string EAST_CHINA_SUFFIX = "-9Nh9j0Va";
+        const string US_SUFFIX = "-MdYXbMMI";
+
         [JsonProperty("ttl")]
         public long TTL {
             get; internal set;
@@ -53,34 +54,11 @@ namespace LeanCloud.Storage.Internal
             }
         }
 
-        public static AppRouterState GetFallbackServers(string appId, AVClient.Configuration.AVRegion region) {
-            var regionValue = (int)region;
+        public static AppRouterState GetFallbackServers(string appId) {
             var prefix = appId.Substring(0, 8).ToLower();
-            switch (regionValue)
-            {
-                case 0:
-                    // 华北
-                    return new AppRouterState {
-                        TTL = -1,
-                        ApiServer = $"{prefix}.api.lncld.net",
-                        EngineServer = $"{prefix}.engine.lncld.net",
-                        PushServer = $"{prefix}.push.lncld.net",
-                        RTMServer = $"{prefix}.rtm.lncld.net",
-                        StatsServer = $"{prefix}.stats.lncld.net",
-                        Source = "fallback",
-                    };
-                case 1:
-                    // 美国
-                    return new AppRouterState {
-                        TTL = -1,
-                        ApiServer = $"{prefix}.api.lncldglobal.com",
-                        EngineServer = $"{prefix}.engine.lncldglobal.com",
-                        PushServer = $"{prefix}.push.lncldglobal.com",
-                        RTMServer = $"{prefix}.rtm.lncldglobal.com",
-                        StatsServer = $"{prefix}.stats.lncldglobal.com",
-                        Source = "fallback",
-                    };
-                case 2:
+            var suffix = appId.Substring(appId.Length - 9);
+            switch (suffix) {
+                case EAST_CHINA_SUFFIX:
                     // 华东
                     return new AppRouterState {
                         TTL = -1,
@@ -91,8 +69,28 @@ namespace LeanCloud.Storage.Internal
                         StatsServer = $"{prefix}.stats.lncldapi.com",
                         Source = "fallback",
                     };
+                case US_SUFFIX:
+                    // 美国
+                    return new AppRouterState {
+                        TTL = -1,
+                        ApiServer = $"{prefix}.api.lncldglobal.com",
+                        EngineServer = $"{prefix}.engine.lncldglobal.com",
+                        PushServer = $"{prefix}.push.lncldglobal.com",
+                        RTMServer = $"{prefix}.rtm.lncldglobal.com",
+                        StatsServer = $"{prefix}.stats.lncldglobal.com",
+                        Source = "fallback",
+                    };
                 default:
-                    throw new AVException(AVException.ErrorCode.OtherCause, "invalid region");
+                    // 华北
+                    return new AppRouterState {
+                        TTL = -1,
+                        ApiServer = $"{prefix}.api.lncld.net",
+                        EngineServer = $"{prefix}.engine.lncld.net",
+                        PushServer = $"{prefix}.push.lncld.net",
+                        RTMServer = $"{prefix}.rtm.lncld.net",
+                        StatsServer = $"{prefix}.stats.lncld.net",
+                        Source = "fallback",
+                    };
             }
         }
 
