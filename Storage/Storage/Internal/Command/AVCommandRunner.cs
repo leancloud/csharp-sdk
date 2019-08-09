@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal {
@@ -13,9 +14,35 @@ namespace LeanCloud.Storage.Internal {
     /// Command Runner.
     /// </summary>
     public class AVCommandRunner {
-        public const string APPLICATION_JSON = "application/json";
+        const string APPLICATION_JSON = "application/json";
+        const string USE_PRODUCTION = "1";
+        const string USE_DEVELOPMENT = "0";
 
-        private readonly System.Net.Http.HttpClient httpClient = new System.Net.Http.HttpClient();
+        private readonly System.Net.Http.HttpClient httpClient;
+
+        public AVCommandRunner() {
+            httpClient = new System.Net.Http.HttpClient();
+            ProductHeaderValue product = new ProductHeaderValue(AVClient.Name, AVClient.Version);
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(product));
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(APPLICATION_JSON));
+
+            var conf = AVClient.CurrentConfiguration;
+            // App ID
+            httpClient.DefaultRequestHeaders.Add("X-LC-Id", conf.ApplicationId);
+            // App Signature
+            long timestamp = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            if (!string.IsNullOrEmpty(conf.MasterKey) && AVClient.UseMasterKey) {
+                string sign = MD5.GetMd5String(timestamp + conf.MasterKey);
+                httpClient.DefaultRequestHeaders.Add("X-LC-Sign", $"{sign},{timestamp},master");
+            } else {
+                string sign = MD5.GetMd5String(timestamp + conf.ApplicationKey);
+                httpClient.DefaultRequestHeaders.Add("X-LC-Sign", $"{sign},{timestamp}");
+            }
+            // TODO Session
+
+            // Production
+            httpClient.DefaultRequestHeaders.Add("X-LC-Prod", AVClient.UseProduction ? USE_PRODUCTION : USE_DEVELOPMENT);
+        }
 
         /// <summary>
         /// 
@@ -30,21 +57,22 @@ namespace LeanCloud.Storage.Internal {
             IProgress<AVDownloadProgressEventArgs> downloadProgress = null,
             CancellationToken cancellationToken = default) {
 
+            string content = JsonConvert.SerializeObject(command.Content);
             var request = new HttpRequestMessage {
                 RequestUri = command.Uri,
                 Method = command.Method,
-                Content = new StringContent(JsonConvert.SerializeObject(command.Content))
+                Content = new StringContent(content)
             };
 
-            var headers = GetHeadersAsync();
-            foreach (var header in headers) {
-                if (!string.IsNullOrEmpty(header.Value)) {
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(APPLICATION_JSON);
+            // 特殊 Headers
+            if (command.Headers != null) {
+                foreach (KeyValuePair<string, string> header in command.Headers) {
                     request.Headers.Add(header.Key, header.Value);
                 }
             }
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue(APPLICATION_JSON);
+            PrintRequest(httpClient, request, content);
 
-            PrintRequest(command, headers);
             var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             request.Dispose();
 
@@ -87,38 +115,22 @@ namespace LeanCloud.Storage.Internal {
             return new Tuple<HttpStatusCode, T>(responseCode, default);
         }
 
-        private const string revocableSessionTokenTrueValue = "1";
-
-        Dictionary<string, string> GetHeadersAsync() {
-            var headers = new Dictionary<string, string>();
-            var installationId = AVPlugins.Instance.InstallationIdController.Get();
-            headers.Add("X-LC-Installation-Id", installationId);
-            var conf = AVClient.CurrentConfiguration;
-            headers.Add("X-LC-Id", conf.ApplicationId);
-            long timestamp = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
-            if (!string.IsNullOrEmpty(conf.MasterKey) && AVClient.UseMasterKey) {
-                string sign = MD5.GetMd5String(timestamp + conf.MasterKey);
-                headers.Add("X-LC-Sign", $"{sign},{timestamp},master");
-            } else {
-                string sign = MD5.GetMd5String(timestamp + conf.ApplicationKey);
-                headers.Add("X-LC-Sign", $"{sign},{timestamp}");
-            }
-            // TODO 重新设计版本号
-            headers.Add("X-LC-Client-Version", AVClient.VersionString);
-            headers.Add("X-LC-App-Build-Version", conf.VersionInfo.BuildVersion);
-            headers.Add("X-LC-App-Display-Version", conf.VersionInfo.DisplayVersion);
-            headers.Add("X-LC-OS-Version", conf.VersionInfo.OSVersion);
-            headers.Add("X-LeanCloud-Revocable-Session", revocableSessionTokenTrueValue);
-            return headers;
-        }
-
-        static void PrintRequest(AVCommand request, Dictionary<string, string> headers) {
+        static void PrintRequest(System.Net.Http.HttpClient client, HttpRequestMessage request, string content) {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("=== HTTP Request Start ===");
-            sb.AppendLine($"URL: {request.Uri}");
+            sb.AppendLine($"URL: {request.RequestUri}");
             sb.AppendLine($"Method: {request.Method}");
-            sb.AppendLine($"Headers: {JsonConvert.SerializeObject(headers)}");
-            sb.AppendLine($"Content: {JsonConvert.SerializeObject(request.Content)}");
+            sb.AppendLine($"Headers: ");
+            foreach (var header in client.DefaultRequestHeaders) {
+                sb.AppendLine($"\t{header.Key}: {string.Join(",", header.Value.ToArray())}");
+            }
+            foreach (var header in request.Headers) {
+                sb.AppendLine($"\t{header.Key}: {string.Join(",", header.Value.ToArray())}");
+            }
+            foreach (var header in request.Content.Headers) {
+                sb.AppendLine($"\t{header.Key}: {string.Join(",", header.Value.ToArray())}");
+            }
+            sb.AppendLine($"Content: {content}");
             sb.AppendLine("=== HTTP Request End ===");
             AVClient.PrintLog(sb.ToString());
         }

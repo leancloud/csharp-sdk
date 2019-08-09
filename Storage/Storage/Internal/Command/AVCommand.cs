@@ -25,7 +25,14 @@ namespace LeanCloud.Storage.Internal
         }
 
         public Dictionary<string, string> Headers {
-            get; set;
+            get {
+                if (AVUser.CurrentUser != null) {
+                    return new Dictionary<string, string> {
+                        { "X-LC-Session", AVUser.CurrentUser.SessionToken }
+                    };
+                }
+                return null;
+            }
         }
 
         public object Content {

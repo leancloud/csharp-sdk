@@ -11,14 +11,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace LeanCloud
-{
+namespace LeanCloud {
     /// <summary>
     /// AVClient contains static functions that handle global
     /// configuration for the LeanCloud library.
     /// </summary>
-    public static class AVClient
-    {
+    public static class AVClient {
         public static readonly string[] DateFormatStrings = {
             // Official ISO format
             "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'",
@@ -31,13 +29,11 @@ namespace LeanCloud
         /// <summary>
         /// Represents the configuration of the LeanCloud SDK.
         /// </summary>
-        public struct Configuration
-        {
+        public struct Configuration {
             /// <summary>
             /// 与 SDK 通讯的云端节点 
             /// </summary>
-            public enum AVRegion
-            {
+            public enum AVRegion {
                 /// <summary>
                 /// 默认值，LeanCloud 华北节点，同 Public_North_China
                 /// </summary>
@@ -81,8 +77,7 @@ namespace LeanCloud
             /// Any values set here will overwrite those that are automatically configured by
             /// any platform-specific migration library your app includes.
             /// </summary>
-            public struct VersionInformation
-            {
+            public struct VersionInformation {
                 /// <summary>
                 /// The build number of your app.
                 /// </summary>
@@ -110,10 +105,8 @@ namespace LeanCloud
             /// </summary>
             public AVRegion Region { get; set; }
 
-            internal int RegionValue
-            {
-                get
-                {
+            internal int RegionValue {
+                get {
                     return (int)Region;
                 }
             }
@@ -178,29 +171,24 @@ namespace LeanCloud
         /// </summary>
         public static Configuration CurrentConfiguration { get; internal set; }
 
-        internal static Version Version
-        {
-            get
-            {
-                var assemblyName = new AssemblyName(typeof(AVClient).GetTypeInfo().Assembly.FullName);
-                return assemblyName.Version;
-            }
-        }
-
         internal static string APIVersion {
             get {
                 return "1.1";
             }
         }
 
+        public static string Name {
+            get {
+                return "LeanCloud-CSharp-SDK";
+            }
+        }
+
         /// <summary>
         /// 当前 SDK 版本号
         /// </summary>
-        public static string VersionString
-        {
-            get
-            {
-                return "net-v0.1.0";
+        public static string Version {
+            get {
+                return "0.1.0";
             }
         }
 
@@ -214,10 +202,8 @@ namespace LeanCloud
         /// </param>
         /// <param name="applicationKey">The .NET API Key provided in the LeanCloud dashboard.
         /// </param>
-        public static void Initialize(string applicationId, string applicationKey)
-        {
-            Initialize(new Configuration
-            {
+        public static void Initialize(string applicationId, string applicationKey) {
+            Initialize(new Configuration {
                 ApplicationId = applicationId,
                 ApplicationKey = applicationKey
             });
@@ -229,16 +215,14 @@ namespace LeanCloud
         /// 启动日志打印
         /// </summary>
         /// <param name="trace"></param>
-        public static void HttpLog(Action<string> trace)
-        {
+        public static void HttpLog(Action<string> trace) {
             LogTracker = trace;
         }
         /// <summary>
         /// 打印 HTTP 访问日志
         /// </summary>
         /// <param name="log"></param>
-        public static void PrintLog(string log)
-        {
+        public static void PrintLog(string log) {
             LogTracker?.Invoke(log);
         }
 
@@ -262,8 +246,7 @@ namespace LeanCloud
         /// </summary>
         /// <param name="configuration">The configuration to initialize LeanCloud with.
         /// </param>
-        public static void Initialize(Configuration configuration)
-        {
+        public static void Initialize(Configuration configuration) {
             Config(configuration);
 
             AVObject.RegisterSubclass<AVUser>();
@@ -271,15 +254,11 @@ namespace LeanCloud
             AVObject.RegisterSubclass<AVSession>();
         }
 
-        internal static void Config(Configuration configuration)
-        {
-            lock (mutex)
-            {
+        internal static void Config(Configuration configuration) {
+            lock (mutex) {
                 var nodeHash = configuration.ApplicationId.Split('-');
-                if (nodeHash.Length > 1)
-                {
-                    if (nodeHash[1].Trim() == "9Nh9j0Va")
-                    {
+                if (nodeHash.Length > 1) {
+                    if (nodeHash[1].Trim() == "9Nh9j0Va") {
                         configuration.Region = Configuration.AVRegion.Public_East_China;
                     }
                 }
@@ -288,8 +267,7 @@ namespace LeanCloud
             }
         }
 
-        internal static void Clear()
-        {
+        internal static void Clear() {
             AVPlugins.Instance.AppRouterController.Clear();
             AVPlugins.Instance.Reset();
             AVUser.ClearInMemoryUser();
@@ -299,16 +277,13 @@ namespace LeanCloud
         /// Switch app.
         /// </summary>
         /// <param name="configuration">Configuration.</param>
-        public static void Switch(Configuration configuration)
-        {
+        public static void Switch(Configuration configuration) {
             Clear();
             Initialize(configuration);
         }
 
-        public static void Switch(string applicationId, string applicationKey, Configuration.AVRegion region = Configuration.AVRegion.Public_North_China)
-        {
-            var configuration = new Configuration
-            {
+        public static void Switch(string applicationId, string applicationKey, Configuration.AVRegion region = Configuration.AVRegion.Public_North_China) {
+            var configuration = new Configuration {
                 ApplicationId = applicationId,
                 ApplicationKey = applicationKey,
                 Region = region
@@ -316,8 +291,7 @@ namespace LeanCloud
             Switch(configuration);
         }
 
-        public static string BuildQueryString(IDictionary<string, object> parameters)
-        {
+        public static string BuildQueryString(IDictionary<string, object> parameters) {
             return string.Join("&", (from pair in parameters
                                      let valueString = pair.Value as string
                                      select string.Format("{0}={1}",
@@ -327,11 +301,9 @@ namespace LeanCloud
                                        .ToArray());
         }
 
-        internal static IDictionary<string, string> DecodeQueryString(string queryString)
-        {
+        internal static IDictionary<string, string> DecodeQueryString(string queryString) {
             var dict = new Dictionary<string, string>();
-            foreach (var pair in queryString.Split('&'))
-            {
+            foreach (var pair in queryString.Split('&')) {
                 var parts = pair.Split(new char[] { '=' }, 2);
                 dict[parts[0]] = parts.Length == 2 ? Uri.UnescapeDataString(parts[1].Replace("+", " ")) : null;
             }

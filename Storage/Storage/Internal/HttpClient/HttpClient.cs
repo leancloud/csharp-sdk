@@ -29,8 +29,8 @@ namespace LeanCloud.Storage.Internal {
 
         public HttpClient() {
             client = new NetHttpClient();
-            // TODO 设置版本号
-            client.DefaultRequestHeaders.Add("User-Agent", "LeanCloud-dotNet-SDK/" + "2.0.0");
+            // 设置版本号
+            client.DefaultRequestHeaders.Add("User-Agent", $"LeanCloud-csharp-sdk-{AVClient.Version}");
         }
 
         public HttpClient(NetHttpClient client) {
