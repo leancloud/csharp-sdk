@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using System.Threading;
 using System.IO;
-using LeanCloud.Storage.Internal;
 using System.Collections.Generic;
 using System.Net.Http;
 
@@ -29,13 +28,19 @@ namespace LeanCloud.Storage.Internal {
         internal async Task<FileState> PutFile(FileState state, string uploadUrl, Stream dataStream) {
             IList<KeyValuePair<string, string>> makeBlockHeaders = new List<KeyValuePair<string, string>>();
             makeBlockHeaders.Add(new KeyValuePair<string, string>("Content-Type", state.MimeType));
-            var request = new HttpRequest {
-                Uri = new Uri(uploadUrl),
+
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage {
+                RequestUri = new Uri(uploadUrl),
                 Method = HttpMethod.Put,
-                Headers = makeBlockHeaders,
-                Data = dataStream
+                Content = new StreamContent(dataStream)
             };
-            await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
+            foreach (var header in makeBlockHeaders) {
+                request.Headers.Add(header.Key, header.Value);
+            }
+            await client.SendAsync(request);
+            client.Dispose();
+            request.Dispose();
             return state;
         }
     }

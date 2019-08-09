@@ -18,10 +18,10 @@ namespace LeanCloud.Storage.Internal {
         const string USE_PRODUCTION = "1";
         const string USE_DEVELOPMENT = "0";
 
-        private readonly System.Net.Http.HttpClient httpClient;
+        private readonly HttpClient httpClient;
 
         public AVCommandRunner() {
-            httpClient = new System.Net.Http.HttpClient();
+            httpClient = new HttpClient();
             ProductHeaderValue product = new ProductHeaderValue(AVClient.Name, AVClient.Version);
             httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(product));
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(APPLICATION_JSON));
@@ -48,15 +48,9 @@ namespace LeanCloud.Storage.Internal {
         /// 
         /// </summary>
         /// <param name="command"></param>
-        /// <param name="uploadProgress"></param>
-        /// <param name="downloadProgress"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<Tuple<HttpStatusCode, T>> RunCommandAsync<T>(AVCommand command,
-            IProgress<AVUploadProgressEventArgs> uploadProgress = null,
-            IProgress<AVDownloadProgressEventArgs> downloadProgress = null,
-            CancellationToken cancellationToken = default) {
-
+        public async Task<Tuple<HttpStatusCode, T>> RunCommandAsync<T>(AVCommand command,CancellationToken cancellationToken = default) {
             string content = JsonConvert.SerializeObject(command.Content);
             var request = new HttpRequestMessage {
                 RequestUri = command.Uri,
@@ -115,7 +109,7 @@ namespace LeanCloud.Storage.Internal {
             return new Tuple<HttpStatusCode, T>(responseCode, default);
         }
 
-        static void PrintRequest(System.Net.Http.HttpClient client, HttpRequestMessage request, string content) {
+        static void PrintRequest(HttpClient client, HttpRequestMessage request, string content) {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("=== HTTP Request Start ===");
             sb.AppendLine($"URL: {request.RequestUri}");

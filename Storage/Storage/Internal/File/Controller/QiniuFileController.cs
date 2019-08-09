@@ -175,25 +175,41 @@ namespace LeanCloud.Storage.Internal
             MemoryStream firstChunkData = new MemoryStream(firstChunkBinary, 0, firstChunkBinary.Length);
             var headers = GetQiniuRequestHeaders(state);
             headers.Add(new KeyValuePair<string, string>("Content-Type", "application/octet-stream"));
-            var request = new HttpRequest {
-                Uri = new Uri(new Uri(UP_HOST) + string.Format("mkblk/{0}", blcokSize)),
+            var client = new HttpClient();
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri($"{UP_HOST}/mkblk/{blcokSize}"),
                 Method = HttpMethod.Post,
-                Headers = headers,
-                Data = firstChunkData
+                Content = new StreamContent(firstChunkData)
             };
-            return await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
+            foreach (var header in headers) {
+                request.Headers.Add(header.Key, header.Value);
+            }
+            var response = await client.SendAsync(request);
+            client.Dispose();
+            request.Dispose();
+            var content = await response.Content.ReadAsStringAsync();
+            response.Dispose();
+            return await JsonUtils.DeserializeObjectAsync<Tuple<HttpStatusCode, string>>(content);
         }
 
         async Task<Tuple<HttpStatusCode, string>> PutChunk(FileState state, byte[] chunkBinary, string LastChunkctx, long currentChunkOffsetInBlock) {
             MemoryStream chunkData = new MemoryStream(chunkBinary, 0, chunkBinary.Length);
-            var request = new HttpRequest {
-                Uri = new Uri(new Uri(UP_HOST) + string.Format("bput/{0}/{1}", LastChunkctx, currentChunkOffsetInBlock)),
+            var client = new HttpClient();
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri($"{UP_HOST}/bput/{LastChunkctx}/{currentChunkOffsetInBlock}"),
                 Method = HttpMethod.Post,
-                Headers = GetQiniuRequestHeaders(state),
-                Data = chunkData
+                Content = new StreamContent(chunkData)
             };
-            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
-            return ret;
+            var headers = GetQiniuRequestHeaders(state);
+            foreach (var header in headers) {
+                request.Headers.Add(header.Key, header.Value);
+            }
+            var response = await client.SendAsync(request);
+            client.Dispose();
+            request.Dispose();
+            var content = await response.Content.ReadAsStringAsync();
+            response.Dispose();
+            return await JsonUtils.DeserializeObjectAsync<Tuple<HttpStatusCode, string>>(content);
         }
 
         internal async Task<Tuple<HttpStatusCode, string>> QiniuMakeFile(FileState state, Stream dataStream, string upToken, string key, long fsize, string[] ctxes, CancellationToken cancellationToken)
@@ -232,15 +248,21 @@ namespace LeanCloud.Storage.Internal
                 }
             }
             body.Seek(0, SeekOrigin.Begin);
-            var request = new HttpRequest {
-                Uri = new Uri(urlBuilder.ToString()),
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri(urlBuilder.ToString()),
                 Method = HttpMethod.Post,
-                Headers = headers,
-                Data = body
+                Content = new StreamContent(body)
             };
-            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
-            return ret;
+            var response = await client.SendAsync(request);
+            client.Dispose();
+            request.Dispose();
+            var content = await response.Content.ReadAsStringAsync();
+            response.Dispose();
+            return await JsonUtils.DeserializeObjectAsync<Tuple<HttpStatusCode, string>>(content);
         }
+
         internal void MergeFromJSON(FileState state, IDictionary<string, object> jsonData)
         {
             lock (this.mutex)

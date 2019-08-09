@@ -20,7 +20,7 @@ namespace LeanCloud.Storage.Internal {
         bool done;
         private long sliceSize = (long)CommonSize.KB512;
 
-        public Task<FileState> SaveAsync(FileState state,
+        public override Task<FileState> SaveAsync(FileState state,
             Stream dataStream,
             string sessionToken,
             IProgress<AVUploadProgressEventArgs> progress,
@@ -132,6 +132,7 @@ namespace LeanCloud.Storage.Internal {
 
             return HexStringFromBytes(hashBytes);
         }
+
         async Task<Tuple<HttpStatusCode, IDictionary<string, object>>> PostToQCloud(
             Dictionary<string, object> body,
             byte[] sliceFile,
@@ -146,16 +147,22 @@ namespace LeanCloud.Storage.Internal {
 
             sliceHeaders.Add(new KeyValuePair<string, string>("Content-Type", contentType));
 
-            var request = new HttpRequest {
-                Uri = new Uri(this.uploadUrl),
+            var client = new HttpClient();
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri(uploadUrl),
                 Method = HttpMethod.Post,
-                Headers = sliceHeaders,
-                Data = tempStream
+                Content = new StreamContent(tempStream)
             };
-            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
-            var result = new Tuple<HttpStatusCode, IDictionary<string, object>>(ret.Item1,
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(ret.Item2, new LeanCloudJsonConverter()));
-            return result;
+            foreach (var header in sliceHeaders) {
+                request.Headers.Add(header.Key, header.Value);
+            }
+            var response = await client.SendAsync(request);
+            client.Dispose();
+            request.Dispose();
+            var content = await response.Content.ReadAsStringAsync();
+            response.Dispose();
+            // TODO 修改反序列化返回
+            return await JsonUtils.DeserializeObjectAsync<Tuple<HttpStatusCode, IDictionary<string, object>>>(content);
         }
         public static Stream HttpUploadFile(byte[] file, string fileName, out string contentType, out long contentLength, IDictionary<string, object> nvc) {
             string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");

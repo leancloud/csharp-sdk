@@ -6,53 +6,15 @@ using System.Net;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal {
-    /// <summary>
-    /// AVF ile controller.
-    /// </summary>
-    public class AVFileController {
-        /// <summary>
-        /// Saves the async.
-        /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="state">State.</param>
-        /// <param name="dataStream">Data stream.</param>
-        /// <param name="sessionToken">Session token.</param>
-        /// <param name="progress">Progress.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        public virtual async Task<FileState> SaveAsync(FileState state,
+    public abstract class AVFileController {
+        public abstract Task<FileState> SaveAsync(FileState state,
             Stream dataStream,
             String sessionToken,
             IProgress<AVUploadProgressEventArgs> progress,
-            CancellationToken cancellationToken = default(CancellationToken)) {
-            if (state.Url != null) {
-                // !isDirty
-                return state;
-            }
+            CancellationToken cancellationToken = default(CancellationToken));
 
-            if (cancellationToken.IsCancellationRequested) {
-                return null;
-            }
-
-            var oldPosition = dataStream.Position;
-
-            var request = new HttpRequest {
-                Uri = new Uri("files/" + state.Name),
-                Method = HttpMethod.Post,
-                Headers = new List<KeyValuePair<string, string>> {
-                    new KeyValuePair<string, string>("Content-Type", state.MimeType)
-                }
-            };
-            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
-            var jsonData = JsonConvert.DeserializeObject<Dictionary<string, object>>(ret.Item2, new LeanCloudJsonConverter());
-            return new FileState {
-                Name = jsonData["name"] as string,
-                Url = new Uri(jsonData["url"] as string, UriKind.Absolute),
-                MimeType = state.MimeType
-            };
-        }
         public Task DeleteAsync(FileState state, string sessionToken, CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"files/{state.ObjectId}",
@@ -60,6 +22,7 @@ namespace LeanCloud.Storage.Internal {
             };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
         }
+
         internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken) {
             Task<Tuple<HttpStatusCode, IDictionary<string, object>>> rtn;
             string currentSessionToken = AVUser.CurrentSessionToken;
@@ -78,6 +41,7 @@ namespace LeanCloud.Storage.Internal {
             };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
+
         public Task<FileState> GetAsync(string objectId, string sessionToken, CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"files/{objectId}",
@@ -94,6 +58,7 @@ namespace LeanCloud.Storage.Internal {
                 };
             });
         }
+
         internal static string GetUniqueName(FileState fileState) {
             string key = Random(12);
             string extension = Path.GetExtension(fileState.Name);
@@ -101,12 +66,14 @@ namespace LeanCloud.Storage.Internal {
             fileState.CloudName = key;
             return key;
         }
+
         internal static string Random(int length) {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
             var random = new Random();
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
         internal static double CalcProgress(double already, double total) {
             var pv = (1.0 * already / total);
             return Math.Round(pv, 3);

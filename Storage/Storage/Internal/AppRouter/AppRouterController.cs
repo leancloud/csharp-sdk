@@ -36,18 +36,23 @@ namespace LeanCloud.Storage.Internal {
             string appId = AVClient.CurrentConfiguration.ApplicationId;
             string url = string.Format("https://app-router.leancloud.cn/2/route?appId={0}", appId);
 
-            var request = new HttpRequest {
-                Uri = new Uri(url),
-                Method = HttpMethod.Get,
-                Headers = null,
-                Data = null
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage {
+                RequestUri = new Uri(url),
+                Method = HttpMethod.Get
             };
-            var ret = await AVPlugins.Instance.HttpClient.ExecuteAsync(request, null, null, CancellationToken.None);
-            if (ret.Item1 != HttpStatusCode.OK) {
-                throw new AVException(AVException.ErrorCode.ConnectionFailed, "can not reach router.", null);
-            }
+            try {
+                HttpResponseMessage response = await client.SendAsync(request);
+                client.Dispose();
+                request.Dispose();
 
-            return await JsonUtils.DeserializeObjectAsync<AppRouterState>(ret.Item2);
+                string content = await response.Content.ReadAsStringAsync();
+                response.Dispose();
+
+                return await JsonUtils.DeserializeObjectAsync<AppRouterState>(content);
+            } catch (Exception e) {
+                throw new AVException(AVException.ErrorCode.ConnectionFailed, "can not reach router.", e);
+            }
         }
 
         public void Clear() {

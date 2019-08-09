@@ -16,7 +16,6 @@ namespace LeanCloud.Storage.Internal {
 
         #region Server Controllers
 
-        private HttpClient httpClient;
         private AppRouterController appRouterController;
         private AVCommandRunner commandRunner;
         private StorageController storageController;
@@ -40,7 +39,6 @@ namespace LeanCloud.Storage.Internal {
 
         public void Reset() {
             lock (mutex) {
-                HttpClient = null;
                 AppRouterController = null;
                 CommandRunner = null;
                 StorageController = null;
@@ -54,20 +52,6 @@ namespace LeanCloud.Storage.Internal {
 
                 CurrentUserController = null;
                 InstallationIdController = null;
-            }
-        }
-
-        public HttpClient HttpClient {
-            get {
-                lock (mutex) {
-                    httpClient = httpClient ?? new HttpClient();
-                    return httpClient;
-                }
-            }
-            set {
-                lock (mutex) {
-                    httpClient = value;
-                }
             }
         }
 
