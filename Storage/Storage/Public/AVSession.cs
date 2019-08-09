@@ -63,26 +63,21 @@ namespace LeanCloud
         /// <param name="cancellationToken">The cancellation token</param>
         public static Task<AVSession> GetCurrentSessionAsync(CancellationToken cancellationToken)
         {
-            return AVUser.GetCurrentUserAsync().OnSuccess(t1 =>
+            AVUser user = AVUser.CurrentUser;
+            if (user == null) {
+                return Task<AVSession>.FromResult((AVSession)null);
+            }
+
+            string sessionToken = user.SessionToken;
+            if (sessionToken == null) {
+                return Task<AVSession>.FromResult((AVSession)null);
+            }
+
+            return SessionController.GetSessionAsync(sessionToken, cancellationToken).OnSuccess(t =>
             {
-                AVUser user = t1.Result;
-                if (user == null)
-                {
-                    return Task<AVSession>.FromResult((AVSession)null);
-                }
-
-                string sessionToken = user.SessionToken;
-                if (sessionToken == null)
-                {
-                    return Task<AVSession>.FromResult((AVSession)null);
-                }
-
-                return SessionController.GetSessionAsync(sessionToken, cancellationToken).OnSuccess(t =>
-                {
-                    AVSession session = AVObject.FromState<AVSession>(t.Result, "_Session");
-                    return session;
-                });
-            }).Unwrap();
+                AVSession session = AVObject.FromState<AVSession>(t.Result, "_Session");
+                return session;
+            });
         }
 
         internal static Task RevokeAsync(string sessionToken, CancellationToken cancellationToken)

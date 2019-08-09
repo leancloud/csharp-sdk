@@ -18,7 +18,6 @@ namespace LeanCloud.Storage.Internal {
 
         private AppRouterController appRouterController;
         private AVCommandRunner commandRunner;
-        private StorageController storageController;
 
         private AVCloudCodeController cloudCodeController;
         private AVFileController fileController;
@@ -32,7 +31,6 @@ namespace LeanCloud.Storage.Internal {
 
         #region Current Instance Controller
 
-        private AVCurrentUserController currentUserController;
         private InstallationIdController installationIdController;
 
         #endregion
@@ -41,7 +39,6 @@ namespace LeanCloud.Storage.Internal {
             lock (mutex) {
                 AppRouterController = null;
                 CommandRunner = null;
-                StorageController = null;
 
                 CloudCodeController = null;
                 FileController = null;
@@ -50,7 +47,6 @@ namespace LeanCloud.Storage.Internal {
                 UserController = null;
                 SubclassingController = null;
 
-                CurrentUserController = null;
                 InstallationIdController = null;
             }
         }
@@ -82,36 +78,6 @@ namespace LeanCloud.Storage.Internal {
                 }
             }
         }
-
-#if UNITY
-        public StorageController StorageController {
-            get {
-                lock (mutex) {
-                    storageController = storageController ?? new StorageController(AVInitializeBehaviour.IsWebPlayer, AVClient.CurrentConfiguration.ApplicationId);
-                    return storageController;
-                }
-            }
-            set {
-                lock (mutex) {
-                    storageController = value;
-                }
-            }
-        }
-#else
-        public StorageController StorageController {
-            get {
-                lock (mutex) {
-                    storageController = storageController ?? new StorageController(AVClient.CurrentConfiguration.ApplicationId);
-                    return storageController;
-                }
-            }
-            set {
-                lock (mutex) {
-                    storageController = value;
-                }
-            }
-        }
-#endif
 
         public AVCloudCodeController CloudCodeController {
             get {
@@ -212,26 +178,12 @@ namespace LeanCloud.Storage.Internal {
             }
         }
 
-        public AVCurrentUserController CurrentUserController {
-            get {
-                lock (mutex) {
-                    currentUserController = currentUserController ?? new AVCurrentUserController();
-                    return currentUserController;
-                }
-            }
-            set {
-                lock (mutex) {
-                    currentUserController = value;
-                }
-            }
-        }
-
         public ObjectSubclassingController SubclassingController {
             get {
                 lock (mutex) {
                     if (subclassingController == null) {
                         subclassingController = new ObjectSubclassingController();
-                        subclassingController.AddRegisterHook(typeof(AVUser), () => CurrentUserController.ClearFromMemory());
+                        //subclassingController.AddRegisterHook(typeof(AVUser), () => CurrentUserController.ClearFromMemory());
                     }
                     return subclassingController;
                 }

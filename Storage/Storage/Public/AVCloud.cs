@@ -42,14 +42,9 @@ namespace LeanCloud {
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The result of the cloud call.</returns>
         public static Task<T> CallFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken)) {
-            var sessionTokenTask = AVUser.TakeSessionToken(sesstionToken);
-
-            return sessionTokenTask.OnSuccess(s => {
-                return CloudCodeController.CallFunctionAsync<T>(name,
-                    parameters, s.Result,
+            return CloudCodeController.CallFunctionAsync<T>(name,
+                    parameters, AVUser.CurrentUser.SessionToken,
                     cancellationToken);
-
-            }).Unwrap();
         }
 
         /// <summary>
@@ -62,14 +57,9 @@ namespace LeanCloud {
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public static Task<T> RPCFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken)) {
-            var sessionTokenTask = AVUser.TakeSessionToken(sesstionToken);
-
-            return sessionTokenTask.OnSuccess(s => {
-                return CloudCodeController.RPCFunction<T>(name,
-                    parameters,
-                    s.Result,
+            return CloudCodeController.RPCFunction<T>(name,
+                    parameters, AVUser.CurrentUser.SessionToken,
                     cancellationToken);
-            }).Unwrap();
         }
 
         /// <summary>
@@ -329,9 +319,7 @@ namespace LeanCloud {
         }
 
         public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            return AVUser.GetCurrentUserAsync(cancellationToken).OnSuccess(t => {
-                return RequestRealtimeSignatureAsync(t.Result, cancellationToken);
-            }).Unwrap();
+            return RequestRealtimeSignatureAsync(AVUser.CurrentUser, cancellationToken);
         }
 
         public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(AVUser user, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -424,16 +412,13 @@ namespace LeanCloud {
         public string FunctionName { get; set; }
 
         public Task<R> ExecuteAsync(P parameters) {
-            return AVUser.GetCurrentAsync().OnSuccess(t => {
-                var user = t.Result;
-                var encodedParameters = Encode(parameters);
-                var command = new EngineCommand {
-                    Path = $"call/{Uri.EscapeUriString(FunctionName)}",
-                    Method = HttpMethod.Post,
-                    Content = encodedParameters
-                };
-                return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
-            }).Unwrap().OnSuccess(s => {
+            var encodedParameters = Encode(parameters);
+            var command = new EngineCommand {
+                Path = $"call/{Uri.EscapeUriString(FunctionName)}",
+                Method = HttpMethod.Post,
+                Content = encodedParameters
+            };
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(s => {
                 var responseBody = s.Result.Item2;
                 if (!responseBody.ContainsKey("result")) {
                     return default(R);
@@ -441,7 +426,6 @@ namespace LeanCloud {
 
                 return Decode(responseBody);
             });
-
         }
     }
 

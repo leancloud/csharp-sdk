@@ -270,7 +270,6 @@ namespace LeanCloud {
         internal static void Clear() {
             AVPlugins.Instance.AppRouterController.Clear();
             AVPlugins.Instance.Reset();
-            AVUser.ClearInMemoryUser();
         }
 
         /// <summary>

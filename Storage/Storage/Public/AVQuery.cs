@@ -204,11 +204,7 @@ namespace LeanCloud
 
         public Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken = default)
         {
-            return AVUser.GetCurrentUserAsync().OnSuccess(t =>
-            {
-                return QueryController.FindAsync<T>(this, t.Result, cancellationToken);
-            }).Unwrap().OnSuccess(t =>
-            {
+            return QueryController.FindAsync<T>(this, AVUser.CurrentUser, cancellationToken).OnSuccess(t => {
                 IEnumerable<IObjectState> states = t.Result;
                 return (from state in states
                         select AVObject.FromState<T>(state, ClassName));
@@ -217,11 +213,7 @@ namespace LeanCloud
 
         public Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
         {
-            return AVUser.GetCurrentUserAsync().OnSuccess(t =>
-            {
-                return QueryController.FirstAsync<T>(this, t.Result, cancellationToken);
-            }).Unwrap().OnSuccess(t =>
-            {
+            return QueryController.FirstAsync<T>(this, AVUser.CurrentUser, cancellationToken).OnSuccess(t => {
                 IObjectState state = t.Result;
                 return state == null ? default : AVObject.FromState<T>(state, ClassName);
             });
@@ -242,9 +234,7 @@ namespace LeanCloud
 
         public Task<int> CountAsync(CancellationToken cancellationToken = default)
         {
-            return AVUser.GetCurrentUserAsync().OnSuccess(t => {
-                return QueryController.CountAsync<T>(this, t.Result, cancellationToken);
-            }).Unwrap();
+            return QueryController.CountAsync(this, AVUser.CurrentUser, cancellationToken);
         }
 
         public Task<T> GetAsync(string objectId, CancellationToken cancellationToken)
