@@ -8,12 +8,40 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace LeanCloud.Storage.Internal {
-    public abstract class AVFileController {
-        public abstract Task<FileState> SaveAsync(FileState state,
+    public interface IFileUploader {
+        Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress,
+            CancellationToken cancellationToken);
+    }
+
+    public class AVFileController {
+        const string QCloud = "qcloud";
+        const string AWS = "s3";
+
+        public Task<FileState> SaveAsync(FileState state,
             Stream dataStream,
             String sessionToken,
             IProgress<AVUploadProgressEventArgs> progress,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default(CancellationToken)) {
+            if (state.Url != null) {
+                // !isDirty
+                return Task<FileState>.FromResult(state);
+            }
+
+            return GetFileToken(state, cancellationToken).OnSuccess(t => {
+                // 根据 provider 区分 cdn
+                var ret = t.Result;
+                var fileToken = ret.Item2;
+                var provider = fileToken["provider"] as string;
+                switch (provider) {
+                    case QCloud:
+                        return new QCloudUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
+                    case AWS:
+                        return new AWSUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
+                    default:
+                        return new QiniuUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
+                }
+            }).Unwrap();
+        }
 
         public Task DeleteAsync(FileState state, string sessionToken, CancellationToken cancellationToken) {
             var command = new AVCommand {
@@ -24,7 +52,6 @@ namespace LeanCloud.Storage.Internal {
         }
 
         internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken) {
-            Task<Tuple<HttpStatusCode, IDictionary<string, object>>> rtn;
             string currentSessionToken = AVUser.CurrentSessionToken;
             string str = fileState.Name;
             IDictionary<string, object> parameters = new Dictionary<string, object>();

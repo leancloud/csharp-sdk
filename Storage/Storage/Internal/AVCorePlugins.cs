@@ -23,7 +23,6 @@ namespace LeanCloud.Storage.Internal {
         private AVFileController fileController;
         private AVObjectController objectController;
         private AVQueryController queryController;
-        private AVSessionController sessionController;
         private AVUserController userController;
         private ObjectSubclassingController subclassingController;
 
@@ -43,7 +42,6 @@ namespace LeanCloud.Storage.Internal {
                 CloudCodeController = null;
                 FileController = null;
                 ObjectController = null;
-                SessionController = null;
                 UserController = null;
                 SubclassingController = null;
 
@@ -98,20 +96,8 @@ namespace LeanCloud.Storage.Internal {
                 if (fileController != null) {
                     return fileController;
                 }
-                lock (mutex) {
-                    switch (AVClient.CurrentConfiguration.RegionValue) {
-                        case 0:
-                            fileController = new QiniuFileController();
-                            break;
-                        case 2:
-                            fileController = new QCloudCosFileController();
-                            break;
-                        case 1:
-                            fileController = new AWSS3FileController();
-                            break;
-                    }
-                    return fileController;
-                }
+                fileController = new AVFileController();
+                return fileController;
             }
             set {
                 lock (mutex) {
@@ -146,20 +132,6 @@ namespace LeanCloud.Storage.Internal {
             set {
                 lock (mutex) {
                     queryController = value;
-                }
-            }
-        }
-
-        public AVSessionController SessionController {
-            get {
-                lock (mutex) {
-                    sessionController = sessionController ?? new AVSessionController();
-                    return sessionController;
-                }
-            }
-            set {
-                lock (mutex) {
-                    sessionController = value;
                 }
             }
         }

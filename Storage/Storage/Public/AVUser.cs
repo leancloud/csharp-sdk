@@ -343,46 +343,11 @@ namespace LeanCloud {
         /// Typically, you should use <see cref="LogOutAsync()"/>, unless you are managing your own threading.
         /// </remarks>
         public static void LogOut() {
+            CurrentUser = null;
+
             // TODO (hallucinogen): this will without a doubt fail in Unity. But what else can we do?
             //LogOutAsync().Wait();
         }
-
-        /// <summary>
-        /// Logs out the currently logged in user session. This will remove the session from disk, log out of
-        /// linked services, and future calls to <see cref="CurrentUser"/> will return <c>null</c>.
-        /// </summary>
-        /// <remarks>
-        /// This is preferable to using <see cref="LogOut()"/>, unless your code is already running from a
-        /// background thread.
-        /// </remarks>
-        public static void LogOutAsync() {
-            //return LogOutAsync(CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Logs out the currently logged in user session. This will remove the session from disk, log out of
-        /// linked services, and future calls to <see cref="CurrentUser"/> will return <c>null</c>.
-        ///
-        /// This is preferable to using <see cref="LogOut()"/>, unless your code is already running from a
-        /// background thread.
-        /// </summary>
-        public static void LogOutAsync(CancellationToken cancellationToken) {
-            CurrentUser = null;
-        }
-
-        //internal Task LogOutAsync(Task toAwait, CancellationToken cancellationToken) {
-        //    string oldSessionToken = SessionToken;
-        //    if (oldSessionToken == null) {
-        //        return Task.FromResult(0);
-        //    }
-
-        //    // Cleanup in-memory session.
-        //    MutateState(mutableClone => {
-        //        mutableClone.ServerData.Remove("sessionToken");
-        //    });
-        //    var revokeSessionTask = AVSession.RevokeAsync(oldSessionToken, cancellationToken);
-        //    return Task.WhenAll(revokeSessionTask, CurrentUserController.LogOutAsync(cancellationToken));
-        //}
 
         private static void LogOutWithProviders() {
             foreach (var provider in authProviders.Values) {
@@ -391,8 +356,8 @@ namespace LeanCloud {
         }
 
         public static AVUser CurrentUser {
-            // TODO 线程问题
-            get; internal set;
+            get;
+            internal set;
         }
 
         /// <summary>
@@ -403,27 +368,6 @@ namespace LeanCloud {
                 return new AVQuery<AVUser>();
             }
         }
-
-        #region Legacy / Revocable Session Tokens
-
-        private static readonly object isRevocableSessionEnabledMutex = new object();
-        private static bool isRevocableSessionEnabled;
-
-        internal static void DisableRevocableSession() {
-            lock (isRevocableSessionEnabledMutex) {
-                isRevocableSessionEnabled = false;
-            }
-        }
-
-        internal static bool IsRevocableSessionEnabled {
-            get {
-                lock (isRevocableSessionEnabledMutex) {
-                    return isRevocableSessionEnabled;
-                }
-            }
-        }
-
-        #endregion
 
         /// <summary>
         /// Requests a password reset email to be sent to the specified email address associated with the
@@ -803,7 +747,7 @@ namespace LeanCloud {
         /// <param name="mobilePhoneNumber">注册时使用的手机号</param>
         /// <returns></returns>
         public static Task RequestPasswordResetBySmsCode(string mobilePhoneNumber) {
-            return AVUser.RequestPasswordResetBySmsCode(mobilePhoneNumber, null, CancellationToken.None);
+            return RequestPasswordResetBySmsCode(mobilePhoneNumber, null, CancellationToken.None);
         }
 
         /// <summary>
@@ -823,7 +767,7 @@ namespace LeanCloud {
         /// <param name="validateToken">Validate token.</param>
         /// <returns></returns>
         public static Task RequestPasswordResetBySmsCode(string mobilePhoneNumber, string validateToken) {
-            return AVUser.RequestPasswordResetBySmsCode(mobilePhoneNumber, validateToken, CancellationToken.None);
+            return RequestPasswordResetBySmsCode(mobilePhoneNumber, validateToken, CancellationToken.None);
         }
 
         /// <summary>
@@ -834,9 +778,7 @@ namespace LeanCloud {
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
         public static Task RequestPasswordResetBySmsCode(string mobilePhoneNumber, string validateToken, CancellationToken cancellationToken) {
-            string currentSessionToken = AVUser.CurrentSessionToken;
-            Dictionary<string, object> strs = new Dictionary<string, object>()
-            {
+            Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
             if (String.IsNullOrEmpty(validateToken)) {
@@ -868,9 +810,7 @@ namespace LeanCloud {
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
         public static Task ResetPasswordBySmsCodeAsync(string newPassword, string smsCode, CancellationToken cancellationToken) {
-            string currentSessionToken = AVUser.CurrentSessionToken;
-            Dictionary<string, object> strs = new Dictionary<string, object>()
-            {
+            Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "password", newPassword }
             };
             var command = new AVCommand {
@@ -918,7 +858,6 @@ namespace LeanCloud {
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns></returns>
         public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, string validateToken, CancellationToken cancellationToken) {
-            string currentSessionToken = AVUser.CurrentSessionToken;
             Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber }
             };

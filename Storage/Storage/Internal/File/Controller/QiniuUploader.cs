@@ -9,104 +9,75 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 
-namespace LeanCloud.Storage.Internal
-{
-    internal enum CommonSize : long
-    {
+namespace LeanCloud.Storage.Internal {
+    internal enum CommonSize : long {
         MB4 = 1024 * 1024 * 4,
         MB1 = 1024 * 1024,
         KB512 = 1024 * 1024 / 2,
         KB256 = 1024 * 1024 / 4
     }
 
-    internal class QiniuFileController : AVFileController
-    {
+    internal class QiniuUploader : IFileUploader {
         private static int BLOCKSIZE = 1024 * 1024 * 4;
         private const int blockMashk = (1 << blockBits) - 1;
         private const int blockBits = 22;
-        private int CalcBlockCount(long fsize)
-        {
+        private int CalcBlockCount(long fsize) {
             return (int)((fsize + blockMashk) >> blockBits);
         }
         internal static string UP_HOST = "https://up.qbox.me";
         private object mutex = new object();
 
-        public override Task<FileState> SaveAsync(FileState state,
-        Stream dataStream,
-        String sessionToken,
-        IProgress<AVUploadProgressEventArgs> progress,
-        CancellationToken cancellationToken)
-        {
-            if (state.Url != null)
-            {
-                return Task<FileState>.FromResult(state);
-            }
+        public Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken) {
             state.frozenData = dataStream;
             state.CloudName = GetUniqueName(state);
-            return GetQiniuToken(state, CancellationToken.None).ContinueWith(t =>
-            {
-                MergeFromJSON(state, t.Result.Item2);
-                return UploadNextChunk(state, dataStream, string.Empty, 0, progress);
-            }).Unwrap().OnSuccess<FileState>(s =>
-            {
+            MergeFromJSON(state, fileToken);
+            return UploadNextChunk(state, dataStream, string.Empty, 0, progress).OnSuccess(_ => {
                 return state;
             });
         }
-        Task UploadNextChunk(FileState state, Stream dataStream, string context, long offset, IProgress<AVUploadProgressEventArgs> progress)
-        {
+
+        Task UploadNextChunk(FileState state, Stream dataStream, string context, long offset, IProgress<AVUploadProgressEventArgs> progress) {
             var totalSize = dataStream.Length;
             var remainingSize = totalSize - state.completed;
 
-            if (progress != null)
-            {
-                lock (mutex)
-                {
-                    progress.Report(new AVUploadProgressEventArgs()
-                    {
+            if (progress != null) {
+                lock (mutex) {
+                    progress.Report(new AVUploadProgressEventArgs() {
                         Progress = AVFileController.CalcProgress(state.completed, totalSize)
                     });
                 }
             }
-            if (state.completed == totalSize)
-            {
+            if (state.completed == totalSize) {
                 return QiniuMakeFile(state, state.frozenData, state.token, state.CloudName, totalSize, state.block_ctxes.ToArray(), CancellationToken.None);
 
-            }
-            else if (state.completed % BLOCKSIZE == 0)
-            {
+            } else if (state.completed % BLOCKSIZE == 0) {
                 var firstChunkBinary = GetChunkBinary(state.completed, dataStream);
 
                 var blockSize = remainingSize > BLOCKSIZE ? BLOCKSIZE : remainingSize;
-                return MakeBlock(state, firstChunkBinary, blockSize).ContinueWith(t =>
-                {
+                return MakeBlock(state, firstChunkBinary, blockSize).ContinueWith(t => {
                     var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(t.Result.Item2, new LeanCloudJsonConverter());
                     var ctx = dict["ctx"].ToString();
                     offset = long.Parse(dict["offset"].ToString());
                     var host = dict["host"].ToString();
 
                     state.completed += firstChunkBinary.Length;
-                    if (state.completed % BLOCKSIZE == 0 || state.completed == totalSize)
-                    {
+                    if (state.completed % BLOCKSIZE == 0 || state.completed == totalSize) {
                         state.block_ctxes.Add(ctx);
                     }
 
                     return UploadNextChunk(state, dataStream, ctx, offset, progress);
                 }).Unwrap();
 
-            }
-            else
-            {
+            } else {
                 var chunkBinary = GetChunkBinary(state.completed, dataStream);
-                return PutChunk(state, chunkBinary, context, offset).ContinueWith(t =>
-                {
+                return PutChunk(state, chunkBinary, context, offset).ContinueWith(t => {
                     var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(t.Result.Item2, new LeanCloudJsonConverter());
                     var ctx = dict["ctx"].ToString();
 
                     offset = long.Parse(dict["offset"].ToString());
                     var host = dict["host"].ToString();
                     state.completed += chunkBinary.Length;
-                    if (state.completed % BLOCKSIZE == 0 || state.completed == totalSize)
-                    {
+                    if (state.completed % BLOCKSIZE == 0 || state.completed == totalSize) {
                         state.block_ctxes.Add(ctx);
                     }
                     //if (AVClient.fileUploaderDebugLog)
@@ -119,11 +90,9 @@ namespace LeanCloud.Storage.Internal
             }
         }
 
-        byte[] GetChunkBinary(long completed, Stream dataStream)
-        {
+        byte[] GetChunkBinary(long completed, Stream dataStream) {
             long chunkSize = (long)CommonSize.MB1;
-            if (completed + chunkSize > dataStream.Length)
-            {
+            if (completed + chunkSize > dataStream.Length) {
                 chunkSize = dataStream.Length - completed;
             }
             byte[] chunkBinary = new byte[chunkSize];
@@ -132,16 +101,13 @@ namespace LeanCloud.Storage.Internal
             return chunkBinary;
         }
 
-        internal string GetUniqueName(FileState state)
-        {
+        internal string GetUniqueName(FileState state) {
             string key = Guid.NewGuid().ToString();//file Key in Qiniu.
             string extension = Path.GetExtension(state.Name);
             key += extension;
             return key;
         }
-        internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetQiniuToken(FileState state, CancellationToken cancellationToken)
-        {
-            Task<Tuple<HttpStatusCode, IDictionary<string, object>>> rtn;
+        internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetQiniuToken(FileState state, CancellationToken cancellationToken) {
             string currentSessionToken = AVUser.CurrentSessionToken;
             string str = state.Name;
 
@@ -162,8 +128,7 @@ namespace LeanCloud.Storage.Internal
             };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
-        IList<KeyValuePair<string, string>> GetQiniuRequestHeaders(FileState state)
-        {
+        IList<KeyValuePair<string, string>> GetQiniuRequestHeaders(FileState state) {
             IList<KeyValuePair<string, string>> makeBlockHeaders = new List<KeyValuePair<string, string>>();
 
             string authHead = "UpToken " + state.token;
@@ -212,19 +177,16 @@ namespace LeanCloud.Storage.Internal
             return await JsonUtils.DeserializeObjectAsync<Tuple<HttpStatusCode, string>>(content);
         }
 
-        internal async Task<Tuple<HttpStatusCode, string>> QiniuMakeFile(FileState state, Stream dataStream, string upToken, string key, long fsize, string[] ctxes, CancellationToken cancellationToken)
-        {
+        internal async Task<Tuple<HttpStatusCode, string>> QiniuMakeFile(FileState state, Stream dataStream, string upToken, string key, long fsize, string[] ctxes, CancellationToken cancellationToken) {
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.AppendFormat("{0}/mkfile/{1}", UP_HOST, fsize);
-            if (key != null)
-            {
+            if (key != null) {
                 urlBuilder.AppendFormat("/key/{0}", ToBase64URLSafe(key));
             }
             var metaData = GetMetaData(state, dataStream);
 
             StringBuilder sb = new StringBuilder();
-            foreach (string _key in metaData.Keys)
-            {
+            foreach (string _key in metaData.Keys) {
                 sb.AppendFormat("/{0}/{1}", _key, ToBase64URLSafe(metaData[_key].ToString()));
             }
             urlBuilder.Append(sb.ToString());
@@ -238,12 +200,10 @@ namespace LeanCloud.Storage.Internal
             int proCount = ctxes.Length;
             Stream body = new MemoryStream();
 
-            for (int i = 0; i < proCount; i++)
-            {
+            for (int i = 0; i < proCount; i++) {
                 byte[] bctx = StringToAscii(ctxes[i]);
                 body.Write(bctx, 0, bctx.Length);
-                if (i != proCount - 1)
-                {
+                if (i != proCount - 1) {
                     body.WriteByte((byte)',');
                 }
             }
@@ -263,10 +223,8 @@ namespace LeanCloud.Storage.Internal
             return await JsonUtils.DeserializeObjectAsync<Tuple<HttpStatusCode, string>>(content);
         }
 
-        internal void MergeFromJSON(FileState state, IDictionary<string, object> jsonData)
-        {
-            lock (this.mutex)
-            {
+        internal void MergeFromJSON(FileState state, IDictionary<string, object> jsonData) {
+            lock (this.mutex) {
                 string url = jsonData["url"] as string;
                 state.Url = new Uri(url, UriKind.Absolute);
                 state.bucketId = FetchBucketId(url);
@@ -276,17 +234,14 @@ namespace LeanCloud.Storage.Internal
             }
         }
 
-        string FetchBucketId(string url)
-        {
+        string FetchBucketId(string url) {
             var elements = url.Split('/');
 
             return elements[elements.Length - 1];
         }
-        public static byte[] StringToAscii(string s)
-        {
+        public static byte[] StringToAscii(string s) {
             byte[] retval = new byte[s.Length];
-            for (int ix = 0; ix < s.Length; ++ix)
-            {
+            for (int ix = 0; ix < s.Length; ++ix) {
                 char ch = s[ix];
                 if (ch <= 0x7f)
                     retval[ix] = (byte)ch;
@@ -295,20 +250,17 @@ namespace LeanCloud.Storage.Internal
             }
             return retval;
         }
-        public static string ToBase64URLSafe(string str)
-        {
+        public static string ToBase64URLSafe(string str) {
             return Encode(str);
         }
-        public static string Encode(byte[] bs)
-        {
+        public static string Encode(byte[] bs) {
             if (bs == null || bs.Length == 0)
                 return "";
             string encodedStr = Convert.ToBase64String(bs);
             encodedStr = encodedStr.Replace('+', '-').Replace('/', '_');
             return encodedStr;
         }
-        public static string Encode(string text)
-        {
+        public static string Encode(string text) {
             if (String.IsNullOrEmpty(text))
                 return "";
             byte[] bs = Encoding.UTF8.GetBytes(text);
@@ -317,28 +269,23 @@ namespace LeanCloud.Storage.Internal
             return encodedStr;
         }
 
-        internal static string GetMD5Code(Stream data)
-        {
+        internal static string GetMD5Code(Stream data) {
             MD5 md5 = new MD5CryptoServiceProvider();
             byte[] retVal = md5.ComputeHash(data);
 
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < retVal.Length; i++)
-            {
+            for (int i = 0; i < retVal.Length; i++) {
                 sb.Append(retVal[i].ToString("x2"));
             }
             return sb.ToString();
 
         }
 
-        internal IDictionary<string, object> GetMetaData(FileState state, Stream data)
-        {
+        internal IDictionary<string, object> GetMetaData(FileState state, Stream data) {
             IDictionary<string, object> rtn = new Dictionary<string, object>();
 
-            if (state.MetaData != null)
-            {
-                foreach (var meta in state.MetaData)
-                {
+            if (state.MetaData != null) {
+                foreach (var meta in state.MetaData) {
                     rtn.Add(meta.Key, meta.Value);
                 }
             }
@@ -351,14 +298,10 @@ namespace LeanCloud.Storage.Internal
 
             return rtn;
         }
-        internal void MergeDic(IDictionary<string, object> dic, string key, object value)
-        {
-            if (dic.ContainsKey(key))
-            {
+        internal void MergeDic(IDictionary<string, object> dic, string key, object value) {
+            if (dic.ContainsKey(key)) {
                 dic[key] = value;
-            }
-            else
-            {
+            } else {
                 dic.Add(key, value);
             }
         }

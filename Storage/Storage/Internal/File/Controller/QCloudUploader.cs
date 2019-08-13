@@ -6,10 +6,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal {
-    internal class QCloudCosFileController : AVFileController {
+    internal class QCloudUploader : IFileUploader {
         private object mutex = new object();
 
         FileState fileState;
@@ -20,33 +19,22 @@ namespace LeanCloud.Storage.Internal {
         bool done;
         private long sliceSize = (long)CommonSize.KB512;
 
-        public override Task<FileState> SaveAsync(FileState state,
-            Stream dataStream,
-            string sessionToken,
-            IProgress<AVUploadProgressEventArgs> progress,
-            CancellationToken cancellationToken) {
-            if (state.Url != null) {
-                return Task<FileState>.FromResult(state);
-            }
+        public Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken) {
             fileState = state;
             data = dataStream;
-            return GetFileToken(fileState, cancellationToken).OnSuccess(_ => {
-                var fileToken = _.Result.Item2;
-                uploadUrl = fileToken["upload_url"].ToString();
-                token = fileToken["token"].ToString();
-                fileState.ObjectId = fileToken["objectId"].ToString();
-                bucket = fileToken["bucket"].ToString();
+            uploadUrl = fileToken["upload_url"].ToString();
+            token = fileToken["token"].ToString();
+            fileState.ObjectId = fileToken["objectId"].ToString();
+            bucket = fileToken["bucket"].ToString();
 
-                return FileSlice(cancellationToken).OnSuccess(t => {
-                    if (done) return Task<FileState>.FromResult(state);
-                    var response = t.Result.Item2;
-                    var resumeData = response["data"] as IDictionary<string, object>;
-                    if (resumeData.ContainsKey("access_url")) return Task<FileState>.FromResult(state);
-                    var sliceSession = resumeData["session"].ToString();
-                    var sliceOffset = long.Parse(resumeData["offset"].ToString());
-                    return UploadSlice(sliceSession, sliceOffset, dataStream, progress, cancellationToken);
-                }).Unwrap();
-
+            return FileSlice(cancellationToken).OnSuccess(t => {
+                if (done) return Task<FileState>.FromResult(state);
+                var response = t.Result.Item2;
+                var resumeData = response["data"] as IDictionary<string, object>;
+                if (resumeData.ContainsKey("access_url")) return Task<FileState>.FromResult(state);
+                var sliceSession = resumeData["session"].ToString();
+                var sliceOffset = long.Parse(resumeData["offset"].ToString());
+                return UploadSlice(sliceSession, sliceOffset, dataStream, progress, cancellationToken);
             }).Unwrap();
         }
 

@@ -251,7 +251,6 @@ namespace LeanCloud {
 
             AVObject.RegisterSubclass<AVUser>();
             AVObject.RegisterSubclass<AVRole>();
-            AVObject.RegisterSubclass<AVSession>();
         }
 
         internal static void Config(Configuration configuration) {

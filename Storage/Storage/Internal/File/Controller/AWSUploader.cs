@@ -6,21 +6,14 @@ using System.Collections.Generic;
 using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal {
-    internal class AWSS3FileController : AVFileController {
-        public override Task<FileState> SaveAsync(FileState state, Stream dataStream, string sessionToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken = default(System.Threading.CancellationToken)) {
-            if (state.Url != null) {
-                return Task.FromResult(state);
-            }
-
-            return GetFileToken(state, cancellationToken).OnSuccess(t => {
-                var fileToken = t.Result.Item2;
-                var uploadUrl = fileToken["upload_url"].ToString();
-                state.ObjectId = fileToken["objectId"].ToString();
-                string url = fileToken["url"] as string;
-                state.Url = new Uri(url, UriKind.Absolute);
-                return PutFile(state, uploadUrl, dataStream);
-
-            }).Unwrap().OnSuccess(s => {
+    internal class AWSUploader : IFileUploader {
+        public Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress,
+            CancellationToken cancellationToken) {
+            var uploadUrl = fileToken["upload_url"].ToString();
+            state.ObjectId = fileToken["objectId"].ToString();
+            string url = fileToken["url"] as string;
+            state.Url = new Uri(url, UriKind.Absolute);
+            return PutFile(state, uploadUrl, dataStream).OnSuccess(s => {
                 return s.Result;
             });
         }

@@ -97,9 +97,7 @@ namespace LeanCloud.Storage.Internal {
             registerActions.TryGetValue(className, out toPerform);
             mutex.ExitReadLock();
 
-            if (toPerform != null) {
-                toPerform();
-            }
+            toPerform?.Invoke();
         }
 
         public void UnregisterSubclass(Type type) {
