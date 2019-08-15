@@ -15,12 +15,24 @@ namespace LeanCloud.Storage.Internal {
             return str;
         }
 
+        public static Task<string> SerializeAsync(object obj) {
+            return Task.Run(() => {
+                return JsonConvert.SerializeObject(obj);
+            });
+        }
+
         public static async Task<T> DeserializeObjectAsync<T>(string str, params JsonConverter[] converters) {
             T obj = default;
             await Task.Run(() => {
                 obj = JsonConvert.DeserializeObject<T>(str, converters);
             });
             return obj;
+        }
+
+        public static Task<T> DeserializeAsync<T>(string str, params JsonConverter[] converts) {
+            return Task.Run(() => {
+                return JsonConvert.DeserializeObject<T>(str, converts);
+            });
         }
     }
 }

@@ -7,36 +7,36 @@ using Newtonsoft.Json;
 namespace LeanCloud.Storage.Internal {
     public class AppRouterController {
         private AppRouterState currentState;
-        private readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
-        public AppRouterState Get(string appId) {
+        private readonly SemaphoreSlim locker = new SemaphoreSlim(1);
+
+        public async Task<AppRouterState> Get(string appId) {
             if (string.IsNullOrEmpty(appId)) {
                 throw new ArgumentNullException(nameof(appId));
             }
 
-            try {
-                locker.EnterUpgradeableReadLock();
-                if (currentState != null && !currentState.IsExpired) {
-                    return currentState;
-                }
-                // 从 AppRouter 获取服务器地址，只触发，不等待
-                QueryAsync(appId).ContinueWith(t => {
-                    if (t.IsFaulted) {
+            if (currentState != null && !currentState.IsExpired) {
+                return currentState;
+            }
 
-                    } else {
-                        locker.EnterWriteLock();
-                        currentState = t.Result;
-                        currentState.Source = "router";
-                        locker.ExitWriteLock();
+            await locker.WaitAsync();
+            try {
+                if (currentState == null) {
+                    try {
+                        currentState = await QueryAsync(appId);
+                    } catch (Exception) {
+                        currentState = AppRouterState.GetFallbackServers(appId);
                     }
-                });
-                return AppRouterState.GetFallbackServers(appId);
+                }
+                return currentState;
             } finally {
-                locker.ExitUpgradeableReadLock();
+                locker.Release();
             }
         }
 
         public async Task<AppRouterState> QueryAsync(string appId) {
+            Console.WriteLine("QueryAsync");
+
             string url = string.Format("https://app-router.leancloud.cn/2/route?appId={0}", appId);
 
             HttpClient client = new HttpClient();
@@ -52,13 +52,13 @@ namespace LeanCloud.Storage.Internal {
             string content = await response.Content.ReadAsStringAsync();
             response.Dispose();
 
-            return JsonConvert.DeserializeObject<AppRouterState>(content);
+            AppRouterState state = JsonConvert.DeserializeObject<AppRouterState>(content);
+            state.Source = "router";
+            return state;
         }
 
         public void Clear() {
-            locker.EnterWriteLock();
             currentState = null;
-            locker.ExitWriteLock();
         }
     }
 }

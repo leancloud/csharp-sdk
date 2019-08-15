@@ -16,5 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Storage\Storage.csproj" />
+    <ProjectReference Include="..\..\AppRouter\AppRouter\AppRouter.csproj" />
   </ItemGroup>
 </Project>

@@ -31,43 +31,6 @@ namespace LeanCloud {
         /// </summary>
         public struct Configuration {
             /// <summary>
-            /// 与 SDK 通讯的云端节点 
-            /// </summary>
-            public enum AVRegion {
-                /// <summary>
-                /// 默认值，LeanCloud 华北节点，同 Public_North_China
-                /// </summary>
-                [Obsolete("please use Configuration.AVRegion.Public_North_China")]
-                Public_CN = 0,
-
-                /// <summary>
-                /// 默认值，华北公有云节点，同 Public_CN
-                /// </summary>
-                Public_North_China = 0,
-
-                /// <summary>
-                /// LeanCloud 北美区公有云节点，同 Public_North_America
-                /// </summary>
-                [Obsolete("please use Configuration.AVRegion.Public_North_America")]
-                Public_US = 1,
-                /// <summary>
-                /// LeanCloud 北美区公有云节点，同 Public_US
-                /// </summary>
-                Public_North_America = 1,
-
-                /// <summary>
-                /// 华东公有云节点，同 Public_East_China
-                /// </summary>
-                [Obsolete("please use Configuration.AVRegion.Public_East_China")]
-                Vendor_Tencent = 2,
-
-                /// <summary>
-                /// 华东公有云节点，同 Vendor_Tencent
-                /// </summary>
-                Public_East_China = 2,
-            }
-
-            /// <summary>
             /// In the event that you would like to use the LeanCloud SDK
             /// from a completely portable project, with no platform-specific library required,
             /// to get full access to all of our features available on LeanCloud.com
@@ -99,17 +62,6 @@ namespace LeanCloud {
             /// The LeanCloud application ID of your app.
             /// </summary>
             public string ApplicationId { get; set; }
-
-            /// <summary>
-            /// LeanCloud  C# SDK 支持的服务节点，目前支持华北，华东和北美公有云节点和私有节点，以及专属节点
-            /// </summary>
-            public AVRegion Region { get; set; }
-
-            internal int RegionValue {
-                get {
-                    return (int)Region;
-                }
-            }
 
             /// <summary>
             /// The LeanCloud application key for your app.
@@ -255,13 +207,6 @@ namespace LeanCloud {
 
         internal static void Config(Configuration configuration) {
             lock (mutex) {
-                var nodeHash = configuration.ApplicationId.Split('-');
-                if (nodeHash.Length > 1) {
-                    if (nodeHash[1].Trim() == "9Nh9j0Va") {
-                        configuration.Region = Configuration.AVRegion.Public_East_China;
-                    }
-                }
-
                 CurrentConfiguration = configuration;
             }
         }
@@ -280,11 +225,10 @@ namespace LeanCloud {
             Initialize(configuration);
         }
 
-        public static void Switch(string applicationId, string applicationKey, Configuration.AVRegion region = Configuration.AVRegion.Public_North_China) {
+        public static void Switch(string applicationId, string applicationKey) {
             var configuration = new Configuration {
                 ApplicationId = applicationId,
-                ApplicationKey = applicationKey,
-                Region = region
+                ApplicationKey = applicationKey
             };
             Switch(configuration);
         }
