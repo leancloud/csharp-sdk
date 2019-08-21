@@ -7,16 +7,12 @@ using System.Threading.Tasks;
 
 namespace LeanCloud {
     /// <summary>
-    /// Represents a user for a LeanCloud application.
+    /// 用户类
     /// </summary>
     [AVClassName("_User")]
     public class AVUser : AVObject {
         private static readonly IDictionary<string, IAVAuthenticationProvider> authProviders =
             new Dictionary<string, IAVAuthenticationProvider>();
-
-        private static readonly HashSet<string> readOnlyKeys = new HashSet<string> {
-            "sessionToken", "isNew"
-        };
 
         internal static AVUserController UserController {
             get {
@@ -25,20 +21,8 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// Whether the AVUser has been authenticated on this device. Only an authenticated
-        /// AVUser can be saved and deleted.
+        /// 判断是否是当前用户
         /// </summary>
-        [Obsolete("This property is deprecated, please use IsAuthenticatedAsync instead.")]
-        public bool IsAuthenticated {
-            get {
-                lock (mutex) {
-                    return SessionToken != null &&
-                      CurrentUser != null &&
-                      CurrentUser.ObjectId == ObjectId;
-                }
-            }
-        }
-
         public bool IsCurrent {
             get {
                 return CurrentUser == this;
@@ -46,34 +30,34 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// Whether the AVUser has been authenticated on this device, and the AVUser's session token is expired.
-        /// Only an authenticated AVUser can be saved and deleted.
+        /// 判断当前用户的 Session Token 是否有效
         /// </summary>
-        public Task IsAuthenticatedAsync() {
+        /// <returns></returns>
+        public async Task<bool> IsAuthenticatedAsync() {
             lock (mutex) {
                 if (SessionToken == null || CurrentUser == null || CurrentUser.ObjectId != ObjectId) {
-                    return Task.FromResult(false);
+                    return false;
                 }
             }
             var command = new AVCommand {
-                Path = $"users/me?session_token={CurrentSessionToken}",
+                Path = $"users/me?session_token={SessionToken}",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            return true;
         }
 
         /// <summary>
-        /// Refresh this user's session token, and current session token will be invalid.
+        /// 刷新用户的 Session Token，刷新后 Session Token 将会改变
         /// </summary>
-        public Task RefreshSessionTokenAsync(CancellationToken cancellationToken) {
-            return UserController.RefreshSessionTokenAsync(ObjectId, SessionToken, cancellationToken).OnSuccess(t => {
-                var serverState = t.Result;
-                HandleSave(serverState);
-            });
+        /// <returns></returns>
+        public async Task RefreshSessionTokenAsync() {
+            var serverState = await UserController.RefreshSessionTokenAsync(ObjectId);
+            HandleSave(serverState);
         }
 
         /// <summary>
-        /// authenticated token.
+        /// 获取 Session Token
         /// </summary>
         public string SessionToken {
             get {
@@ -84,53 +68,47 @@ namespace LeanCloud {
             }
         }
 
-        internal static string CurrentSessionToken {
-            get {
-                return CurrentUser?.SessionToken;
-            }
-        }
-
-        internal void SetSessionTokenAsync(string newSessionToken) {
-            SetSessionTokenAsync(newSessionToken, CancellationToken.None);
-        }
-
-        internal void SetSessionTokenAsync(string newSessionToken, CancellationToken cancellationToken) {
-            MutateState(mutableClone => {
-                mutableClone.ServerData["sessionToken"] = newSessionToken;
-            });
-
-            CurrentUser = this;
-        }
-
         /// <summary>
-        /// Gets or sets the username.
+        /// 用户名
         /// </summary>
         [AVFieldName("username")]
         public string Username {
-            get { return GetProperty<string>(null, "Username"); }
-            set { SetProperty(value, "Username"); }
+            get {
+                return GetProperty<string>(null, "Username");
+            }
+            set {
+                SetProperty(value, "Username");
+            }
         }
 
         /// <summary>
-        /// Sets the password.
+        /// 密码
         /// </summary>
         [AVFieldName("password")]
         public string Password {
-            private get { return GetProperty<string>(null, "Password"); }
-            set { SetProperty(value, "Password"); }
+            private get {
+                return GetProperty<string>(null, "Password");
+            }
+            set {
+                SetProperty(value, "Password");
+            }
         }
 
         /// <summary>
-        /// Sets the email address.
+        /// Email
         /// </summary>
         [AVFieldName("email")]
         public string Email {
-            get { return GetProperty<string>(null, "Email"); }
-            set { SetProperty(value, "Email"); }
+            get {
+                return GetProperty<string>(null, "Email");
+            }
+            set {
+                SetProperty(value, "Email");
+            }
         }
 
         /// <summary>
-        /// 用户手机号。
+        /// 手机号。
         /// </summary>
         [AVFieldName("mobilePhoneNumber")]
         public string MobilePhoneNumber {
@@ -138,21 +116,21 @@ namespace LeanCloud {
                 return GetProperty<string>(null, "MobilePhoneNumber");
             }
             set {
-                SetProperty<string>(value, "MobilePhoneNumber");
+                SetProperty(value, "MobilePhoneNumber");
             }
         }
 
         /// <summary>
-        /// 用户手机号是否已经验证
+        /// 手机号是否已经验证
         /// </summary>
         /// <value><c>true</c> if mobile phone verified; otherwise, <c>false</c>.</value>
         [AVFieldName("mobilePhoneVerified")]
         public bool MobilePhoneVerified {
             get {
-                return GetProperty<bool>(false, "MobilePhoneVerified");
+                return GetProperty(false, "MobilePhoneVerified");
             }
             set {
-                SetProperty<bool>(value, "MobilePhoneVerified");
+                SetProperty(value, "MobilePhoneVerified");
             }
         }
 
@@ -161,11 +139,7 @@ namespace LeanCloud {
         /// </summary>
         public bool IsAnonymous {
             get {
-                bool rtn = false;
-                if (this.AuthData != null) {
-                    rtn = this.AuthData.Keys.Contains("anonymous");
-                }
-                return rtn;
+                return AuthData != null && AuthData.Keys.Contains("anonymous");
             }
         }
 
@@ -285,68 +259,38 @@ namespace LeanCloud {
             return GetFolloweeQuery().FindAsync(CancellationToken.None);
         }
 
-
-        //public Task<AVStatus> SendStatusAsync()
-        //{
-
-        //}
-
         #endregion
 
         /// <summary>
-        /// Logs in a user with a username and password. On success, this saves the session to disk so you
-        /// can retrieve the currently logged in user using <see cref="CurrentUser"/>.
+        /// 使用用户名和密码登陆。登陆成功后，将用户设置为当前用户
         /// </summary>
-        /// <param name="username">The username to log in with.</param>
-        /// <param name="password">The password to log in with.</param>
-        /// <returns>The newly logged-in user.</returns>
-        public static Task<AVUser> LogInAsync(string username, string password) {
-            return LogInAsync(username, password, CancellationToken.None);
-        }
-
-        public static async Task<AVUser> LogInAsync(string username, string password, CancellationToken cancellationToken) {
-            var ret = await UserController.LogInAsync(username, null, password, cancellationToken);
+        /// <param name="username">用户名</param>
+        /// <param name="password">密码</param>
+        /// <returns></returns>
+        public static async Task<AVUser> LogInAsync(string username, string password) {
+            var ret = await UserController.LogInAsync(username, null, password);
             AVUser user = FromState<AVUser>(ret, "_User");
             CurrentUser = user;
             return user;
         }
 
         /// <summary>
-        /// Logs in a user with a username and password. On success, this saves the session to disk so you
-        /// can retrieve the currently logged in user using <see cref="CurrentUser"/>.
+        /// 使用 Session Token 登录。
         /// </summary>
-        /// <param name="sessionToken">The session token to authorize with</param>
-        /// <returns>The user if authorization was successful</returns>
-        public static Task<AVUser> BecomeAsync(string sessionToken) {
-            return BecomeAsync(sessionToken, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Logs in a user with a username and password. On success, this saves the session to disk so you
-        /// can retrieve the currently logged in user using <see cref="CurrentUser"/>.
-        /// </summary>
-        /// <param name="sessionToken">The session token to authorize with</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The user if authorization was successful</returns>
-        public static async Task<AVUser> BecomeAsync(string sessionToken, CancellationToken cancellationToken) {
-            var ret = await UserController.GetUserAsync(sessionToken, cancellationToken);
+        /// <param name="sessionToken">Session Token</param>
+        /// <returns></returns>
+        public static async Task<AVUser> BecomeAsync(string sessionToken) {
+            var ret = await UserController.GetUserAsync(sessionToken);
             AVUser user = FromState<AVUser>(ret, "_User");
             CurrentUser = user;
             return user;
         }
 
         /// <summary>
-        /// Logs out the currently logged in user session. This will remove the session from disk, log out of
-        /// linked services, and future calls to <see cref="CurrentUser"/> will return <c>null</c>.
+        /// 用户登出
         /// </summary>
-        /// <remarks>
-        /// Typically, you should use <see cref="LogOutAsync()"/>, unless you are managing your own threading.
-        /// </remarks>
         public static void LogOut() {
             CurrentUser = null;
-
-            // TODO (hallucinogen): this will without a doubt fail in Unity. But what else can we do?
-            //LogOutAsync().Wait();
         }
 
         private static void LogOutWithProviders() {
@@ -355,13 +299,16 @@ namespace LeanCloud {
             }
         }
 
+        /// <summary>
+        /// 获取当前用户
+        /// </summary>
         public static AVUser CurrentUser {
             get;
             internal set;
         }
 
         /// <summary>
-        /// Constructs a <see cref="AVQuery{AVUser}"/> for AVUsers.
+        /// 创建一个 AVUser 查询对象
         /// </summary>
         public static AVQuery<AVUser> Query {
             get {
@@ -370,34 +317,23 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// Requests a password reset email to be sent to the specified email address associated with the
-        /// user account. This email allows the user to securely reset their password on the LeanCloud site.
+        /// 通过绑定的邮箱请求重置密码
+        /// 邮件可以在 LeanCloud 站点安全的重置密码
         /// </summary>
-        /// <param name="email">The email address associated with the user that forgot their password.</param>
+        /// <param name="email">绑定的邮箱地址</param>
+        /// <returns></returns>
         public static Task RequestPasswordResetAsync(string email) {
-            return RequestPasswordResetAsync(email, CancellationToken.None);
+            return UserController.RequestPasswordResetAsync(email);
         }
 
         /// <summary>
-        /// Requests a password reset email to be sent to the specified email address associated with the
-        /// user account. This email allows the user to securely reset their password on the LeanCloud site.
+        /// 更新用户的密码，需要用户的旧密码
         /// </summary>
-        /// <param name="email">The email address associated with the user that forgot their password.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public static Task RequestPasswordResetAsync(string email,
-            CancellationToken cancellationToken) {
-            return UserController.RequestPasswordResetAsync(email, cancellationToken);
-        }
-
-        /// <summary>
-        /// Updates current user's password. Need the user's old password,
-        /// </summary>
-        /// <returns>The password.</returns>
         /// <param name="oldPassword">Old password.</param>
         /// <param name="newPassword">New password.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        public Task UpdatePassword(string oldPassword, string newPassword, CancellationToken cancellationToken) {
-            return UserController.UpdatePasswordAsync(ObjectId, SessionToken, oldPassword, newPassword, cancellationToken);
+        public async Task UpdatePasswordAsync(string oldPassword, string newPassword) {
+            IObjectState state = await UserController.UpdatePasswordAsync(ObjectId, oldPassword, newPassword);
+            HandleFetchResult(state);
         }
 
         /// <summary>
@@ -545,32 +481,12 @@ namespace LeanCloud {
 
         #region 手机号登录
 
-        internal static async Task<AVUser> LogInWithParametersAsync(Dictionary<string, object> strs, CancellationToken cancellationToken) {
-            var ret = await UserController.LogInWithParametersAsync("login", strs, cancellationToken);
+        internal static async Task<AVUser> LogInWithParametersAsync(Dictionary<string, object> strs) {
+            var ret = await UserController.LogInWithParametersAsync("login", strs);
             var user = CreateWithoutData<AVUser>(null);
             user.HandleFetchResult(ret);
             CurrentUser = user;
             return CurrentUser;
-        }
-
-        /// <summary>
-        /// 以手机号和密码实现登陆。
-        /// </summary>
-        /// <param name="mobilePhoneNumber">手机号</param>
-        /// <param name="password">密码</param>
-        /// <returns></returns>
-        public static Task<AVUser> LogInByMobilePhoneNumberAsync(string mobilePhoneNumber, string password) {
-            return AVUser.LogInByMobilePhoneNumberAsync(mobilePhoneNumber, password, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// 以手机号和验证码匹配登陆
-        /// </summary>
-        /// <param name="mobilePhoneNumber">手机号</param>
-        /// <param name="smsCode">短信验证码</param>
-        /// <returns></returns>
-        public static Task<AVUser> LogInBySmsCodeAsync(string mobilePhoneNumber, string smsCode) {
-            return AVUser.LogInBySmsCodeAsync(mobilePhoneNumber, smsCode, CancellationToken.None);
         }
 
         /// <summary>
@@ -579,8 +495,8 @@ namespace LeanCloud {
         /// <param name="email">邮箱</param>
         /// <param name="password">密码</param>
         /// <returns></returns>
-        public static async Task<AVUser> LogInByEmailAsync(string email, string password, CancellationToken cancellationToken = default(CancellationToken)) {
-            var ret = await UserController.LogInAsync(null, email, password, cancellationToken);
+        public static async Task<AVUser> LogInByEmailAsync(string email, string password) {
+            var ret = await UserController.LogInAsync(null, email, password);
             AVUser user = FromState<AVUser>(ret, "_User");
             CurrentUser = user;
             return CurrentUser;
@@ -588,35 +504,31 @@ namespace LeanCloud {
 
 
         /// <summary>
-        /// 以手机号和密码匹配登陆
+        /// 用手机号和密码匹配登陆
         /// </summary>
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="password">密码</param>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<AVUser> LogInByMobilePhoneNumberAsync(string mobilePhoneNumber, string password, CancellationToken cancellationToken) {
-            Dictionary<string, object> strs = new Dictionary<string, object>()
-            {
+        public static Task<AVUser> LogInByMobilePhoneNumberAsync(string mobilePhoneNumber, string password) {
+            Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber },
                 { "password", password }
             };
-            return AVUser.LogInWithParametersAsync(strs, cancellationToken);
+            return LogInWithParametersAsync(strs);
         }
 
         /// <summary>
-        /// 以手机号和验证码登陆
+        /// 用手机号和验证码登陆
         /// </summary>
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="smsCode">短信验证码</param>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<AVUser> LogInBySmsCodeAsync(string mobilePhoneNumber, string smsCode, CancellationToken cancellationToken = default(CancellationToken)) {
-            Dictionary<string, object> strs = new Dictionary<string, object>()
-            {
+        public static Task<AVUser> LogInBySmsCodeAsync(string mobilePhoneNumber, string smsCode) {
+            Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber },
                 { "smsCode", smsCode }
             };
-            return AVUser.LogInWithParametersAsync(strs, cancellationToken);
+            return LogInWithParametersAsync(strs);
         }
 
         /// <summary>
@@ -672,34 +584,27 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// 手机号一键登录
+        /// 手机号注册和登录
         /// </summary>
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="smsCode">短信验证码</param>
         /// <returns></returns>
-        public static async Task<AVUser> SignUpOrLogInByMobilePhoneAsync(string mobilePhoneNumber, string smsCode, CancellationToken cancellationToken) {
+        public static async Task<AVUser> SignUpOrLogInByMobilePhoneAsync(string mobilePhoneNumber, string smsCode) {
             Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber },
                 { "smsCode", smsCode }
             };
-            var ret = await UserController.LogInWithParametersAsync("usersByMobilePhone", strs, cancellationToken);
+            var ret = await UserController.LogInWithParametersAsync("usersByMobilePhone", strs);
             var user = CreateWithoutData<AVUser>(null);
             user.HandleFetchResult(ret);
             CurrentUser = user;
             return CurrentUser;
         }
 
-        /// <summary>
-        /// 手机号一键登录
-        /// </summary>
-        /// <returns>signup or login by mobile phone async.</returns>
-        /// <param name="mobilePhoneNumber">手机号</param>
-        /// <param name="smsCode">短信验证码</param>
-        public static Task<AVUser> SignUpOrLogInByMobilePhoneAsync(string mobilePhoneNumber, string smsCode) {
-            return AVUser.SignUpOrLogInByMobilePhoneAsync(mobilePhoneNumber, smsCode, CancellationToken.None);
-        }
+        #endregion
 
-        #region mobile sms shortcode sign up & log in.
+        #region 手机短信
+
         /// <summary>
         /// Send sign up sms code async.
         /// </summary>
@@ -716,7 +621,7 @@ namespace LeanCloud {
         /// <param name="mobilePhoneNumber">Mobile phone number.</param>
         /// <param name="smsCode">Sms code.</param>
         public static Task<AVUser> SignUpByMobilePhoneAsync(string mobilePhoneNumber, string smsCode) {
-            return AVUser.SignUpOrLogInByMobilePhoneAsync(mobilePhoneNumber, smsCode);
+            return SignUpOrLogInByMobilePhoneAsync(mobilePhoneNumber, smsCode);
         }
 
         /// <summary>
@@ -725,7 +630,7 @@ namespace LeanCloud {
         /// <returns>The log in sms code async.</returns>
         /// <param name="mobilePhoneNumber">Mobile phone number.</param>
         public static Task SendLogInSmsCodeAsync(string mobilePhoneNumber) {
-            return AVUser.RequestLogInSmsCodeAsync(mobilePhoneNumber);
+            return RequestLogInSmsCodeAsync(mobilePhoneNumber);
         }
 
         /// <summary>
@@ -735,14 +640,15 @@ namespace LeanCloud {
         /// <param name="mobilePhoneNumber">Mobile phone number.</param>
         /// <param name="smsCode">Sms code.</param>
         public static Task<AVUser> LogInByMobilePhoneAsync(string mobilePhoneNumber, string smsCode) {
-            return AVUser.LogInBySmsCodeAsync(mobilePhoneNumber, smsCode);
+            return LogInBySmsCodeAsync(mobilePhoneNumber, smsCode);
         }
-        #endregion
+
         #endregion
 
         #region 重置密码
+
         /// <summary>
-        ///  请求重置密码，需要传入注册时使用的手机号。
+        /// 请求重置密码，需要传入注册时使用的手机号。
         /// </summary>
         /// <param name="mobilePhoneNumber">注册时使用的手机号</param>
         /// <returns></returns>
@@ -751,7 +657,7 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        ///  请求重置密码，需要传入注册时使用的手机号。
+        /// 请求重置密码，需要传入注册时使用的手机号。
         /// </summary>
         /// <param name="mobilePhoneNumber">注册时使用的手机号</param>
         /// <param name="cancellationToken">cancellationToken</param>
@@ -761,7 +667,7 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        ///  请求重置密码，需要传入注册时使用的手机号。
+        /// 请求重置密码，需要传入注册时使用的手机号。
         /// </summary>
         /// <param name="mobilePhoneNumber">注册时使用的手机号</param>
         /// <param name="validateToken">Validate token.</param>
@@ -771,7 +677,7 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        ///  请求重置密码，需要传入注册时使用的手机号。
+        /// 请求重置密码，需要传入注册时使用的手机号。
         /// </summary>
         /// <param name="mobilePhoneNumber">注册时使用的手机号</param>
         /// <param name="validateToken">Validate token.</param>
@@ -822,42 +728,12 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// 发送认证码到需要认证的手机上
+        /// 发送验证码到用户绑定的手机上
         /// </summary>
         /// <param name="mobilePhoneNumber">手机号</param>
+        /// <param name="validateToken">验证码</param>
         /// <returns></returns>
-        public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber) {
-            return RequestMobilePhoneVerifyAsync(mobilePhoneNumber, null, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// 发送认证码到需要认证的手机上
-        /// </summary>
-        /// <param name="mobilePhoneNumber">手机号</param>
-        /// <param name="validateToken">Validate token.</param>
-        /// <returns></returns>
-        public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, string validateToken) {
-            return RequestMobilePhoneVerifyAsync(mobilePhoneNumber, validateToken, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// 发送认证码到需要认证的手机上
-        /// </summary>
-        /// <param name="mobilePhoneNumber">手机号</param>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns></returns>
-        public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, CancellationToken cancellationToken) {
-            return RequestMobilePhoneVerifyAsync(mobilePhoneNumber, null, cancellationToken);
-        }
-
-        /// <summary>
-        /// 发送认证码到需要认证的手机上
-        /// </summary>
-        /// <param name="mobilePhoneNumber">手机号</param>
-        /// <param name="validateToken">Validate token.</param>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns></returns>
-        public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, string validateToken, CancellationToken cancellationToken) {
+        public static Task RequestMobilePhoneVerifyAsync(string mobilePhoneNumber, string validateToken = null) {
             Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber }
             };
@@ -876,31 +752,6 @@ namespace LeanCloud {
         /// 验证手机验证码是否为有效值
         /// </summary>
         /// <param name="code">手机收到的验证码</param>
-        /// <param name="mobilePhoneNumber">手机号</param>
-        /// <returns></returns>
-        public static Task VerifyMobilePhoneAsync(string code, string mobilePhoneNumber) {
-            return VerifyMobilePhoneAsync(code, mobilePhoneNumber, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// 验证手机验证码是否为有效值
-        /// </summary>
-        /// <param name="code">手机收到的验证码</param>
-        /// <param name="mobilePhoneNumber">手机号，可选</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static Task VerifyMobilePhoneAsync(string code, string mobilePhoneNumber, CancellationToken cancellationToken) {
-            var command = new AVCommand {
-                Path = $"verifyMobilePhone/{code.Trim()}?mobilePhoneNumber={mobilePhoneNumber.Trim()}",
-                Method = HttpMethod.Post
-            };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
-        }
-
-        /// <summary>
-        /// 验证手机验证码是否为有效值
-        /// </summary>
-        /// <param name="code">手机收到的验证码</param>
         /// <returns></returns>
         public static Task VerifyMobilePhoneAsync(string code) {
             var command = new AVCommand {
@@ -910,19 +761,10 @@ namespace LeanCloud {
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
-        /// <summary>
-        ///  验证手机验证码是否为有效值
-        /// </summary>
-        /// <param name="code">手机收到的验证码</param>
-        /// <param name="cancellationToken">cancellationToken</param>
-        /// <returns></returns>
-        public static Task<bool> VerifyMobilePhoneAsync(string code, CancellationToken cancellationToken) {
-            return AVUser.VerifyMobilePhoneAsync(code, CancellationToken.None);
-        }
-
         #endregion
 
         #region 邮箱验证
+
         /// <summary>
         /// 申请发送验证邮箱的邮件，一周之内有效
         /// 如果该邮箱已经验证通过，会直接返回 True，并不会真正发送邮件
@@ -931,8 +773,7 @@ namespace LeanCloud {
         /// <param name="email">邮箱地址</param>
         /// <returns></returns>
         public static Task RequestEmailVerifyAsync(string email) {
-            Dictionary<string, object> strs = new Dictionary<string, object>()
-            {
+            Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "email", email }
             };
             var command = new AVCommand {
@@ -942,6 +783,7 @@ namespace LeanCloud {
             };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
+
         #endregion
 
         #region in no-local-storage enviroment
@@ -988,9 +830,11 @@ namespace LeanCloud {
                 return t;
             }).Unwrap();
         }
+
         #endregion
 
         #region AVUser Extension
+
         public IDictionary<string, IDictionary<string, object>> GetAuthData() {
             return AuthData;
         }
@@ -1009,7 +853,7 @@ namespace LeanCloud {
             if (options == null) {
                 options = new AVUserAuthDataLogInOption();
             }
-            return AVUser.LogInWithAsync(platform, data, options.FailOnNotExist, cancellationToken);
+            return LogInWithAsync(platform, data, options.FailOnNotExist, cancellationToken);
         }
 
         public static Task<AVUser> LogInWithAuthDataAndUnionIdAsync(
@@ -1022,7 +866,7 @@ namespace LeanCloud {
                 options = new AVUserAuthDataLogInOption();
             }
             MergeAuthData(authData, unionId, options);
-            return AVUser.LogInWithAsync(platform, authData, options.FailOnNotExist, cancellationToken);
+            return LogInWithAsync(platform, authData, options.FailOnNotExist, cancellationToken);
         }
 
         public static Task<AVUser> LogInAnonymouslyAsync(CancellationToken cancellationToken = default(System.Threading.CancellationToken)) {
@@ -1035,13 +879,12 @@ namespace LeanCloud {
 
         [Obsolete("please use LogInWithAuthDataAsync instead.")]
         public static Task<AVUser> LogInWithAsync(string authType, IDictionary<string, object> data, CancellationToken cancellationToken) {
-            return AVUser.LogInWithAsync(authType, data, false, cancellationToken);
+            return LogInWithAsync(authType, data, false, cancellationToken);
         }
 
         /// <summary>
         /// link a 3rd auth account to the user.
         /// </summary>
-        /// <param name="user">AVUser instance</param>
         /// <param name="data">OAuth data, like {"accessToken":"xxxxxx"}</param>
         /// <param name="platform">auth platform,maybe "facebook"/"twiiter"/"weibo"/"weixin" .etc</param>
         /// <param name="cancellationToken"></param>
@@ -1066,7 +909,6 @@ namespace LeanCloud {
         /// <summary>
         /// unlink a 3rd auth account from the user.
         /// </summary>
-        /// <param name="user">AVUser instance</param>
         /// <param name="platform">auth platform,maybe "facebook"/"twiiter"/"weibo"/"weixin" .etc</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -1080,6 +922,7 @@ namespace LeanCloud {
             authData["main_account"] = options.AsMainAccount;
             authData["unionid"] = unionId;
         }
+
         #endregion
     }
 }

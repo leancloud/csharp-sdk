@@ -52,7 +52,6 @@ namespace LeanCloud.Storage.Internal {
         }
 
         internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken) {
-            string currentSessionToken = AVUser.CurrentSessionToken;
             string str = fileState.Name;
             IDictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("name", str);

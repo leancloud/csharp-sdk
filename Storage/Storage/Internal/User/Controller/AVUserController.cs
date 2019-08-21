@@ -20,7 +20,7 @@ namespace LeanCloud.Storage.Internal {
             return serverState;
         }
 
-        public async Task<IObjectState> LogInAsync(string username, string email, string password, CancellationToken cancellationToken) {
+        public async Task<IObjectState> LogInAsync(string username, string email, string password) {
             var data = new Dictionary<string, object>{
                 { "password", password}
             };
@@ -35,7 +35,7 @@ namespace LeanCloud.Storage.Internal {
                 Method = HttpMethod.Post,
                 Content = data
             };
-            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             var serverState = AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
             serverState = serverState.MutatedClone(mutableClone => {
                 mutableClone.IsNew = ret.Item1 == System.Net.HttpStatusCode.Created;
@@ -63,16 +63,19 @@ namespace LeanCloud.Storage.Internal {
             return serverState;
         }
 
-        public async Task<IObjectState> GetUserAsync(string sessionToken, CancellationToken cancellationToken) {
+        public async Task<IObjectState> GetUserAsync(string sessionToken) {
             var command = new AVCommand {
                 Path = "users/me",
-                Method = HttpMethod.Get
+                Method = HttpMethod.Get,
+                Headers = new Dictionary<string, string> {
+                    { "X-LC-Session", sessionToken }
+                }
             };
-            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             return AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
         }
 
-        public async Task RequestPasswordResetAsync(string email, CancellationToken cancellationToken) {
+        public async Task RequestPasswordResetAsync(string email) {
             var command = new AVCommand {
                 Path = "requestPasswordReset",
                 Method = HttpMethod.Post,
@@ -80,16 +83,16 @@ namespace LeanCloud.Storage.Internal {
                     { "email", email}
                 }
             };
-            await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
-        public async Task<IObjectState> LogInWithParametersAsync(string relativeUrl, IDictionary<string, object> data, CancellationToken cancellationToken) {
+        public async Task<IObjectState> LogInWithParametersAsync(string relativeUrl, IDictionary<string, object> data) {
             var command = new AVCommand {
                 Path = relativeUrl,
                 Method = HttpMethod.Post,
                 Content = data
             };
-            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             var serverState = AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
             serverState = serverState.MutatedClone(mutableClone => {
                 mutableClone.IsNew = ret.Item1 == System.Net.HttpStatusCode.Created;
@@ -97,7 +100,7 @@ namespace LeanCloud.Storage.Internal {
             return serverState;
         }
 
-        public async Task UpdatePasswordAsync(string userId, string sessionToken, string oldPassword, string newPassword, CancellationToken cancellationToken) {
+        public async Task<IObjectState> UpdatePasswordAsync(string userId, string oldPassword, string newPassword) {
             var command = new AVCommand {
                 Path = $"users/{userId}/updatePassword",
                 Method = HttpMethod.Put,
@@ -106,10 +109,11 @@ namespace LeanCloud.Storage.Internal {
                     { "new_password", newPassword },
                 }
             };
-            await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            return AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
         }
 
-        public async Task<IObjectState> RefreshSessionTokenAsync(string userId, string sessionToken, CancellationToken cancellationToken) {
+        public async Task<IObjectState> RefreshSessionTokenAsync(string userId) {
             var command = new AVCommand {
                 Path = $"users/{userId}/refreshSessionToken",
                 Method = HttpMethod.Put

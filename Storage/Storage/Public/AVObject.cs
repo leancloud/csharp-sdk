@@ -570,7 +570,7 @@ string propertyName
                 // Get the JSON representation of the object.
                 currentOperations = StartSave();
 
-                sessionToken = AVUser.CurrentSessionToken;
+                sessionToken = AVUser.CurrentUser.SessionToken;
 
                 deepSaveTask = DeepSaveAsync(estimatedData, sessionToken, cancellationToken);
             }
@@ -621,7 +621,7 @@ string propertyName
                     queryString = new Dictionary<string, object>();
                 }
 
-                return ObjectController.FetchAsync(state, queryString, AVUser.CurrentSessionToken, cancellationToken);
+                return ObjectController.FetchAsync(state, queryString, AVUser.CurrentUser.SessionToken, cancellationToken);
             }).Unwrap().OnSuccess(t => {
                 HandleFetchResult(t.Result);
                 return this;
@@ -709,7 +709,7 @@ string propertyName
         /// <param name="cancellationToken">The cancellation token.</param>
         public static Task SaveAllAsync<T>(
             IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
-            return DeepSaveAsync(objects.ToList(), AVUser.CurrentSessionToken, cancellationToken);
+            return DeepSaveAsync(objects.ToList(), AVUser.CurrentUser.SessionToken, cancellationToken);
         }
 
         #endregion
@@ -856,8 +856,8 @@ string propertyName
             if (ObjectId == null) {
                 return Task.FromResult(0);
             }
-
-            string sessionToken = AVUser.CurrentSessionToken;
+            
+            string sessionToken = AVUser.CurrentUser.SessionToken;
 
             return toAwait.OnSuccess(_ => {
                 return ObjectController.DeleteAsync(State, sessionToken, cancellationToken);
@@ -902,7 +902,7 @@ string propertyName
                 var states = uniqueObjects.Select(t => t.state).ToList();
                 return toAwait.OnSuccess(_ => {
                     var deleteTasks = ObjectController.DeleteAllAsync(states,
-                      AVUser.CurrentSessionToken,
+                      AVUser.CurrentUser.SessionToken,
                       cancellationToken);
 
                     return Task.WhenAll(deleteTasks);

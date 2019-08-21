@@ -108,7 +108,6 @@ namespace LeanCloud.Storage.Internal {
             return key;
         }
         internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetQiniuToken(FileState state, CancellationToken cancellationToken) {
-            string currentSessionToken = AVUser.CurrentSessionToken;
             string str = state.Name;
 
             IDictionary<string, object> parameters = new Dictionary<string, object>();
