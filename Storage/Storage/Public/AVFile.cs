@@ -6,8 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LeanCloud
-{
+namespace LeanCloud {
     /// <summary>
     /// AVFile is a local representation of a file that is saved to the LeanCloud.
     /// </summary>
@@ -24,8 +23,7 @@ namespace LeanCloud
     /// await obj.SaveAsync();
     /// </code>
     /// </example>
-    public partial class AVFile : IJsonConvertible
-    {
+    public partial class AVFile : IJsonConvertible {
         internal static int objectCounter = 0;
         internal static readonly object Mutex = new object();
         private FileState state;
@@ -40,18 +38,15 @@ namespace LeanCloud
         /// <param name="data">数据流</param>
         /// <param name="mimeType">文件类型</param>
         /// <param name="metaData">文件源信息</param>
-        public AVFile(string name, Stream data, string mimeType = null, IDictionary<string, object> metaData = null)
-        {
+        public AVFile(string name, Stream data, string mimeType = null, IDictionary<string, object> metaData = null) {
             mimeType = mimeType == null ? GetMIMEType(name) : mimeType;
-            state = new FileState
-            {
+            state = new FileState {
                 Name = name,
                 MimeType = mimeType,
                 MetaData = metaData
             };
             this.dataStream = data;
-            lock (Mutex)
-            {
+            lock (Mutex) {
                 objectCounter++;
                 state.counter = objectCounter;
             }
@@ -73,8 +68,7 @@ namespace LeanCloud
         /// <param name="data">文件流数据</param>
         /// <param name="mimeType">文件类型</param>
         public AVFile(string name, Stream data, string mimeType = null)
-            : this(name, data, mimeType, new Dictionary<string, object>())
-        {
+            : this(name, data, mimeType, new Dictionary<string, object>()) {
         }
 
         /// <summary>
@@ -83,8 +77,7 @@ namespace LeanCloud
         /// <param name="name">文件名</param>
         /// <param name="data">文件的 byte[] 数据</param>
         public AVFile(string name, byte[] data)
-            : this(name, new MemoryStream(data), new Dictionary<string, object>())
-        {
+            : this(name, new MemoryStream(data), new Dictionary<string, object>()) {
 
         }
 
@@ -95,8 +88,7 @@ namespace LeanCloud
         /// <param name="data">文件的 byte[] 数据</param>
         /// <param name="metaData">元数据</param>
         public AVFile(string name, byte[] data, IDictionary<string, object> metaData)
-            : this(name, new MemoryStream(data), metaData)
-        {
+            : this(name, new MemoryStream(data), metaData) {
 
         }
 
@@ -107,8 +99,7 @@ namespace LeanCloud
         /// <param name="data">文件的数据流</param>
         /// <param name="metaData">元数据</param>
         public AVFile(string name, Stream data, IDictionary<string, object> metaData)
-            : this(name, data, GetMIMEType(name), metaData)
-        {
+            : this(name, data, GetMIMEType(name), metaData) {
         }
 
         /// <summary>
@@ -117,8 +108,7 @@ namespace LeanCloud
         /// <param name="name">文件名</param>
         /// <param name="data">文件的数据流</param>
         public AVFile(string name, Stream data)
-            : this(name, data, new Dictionary<string, object>())
-        {
+            : this(name, data, new Dictionary<string, object>()) {
 
         }
 
@@ -130,18 +120,15 @@ namespace LeanCloud
         /// <param name="uri">文件Uri</param>
         /// <param name="mimeType">文件类型</param>
         /// <param name="metaData">文件源信息</param>
-        public AVFile(string name, Uri uri, string mimeType = null, IDictionary<string, object> metaData = null)
-        {
+        public AVFile(string name, Uri uri, string mimeType = null, IDictionary<string, object> metaData = null) {
             mimeType = mimeType == null ? GetMIMEType(name) : mimeType;
-            state = new FileState
-            {
+            state = new FileState {
                 Name = name,
                 Url = uri,
                 MetaData = metaData,
                 MimeType = mimeType
             };
-            lock (Mutex)
-            {
+            lock (Mutex) {
                 objectCounter++;
                 state.counter = objectCounter;
             }
@@ -156,8 +143,7 @@ namespace LeanCloud
         /// <param name="mimeType">文件类型</param>
         /// <param name="metaData">文件源信息</param>
         public AVFile(string name, string url, string mimeType = null, IDictionary<string, object> metaData = null)
-            : this(name, new Uri(url), mimeType, metaData)
-        {
+            : this(name, new Uri(url), mimeType, metaData) {
 
         }
 
@@ -168,8 +154,7 @@ namespace LeanCloud
         /// <param name="url">文件 Url</param>
         /// <param name="metaData">文件源信息</param>
         public AVFile(string name, string url, IDictionary<string, object> metaData)
-            : this(name, url, null, metaData)
-        {
+            : this(name, url, null, metaData) {
         }
 
         /// <summary>
@@ -179,8 +164,7 @@ namespace LeanCloud
         /// <param name="uri">文件 Uri</param>
         /// <param name="mimeType">文件类型</param>
         public AVFile(string name, Uri uri, string mimeType = null)
-            : this(name, uri, mimeType, new Dictionary<string, object>())
-        {
+            : this(name, uri, mimeType, new Dictionary<string, object>()) {
 
         }
 
@@ -190,8 +174,7 @@ namespace LeanCloud
         /// <param name="name">文件名</param>
         /// <param name="uri">文件 Uri</param>
         public AVFile(string name, Uri uri)
-            : this(name, uri, null, new Dictionary<string, object>())
-        {
+            : this(name, uri, null, new Dictionary<string, object>()) {
 
         }
         /// <summary>
@@ -200,20 +183,16 @@ namespace LeanCloud
         /// <param name="name">文件名</param>
         /// <param name="url">文件的 Url</param>
         public AVFile(string name, string url)
-            : this(name, new Uri(url))
-        {
+            : this(name, new Uri(url)) {
         }
 
-        internal AVFile(FileState filestate)
-        {
+        internal AVFile(FileState filestate) {
             this.state = filestate;
         }
         internal AVFile(string objectId)
-            : this(new FileState()
-            {
+            : this(new FileState() {
                 ObjectId = objectId
-            })
-        {
+            }) {
 
         }
         #endregion
@@ -225,10 +204,8 @@ namespace LeanCloud
         /// <summary>
         /// Gets whether the file still needs to be saved.
         /// </summary>
-        public bool IsDirty
-        {
-            get
-            {
+        public bool IsDirty {
+            get {
                 return state.Url == null;
             }
         }
@@ -238,10 +215,8 @@ namespace LeanCloud
         /// the user. After save is called, that name gets prefixed with a unique identifier.
         /// </summary>
         [AVFieldName("name")]
-        public string Name
-        {
-            get
-            {
+        public string Name {
+            get {
                 return state.Name;
             }
         }
@@ -251,10 +226,8 @@ namespace LeanCloud
         /// inferred from the file extension. "unknown/unknown" will be used if neither is 
         /// available.
         /// </summary>
-        public string MimeType
-        {
-            get
-            {
+        public string MimeType {
+            get {
                 return state.MimeType;
             }
         }
@@ -264,28 +237,22 @@ namespace LeanCloud
         /// you get the file from a <see cref="AVObject"/>.
         /// </summary>
         [AVFieldName("url")]
-        public Uri Url
-        {
-            get
-            {
+        public Uri Url {
+            get {
                 return state.Url;
             }
         }
 
-        internal static AVFileController FileController
-        {
-            get
-            {
+        internal static AVFileController FileController {
+            get {
                 return AVPlugins.Instance.FileController;
             }
         }
 
         #endregion
 
-        IDictionary<string, object> IJsonConvertible.ToJSON()
-        {
-            if (this.IsDirty)
-            {
+        IDictionary<string, object> IJsonConvertible.ToJSON() {
+            if (this.IsDirty) {
                 throw new InvalidOperationException(
                   "AVFile must be saved before it can be serialized.");
             }
@@ -302,8 +269,7 @@ namespace LeanCloud
         /// <summary>
         /// Saves the file to the LeanCloud cloud.
         /// </summary>
-        public Task SaveAsync()
-        {
+        public Task SaveAsync() {
             return SaveAsync(null, CancellationToken.None);
         }
 
@@ -311,8 +277,7 @@ namespace LeanCloud
         /// Saves the file to the LeanCloud cloud.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public Task SaveAsync(CancellationToken cancellationToken)
-        {
+        public Task SaveAsync(CancellationToken cancellationToken) {
             return SaveAsync(null, cancellationToken);
         }
 
@@ -320,8 +285,7 @@ namespace LeanCloud
         /// Saves the file to the LeanCloud cloud.
         /// </summary>
         /// <param name="progress">The progress callback.</param>
-        public Task SaveAsync(IProgress<AVUploadProgressEventArgs> progress)
-        {
+        public Task SaveAsync(IProgress<AVUploadProgressEventArgs> progress) {
             return SaveAsync(progress, CancellationToken.None);
         }
 
@@ -331,21 +295,18 @@ namespace LeanCloud
         /// <param name="progress">The progress callback.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         public Task SaveAsync(IProgress<AVUploadProgressEventArgs> progress,
-            CancellationToken cancellationToken)
-        {
+            CancellationToken cancellationToken) {
             if (this.isExternal)
                 return this.SaveExternal();
 
             return taskQueue.Enqueue(
                 toAwait => FileController.SaveAsync(state, dataStream, AVUser.CurrentUser.SessionToken, progress, cancellationToken), cancellationToken)
-            .OnSuccess(t =>
-            {
+            .OnSuccess(t => {
                 state = t.Result;
             });
         }
 
-        internal Task SaveExternal()
-        {
+        internal Task SaveExternal() {
             Dictionary<string, object> strs = new Dictionary<string, object>()
             {
                 { "url", this.Url.ToString() },
@@ -369,8 +330,7 @@ namespace LeanCloud
                 };
             }
 
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(cmd).OnSuccess(t =>
-            {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(cmd).OnSuccess(t => {
                 var result = t.Result.Item2;
                 state.ObjectId = result["objectId"].ToString();
             });
@@ -385,13 +345,10 @@ namespace LeanCloud
         /// <summary>
         /// 文件在 LeanCloud 的唯一Id 标识
         /// </summary>
-        public string ObjectId
-        {
-            get
-            {
+        public string ObjectId {
+            get {
                 String str;
-                lock (this.mutex)
-                {
+                lock (this.mutex) {
                     str = state.ObjectId;
                 }
                 return str;
@@ -401,10 +358,8 @@ namespace LeanCloud
         /// <summary>
         /// 文件的元数据。
         /// </summary>
-        public IDictionary<string, object> MetaData
-        {
-            get
-            {
+        public IDictionary<string, object> MetaData {
+            get {
                 return state.MetaData;
             }
         }
@@ -414,16 +369,13 @@ namespace LeanCloud
         /// </summary>
         /// <value>
         /// </value>
-        public bool IsExternal
-        {
-            get
-            {
+        public bool IsExternal {
+            get {
                 return isExternal;
             }
         }
 
-        static AVFile()
-        {
+        static AVFile() {
             Dictionary<string, string> strs = new Dictionary<string, string>()
             {
                 { "ai", "application/postscript" },
@@ -617,19 +569,14 @@ namespace LeanCloud
             };
             AVFile.MIMETypesDictionary = strs;
         }
-        internal static string GetMIMEType(string fileName)
-        {
-            try
-            {
+        internal static string GetMIMEType(string fileName) {
+            try {
                 string str = Path.GetExtension(fileName).Remove(0, 1);
-                if (!AVFile.MIMETypesDictionary.ContainsKey(str))
-                {
+                if (!AVFile.MIMETypesDictionary.ContainsKey(str)) {
                     return "unknown/unknown";
                 }
                 return AVFile.MIMETypesDictionary[str];
-            }
-            catch
-            {
+            } catch {
                 return "unknown/unknown";
             }
         }
@@ -639,28 +586,23 @@ namespace LeanCloud
         /// </summary>
         /// <remarks>获取之后并没有实际执行下载，只是加载了文件的元信息以及物理地址（Url）
         /// </remarks>
-        public static Task<AVFile> GetFileWithObjectIdAsync(string objectId, CancellationToken cancellationToken)
-        {
+        public static Task<AVFile> GetFileWithObjectIdAsync(string objectId, CancellationToken cancellationToken) {
             string currentSessionToken = AVUser.CurrentUser.SessionToken;
-            return FileController.GetAsync(objectId, currentSessionToken, cancellationToken).OnSuccess(_ =>
-            {
+            return FileController.GetAsync(objectId, currentSessionToken, cancellationToken).OnSuccess(_ => {
                 var filestate = _.Result;
                 return new AVFile(filestate);
             });
         }
 
-        public static AVFile CreateWithoutData(string objectId)
-        {
+        public static AVFile CreateWithoutData(string objectId) {
             return new AVFile(objectId);
         }
 
-        public static AVFile CreateWithState(FileState state)
-        {
+        public static AVFile CreateWithState(FileState state) {
             return new AVFile(state);
         }
 
-        public static AVFile CreateWithData(string objectId,string name, string url,IDictionary<string,object> metaData)
-        {
+        public static AVFile CreateWithData(string objectId, string name, string url, IDictionary<string, object> metaData) {
             var fileState = new FileState();
             fileState.Name = name;
             fileState.ObjectId = objectId;
@@ -673,23 +615,18 @@ namespace LeanCloud
         /// </summary>
         /// <remarks>获取之后并没有实际执行下载，只是加载了文件的元信息以及物理地址（Url）
         /// </remarks>
-        public static Task<AVFile> GetFileWithObjectIdAsync(string objectId)
-        {
+        public static Task<AVFile> GetFileWithObjectIdAsync(string objectId) {
             return GetFileWithObjectIdAsync(objectId, CancellationToken.None);
         }
 
-        internal void MergeFromJSON(IDictionary<string, object> jsonData)
-        {
-            lock (this.mutex)
-            {
+        internal void MergeFromJSON(IDictionary<string, object> jsonData) {
+            lock (this.mutex) {
                 state.ObjectId = jsonData["objectId"] as string;
                 state.Url = new Uri(jsonData["url"] as string, UriKind.Absolute);
-                if (jsonData.ContainsKey("name"))
-                {
+                if (jsonData.ContainsKey("name")) {
                     state.Name = jsonData["name"] as string;
                 }
-                if (jsonData.ContainsKey("metaData"))
-                {
+                if (jsonData.ContainsKey("metaData")) {
                     state.MetaData = jsonData["metaData"] as Dictionary<string, object>;
                 }
 
@@ -700,32 +637,25 @@ namespace LeanCloud
         /// 删除文件
         /// </summary>
         /// <returns>Task</returns>
-        public Task DeleteAsync()
-        {
+        public Task DeleteAsync() {
             return DeleteAsync(CancellationToken.None);
         }
-        internal Task DeleteAsync(CancellationToken cancellationToken)
-        {
+        internal Task DeleteAsync(CancellationToken cancellationToken) {
             return taskQueue.Enqueue(toAwait => DeleteAsync(toAwait, cancellationToken),
                     cancellationToken);
 
         }
-        internal Task DeleteAsync(Task toAwait, CancellationToken cancellationToken)
-        {
-            if (ObjectId == null)
-            {
+        internal Task DeleteAsync(Task toAwait, CancellationToken cancellationToken) {
+            if (ObjectId == null) {
                 return Task.FromResult(0);
             }
 
             string sessionToken = AVUser.CurrentUser.SessionToken;
 
-            return toAwait.OnSuccess(_ =>
-            {
+            return toAwait.OnSuccess(_ => {
                 return FileController.DeleteAsync(state, sessionToken, cancellationToken);
             }).Unwrap().OnSuccess(_ => { });
         }
         #endregion
     }
-
-
 }

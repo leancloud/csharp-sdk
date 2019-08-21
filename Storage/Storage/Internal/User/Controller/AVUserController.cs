@@ -5,14 +5,14 @@ using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal {
     public class AVUserController {
-        public async Task<IObjectState> SignUpAsync(IObjectState state, IDictionary<string, IAVFieldOperation> operations, CancellationToken cancellationToken) {
+        public async Task<IObjectState> SignUpAsync(IObjectState state, IDictionary<string, IAVFieldOperation> operations) {
             var objectJSON = AVObject.ToJSONObjectForSaving(operations);
             var command = new AVCommand {
                 Path = "classes/_User",
                 Method = HttpMethod.Post,
                 Content = objectJSON
             };
-            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             var serverState = AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
             serverState = serverState.MutatedClone(mutableClone => {
                 mutableClone.IsNew = true;
@@ -43,7 +43,7 @@ namespace LeanCloud.Storage.Internal {
             return serverState;
         }
 
-        public async Task<IObjectState> LogInAsync(string authType, IDictionary<string, object> data, bool failOnNotExist, CancellationToken cancellationToken) {
+        public async Task<IObjectState> LogInAsync(string authType, IDictionary<string, object> data, bool failOnNotExist) {
             var authData = new Dictionary<string, object> {
                 [authType] = data
             };
@@ -55,7 +55,7 @@ namespace LeanCloud.Storage.Internal {
                     { "authData", authData}
                 }
             };
-            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             var serverState = AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
             serverState = serverState.MutatedClone(mutableClone => {
                 mutableClone.IsNew = ret.Item1 == System.Net.HttpStatusCode.Created;

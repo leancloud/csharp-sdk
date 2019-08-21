@@ -108,7 +108,7 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// 手机号。
+        /// 手机号
         /// </summary>
         [AVFieldName("mobilePhoneNumber")]
         public string MobilePhoneNumber {
@@ -143,29 +143,31 @@ namespace LeanCloud {
             }
         }
 
-        internal async Task SignUpAsync(Task toAwait, CancellationToken cancellationToken) {
-            await Create(toAwait, cancellationToken);
-            CurrentUser = this;
-        }
-
         /// <summary>
-        /// Signs up a new user. This will create a new AVUser on the server and will also persist the
-        /// session on disk so that you can access the user using <see cref="CurrentUser"/>. A username and
-        /// password must be set before calling SignUpAsync.
+        /// 注册新用户，注册成功后将保存为当前用户。必须设置用户名和密码。
         /// </summary>
-        public Task SignUpAsync() {
-            return SignUpAsync(CancellationToken.None);
-        }
+        /// <returns></returns>
+        public async Task SignUpAsync() {
+            if (AuthData == null) {
+                if (string.IsNullOrEmpty(Username)) {
+                    throw new InvalidOperationException("Cannot sign up user with an empty name.");
+                }
+                if (string.IsNullOrEmpty(Password)) {
+                    throw new InvalidOperationException("Cannot sign up user with an empty password.");
+                }
+            }
+            if (!string.IsNullOrEmpty(ObjectId)) {
+                throw new InvalidOperationException("Cannot sign up a user that already exists.");
+            }
 
-        /// <summary>
-        /// Signs up a new user. This will create a new AVUser on the server and will also persist the
-        /// session on disk so that you can access the user using <see cref="CurrentUser"/>. A username and
-        /// password must be set before calling SignUpAsync.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public Task SignUpAsync(CancellationToken cancellationToken) {
-            return taskQueue.Enqueue(toAwait => SignUpAsync(toAwait, cancellationToken),
-                cancellationToken);
+            IDictionary<string, IAVFieldOperation> currentOperations = StartSave();
+            try {
+                var serverState = await UserController.SignUpAsync(State, currentOperations);
+                HandleSave(serverState);
+                CurrentUser = this;
+            } catch (Exception) {
+                HandleFailedSave(currentOperations);
+            }
         }
 
         #region 事件流系统相关 API
@@ -187,7 +189,7 @@ namespace LeanCloud {
         /// <returns></returns>
         public Task FollowAsync(string userObjectId, IDictionary<string, object> data) {
             if (data != null) {
-                data = this.EncodeForSaving(data);
+                data = EncodeForSaving(data);
             }
             var command = new AVCommand {
                 Path = $"users/{ObjectId}/friendship/{userObjectId}",
@@ -329,21 +331,19 @@ namespace LeanCloud {
         /// <summary>
         /// 更新用户的密码，需要用户的旧密码
         /// </summary>
-        /// <param name="oldPassword">Old password.</param>
-        /// <param name="newPassword">New password.</param>
+        /// <param name="oldPassword">旧密码</param>
+        /// <param name="newPassword">新密码</param>
         public async Task UpdatePasswordAsync(string oldPassword, string newPassword) {
             IObjectState state = await UserController.UpdatePasswordAsync(ObjectId, oldPassword, newPassword);
             HandleFetchResult(state);
         }
 
         /// <summary>
-        /// Gets the authData for this user.
+        /// 用户数据
         /// </summary>
         internal IDictionary<string, IDictionary<string, object>> AuthData {
             get {
-                IDictionary<string, IDictionary<string, object>> authData;
-                if (this.TryGetValue<IDictionary<string, IDictionary<string, object>>>(
-                    "authData", out authData)) {
+                if (TryGetValue("authData", out IDictionary<string, IDictionary<string, object>> authData)) {
                     return authData;
                 }
                 return null;
@@ -354,8 +354,7 @@ namespace LeanCloud {
         }
 
         private static IAVAuthenticationProvider GetProvider(string providerName) {
-            IAVAuthenticationProvider provider;
-            if (authProviders.TryGetValue(providerName, out provider)) {
+            if (authProviders.TryGetValue(providerName, out IAVAuthenticationProvider provider)) {
                 return provider;
             }
             return null;
@@ -407,29 +406,27 @@ namespace LeanCloud {
                 if (authData == null || provider == null) {
                     return;
                 }
-                IDictionary<string, object> data;
-                if (authData.TryGetValue(provider.AuthType, out data)) {
+                if (authData.TryGetValue(provider.AuthType, out IDictionary<string, object> data)) {
                     restorationSuccess = provider.RestoreAuthentication(data);
                 }
             }
 
             if (!restorationSuccess) {
-                this.UnlinkFromAsync(provider.AuthType, CancellationToken.None);
+                UnlinkFromAsync(provider.AuthType, CancellationToken.None);
             }
         }
 
-        public Task LinkWithAsync(string authType, IDictionary<string, object> data, CancellationToken cancellationToken) {
-            return taskQueue.Enqueue(toAwait => {
-                AuthData = new Dictionary<string, IDictionary<string, object>>();
-                AuthData[authType] = data;
-                return SaveAsync(cancellationToken);
-            }, cancellationToken);
+        public Task LinkWithAsync(string authType, IDictionary<string, object> data) {
+            AuthData = new Dictionary<string, IDictionary<string, object>> {
+                [authType] = data
+            };
+            return SaveAsync();
         }
 
         public Task LinkWithAsync(string authType, CancellationToken cancellationToken) {
             var provider = GetProvider(authType);
             return provider.AuthenticateAsync(cancellationToken)
-              .OnSuccess(t => LinkWithAsync(authType, t.Result, cancellationToken))
+              .OnSuccess(t => LinkWithAsync(authType, t.Result))
               .Unwrap();
         }
 
@@ -437,7 +434,7 @@ namespace LeanCloud {
         /// Unlinks a user from a service.
         /// </summary>
         public Task UnlinkFromAsync(string authType, CancellationToken cancellationToken) {
-            return LinkWithAsync(authType, null, cancellationToken);
+            return LinkWithAsync(authType, null);
         }
 
         /// <summary>
@@ -449,12 +446,8 @@ namespace LeanCloud {
             }
         }
 
-        internal static async Task<AVUser> LogInWithAsync(string authType,
-            IDictionary<string, object> data,
-            bool failOnNotExist,
-            CancellationToken cancellationToken) {
-            
-            var ret = await UserController.LogInAsync(authType, data, failOnNotExist, cancellationToken);
+        internal static async Task<AVUser> LogInWithAsync(string authType, IDictionary<string, object> data, bool failOnNotExist) {
+            var ret = await UserController.LogInAsync(authType, data, failOnNotExist);
             AVUser user = FromState<AVUser>(ret, "_User");
             user.AuthData = new Dictionary<string, IDictionary<string, object>>();
             user.AuthData[authType] = data;
@@ -463,17 +456,16 @@ namespace LeanCloud {
             return CurrentUser;
         }
 
-        internal static Task<AVUser> LogInWithAsync(string authType,
-            CancellationToken cancellationToken) {
+        internal static Task<AVUser> LogInWithAsync(string authType) {
             var provider = GetProvider(authType);
-            return provider.AuthenticateAsync(cancellationToken)
-              .OnSuccess(authData => LogInWithAsync(authType, authData.Result, false, cancellationToken))
+            return provider.AuthenticateAsync(CancellationToken.None)
+              .OnSuccess(authData => LogInWithAsync(authType, authData.Result, false))
               .Unwrap();
         }
 
         internal static void RegisterProvider(IAVAuthenticationProvider provider) {
             authProviders[provider.AuthType] = provider;
-            var curUser = AVUser.CurrentUser;
+            var curUser = CurrentUser;
             if (curUser != null) {
                 curUser.SynchronizeAuthData(provider);
             }
@@ -482,8 +474,8 @@ namespace LeanCloud {
         #region 手机号登录
 
         internal static async Task<AVUser> LogInWithParametersAsync(Dictionary<string, object> strs) {
-            var ret = await UserController.LogInWithParametersAsync("login", strs);
-            var user = CreateWithoutData<AVUser>(null);
+            IObjectState ret = await UserController.LogInWithParametersAsync("login", strs);
+            AVUser user = CreateWithoutData<AVUser>(null);
             user.HandleFetchResult(ret);
             CurrentUser = user;
             return CurrentUser;
@@ -523,7 +515,7 @@ namespace LeanCloud {
         /// <param name="mobilePhoneNumber">手机号</param>
         /// <param name="smsCode">短信验证码</param>
         /// <returns></returns>
-        public static Task<AVUser> LogInBySmsCodeAsync(string mobilePhoneNumber, string smsCode) {
+        public static Task<AVUser> LogInByMobilePhoneNumberSmsCodeAsync(string mobilePhoneNumber, string smsCode) {
             Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber },
                 { "smsCode", smsCode }
@@ -532,44 +524,13 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// Requests the login SMS code asynchronous.
+        /// 请求登录短信验证码
         /// </summary>
-        /// <param name="mobilePhoneNumber">The mobile phone number.</param>
-        /// <returns></returns>
-        public static Task RequestLogInSmsCodeAsync(string mobilePhoneNumber) {
-            return RequestLogInSmsCodeAsync(mobilePhoneNumber, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Requests the login SMS code asynchronous.
-        /// </summary>
-        /// <param name="mobilePhoneNumber">The mobile phone number.</param>
-        /// <param name="validateToken">Validate token.</param>
+        /// <param name="mobilePhoneNumber">手机号</param>
+        /// <param name="validateToken">验证码</param>
         /// <returns></returns>
         public static Task RequestLogInSmsCodeAsync(string mobilePhoneNumber, string validateToken) {
-            return RequestLogInSmsCodeAsync(mobilePhoneNumber, null, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Requests the login SMS code asynchronous.
-        /// </summary>
-        /// <param name="mobilePhoneNumber">The mobile phone number.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        public static Task RequestLogInSmsCodeAsync(string mobilePhoneNumber, CancellationToken cancellationToken) {
-            return RequestLogInSmsCodeAsync(mobilePhoneNumber, null, cancellationToken);
-        }
-
-        /// <summary>
-        /// Requests the login SMS code asynchronous.
-        /// </summary>
-        /// <param name="mobilePhoneNumber">The mobile phone number.</param>
-        /// <param name="validateToken">Validate token.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        public static Task RequestLogInSmsCodeAsync(string mobilePhoneNumber, string validateToken, CancellationToken cancellationToken) {
-            Dictionary<string, object> strs = new Dictionary<string, object>()
-            {
+            Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
             if (String.IsNullOrEmpty(validateToken)) {
@@ -603,87 +564,15 @@ namespace LeanCloud {
 
         #endregion
 
-        #region 手机短信
-
-        /// <summary>
-        /// Send sign up sms code async.
-        /// </summary>
-        /// <returns>The sign up sms code async.</returns>
-        /// <param name="mobilePhoneNumber">Mobile phone number.</param>
-        public static Task SendSignUpSmsCodeAsync(string mobilePhoneNumber) {
-            return AVCloud.RequestSMSCodeAsync(mobilePhoneNumber);
-        }
-
-        /// <summary>
-        /// Sign up by mobile phone async.
-        /// </summary>
-        /// <returns>The up by mobile phone async.</returns>
-        /// <param name="mobilePhoneNumber">Mobile phone number.</param>
-        /// <param name="smsCode">Sms code.</param>
-        public static Task<AVUser> SignUpByMobilePhoneAsync(string mobilePhoneNumber, string smsCode) {
-            return SignUpOrLogInByMobilePhoneAsync(mobilePhoneNumber, smsCode);
-        }
-
-        /// <summary>
-        /// Send log in sms code async.
-        /// </summary>
-        /// <returns>The log in sms code async.</returns>
-        /// <param name="mobilePhoneNumber">Mobile phone number.</param>
-        public static Task SendLogInSmsCodeAsync(string mobilePhoneNumber) {
-            return RequestLogInSmsCodeAsync(mobilePhoneNumber);
-        }
-
-        /// <summary>
-        /// Log in by mobile phone async.
-        /// </summary>
-        /// <returns>The in by mobile phone async.</returns>
-        /// <param name="mobilePhoneNumber">Mobile phone number.</param>
-        /// <param name="smsCode">Sms code.</param>
-        public static Task<AVUser> LogInByMobilePhoneAsync(string mobilePhoneNumber, string smsCode) {
-            return LogInBySmsCodeAsync(mobilePhoneNumber, smsCode);
-        }
-
-        #endregion
-
         #region 重置密码
 
         /// <summary>
         /// 请求重置密码，需要传入注册时使用的手机号。
         /// </summary>
         /// <param name="mobilePhoneNumber">注册时使用的手机号</param>
+        /// <param name="validateToken">图形验证码</param>
         /// <returns></returns>
-        public static Task RequestPasswordResetBySmsCode(string mobilePhoneNumber) {
-            return RequestPasswordResetBySmsCode(mobilePhoneNumber, null, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// 请求重置密码，需要传入注册时使用的手机号。
-        /// </summary>
-        /// <param name="mobilePhoneNumber">注册时使用的手机号</param>
-        /// <param name="cancellationToken">cancellationToken</param>
-        /// <returns></returns>
-        public static Task RequestPasswordResetBySmsCode(string mobilePhoneNumber, CancellationToken cancellationToken) {
-            return RequestPasswordResetBySmsCode(mobilePhoneNumber, null, cancellationToken);
-        }
-
-        /// <summary>
-        /// 请求重置密码，需要传入注册时使用的手机号。
-        /// </summary>
-        /// <param name="mobilePhoneNumber">注册时使用的手机号</param>
-        /// <param name="validateToken">Validate token.</param>
-        /// <returns></returns>
-        public static Task RequestPasswordResetBySmsCode(string mobilePhoneNumber, string validateToken) {
-            return RequestPasswordResetBySmsCode(mobilePhoneNumber, validateToken, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// 请求重置密码，需要传入注册时使用的手机号。
-        /// </summary>
-        /// <param name="mobilePhoneNumber">注册时使用的手机号</param>
-        /// <param name="validateToken">Validate token.</param>
-        /// <param name="cancellationToken">cancellationToken</param>
-        /// <returns></returns>
-        public static Task RequestPasswordResetBySmsCode(string mobilePhoneNumber, string validateToken, CancellationToken cancellationToken) {
+        public static Task RequestPasswordResetBySmsCode(string mobilePhoneNumber, string validateToken = null) {
             Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
@@ -702,20 +591,9 @@ namespace LeanCloud {
         /// 通过验证码重置密码。
         /// </summary>
         /// <param name="newPassword">新密码</param>
-        /// <param name="smsCode">6位数验证码</param>
+        /// <param name="smsCode">6 位数验证码</param>
         /// <returns></returns>
         public static Task ResetPasswordBySmsCodeAsync(string newPassword, string smsCode) {
-            return ResetPasswordBySmsCodeAsync(newPassword, smsCode, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// 通过验证码重置密码。
-        /// </summary>
-        /// <param name="newPassword">新密码</param>
-        /// <param name="smsCode">6位数验证码</param>
-        /// <param name="cancellationToken">cancellationToken</param>
-        /// <returns></returns>
-        public static Task ResetPasswordBySmsCodeAsync(string newPassword, string smsCode, CancellationToken cancellationToken) {
             Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "password", newPassword }
             };
@@ -786,53 +664,6 @@ namespace LeanCloud {
 
         #endregion
 
-        #region in no-local-storage enviroment
-
-        internal Task Create() {
-            return this.Create(CancellationToken.None);
-        }
-        internal Task Create(CancellationToken cancellationToken) {
-            return taskQueue.Enqueue(toAwait => Create(toAwait, cancellationToken),
-               cancellationToken);
-        }
-
-        internal Task Create(Task toAwait, CancellationToken cancellationToken) {
-            if (AuthData == null) {
-                // TODO (hallucinogen): make an Extension of Task to create Task with exception/canceled.
-                if (string.IsNullOrEmpty(Username)) {
-                    TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
-                    tcs.TrySetException(new InvalidOperationException("Cannot sign up user with an empty name."));
-                    return tcs.Task;
-                }
-                if (string.IsNullOrEmpty(Password)) {
-                    TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
-                    tcs.TrySetException(new InvalidOperationException("Cannot sign up user with an empty password."));
-                    return tcs.Task;
-                }
-            }
-            if (!string.IsNullOrEmpty(ObjectId)) {
-                TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
-                tcs.TrySetException(new InvalidOperationException("Cannot sign up a user that already exists."));
-                return tcs.Task;
-            }
-
-            IDictionary<string, IAVFieldOperation> currentOperations = StartSave();
-
-            return toAwait.OnSuccess(_ => {
-                return UserController.SignUpAsync(State, currentOperations, cancellationToken);
-            }).Unwrap().ContinueWith(t => {
-                if (t.IsFaulted || t.IsCanceled) {
-                    HandleFailedSave(currentOperations);
-                } else {
-                    var serverState = t.Result;
-                    HandleSave(serverState);
-                }
-                return t;
-            }).Unwrap();
-        }
-
-        #endregion
-
         #region AVUser Extension
 
         public IDictionary<string, IDictionary<string, object>> GetAuthData() {
@@ -844,42 +675,32 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="data">OAuth data, like {"accessToken":"xxxxxx"}</param>
         /// <param name="platform">auth platform,maybe "facebook"/"twiiter"/"weibo"/"weixin" .etc</param>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<AVUser> LogInWithAuthDataAsync(IDictionary<string, object> data,
-            string platform,
-            AVUserAuthDataLogInOption options = null,
-            CancellationToken cancellationToken = default(System.Threading.CancellationToken)) {
+        public static Task<AVUser> LogInWithAuthDataAsync(IDictionary<string, object> data, string platform, AVUserAuthDataLogInOption options = null) {
             if (options == null) {
                 options = new AVUserAuthDataLogInOption();
             }
-            return LogInWithAsync(platform, data, options.FailOnNotExist, cancellationToken);
+            return LogInWithAsync(platform, data, options.FailOnNotExist);
         }
 
         public static Task<AVUser> LogInWithAuthDataAndUnionIdAsync(
             IDictionary<string, object> authData,
             string platform,
             string unionId,
-            AVUserAuthDataLogInOption options = null,
-            CancellationToken cancellationToken = default(System.Threading.CancellationToken)) {
+            AVUserAuthDataLogInOption options = null) {
             if (options == null) {
                 options = new AVUserAuthDataLogInOption();
             }
             MergeAuthData(authData, unionId, options);
-            return LogInWithAsync(platform, authData, options.FailOnNotExist, cancellationToken);
+            return LogInWithAsync(platform, authData, options.FailOnNotExist);
         }
 
-        public static Task<AVUser> LogInAnonymouslyAsync(CancellationToken cancellationToken = default(System.Threading.CancellationToken)) {
+        public static Task<AVUser> LogInAnonymouslyAsync() {
             var data = new Dictionary<string, object> {
                 { "id", Guid.NewGuid().ToString() }
             };
             var options = new AVUserAuthDataLogInOption();
-            return LogInWithAuthDataAsync(data, "anonymous", options, cancellationToken);
-        }
-
-        [Obsolete("please use LogInWithAuthDataAsync instead.")]
-        public static Task<AVUser> LogInWithAsync(string authType, IDictionary<string, object> data, CancellationToken cancellationToken) {
-            return LogInWithAsync(authType, data, false, cancellationToken);
+            return LogInWithAuthDataAsync(data, "anonymous", options);
         }
 
         /// <summary>
@@ -887,23 +708,21 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="data">OAuth data, like {"accessToken":"xxxxxx"}</param>
         /// <param name="platform">auth platform,maybe "facebook"/"twiiter"/"weibo"/"weixin" .etc</param>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task AssociateAuthDataAsync(IDictionary<string, object> data, string platform, CancellationToken cancellationToken = default(System.Threading.CancellationToken)) {
-            return LinkWithAsync(platform, data, cancellationToken);
+        public Task AssociateAuthDataAsync(IDictionary<string, object> data, string platform) {
+            return LinkWithAsync(platform, data);
         }
 
         public Task AssociateAuthDataAndUnionIdAsync(
             IDictionary<string, object> authData,
             string platform,
             string unionId,
-            AVUserAuthDataLogInOption options = null,
-            CancellationToken cancellationToken = default(System.Threading.CancellationToken)) {
+            AVUserAuthDataLogInOption options = null) {
             if (options == null) {
                 options = new AVUserAuthDataLogInOption();
             }
             MergeAuthData(authData, unionId, options);
-            return LinkWithAsync(platform, authData, cancellationToken);
+            return LinkWithAsync(platform, authData);
         }
 
         /// <summary>
