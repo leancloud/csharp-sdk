@@ -35,7 +35,7 @@ namespace LeanCloudTests {
 
         [Test]
         public async Task LoginWithEmail() {
-            AVUser user = await AVUser.LogInByEmailAsync("111111@qq.com", "111111");
+            AVUser user = await AVUser.LogInWithEmailAsync("111111@qq.com", "111111");
             Assert.AreEqual(user, AVUser.CurrentUser);
             TestContext.Out.WriteLine($"{AVUser.CurrentUser.SessionToken} login");
         }
@@ -49,7 +49,7 @@ namespace LeanCloudTests {
 
         [Test]
         public async Task IsAuthenticated() {
-            AVUser user = await AVUser.LogInByEmailAsync("111111@qq.com", "111111");
+            AVUser user = await AVUser.LogInWithEmailAsync("111111@qq.com", "111111");
             Assert.IsTrue(user.IsCurrent);
             Assert.AreEqual(user, AVUser.CurrentUser);
             bool authenticated = await user.IsAuthenticatedAsync();
@@ -58,7 +58,7 @@ namespace LeanCloudTests {
 
         [Test]
         public async Task RefreshSessionToken() {
-            AVUser user = await AVUser.LogInByEmailAsync("111111@qq.com", "111111");
+            AVUser user = await AVUser.LogInWithEmailAsync("111111@qq.com", "111111");
             Assert.IsTrue(user.IsCurrent);
             await user.RefreshSessionTokenAsync();
             TestContext.Out.WriteLine(user.SessionToken);
