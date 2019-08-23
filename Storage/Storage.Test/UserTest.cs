@@ -70,5 +70,45 @@ namespace LeanCloudTests {
             await user.UpdatePasswordAsync("111111", "222222");
             await user.UpdatePasswordAsync("222222", "111111");
         }
+
+        [Test]
+        public async Task LoginWithAuthData() {
+            AVUser user = await AVUser.LogInWithAuthDataAsync(new Dictionary<string, object> {
+                { "openid", "0395BA18A5CD6255E5BA185E7BEBA242" },
+                { "access_token", "12345678-SaMpLeTuo3m2avZxh5cjJmIrAfx4ZYyamdofM7IjU" },
+                { "expires_in", 1382686496 }
+            }, "qq");
+            Assert.NotNull(user.SessionToken);
+            TestContext.Out.WriteLine(user.SessionToken);
+        }
+
+        [Test]
+        public async Task AssociateAuthData() {
+            AVUser user = await AVUser.LogInAsync("111111", "111111");
+            Assert.NotNull(user.SessionToken);
+            await user.AssociateAuthDataAsync(new Dictionary<string, object> {
+                { "openid", "0395BA18A5CD6255E5BA185E7BEBA243" },
+                { "access_token", "12345678-SaMpLeTuo3m2avZxh5cjJmIrAfx4ZYyamdofM7IjU" },
+                { "expires_in", 1382686496 }
+            }, "qq");
+        }
+
+        [Test]
+        public async Task Anonymously() {
+            AVUser user = await AVUser.LogInAnonymouslyAsync();
+            Assert.NotNull(user.SessionToken);
+            TestContext.Out.WriteLine(user.SessionToken);
+        }
+
+        [Test]
+        public async Task GetRoles() {
+            AVUser user = await AVUser.LogInAsync("111111", "111111");
+            Assert.NotNull(user.SessionToken);
+            IEnumerable<AVRole> roles = await user.GetRolesAsync();
+            Assert.Greater(roles.Count(), 0);
+            foreach (AVRole role in roles) {
+                TestContext.Out.WriteLine(role.Name);
+            }
+        }
     }
 }

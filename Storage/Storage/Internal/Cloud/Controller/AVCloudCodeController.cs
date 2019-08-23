@@ -7,7 +7,7 @@ using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal {
     public class AVCloudCodeController {
-        public Task<T> CallFunctionAsync<T>(String name,
+        public Task<T> CallFunctionAsync<T>(string name,
             IDictionary<string, object> parameters,
             string sessionToken,
             CancellationToken cancellationToken) {
@@ -19,7 +19,7 @@ namespace LeanCloud.Storage.Internal {
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
                 if (!decoded.ContainsKey("result")) {
-                    return default(T);
+                    return default;
                 }
                 return Conversion.To<T>(decoded["result"]);
             });
@@ -34,7 +34,7 @@ namespace LeanCloud.Storage.Internal {
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
                 if (!decoded.ContainsKey("result")) {
-                    return default(T);
+                    return default;
                 }
                 return Conversion.To<T>(decoded["result"]);
             });

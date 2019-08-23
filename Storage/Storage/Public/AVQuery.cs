@@ -654,10 +654,13 @@ namespace LeanCloud
 
         internal AVQuery<T> WhereRelatedTo(AVObject parent, string key) {
             MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$relatedTo", new Dictionary<string, object> {
-                        { "object", parent},
-                        { "key", key}
-                    } } } }
+                {
+                    "$relatedTo",
+                    new Dictionary<string, object> {
+                        { "object", parent },
+                        { "key", key }
+                    }
+                }
             });
             return this;
         }

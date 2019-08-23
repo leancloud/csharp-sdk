@@ -269,96 +269,6 @@ namespace LeanCloud {
 
         #endregion
 
-
-        #region 第三方登录
-
-        /// <summary>
-        /// 使用第三方数据注册；如果已经存在相同的 Auth Data，则执行登录
-        /// </summary>
-        /// <param name="authData">Auth Data</param>
-        /// <param name="platform">平台</param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public static Task<AVUser> LogInWithAuthDataAsync(IDictionary<string, object> authData, string platform, AVUserAuthDataLogInOption options = null) {
-            if (options == null) {
-                options = new AVUserAuthDataLogInOption();
-            }
-            return LogInWithAsync(platform, authData, options.FailOnNotExist);
-        }
-
-        /// <summary>
-        /// 使用第三方数据注册；
-        /// </summary>
-        /// <param name="authData">Auth data</param>
-        /// <param name="platform">平台标识</param>
-        /// <param name="unionId"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public static Task<AVUser> LogInWithAuthDataAndUnionIdAsync(IDictionary<string, object> authData, string platform, string unionId,
-            AVUserAuthDataLogInOption options = null) {
-            if (options == null) {
-                options = new AVUserAuthDataLogInOption();
-            }
-            MergeAuthData(authData, unionId, options);
-            return LogInWithAsync(platform, authData, options.FailOnNotExist);
-        }
-
-        /// <summary>
-        /// 绑定第三方登录
-        /// </summary>
-        /// <param name="authData">Auth data</param>
-        /// <param name="platform">平台标识</param>
-        /// <returns></returns>
-        public Task AssociateAuthDataAsync(IDictionary<string, object> authData, string platform) {
-            return LinkWithAsync(platform, authData);
-        }
-
-        /// <summary>
-        /// 绑定第三方登录
-        /// </summary>
-        /// <param name="authData">OAuth data</param>
-        /// <param name="platform">平台标识</param>
-        /// <param name="unionId"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public Task AssociateAuthDataAndUnionIdAsync(IDictionary<string, object> authData, string platform, string unionId,
-            AVUserAuthDataLogInOption options = null) {
-            if (options == null) {
-                options = new AVUserAuthDataLogInOption();
-            }
-            MergeAuthData(authData, unionId, options);
-            return LinkWithAsync(platform, authData);
-        }
-
-        /// <summary>
-        /// 解绑第三方登录
-        /// </summary>
-        /// <param name="platform">平台标识</param>
-        /// <returns></returns>
-        public Task DisassociateWithAuthDataAsync(string platform) {
-            return LinkWithAsync(platform, null);
-        }
-
-        #endregion
-
-
-        public Task LinkWithAsync(string authType, IDictionary<string, object> data) {
-            AuthData = new Dictionary<string, IDictionary<string, object>> {
-                [authType] = data
-            };
-            return SaveAsync();
-        }
-
-        internal static async Task<AVUser> LogInWithAsync(string authType, IDictionary<string, object> data, bool failOnNotExist) {
-            var ret = await UserController.LogInAsync(authType, data, failOnNotExist);
-            AVUser user = FromState<AVUser>(ret, "_User");
-            user.AuthData = new Dictionary<string, IDictionary<string, object>> {
-                [authType] = data
-            };
-            CurrentUser = user;
-            return CurrentUser;
-        }
-
         #region 手机号登录
 
         /// <summary>
@@ -426,6 +336,77 @@ namespace LeanCloud {
             user.HandleFetchResult(ret);
             CurrentUser = user;
             return CurrentUser;
+        }
+
+        #endregion
+
+        #region 第三方登录
+
+        /// <summary>
+        /// 使用第三方数据注册；如果已经存在相同的 Auth Data，则执行登录
+        /// </summary>
+        /// <param name="authData">Auth Data</param>
+        /// <param name="platform">平台</param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static Task<AVUser> LogInWithAuthDataAsync(IDictionary<string, object> authData, string platform, AVUserAuthDataLogInOption options = null) {
+            if (options == null) {
+                options = new AVUserAuthDataLogInOption();
+            }
+            return LogInWithAsync(platform, authData, options.FailOnNotExist);
+        }
+
+        /// <summary>
+        /// 使用第三方数据注册；
+        /// </summary>
+        /// <param name="authData">Auth data</param>
+        /// <param name="platform">平台标识</param>
+        /// <param name="unionId"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static Task<AVUser> LogInWithAuthDataAndUnionIdAsync(IDictionary<string, object> authData, string platform, string unionId,
+            AVUserAuthDataLogInOption options = null) {
+            if (options == null) {
+                options = new AVUserAuthDataLogInOption();
+            }
+            MergeAuthData(authData, unionId, options);
+            return LogInWithAsync(platform, authData, options.FailOnNotExist);
+        }
+
+        /// <summary>
+        /// 绑定第三方登录
+        /// </summary>
+        /// <param name="authData">Auth data</param>
+        /// <param name="platform">平台标识</param>
+        /// <returns></returns>
+        public Task AssociateAuthDataAsync(IDictionary<string, object> authData, string platform) {
+            return LinkWithAuthDataAsync(platform, authData);
+        }
+
+        /// <summary>
+        /// 绑定第三方登录
+        /// </summary>
+        /// <param name="authData">Auth data</param>
+        /// <param name="platform">平台标识</param>
+        /// <param name="unionId"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public Task AssociateAuthDataAndUnionIdAsync(IDictionary<string, object> authData, string platform, string unionId,
+            AVUserAuthDataLogInOption options = null) {
+            if (options == null) {
+                options = new AVUserAuthDataLogInOption();
+            }
+            MergeAuthData(authData, unionId, options);
+            return LinkWithAuthDataAsync(platform, authData);
+        }
+
+        /// <summary>
+        /// 解绑第三方登录
+        /// </summary>
+        /// <param name="platform">平台标识</param>
+        /// <returns></returns>
+        public Task DisassociateWithAuthDataAsync(string platform) {
+            return LinkWithAuthDataAsync(platform, null);
         }
 
         #endregion
@@ -552,7 +533,7 @@ namespace LeanCloud {
         /// <summary>
         /// 关注某个用户
         /// </summary>
-        /// <param name="userObjectId">被关注的用户Id</param>
+        /// <param name="userObjectId">被关注的用户 Id</param>
         /// <param name="data">关注的时候附加属性</param>
         /// <returns></returns>
         public Task FollowAsync(string userObjectId, IDictionary<string, object> data) {
@@ -570,7 +551,7 @@ namespace LeanCloud {
         /// <summary>
         /// 取关某一个用户
         /// </summary>
-        /// <param name="userObjectId"></param>
+        /// <param name="userObjectId">用户 Id</param>
         /// <returns></returns>
         public Task UnfollowAsync(string userObjectId) {
             var command = new AVCommand {
@@ -631,6 +612,28 @@ namespace LeanCloud {
 
         #endregion
 
+        public Task<IEnumerable<AVRole>> GetRolesAsync() {
+            AVQuery<AVRole> query = new AVQuery<AVRole>();
+            query.WhereRelatedTo(this, "users");
+            return query.FindAsync();
+        }
+
+        Task LinkWithAuthDataAsync(string authType, IDictionary<string, object> data) {
+            AuthData = new Dictionary<string, IDictionary<string, object>> {
+                [authType] = data
+            };
+            return SaveAsync();
+        }
+
+        internal static async Task<AVUser> LogInWithAsync(string authType, IDictionary<string, object> data, bool failOnNotExist) {
+            var ret = await UserController.LogInAsync(authType, data, failOnNotExist);
+            AVUser user = FromState<AVUser>(ret, "_User");
+            user.AuthData = new Dictionary<string, IDictionary<string, object>> {
+                [authType] = data
+            };
+            CurrentUser = user;
+            return CurrentUser;
+        }
 
         internal static async Task<AVUser> LogInWithParametersAsync(Dictionary<string, object> strs) {
             IObjectState ret = await UserController.LogInWithParametersAsync("login", strs);

@@ -570,7 +570,7 @@ string propertyName
                 // Get the JSON representation of the object.
                 currentOperations = StartSave();
 
-                sessionToken = AVUser.CurrentUser.SessionToken;
+                sessionToken = AVUser.CurrentUser?.SessionToken;
 
                 deepSaveTask = DeepSaveAsync(estimatedData, sessionToken, cancellationToken);
             }
