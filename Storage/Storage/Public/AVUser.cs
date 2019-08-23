@@ -614,7 +614,7 @@ namespace LeanCloud {
 
         public Task<IEnumerable<AVRole>> GetRolesAsync() {
             AVQuery<AVRole> query = new AVQuery<AVRole>();
-            query.WhereRelatedTo(this, "users");
+            query.WhereEqualTo("users", this);
             return query.FindAsync();
         }
 
