@@ -29,7 +29,7 @@ namespace LeanCloud.Storage.Internal {
 
         public Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken) {
             state.frozenData = dataStream;
-            state.CloudName = GetUniqueName(state);
+            state.CloudName = fileToken["key"] as string;
             MergeFromJSON(state, fileToken);
             return UploadNextChunk(state, dataStream, string.Empty, 0, progress).OnSuccess(_ => {
                 return state;
@@ -101,12 +101,6 @@ namespace LeanCloud.Storage.Internal {
             return chunkBinary;
         }
 
-        internal string GetUniqueName(FileState state) {
-            string key = Guid.NewGuid().ToString();//file Key in Qiniu.
-            string extension = Path.GetExtension(state.Name);
-            key += extension;
-            return key;
-        }
         internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetQiniuToken(FileState state, CancellationToken cancellationToken) {
             string str = state.Name;
 

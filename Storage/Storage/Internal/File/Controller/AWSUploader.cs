@@ -19,8 +19,11 @@ namespace LeanCloud.Storage.Internal {
         }
 
         internal async Task<FileState> PutFile(FileState state, string uploadUrl, Stream dataStream) {
-            IList<KeyValuePair<string, string>> makeBlockHeaders = new List<KeyValuePair<string, string>>();
-            makeBlockHeaders.Add(new KeyValuePair<string, string>("Content-Type", state.MimeType));
+            IList<KeyValuePair<string, string>> makeBlockHeaders = new List<KeyValuePair<string, string>> {
+                new KeyValuePair<string, string>("Content-Type", state.MimeType),
+                new KeyValuePair<string, string>("Cache-Control", "public, max-age=31536000"),
+                new KeyValuePair<string, string>("Content-Length", dataStream.Length.ToString())
+            };
 
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage {

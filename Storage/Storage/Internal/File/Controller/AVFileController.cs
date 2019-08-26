@@ -85,11 +85,10 @@ namespace LeanCloud.Storage.Internal {
             });
         }
 
-        internal static string GetUniqueName(FileState fileState) {
-            string key = Random(12);
-            string extension = Path.GetExtension(fileState.Name);
+        internal static string GetUniqueName(FileState state) {
+            string key = Guid.NewGuid().ToString();
+            string extension = Path.GetExtension(state.Name);
             key += extension;
-            fileState.CloudName = key;
             return key;
         }
 
