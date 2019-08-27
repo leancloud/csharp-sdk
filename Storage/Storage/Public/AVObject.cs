@@ -621,7 +621,7 @@ string propertyName
                     queryString = new Dictionary<string, object>();
                 }
 
-                return ObjectController.FetchAsync(state, queryString, AVUser.CurrentUser.SessionToken, cancellationToken);
+                return ObjectController.FetchAsync(state, queryString, AVUser.CurrentUser?.SessionToken, cancellationToken);
             }).Unwrap().OnSuccess(t => {
                 HandleFetchResult(t.Result);
                 return this;

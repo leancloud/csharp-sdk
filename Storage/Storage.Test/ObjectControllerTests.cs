@@ -7,12 +7,7 @@ namespace LeanCloudTests {
     public class ObjectControllerTests {
         [SetUp]
         public void SetUp() {
-            AVClient.Initialize(new AVClient.Configuration {
-                ApplicationId = "BMYV4RKSTwo8WSqt8q9ezcWF-gzGzoHsz",
-                ApplicationKey = "pbf6Nk5seyjilexdpyrPwjSp",
-                ApiServer = "https://avoscloud.com"
-            });
-            AVClient.HttpLog(TestContext.Out.WriteLine);
+            Utils.InitNorthChina();
         }
 
         [Test]
@@ -25,6 +20,15 @@ namespace LeanCloudTests {
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
             Assert.NotNull(obj.UpdatedAt);
-        } 
+        }
+
+        [Test]
+        public async Task ObjectFetch() {
+            AVObject obj = AVObject.CreateWithoutData("Todo", "5d5f6039d5de2b006cf29c8f");
+            await obj.FetchAsync();
+            Assert.NotNull(obj["title"]);
+            Assert.NotNull(obj["content"]);
+            TestContext.Out.WriteLine($"{obj["title"]}, {obj["content"]}");
+        }
     }
 }
