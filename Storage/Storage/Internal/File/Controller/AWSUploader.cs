@@ -4,6 +4,7 @@ using System.Threading;
 using System.IO;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace LeanCloud.Storage.Internal {
     internal class AWSUploader : IFileUploader {
@@ -19,21 +20,15 @@ namespace LeanCloud.Storage.Internal {
         }
 
         internal async Task<FileState> PutFile(FileState state, string uploadUrl, Stream dataStream) {
-            IList<KeyValuePair<string, string>> makeBlockHeaders = new List<KeyValuePair<string, string>> {
-                new KeyValuePair<string, string>("Content-Type", state.MimeType),
-                new KeyValuePair<string, string>("Cache-Control", "public, max-age=31536000"),
-                new KeyValuePair<string, string>("Content-Length", dataStream.Length.ToString())
-            };
-
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(uploadUrl),
                 Method = HttpMethod.Put,
                 Content = new StreamContent(dataStream)
             };
-            foreach (var header in makeBlockHeaders) {
-                request.Headers.Add(header.Key, header.Value);
-            }
+            request.Headers.Add("Cache-Control", "public, max-age=31536000");
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(state.MimeType);
+            request.Content.Headers.ContentLength = dataStream.Length;
             await client.SendAsync(request);
             client.Dispose();
             request.Dispose();

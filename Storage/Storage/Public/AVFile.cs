@@ -300,7 +300,7 @@ namespace LeanCloud {
                 return this.SaveExternal();
 
             return taskQueue.Enqueue(
-                toAwait => FileController.SaveAsync(state, dataStream, AVUser.CurrentUser.SessionToken, progress, cancellationToken), cancellationToken)
+                toAwait => FileController.SaveAsync(state, dataStream, AVUser.CurrentUser?.SessionToken, progress, cancellationToken), cancellationToken)
             .OnSuccess(t => {
                 state = t.Result;
             });
