@@ -243,6 +243,12 @@ namespace LeanCloud {
             }
         }
 
+        public string GetThumbnailUrl(int width, int height,
+            int quality = 100, bool scaleToFit = true, string format = "png") {
+            int mode = scaleToFit ? 2 : 1;
+            return $"{Url}?imageView/{mode}/w/{width}/h/{height}/q/{quality}/format/{format}";
+        }
+
         internal static AVFileController FileController {
             get {
                 return AVPlugins.Instance.FileController;
@@ -587,7 +593,7 @@ namespace LeanCloud {
         /// <remarks>获取之后并没有实际执行下载，只是加载了文件的元信息以及物理地址（Url）
         /// </remarks>
         public static Task<AVFile> GetFileWithObjectIdAsync(string objectId, CancellationToken cancellationToken) {
-            string currentSessionToken = AVUser.CurrentUser.SessionToken;
+            string currentSessionToken = AVUser.CurrentUser?.SessionToken;
             return FileController.GetAsync(objectId, currentSessionToken, cancellationToken).OnSuccess(_ => {
                 var filestate = _.Result;
                 return new AVFile(filestate);

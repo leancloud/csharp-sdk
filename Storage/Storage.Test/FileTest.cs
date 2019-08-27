@@ -27,5 +27,13 @@ namespace LeanCloudTests {
             Assert.NotNull(file.ObjectId);
             TestContext.Out.WriteLine($"file: {file.ObjectId}, {file.Url}");
         }
+
+        [Test]
+        public async Task Thumbnail() {
+            AVFile file = await AVFile.GetFileWithObjectIdAsync("5d64ac55d5de2b006c1fe3d8");
+            Assert.NotNull(file);
+            TestContext.Out.WriteLine($"url: {file.Url}");
+            TestContext.Out.WriteLine($"thumbnail url: {file.GetThumbnailUrl(28, 28)}");
+        }
     }
 }
