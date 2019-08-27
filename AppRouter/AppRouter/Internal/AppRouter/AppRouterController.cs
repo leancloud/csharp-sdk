@@ -34,7 +34,7 @@ namespace LeanCloud.Storage.Internal {
             }
         }
 
-        public async Task<AppRouterState> QueryAsync(string appId) {
+        async Task<AppRouterState> QueryAsync(string appId) {
             Console.WriteLine("QueryAsync");
 
             string url = string.Format("https://app-router.leancloud.cn/2/route?appId={0}", appId);

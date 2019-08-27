@@ -1,32 +1,18 @@
-﻿using LeanCloud.Storage.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace LeanCloud
-{
+namespace LeanCloud {
     /// <summary>
-    /// Represents a Role on the LeanCloud server. AVRoles represent groupings
-    /// of <see cref="AVUser"/>s for the purposes of granting permissions (e.g.
-    /// specifying a <see cref="AVACL"/> for a <see cref="AVObject"/>. Roles
-    /// are specified by their sets of child users and child roles, all of which are granted
-    /// any permissions that the parent role has.
-    ///
-    /// Roles must have a name (that cannot be changed after creation of the role),
-    /// and must specify an ACL.
+    /// 角色类
     /// </summary>
     [AVClassName("_Role")]
-    public class AVRole : AVObject
-    {
+    public class AVRole : AVObject {
         private static readonly Regex namePattern = new Regex("^[0-9a-zA-Z_\\- ]+$");
 
         /// <summary>
         /// Constructs a new AVRole. You must assign a name and ACL to the role.
         /// </summary>
-        public AVRole() : base() { }
+        public AVRole() { }
 
         /// <summary>
         /// Constructs a new AVRole with the given name.
@@ -34,8 +20,7 @@ namespace LeanCloud
         /// <param name="name">The name of the role to create.</param>
         /// <param name="acl">The ACL for this role. Roles must have an ACL.</param>
         public AVRole(string name, AVACL acl)
-          : this()
-        {
+          : this() {
             Name = name;
             ACL = acl;
         }
@@ -44,10 +29,13 @@ namespace LeanCloud
         /// Gets the name of the role.
         /// </summary>
         [AVFieldName("name")]
-        public string Name
-        {
-            get { return GetProperty<string>("Name"); }
-            set { SetProperty(value, "Name"); }
+        public string Name {
+            get {
+                return GetProperty<string>("Name");
+            }
+            set {
+                SetProperty(value, "Name");
+            }
         }
 
         /// <summary>
@@ -57,9 +45,10 @@ namespace LeanCloud
         /// add or remove child users from the role through this relation.
         /// </summary>
         [AVFieldName("users")]
-        public AVRelation<AVUser> Users
-        {
-            get { return GetRelationProperty<AVUser>("Users"); }
+        public AVRelation<AVUser> Users {
+            get {
+                return GetRelationProperty<AVUser>("Users");
+            }
         }
 
         /// <summary>
@@ -69,30 +58,25 @@ namespace LeanCloud
         /// add or remove child roles from the role through this relation.
         /// </summary>
         [AVFieldName("roles")]
-        public AVRelation<AVRole> Roles
-        {
-            get { return GetRelationProperty<AVRole>("Roles"); }
+        public AVRelation<AVRole> Roles {
+            get {
+                return GetRelationProperty<AVRole>("Roles");
+            }
         }
 
-        internal override void OnSettingValue(ref string key, ref object value)
-        {
+        internal override void OnSettingValue(ref string key, ref object value) {
             base.OnSettingValue(ref key, ref value);
-            if (key == "name")
-            {
-                if (ObjectId != null)
-                {
+            if (key == "name") {
+                if (ObjectId != null) {
                     throw new InvalidOperationException(
                         "A role's name can only be set before it has been saved.");
                 }
-                if (!(value is string))
-                {
-                    throw new ArgumentException("A role's name must be a string.", "value");
+                if (!(value is string)) {
+                    throw new ArgumentException("A role's name must be a string.", nameof(value));
                 }
-                if (!namePattern.IsMatch((string)value))
-                {
+                if (!namePattern.IsMatch((string)value)) {
                     throw new ArgumentException(
-                        "A role's name can only contain alphanumeric characters, _, -, and spaces.",
-                        "value");
+                        "A role's name can only contain alphanumeric characters, _, -, and spaces.", nameof(value));
                 }
             }
         }
@@ -100,10 +84,8 @@ namespace LeanCloud
         /// <summary>
         /// Gets a <see cref="AVQuery{AVRole}"/> over the Role collection.
         /// </summary>
-        public static AVQuery<AVRole> Query
-        {
-            get
-            {
+        public static AVQuery<AVRole> Query {
+            get {
                 return new AVQuery<AVRole>();
             }
         }

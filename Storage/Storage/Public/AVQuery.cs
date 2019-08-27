@@ -219,7 +219,7 @@ namespace LeanCloud
             });
         }
 
-        public Task<T> FirstAsync(CancellationToken cancellationToken)
+        public Task<T> FirstAsync(CancellationToken cancellationToken = default)
         {
             return FirstOrDefaultAsync(cancellationToken).OnSuccess(t =>
             {
