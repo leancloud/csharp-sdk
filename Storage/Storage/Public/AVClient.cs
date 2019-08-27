@@ -13,8 +13,7 @@ using Newtonsoft.Json;
 
 namespace LeanCloud {
     /// <summary>
-    /// AVClient contains static functions that handle global
-    /// configuration for the LeanCloud library.
+    /// LeanCloud SDK 客户端类
     /// </summary>
     public static class AVClient {
         public static readonly string[] DateFormatStrings = {
@@ -27,62 +26,28 @@ namespace LeanCloud {
         };
 
         /// <summary>
-        /// Represents the configuration of the LeanCloud SDK.
+        /// LeanCloud SDK 配置
         /// </summary>
         public struct Configuration {
             /// <summary>
-            /// In the event that you would like to use the LeanCloud SDK
-            /// from a completely portable project, with no platform-specific library required,
-            /// to get full access to all of our features available on LeanCloud.com
-            /// (A/B testing, slow queries, etc.), you must set the values of this struct
-            /// to be appropriate for your platform.
-            ///
-            /// Any values set here will overwrite those that are automatically configured by
-            /// any platform-specific migration library your app includes.
-            /// </summary>
-            public struct VersionInformation {
-                /// <summary>
-                /// The build number of your app.
-                /// </summary>
-                public String BuildVersion { get; set; }
-
-                /// <summary>
-                /// The human friendly version number of your happ.
-                /// </summary>
-                public String DisplayVersion { get; set; }
-
-                /// <summary>
-                /// The operating system version of the platform the SDK is operating in..
-                /// </summary>
-                public String OSVersion { get; set; }
-
-            }
-
-            /// <summary>
-            /// The LeanCloud application ID of your app.
+            /// App Id
             /// </summary>
             public string ApplicationId { get; set; }
 
             /// <summary>
-            /// The LeanCloud application key for your app.
+            /// App Key
             /// </summary>
             public string ApplicationKey { get; set; }
 
             /// <summary>
-            /// The LeanCloud master key for your app.
+            /// Master Key
             /// </summary>
-            /// <value>The master key.</value>
             public string MasterKey { get; set; }
 
             /// <summary>
             /// Gets or sets additional HTTP headers to be sent with network requests from the SDK.
             /// </summary>
             public IDictionary<string, string> AdditionalHTTPHeaders { get; set; }
-
-            /// <summary>
-            /// The version information of your application environment.
-            /// </summary>
-            public VersionInformation VersionInfo { get; set; }
 
             /// <summary>
             /// 存储服务器地址
@@ -119,7 +84,7 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// The current configuration that LeanCloud has been initialized with.
+        /// LeanCloud SDK 当前配置
         /// </summary>
         public static Configuration CurrentConfiguration { get; internal set; }
 
@@ -129,31 +94,23 @@ namespace LeanCloud {
             }
         }
 
-        public static string Name {
+        internal static string Name {
             get {
                 return "LeanCloud-CSharp-SDK";
             }
         }
 
-        /// <summary>
-        /// 当前 SDK 版本号
-        /// </summary>
-        public static string Version {
+        internal static string Version {
             get {
                 return "0.1.0";
             }
         }
 
         /// <summary>
-        /// Authenticates this client as belonging to your application. This must be
-        /// called before your application can use the LeanCloud library. The recommended
-        /// way is to put a call to <c>AVClient.Initialize</c> in your
-        /// Application startup.
+        /// 初始化 LeanCloud SDK
         /// </summary>
-        /// <param name="applicationId">The Application ID provided in the LeanCloud dashboard.
-        /// </param>
-        /// <param name="applicationKey">The .NET API Key provided in the LeanCloud dashboard.
-        /// </param>
+        /// <param name="applicationId">App Id</param>
+        /// <param name="applicationKey">App Key</param>
         public static void Initialize(string applicationId, string applicationKey) {
             Initialize(new Configuration {
                 ApplicationId = applicationId,
@@ -179,58 +136,33 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether send the request to production server or staging server.
+        /// 是否使用生产环境
         /// </summary>
-        /// <value><c>true</c> if use production; otherwise, <c>false</c>.</value>
         public static bool UseProduction {
             get; set;
         }
 
+        /// <summary>
+        /// 是否使用 MasterKey
+        /// </summary>
         public static bool UseMasterKey {
             get; set;
         }
 
         /// <summary>
-        /// Authenticates this client as belonging to your application. This must be
-        /// called before your application can use the LeanCloud library. The recommended
-        /// way is to put a call to <c>AVClient.Initialize</c> in your
-        /// Application startup.
+        /// 初始化 LeanCloud
         /// </summary>
-        /// <param name="configuration">The configuration to initialize LeanCloud with.
-        /// </param>
+        /// <param name="configuration">初始化配置</param>
         public static void Initialize(Configuration configuration) {
-            Config(configuration);
+            CurrentConfiguration = configuration;
 
             AVObject.RegisterSubclass<AVUser>();
             AVObject.RegisterSubclass<AVRole>();
         }
 
-        internal static void Config(Configuration configuration) {
-            lock (mutex) {
-                CurrentConfiguration = configuration;
-            }
-        }
-
         internal static void Clear() {
             AVPlugins.Instance.AppRouterController.Clear();
             AVPlugins.Instance.Reset();
-        }
-
-        /// <summary>
-        /// Switch app.
-        /// </summary>
-        /// <param name="configuration">Configuration.</param>
-        public static void Switch(Configuration configuration) {
-            Clear();
-            Initialize(configuration);
-        }
-
-        public static void Switch(string applicationId, string applicationKey) {
-            var configuration = new Configuration {
-                ApplicationId = applicationId,
-                ApplicationKey = applicationKey
-            };
-            Switch(configuration);
         }
 
         public static string BuildQueryString(IDictionary<string, object> parameters) {
