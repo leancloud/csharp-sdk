@@ -126,9 +126,8 @@ namespace LeanCloud.Storage.Internal {
 
         public IDictionary<string, string> GetPropertyMappings(string className) {
             mutex.EnterReadLock();
-            registeredSubclasses.TryGetValue(className, out info);
-            if (info == null) {
-                registeredSubclasses.TryGetValue(avObjectClassName, out info);
+            if (!registeredSubclasses.TryGetValue(className, out ObjectSubclassInfo info)) {
+                _ = registeredSubclasses.TryGetValue(avObjectClassName, out info);
             }
             mutex.ExitReadLock();
 

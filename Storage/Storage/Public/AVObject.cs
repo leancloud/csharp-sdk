@@ -210,7 +210,7 @@ namespace LeanCloud {
         }
 
         private static string GetFieldForPropertyName(string className, string propertyName) {
-            SubclassingController.GetPropertyMappings(className).TryGetValue(propertyName, out fieldName);
+            SubclassingController.GetPropertyMappings(className).TryGetValue(propertyName, out string fieldName);
             return fieldName;
         }
 
