@@ -35,14 +35,24 @@ namespace LeanCloud.Storage.Internal {
 
         public Task<IObjectState> SaveAsync(IObjectState state,
             IDictionary<string, IAVFieldOperation> operations,
+            AVQuery<AVObject> query,
             string sessionToken,
             CancellationToken cancellationToken) {
             var objectJSON = AVObject.ToJSONObjectForSaving(operations);
+            
             var command = new AVCommand {
                 Path = state.ObjectId == null ? $"classes/{Uri.EscapeDataString(state.ClassName)}" : $"classes/{Uri.EscapeDataString(state.ClassName)}/{state.ObjectId}",
                 Method = state.ObjectId == null ? HttpMethod.Post : HttpMethod.Put,
                 Content = objectJSON
             };
+            // 查询条件
+            if (query != null && query.where != null) {
+                Dictionary<string, object> where = new Dictionary<string, object> {
+                    { "where", PointerOrLocalIdEncoder.Instance.Encode(query.where) }
+                };
+                string encode = AVClient.BuildQueryString(where);
+                command.Path = $"{command.Path}?{encode}";
+            }
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
                 var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
                 serverState = serverState.MutatedClone(mutableClone => {

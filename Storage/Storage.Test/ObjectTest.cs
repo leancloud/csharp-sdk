@@ -8,13 +8,7 @@ namespace LeanCloudTests {
     public class ObjectTests {
         [SetUp]
         public void SetUp() {
-            AVClient.Initialize(new AVClient.Configuration {
-                ApplicationId = "BMYV4RKSTwo8WSqt8q9ezcWF-gzGzoHsz",
-                ApplicationKey = "pbf6Nk5seyjilexdpyrPwjSp",
-                ApiServer = "https://avoscloud.com",
-                RTMServer = "https://router-g0-push.avoscloud.com",
-            });
-            AVClient.HttpLog(TestContext.Out.WriteLine);
+            Utils.InitNorthChina();
         }
 
         [Test]

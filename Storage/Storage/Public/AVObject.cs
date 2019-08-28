@@ -557,13 +557,12 @@ string propertyName
             }
         }
 
-        protected virtual Task SaveAsync(Task toAwait,
-            CancellationToken cancellationToken) {
+        public virtual Task SaveAsync(AVQuery<AVObject> query = null, CancellationToken cancellationToken = default) {
             IDictionary<string, IAVFieldOperation> currentOperations = null;
             if (!IsDirty) {
                 return Task.FromResult(0);
             }
-
+            
             Task deepSaveTask;
             string sessionToken;
             lock (mutex) {
@@ -576,10 +575,9 @@ string propertyName
             }
 
             return deepSaveTask.OnSuccess(_ => {
-                return toAwait;
-            }).Unwrap().OnSuccess(_ => {
                 return ObjectController.SaveAsync(state,
                     currentOperations,
+                    query,
                     sessionToken,
                     cancellationToken);
             }).Unwrap().ContinueWith(t => {
@@ -591,22 +589,6 @@ string propertyName
                 }
                 return t;
             }).Unwrap();
-        }
-
-        /// <summary>
-        /// Saves this object to the server.
-        /// </summary>
-        public virtual Task SaveAsync() {
-            return SaveAsync(CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Saves this object to the server.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public virtual Task SaveAsync(CancellationToken cancellationToken) {
-            return taskQueue.Enqueue(toAwait => SaveAsync(toAwait, cancellationToken),
-                cancellationToken);
         }
 
         internal virtual Task<AVObject> FetchAsyncInternal(
