@@ -181,7 +181,6 @@ namespace LeanCloud {
         /// <param name="template">Sms's template</param>
         /// <param name="env">Template variables env.</param>
         /// <param name="sign">Sms's sign.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
         public static Task<bool> RequestSMSCodeAsync(
             string mobilePhoneNumber,
@@ -200,11 +199,11 @@ namespace LeanCloud {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
             strs.Add("template", template);
-            if (String.IsNullOrEmpty(sign))
+            if (string.IsNullOrEmpty(sign))
             {
                 strs.Add("sign", sign);
             }
-            if (String.IsNullOrEmpty(validateToken))
+            if (string.IsNullOrEmpty(validateToken))
             {
                 strs.Add("validate_token", validateToken);
             }
@@ -318,7 +317,7 @@ namespace LeanCloud {
         /// <returns>an instance of Captcha.</returns>
         public static Task<Captcha> RequestCaptchaAsync(int width = 85, int height = 30, CancellationToken cancellationToken = default)
         {
-            var path = String.Format("requestCaptcha?width={0}&height={1}", width, height);
+            var path = string.Format("requestCaptcha?width={0}&height={1}", width, height);
             var command = new AVCommand(path, "GET", null, data: null);
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {

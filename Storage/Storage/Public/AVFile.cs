@@ -353,7 +353,7 @@ namespace LeanCloud {
         /// </summary>
         public string ObjectId {
             get {
-                String str;
+                string str;
                 lock (this.mutex) {
                     str = state.ObjectId;
                 }

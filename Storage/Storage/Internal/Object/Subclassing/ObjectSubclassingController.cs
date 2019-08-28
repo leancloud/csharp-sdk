@@ -15,7 +15,7 @@ namespace LeanCloud.Storage.Internal {
 
         public ObjectSubclassingController() {
             mutex = new ReaderWriterLockSlim();
-            registeredSubclasses = new Dictionary<String, ObjectSubclassInfo>();
+            registeredSubclasses = new Dictionary<string, ObjectSubclassInfo>();
             registerActions = new Dictionary<string, Action>();
 
             // Register the AVObject subclass, so we get access to the ACL,
@@ -112,7 +112,7 @@ namespace LeanCloud.Storage.Internal {
             mutex.ExitWriteLock();
         }
 
-        public AVObject Instantiate(String className) {
+        public AVObject Instantiate(string className) {
             ObjectSubclassInfo info = null;
 
             mutex.EnterReadLock();
@@ -124,8 +124,7 @@ namespace LeanCloud.Storage.Internal {
               : new AVObject(className);
         }
 
-        public IDictionary<String, String> GetPropertyMappings(String className) {
-            ObjectSubclassInfo info = null;
+        public IDictionary<string, string> GetPropertyMappings(string className) {
             mutex.EnterReadLock();
             registeredSubclasses.TryGetValue(className, out info);
             if (info == null) {

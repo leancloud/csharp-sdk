@@ -38,7 +38,7 @@ namespace LeanCloud {
         /// AVObjects themselves.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The result of the cloud call.</returns>
-        public static Task<T> CallFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, CancellationToken cancellationToken = default) {
+        public static Task<T> CallFunctionAsync<T>(string name, IDictionary<string, object> parameters = null, CancellationToken cancellationToken = default) {
             return CloudCodeController.CallFunctionAsync<T>(name, parameters, cancellationToken);
         }
 
@@ -50,7 +50,7 @@ namespace LeanCloud {
         /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<T> RPCFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, CancellationToken cancellationToken = default) {
+        public static Task<T> RPCFunctionAsync<T>(string name, IDictionary<string, object> parameters = null, CancellationToken cancellationToken = default) {
             return CloudCodeController.RPCFunction<T>(name, parameters, cancellationToken);
         }
 
@@ -134,10 +134,10 @@ namespace LeanCloud {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
             strs.Add("template", template);
-            if (String.IsNullOrEmpty(sign)) {
+            if (string.IsNullOrEmpty(sign)) {
                 strs.Add("sign", sign);
             }
-            if (String.IsNullOrEmpty(validateToken)) {
+            if (string.IsNullOrEmpty(validateToken)) {
                 strs.Add("validate_token", validateToken);
             }
             foreach (var key in env.Keys) {
@@ -233,7 +233,7 @@ namespace LeanCloud {
         /// <param name="cancellationToken">CancellationToken.</param>
         /// <returns>an instance of Captcha.</returns>
         public static Task<Captcha> RequestCaptchaAsync(int width = 85, int height = 30, CancellationToken cancellationToken = default) {
-            var path = String.Format("requestCaptcha?width={0}&height={1}", width, height);
+            var path = string.Format("requestCaptcha?width={0}&height={1}", width, height);
             var command = new AVCommand {
                 Path = $"requestCaptcha?width={width}&height={height}",
                 Method = HttpMethod.Get

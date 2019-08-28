@@ -16,6 +16,6 @@ namespace LeanCloud.Storage.Internal {
     /// <returns>The config async.</returns>
     /// <param name="sessionToken">Session token.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    Task<AVConfig> FetchConfigAsync(String sessionToken, CancellationToken cancellationToken);
+    Task<AVConfig> FetchConfigAsync(string sessionToken, CancellationToken cancellationToken);
   }
 }

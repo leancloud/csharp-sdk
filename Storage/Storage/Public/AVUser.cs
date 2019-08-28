@@ -309,7 +309,7 @@ namespace LeanCloud {
             Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
-            if (String.IsNullOrEmpty(validateToken)) {
+            if (string.IsNullOrEmpty(validateToken)) {
                 strs.Add("validate_token", validateToken);
             }
             var command = new AVCommand {
@@ -423,7 +423,7 @@ namespace LeanCloud {
             Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
-            if (String.IsNullOrEmpty(validateToken)) {
+            if (string.IsNullOrEmpty(validateToken)) {
                 strs.Add("validate_token", validateToken);
             }
             var command = new AVCommand {

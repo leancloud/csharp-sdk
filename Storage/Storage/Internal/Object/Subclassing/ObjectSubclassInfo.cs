@@ -24,8 +24,8 @@ namespace LeanCloud.Storage.Internal
         }
 
         public TypeInfo TypeInfo { get; private set; }
-        public String ClassName { get; private set; }
-        public IDictionary<String, String> PropertyMappings { get; private set; }
+        public string ClassName { get; private set; }
+        public IDictionary<string, string> PropertyMappings { get; private set; }
         private ConstructorInfo Constructor { get; set; }
 
         public AVObject Instantiate()
@@ -33,7 +33,7 @@ namespace LeanCloud.Storage.Internal
             return (AVObject)Constructor.Invoke(null);
         }
 
-        internal static String GetClassName(TypeInfo type)
+        internal static string GetClassName(TypeInfo type)
         {
             var attribute = type.GetCustomAttribute<AVClassNameAttribute>();
             return attribute != null ? attribute.ClassName : null;

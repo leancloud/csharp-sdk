@@ -210,7 +210,6 @@ namespace LeanCloud {
         }
 
         private static string GetFieldForPropertyName(string className, string propertyName) {
-            String fieldName = null;
             SubclassingController.GetPropertyMappings(className).TryGetValue(propertyName, out fieldName);
             return fieldName;
         }
@@ -1631,7 +1630,7 @@ string propertyName
         /// </summary>
         protected virtual void OnFieldsChanged(IEnumerable<string> fieldNames) {
             var mappings = SubclassingController.GetPropertyMappings(ClassName);
-            IEnumerable<String> properties;
+            IEnumerable<string> properties;
 
             if (fieldNames != null && mappings != null) {
                 properties = from m in mappings
@@ -1640,7 +1639,7 @@ string propertyName
             } else if (mappings != null) {
                 properties = mappings.Keys;
             } else {
-                properties = Enumerable.Empty<String>();
+                properties = Enumerable.Empty<string>();
             }
 
             foreach (var property in properties) {

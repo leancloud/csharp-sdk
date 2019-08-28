@@ -140,7 +140,7 @@ namespace LeanCloud
         protected readonly ReadOnlyCollection<string> orderBy;
         protected readonly ReadOnlyCollection<string> includes;
         protected readonly ReadOnlyCollection<string> selectedKeys;
-        protected readonly String redirectClassNameForKey;
+        protected readonly string redirectClassNameForKey;
         protected readonly int? skip;
         protected readonly int? limit;
 
@@ -184,7 +184,7 @@ namespace LeanCloud
             int? limit = null,
             IEnumerable<string> includes = null,
             IEnumerable<string> selectedKeys = null,
-            String redirectClassNameForKey = null);
+            string redirectClassNameForKey = null);
 
         /// <summary>
         /// Private constructor for composition of queries. A Source query is required,
@@ -199,7 +199,7 @@ namespace LeanCloud
             int? limit = null,
             IEnumerable<string> includes = null,
             IEnumerable<string> selectedKeys = null,
-            String redirectClassNameForKey = null)
+            string redirectClassNameForKey = null)
         {
             if (source == null)
             {
@@ -295,13 +295,13 @@ namespace LeanCloud
             return newIncludes;
         }
 
-        private HashSet<String> MergeSelectedKeys(IEnumerable<String> selectedKeys)
+        private HashSet<string> MergeSelectedKeys(IEnumerable<string> selectedKeys)
         {
             if (this.selectedKeys == null)
             {
                 return new HashSet<string>(selectedKeys);
             }
-            var newSelectedKeys = new HashSet<String>(this.selectedKeys);
+            var newSelectedKeys = new HashSet<string>(this.selectedKeys);
             foreach (var item in selectedKeys)
             {
                 newSelectedKeys.Add(item);

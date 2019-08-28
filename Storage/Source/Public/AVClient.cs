@@ -85,17 +85,17 @@ namespace LeanCloud
                 /// <summary>
                 /// The build number of your app.
                 /// </summary>
-                public String BuildVersion { get; set; }
+                public string BuildVersion { get; set; }
 
                 /// <summary>
                 /// The human friendly version number of your happ.
                 /// </summary>
-                public String DisplayVersion { get; set; }
+                public string DisplayVersion { get; set; }
 
                 /// <summary>
                 /// The operating system version of the platform the SDK is operating in..
                 /// </summary>
-                public String OSVersion { get; set; }
+                public string OSVersion { get; set; }
 
             }
 

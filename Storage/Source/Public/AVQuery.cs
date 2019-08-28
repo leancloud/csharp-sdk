@@ -86,7 +86,7 @@ namespace LeanCloud
             int? limit = null,
             IEnumerable<string> includes = null,
             IEnumerable<string> selectedKeys = null,
-            String redirectClassNameForKey = null)
+            string redirectClassNameForKey = null)
             : base(source, where, replacementOrderBy, thenBy, skip, limit, includes, selectedKeys, redirectClassNameForKey)
         {
 
@@ -114,7 +114,7 @@ namespace LeanCloud
             int? limit = null,
             IEnumerable<string> includes = null,
             IEnumerable<string> selectedKeys = null,
-            String redirectClassNameForKey = null)
+            string redirectClassNameForKey = null)
         {
             return new AVQuery<T>(this, where, replacementOrderBy, thenBy, skip, limit, includes, selectedKeys, redirectClassNameForKey);
         }

@@ -46,11 +46,11 @@ namespace LeanCloud.Storage.Internal
                     return new AppRouterState()
                     {
                         TTL = -1,
-                        ApiServer = String.Format("{0}.api.lncld.net", prefix),
-                        EngineServer = String.Format("{0}.engine.lncld.net", prefix),
-                        PushServer = String.Format("{0}.push.lncld.net", prefix),
-                        RealtimeRouterServer = String.Format("{0}.rtm.lncld.net", prefix),
-                        StatsServer = String.Format("{0}.stats.lncld.net", prefix),
+                        ApiServer = string.Format("{0}.api.lncld.net", prefix),
+                        EngineServer = string.Format("{0}.engine.lncld.net", prefix),
+                        PushServer = string.Format("{0}.push.lncld.net", prefix),
+                        RealtimeRouterServer = string.Format("{0}.rtm.lncld.net", prefix),
+                        StatsServer = string.Format("{0}.stats.lncld.net", prefix),
                         Source = "initial",
                     };
                 case 1:

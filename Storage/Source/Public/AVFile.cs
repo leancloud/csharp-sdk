@@ -386,7 +386,7 @@ namespace LeanCloud
         {
             get
             {
-                String str;
+                string str;
                 lock (this.mutex)
                 {
                     str = state.ObjectId;

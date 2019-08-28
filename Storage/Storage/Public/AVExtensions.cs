@@ -97,11 +97,11 @@ namespace LeanCloud {
             CancellationToken cancellationToken = default) where T : AVObject {
             var queryString = new Dictionary<string, object>();
             if (keys != null) {
-                var encode = String.Join(",", keys.ToArray());
+                var encode = string.Join(",", keys.ToArray());
                 queryString.Add("keys", encode);
             }
             if (includes != null) {
-                var encode = String.Join(",", includes.ToArray());
+                var encode = string.Join(",", includes.ToArray());
                 queryString.Add("include", encode);
             }
             if (includeACL != null) {
