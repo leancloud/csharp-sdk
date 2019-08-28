@@ -656,7 +656,7 @@ namespace LeanCloud {
                 return Task.FromResult(0);
             }
 
-            string sessionToken = AVUser.CurrentUser.SessionToken;
+            string sessionToken = AVUser.CurrentUser?.SessionToken;
 
             return toAwait.OnSuccess(_ => {
                 return FileController.DeleteAsync(state, sessionToken, cancellationToken);

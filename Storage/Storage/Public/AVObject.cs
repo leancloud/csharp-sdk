@@ -709,7 +709,7 @@ string propertyName
         /// <param name="cancellationToken">The cancellation token.</param>
         public static Task SaveAllAsync<T>(
             IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
-            return DeepSaveAsync(objects.ToList(), AVUser.CurrentUser.SessionToken, cancellationToken);
+            return DeepSaveAsync(objects.ToList(), AVUser.CurrentUser?.SessionToken, cancellationToken);
         }
 
         #endregion
@@ -857,7 +857,7 @@ string propertyName
                 return Task.FromResult(0);
             }
             
-            string sessionToken = AVUser.CurrentUser.SessionToken;
+            string sessionToken = AVUser.CurrentUser?.SessionToken;
 
             return toAwait.OnSuccess(_ => {
                 return ObjectController.DeleteAsync(State, sessionToken, cancellationToken);
@@ -902,7 +902,7 @@ string propertyName
                 var states = uniqueObjects.Select(t => t.state).ToList();
                 return toAwait.OnSuccess(_ => {
                     var deleteTasks = ObjectController.DeleteAllAsync(states,
-                      AVUser.CurrentUser.SessionToken,
+                      AVUser.CurrentUser?.SessionToken,
                       cancellationToken);
 
                     return Task.WhenAll(deleteTasks);

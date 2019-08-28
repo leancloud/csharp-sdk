@@ -43,7 +43,7 @@ namespace LeanCloud {
         /// <returns>The result of the cloud call.</returns>
         public static Task<T> CallFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken)) {
             return CloudCodeController.CallFunctionAsync<T>(name,
-                    parameters, AVUser.CurrentUser.SessionToken,
+                    parameters, AVUser.CurrentUser?.SessionToken,
                     cancellationToken);
         }
 
@@ -58,7 +58,7 @@ namespace LeanCloud {
         /// <returns></returns>
         public static Task<T> RPCFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken)) {
             return CloudCodeController.RPCFunction<T>(name,
-                    parameters, AVUser.CurrentUser.SessionToken,
+                    parameters, AVUser.CurrentUser?.SessionToken,
                     cancellationToken);
         }
 

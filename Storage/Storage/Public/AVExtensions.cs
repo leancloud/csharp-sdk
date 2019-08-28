@@ -1,24 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using LeanCloud.Storage.Internal;
 
-namespace LeanCloud
-{
+namespace LeanCloud {
     /// <summary>
     /// Provides convenience extension methods for working with collections
     /// of AVObjects so that you can easily save and fetch them in batches.
     /// </summary>
-    public static class AVExtensions
-    {
+    public static class AVExtensions {
         /// <summary>
         /// Saves all of the AVObjects in the enumeration. Equivalent to
         /// calling <see cref="AVObject.SaveAllAsync{T}(IEnumerable{T})"/>.
         /// </summary>
         /// <param name="objects">The objects to save.</param>
-        public static Task SaveAllAsync<T>(this IEnumerable<T> objects) where T : AVObject
-        {
+        public static Task SaveAllAsync<T>(this IEnumerable<T> objects) where T : AVObject {
             return AVObject.SaveAllAsync(objects);
         }
 
@@ -30,8 +28,7 @@ namespace LeanCloud
         /// <param name="objects">The objects to save.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         public static Task SaveAllAsync<T>(
-            this IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject
-        {
+            this IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
             return AVObject.SaveAllAsync(objects, cancellationToken);
         }
 
@@ -41,8 +38,7 @@ namespace LeanCloud
         /// </summary>
         /// <param name="objects">The objects to save.</param>
         public static Task<IEnumerable<T>> FetchAllAsync<T>(this IEnumerable<T> objects)
-          where T : AVObject
-        {
+          where T : AVObject {
             return AVObject.FetchAllAsync(objects);
         }
 
@@ -55,8 +51,7 @@ namespace LeanCloud
         /// <param name="cancellationToken">The cancellation token.</param>
         public static Task<IEnumerable<T>> FetchAllAsync<T>(
             this IEnumerable<T> objects, CancellationToken cancellationToken)
-          where T : AVObject
-        {
+          where T : AVObject {
             return AVObject.FetchAllAsync(objects, cancellationToken);
         }
 
@@ -68,8 +63,7 @@ namespace LeanCloud
         /// <param name="objects">The objects to fetch.</param>
         public static Task<IEnumerable<T>> FetchAllIfNeededAsync<T>(
             this IEnumerable<T> objects)
-          where T : AVObject
-        {
+          where T : AVObject {
             return AVObject.FetchAllIfNeededAsync(objects);
         }
 
@@ -82,8 +76,7 @@ namespace LeanCloud
         /// <param name="cancellationToken">The cancellation token.</param>
         public static Task<IEnumerable<T>> FetchAllIfNeededAsync<T>(
             this IEnumerable<T> objects, CancellationToken cancellationToken)
-          where T : AVObject
-        {
+          where T : AVObject {
             return AVObject.FetchAllIfNeededAsync(objects, cancellationToken);
         }
 
@@ -95,42 +88,24 @@ namespace LeanCloud
         /// <param name="queries">The list of AVQueries to 'or' together.</param>
         /// <returns>A query that is the or of the given queries.</returns>
         public static AVQuery<T> Or<T>(this AVQuery<T> source, params AVQuery<T>[] queries)
-            where T : AVObject
-        {
+            where T : AVObject {
             return AVQuery<T>.Or(queries.Concat(new[] { source }));
         }
 
-        /// <summary>
-        /// Fetches this object with the data from the server.
-        /// </summary>
-        public static Task<T> FetchAsync<T>(this T obj) where T : AVObject
-        {
-            return obj.FetchAsyncInternal(CancellationToken.None).OnSuccess(t => (T)t.Result);
-        }
-
-        /// <summary>
-        /// Fetches this object with the data from the server.
-        /// </summary>
-        /// <param name="obj">The AVObject to fetch.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public static Task<T> FetchAsync<T>(this T obj, CancellationToken cancellationToken)
-            where T : AVObject
-        {
-            return FetchAsync<T>(obj, null, cancellationToken);
-        }
-        public static Task<T> FetchAsync<T>(this T obj, IEnumerable<string> includeKeys) where T : AVObject
-        {
-            return FetchAsync<T>(obj, includeKeys, CancellationToken.None).OnSuccess(t => (T)t.Result);
-        }
-        public static Task<T> FetchAsync<T>(this T obj, IEnumerable<string> includeKeys, CancellationToken cancellationToken)
-            where T : AVObject
-        {
+        public static Task<T> FetchAsync<T>(this T obj,
+            IEnumerable<string> keys = null, IEnumerable<string> includes = null, AVACL includeACL = null,
+            CancellationToken cancellationToken = default) where T : AVObject {
             var queryString = new Dictionary<string, object>();
-            if (includeKeys != null)
-            {
-
-                var encode = string.Join(",", includeKeys.ToArray());
+            if (keys != null) {
+                var encode = String.Join(",", keys.ToArray());
+                queryString.Add("keys", encode);
+            }
+            if (includes != null) {
+                var encode = String.Join(",", includes.ToArray());
                 queryString.Add("include", encode);
+            }
+            if (includeACL != null) {
+                queryString.Add("returnACL", includeACL);
             }
             return obj.FetchAsyncInternal(queryString, cancellationToken).OnSuccess(t => (T)t.Result);
         }
@@ -140,8 +115,7 @@ namespace LeanCloud
         /// false), fetches this object with the data from the server.
         /// </summary>
         /// <param name="obj">The AVObject to fetch.</param>
-        public static Task<T> FetchIfNeededAsync<T>(this T obj) where T : AVObject
-        {
+        public static Task<T> FetchIfNeededAsync<T>(this T obj) where T : AVObject {
             return obj.FetchIfNeededAsyncInternal(CancellationToken.None).OnSuccess(t => (T)t.Result);
         }
 
@@ -152,8 +126,7 @@ namespace LeanCloud
         /// <param name="obj">The AVObject to fetch.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         public static Task<T> FetchIfNeededAsync<T>(this T obj, CancellationToken cancellationToken)
-            where T : AVObject
-        {
+            where T : AVObject {
             return obj.FetchIfNeededAsyncInternal(cancellationToken).OnSuccess(t => (T)t.Result);
         }
     }
