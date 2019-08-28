@@ -306,7 +306,7 @@ namespace LeanCloud {
                 return this.SaveExternal();
 
             return taskQueue.Enqueue(
-                toAwait => FileController.SaveAsync(state, dataStream, AVUser.CurrentUser?.SessionToken, progress, cancellationToken), cancellationToken)
+                toAwait => FileController.SaveAsync(state, dataStream, progress, cancellationToken), cancellationToken)
             .OnSuccess(t => {
                 state = t.Result;
             });
@@ -593,8 +593,7 @@ namespace LeanCloud {
         /// <remarks>获取之后并没有实际执行下载，只是加载了文件的元信息以及物理地址（Url）
         /// </remarks>
         public static Task<AVFile> GetFileWithObjectIdAsync(string objectId, CancellationToken cancellationToken) {
-            string currentSessionToken = AVUser.CurrentUser?.SessionToken;
-            return FileController.GetAsync(objectId, currentSessionToken, cancellationToken).OnSuccess(_ => {
+            return FileController.GetAsync(objectId, cancellationToken).OnSuccess(_ => {
                 var filestate = _.Result;
                 return new AVFile(filestate);
             });
@@ -656,10 +655,8 @@ namespace LeanCloud {
                 return Task.FromResult(0);
             }
 
-            string sessionToken = AVUser.CurrentUser?.SessionToken;
-
             return toAwait.OnSuccess(_ => {
-                return FileController.DeleteAsync(state, sessionToken, cancellationToken);
+                return FileController.DeleteAsync(state, cancellationToken);
             }).Unwrap().OnSuccess(_ => { });
         }
         #endregion

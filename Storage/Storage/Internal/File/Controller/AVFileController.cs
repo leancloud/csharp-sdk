@@ -19,9 +19,8 @@ namespace LeanCloud.Storage.Internal {
 
         public Task<FileState> SaveAsync(FileState state,
             Stream dataStream,
-            String sessionToken,
             IProgress<AVUploadProgressEventArgs> progress,
-            CancellationToken cancellationToken = default(CancellationToken)) {
+            CancellationToken cancellationToken = default) {
             if (state.Url != null) {
                 // !isDirty
                 return Task<FileState>.FromResult(state);
@@ -43,7 +42,7 @@ namespace LeanCloud.Storage.Internal {
             }).Unwrap();
         }
 
-        public Task DeleteAsync(FileState state, string sessionToken, CancellationToken cancellationToken) {
+        public Task DeleteAsync(FileState state, CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"files/{state.ObjectId}",
                 Method = HttpMethod.Delete
@@ -68,7 +67,7 @@ namespace LeanCloud.Storage.Internal {
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
-        public Task<FileState> GetAsync(string objectId, string sessionToken, CancellationToken cancellationToken) {
+        public Task<FileState> GetAsync(string objectId, CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"files/{objectId}",
                 Method = HttpMethod.Get

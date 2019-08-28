@@ -248,7 +248,6 @@ namespace LeanCloud {
                 var names = string.Join(",", statisticNames.ToArray());
                 path = string.Format("{0}?statistics={1}", path, names);
             }
-            var sessionToken = AVUser.CurrentUser?.SessionToken;
             var command = new AVCommand {
                 Path = path,
                 Method = HttpMethod.Post

@@ -9,20 +9,7 @@ using System.Net.Http;
 namespace LeanCloud.Storage.Internal {
     public class AVObjectController {
         public Task<IObjectState> FetchAsync(IObjectState state,
-            string sessionToken,
-            CancellationToken cancellationToken) {
-            var command = new AVCommand {
-                Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}",
-                Method = HttpMethod.Get
-            };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
-                return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
-            });
-        }
-
-        public Task<IObjectState> FetchAsync(IObjectState state,
             IDictionary<string, object> queryString,
-            string sessionToken,
             CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}?{AVClient.BuildQueryString(queryString)}",
@@ -37,7 +24,6 @@ namespace LeanCloud.Storage.Internal {
             IDictionary<string, IAVFieldOperation> operations,
             bool fetchWhenSave,
             AVQuery<AVObject> query,
-            string sessionToken,
             CancellationToken cancellationToken) {
             var objectJSON = AVObject.ToJSONObjectForSaving(operations);
             
@@ -69,7 +55,6 @@ namespace LeanCloud.Storage.Internal {
 
         public IList<Task<IObjectState>> SaveAllAsync(IList<IObjectState> states,
             IList<IDictionary<string, IAVFieldOperation>> operationsList,
-            string sessionToken,
             CancellationToken cancellationToken) {
 
             var requests = states
@@ -80,7 +65,7 @@ namespace LeanCloud.Storage.Internal {
               })
               .ToList();
 
-            var batchTasks = ExecuteBatchRequests(requests, sessionToken, cancellationToken);
+            var batchTasks = ExecuteBatchRequests(requests, cancellationToken);
             var stateTasks = new List<Task<IObjectState>>();
             foreach (var task in batchTasks) {
                 stateTasks.Add(task.OnSuccess(t => {
@@ -92,7 +77,6 @@ namespace LeanCloud.Storage.Internal {
         }
 
         public Task DeleteAsync(IObjectState state,
-            string sessionToken,
             CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"classes/{state.ClassName}/{state.ObjectId}",
@@ -102,7 +86,6 @@ namespace LeanCloud.Storage.Internal {
         }
 
         public IList<Task> DeleteAllAsync(IList<IObjectState> states,
-            string sessionToken,
             CancellationToken cancellationToken) {
             var requests = states
               .Where(item => item.ObjectId != null)
@@ -111,13 +94,12 @@ namespace LeanCloud.Storage.Internal {
                   Method = HttpMethod.Delete
               })
               .ToList();
-            return ExecuteBatchRequests(requests, sessionToken, cancellationToken).Cast<Task>().ToList();
+            return ExecuteBatchRequests(requests, cancellationToken).Cast<Task>().ToList();
         }
 
         // TODO (hallucinogen): move this out to a class to be used by Analytics
         private const int MaximumBatchSize = 50;
         internal IList<Task<IDictionary<string, object>>> ExecuteBatchRequests(IList<AVCommand> requests,
-            string sessionToken,
             CancellationToken cancellationToken) {
             var tasks = new List<Task<IDictionary<string, object>>>();
             int batchSize = requests.Count;
@@ -127,17 +109,16 @@ namespace LeanCloud.Storage.Internal {
                 var process = remaining.Take(MaximumBatchSize).ToList();
                 remaining = remaining.Skip(MaximumBatchSize);
 
-                tasks.AddRange(ExecuteBatchRequest(process, sessionToken, cancellationToken));
+                tasks.AddRange(ExecuteBatchRequest(process, cancellationToken));
 
                 batchSize = remaining.Count();
             }
-            tasks.AddRange(ExecuteBatchRequest(remaining.ToList(), sessionToken, cancellationToken));
+            tasks.AddRange(ExecuteBatchRequest(remaining.ToList(), cancellationToken));
 
             return tasks;
         }
 
         private IList<Task<IDictionary<string, object>>> ExecuteBatchRequest(IList<AVCommand> requests,
-            string sessionToken,
             CancellationToken cancellationToken) {
             var tasks = new List<Task<IDictionary<string, object>>>();
             int batchSize = requests.Count;

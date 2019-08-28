@@ -564,14 +564,10 @@ string propertyName
             }
             
             Task deepSaveTask;
-            string sessionToken;
             lock (mutex) {
                 // Get the JSON representation of the object.
                 currentOperations = StartSave();
-
-                sessionToken = AVUser.CurrentUser?.SessionToken;
-
-                deepSaveTask = DeepSaveAsync(estimatedData, sessionToken, cancellationToken);
+                deepSaveTask = DeepSaveAsync(estimatedData, cancellationToken);
             }
 
             return deepSaveTask.OnSuccess(_ => {
@@ -579,7 +575,6 @@ string propertyName
                     currentOperations,
                     FetchWhenSave || fetchWhenSave,
                     query,
-                    sessionToken,
                     cancellationToken);
             }).Unwrap().ContinueWith(t => {
                 if (t.IsFaulted || t.IsCanceled) {
@@ -604,14 +599,14 @@ string propertyName
                     queryString = new Dictionary<string, object>();
                 }
 
-                return ObjectController.FetchAsync(state, queryString, AVUser.CurrentUser?.SessionToken, cancellationToken);
+                return ObjectController.FetchAsync(state, queryString, cancellationToken);
             }).Unwrap().OnSuccess(t => {
                 HandleFetchResult(t.Result);
                 return this;
             });
         }
 
-        private static Task DeepSaveAsync(object obj, string sessionToken, CancellationToken cancellationToken) {
+        private static Task DeepSaveAsync(object obj, CancellationToken cancellationToken) {
             var objects = new List<AVObject>();
             CollectDirtyChildren(obj, objects);
 
@@ -654,7 +649,6 @@ string propertyName
 
                             var saveTasks = ObjectController.SaveAllAsync(states,
                                 operationsList,
-                                sessionToken,
                                 cancellationToken);
 
                             return Task.WhenAll(saveTasks).ContinueWith(t => {
@@ -692,7 +686,7 @@ string propertyName
         /// <param name="cancellationToken">The cancellation token.</param>
         public static Task SaveAllAsync<T>(
             IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
-            return DeepSaveAsync(objects.ToList(), AVUser.CurrentUser?.SessionToken, cancellationToken);
+            return DeepSaveAsync(objects.ToList(), cancellationToken);
         }
 
         #endregion
@@ -840,10 +834,8 @@ string propertyName
                 return Task.FromResult(0);
             }
             
-            string sessionToken = AVUser.CurrentUser?.SessionToken;
-
             return toAwait.OnSuccess(_ => {
-                return ObjectController.DeleteAsync(State, sessionToken, cancellationToken);
+                return ObjectController.DeleteAsync(State, cancellationToken);
             }).Unwrap().OnSuccess(_ => IsDirty = true);
         }
 
@@ -884,10 +876,7 @@ string propertyName
             return AVObject.EnqueueForAll<object>(uniqueObjects, toAwait => {
                 var states = uniqueObjects.Select(t => t.state).ToList();
                 return toAwait.OnSuccess(_ => {
-                    var deleteTasks = ObjectController.DeleteAllAsync(states,
-                      AVUser.CurrentUser?.SessionToken,
-                      cancellationToken);
-
+                    var deleteTasks = ObjectController.DeleteAllAsync(states, cancellationToken);
                     return Task.WhenAll(deleteTasks);
                 }).Unwrap().OnSuccess(t => {
                     // Dirty all objects in memory.

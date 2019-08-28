@@ -27,7 +27,6 @@ namespace LeanCloud.Storage.Internal {
         public async Task<IObjectState> FirstAsync<T>(AVQuery<T> query,
             AVUser user,
             CancellationToken cancellationToken) where T : AVObject {
-            string sessionToken = user?.SessionToken;
             var parameters = query.BuildParameters();
             parameters["limit"] = 1;
             IList<object> items = await FindAsync<IList<object>>(query.Path, query.BuildParameters(), "results", cancellationToken);
