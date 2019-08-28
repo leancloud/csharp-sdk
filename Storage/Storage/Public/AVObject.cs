@@ -557,7 +557,7 @@ string propertyName
             }
         }
 
-        public virtual Task SaveAsync(AVQuery<AVObject> query = null, CancellationToken cancellationToken = default) {
+        public virtual Task SaveAsync(bool fetchWhenSave = false, AVQuery<AVObject> query = null, CancellationToken cancellationToken = default) {
             IDictionary<string, IAVFieldOperation> currentOperations = null;
             if (!IsDirty) {
                 return Task.FromResult(0);
@@ -577,6 +577,7 @@ string propertyName
             return deepSaveTask.OnSuccess(_ => {
                 return ObjectController.SaveAsync(state,
                     currentOperations,
+                    FetchWhenSave || fetchWhenSave,
                     query,
                     sessionToken,
                     cancellationToken);
@@ -1499,6 +1500,10 @@ string propertyName
             get {
                 return state.CreatedAt;
             }
+        }
+
+        public bool FetchWhenSave {
+            get; set;
         }
 
         /// <summary>

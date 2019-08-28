@@ -24,12 +24,12 @@ namespace LeanCloudTests {
         }
 
         [Test]
-        public async Task SaveWithQuery() {
+        public async Task SaveWithOptions() {
             AVObject account = AVObject.CreateWithoutData("Account", "5d65fa5330863b008065e476");
             AVQuery<AVObject> query = new AVQuery<AVObject>("Account");
             query.WhereGreaterThan("balance", 80);
             account["balance"] = 50;
-            await account.SaveAsync(query);
+            await account.SaveAsync(true, query);
             TestContext.Out.WriteLine($"balance: {account["balance"]}");
         }
 

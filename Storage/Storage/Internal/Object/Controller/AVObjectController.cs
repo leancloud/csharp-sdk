@@ -35,6 +35,7 @@ namespace LeanCloud.Storage.Internal {
 
         public Task<IObjectState> SaveAsync(IObjectState state,
             IDictionary<string, IAVFieldOperation> operations,
+            bool fetchWhenSave,
             AVQuery<AVObject> query,
             string sessionToken,
             CancellationToken cancellationToken) {
@@ -45,12 +46,16 @@ namespace LeanCloud.Storage.Internal {
                 Method = state.ObjectId == null ? HttpMethod.Post : HttpMethod.Put,
                 Content = objectJSON
             };
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            if (fetchWhenSave) {
+                args.Add("fetchWhenSave", fetchWhenSave);
+            }
             // 查询条件
             if (query != null && query.where != null) {
-                Dictionary<string, object> where = new Dictionary<string, object> {
-                    { "where", PointerOrLocalIdEncoder.Instance.Encode(query.where) }
-                };
-                string encode = AVClient.BuildQueryString(where);
+                args.Add("where", PointerOrLocalIdEncoder.Instance.Encode(query.where));
+            }
+            if (args.Count > 0) {
+                string encode = AVClient.BuildQueryString(args);
                 command.Path = $"{command.Path}?{encode}";
             }
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
