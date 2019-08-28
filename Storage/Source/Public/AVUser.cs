@@ -147,7 +147,7 @@ namespace LeanCloud
             }
         }
 
-        internal static Task<string> GetCurrentSessionTokenAsync(CancellationToken cancellationToken = default(CancellationToken))
+        internal static Task<string> GetCurrentSessionTokenAsync(CancellationToken cancellationToken = default)
         {
             return CurrentUserController.GetCurrentSessionTokenAsync(cancellationToken);
         }
@@ -937,23 +937,12 @@ namespace LeanCloud
         }
 
         /// <summary>
-        /// 以手机号和验证码匹配登陆
-        /// </summary>
-        /// <param name="mobilePhoneNumber">手机号</param>
-        /// <param name="smsCode">短信验证码</param>
-        /// <returns></returns>
-        public static Task<AVUser> LogInBySmsCodeAsync(string mobilePhoneNumber, string smsCode)
-        {
-            return AVUser.LogInBySmsCodeAsync(mobilePhoneNumber, smsCode, CancellationToken.None);
-        }
-
-        /// <summary>
         /// 用邮箱作和密码匹配登录
         /// </summary>
         /// <param name="email">邮箱</param>
         /// <param name="password">密码</param>
         /// <returns></returns>
-        public static Task<AVUser> LogInByEmailAsync(string email, string password, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<AVUser> LogInByEmailAsync(string email, string password, CancellationToken cancellationToken = default)
         {
             return UserController.LogInAsync(null, email, password, cancellationToken).OnSuccess(t => {
                 AVUser user = AVObject.FromState<AVUser>(t.Result, "_User");
@@ -986,7 +975,7 @@ namespace LeanCloud
         /// <param name="smsCode">短信验证码</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<AVUser> LogInBySmsCodeAsync(string mobilePhoneNumber, string smsCode, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<AVUser> LogInBySmsCodeAsync(string mobilePhoneNumber, string smsCode, CancellationToken cancellationToken = default)
         {
             Dictionary<string, object> strs = new Dictionary<string, object>()
             {
@@ -1127,7 +1116,7 @@ namespace LeanCloud
         /// <param name="smsCode">Sms code.</param>
         public static Task<AVUser> LogInByMobilePhoneAsync(string mobilePhoneNumber, string smsCode)
         {
-            return AVUser.LogInBySmsCodeAsync(mobilePhoneNumber, smsCode);
+            return LogInBySmsCodeAsync(mobilePhoneNumber, smsCode);
         }
         #endregion
         #endregion
