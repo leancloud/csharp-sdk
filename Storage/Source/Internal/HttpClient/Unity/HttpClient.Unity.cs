@@ -64,7 +64,7 @@ namespace LeanCloud.Storage.Internal
                             var statusCode = GetResponseStatusCode(request);
                             // Returns HTTP error if that's the only info we have.
                             // if (!String.IsNullOrEmpty(www.error) && String.IsNullOrEmpty(www.text))
-                            if (!String.IsNullOrEmpty(request.error) && String.IsNullOrEmpty(request.downloadHandler.text))
+                            if (!string.IsNullOrEmpty(request.error) && string.IsNullOrEmpty(request.downloadHandler.text))
                             {
                                 var errorString = string.Format("{{\"error\":\"{0}\"}}", request.error);
                                 tcs.TrySetResult(new Tuple<HttpStatusCode, string>(statusCode, errorString));

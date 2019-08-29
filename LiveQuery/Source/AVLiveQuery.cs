@@ -179,7 +179,7 @@ namespace LeanCloud.LiveQuery
                 { "id", AVLiveQuery.InstallationId },
                 { "clientTimestamp", AVLiveQuery.ClientTs }
             };
-            string sessionToken = AVUser.CurrentUser != null ? AVUser.CurrentUser.SessionToken : string.Empty;
+            string sessionToken = AVUser.CurrentUser?.SessionToken;
             if (!string.IsNullOrEmpty(sessionToken)) {
                 data.Add("sessionToken", sessionToken);
             }
@@ -200,7 +200,7 @@ namespace LeanCloud.LiveQuery
                 { "id", AVLiveQuery.InstallationId },
                 { "query_id", Id },
             };
-            string sessionToken = AVUser.CurrentUser != null ? AVUser.CurrentUser.SessionToken : string.Empty;
+            string sessionToken = AVUser.CurrentUser?.SessionToken;
             var command = new AVCommand("LiveQuery/unsubscribe",
                           "POST",
                           sessionToken,

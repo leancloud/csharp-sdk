@@ -42,7 +42,7 @@ namespace LeanCloud {
         /// <param name="sesstionToken"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The result of the cloud call.</returns>
-        public static Task<T> CallFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<T> CallFunctionAsync<T>(string name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default)
         {
             var sessionTokenTask = AVUser.TakeSessionToken(sesstionToken);
 
@@ -64,7 +64,7 @@ namespace LeanCloud {
         /// <param name="sesstionToken"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<T> RPCFunctionAsync<T>(String name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<T> RPCFunctionAsync<T>(string name, IDictionary<string, object> parameters = null, string sesstionToken = null, CancellationToken cancellationToken = default)
         {
             var sessionTokenTask = AVUser.TakeSessionToken(sesstionToken);
 
@@ -109,20 +109,6 @@ namespace LeanCloud {
         }
 
         /// <summary>
-        /// 请求短信认证。
-        /// </summary>
-        /// <param name="mobilePhoneNumber">手机号。</param>
-        /// <param name="name">应用名称。</param>
-        /// <param name="op">进行的操作名称。</param>
-        /// <param name="ttl">验证码失效时间。</param>
-        /// <returns></returns>
-        public static Task<bool> RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10)
-        {
-            return RequestSMSCodeAsync(mobilePhoneNumber, name, op, ttl, CancellationToken.None);
-        }
-
-
-        /// <summary>
         /// 请求发送验证码。
         /// </summary>
         /// <returns>是否发送成功。</returns>
@@ -131,7 +117,7 @@ namespace LeanCloud {
         /// <param name="op">进行的操作名称。</param>
         /// <param name="ttl">验证码失效时间。</param>
         /// <param name="cancellationToken">Cancellation token。</param>
-        public static Task<bool> RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<bool> RequestSMSCodeAsync(string mobilePhoneNumber, string name, string op, int ttl = 10, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(mobilePhoneNumber))
             {
@@ -195,15 +181,13 @@ namespace LeanCloud {
         /// <param name="template">Sms's template</param>
         /// <param name="env">Template variables env.</param>
         /// <param name="sign">Sms's sign.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
         public static Task<bool> RequestSMSCodeAsync(
             string mobilePhoneNumber,
             string template,
             IDictionary<string, object> env,
             string sign = "",
-            string validateToken = "",
-            CancellationToken cancellationToken = default(CancellationToken))
+            string validateToken = "")
         {
 
             if (string.IsNullOrEmpty(mobilePhoneNumber))
@@ -215,11 +199,11 @@ namespace LeanCloud {
                 { "mobilePhoneNumber", mobilePhoneNumber },
             };
             strs.Add("template", template);
-            if (String.IsNullOrEmpty(sign))
+            if (string.IsNullOrEmpty(sign))
             {
                 strs.Add("sign", sign);
             }
-            if (String.IsNullOrEmpty(validateToken))
+            if (string.IsNullOrEmpty(validateToken))
             {
                 strs.Add("validate_token", validateToken);
             }
@@ -318,7 +302,7 @@ namespace LeanCloud {
             /// <param name="code">User's input of this captcha.</param>
             /// <param name="cancellationToken">CancellationToken.</param>
             /// <returns></returns>
-            public Task VerifyAsync(string code, CancellationToken cancellationToken = default(CancellationToken))
+            public Task VerifyAsync(string code)
             {
                 return AVCloud.VerifyCaptchaAsync(code, Token);
             }
@@ -331,10 +315,10 @@ namespace LeanCloud {
         /// <param name="height">captcha image height.</param>
         /// <param name="cancellationToken">CancellationToken.</param>
         /// <returns>an instance of Captcha.</returns>
-        public static Task<Captcha> RequestCaptchaAsync(int width = 85, int height = 30, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<Captcha> RequestCaptchaAsync(int width = 85, int height = 30, CancellationToken cancellationToken = default)
         {
-            var path = String.Format("requestCaptcha?width={0}&height={1}", width, height);
-            var command = new AVCommand(path, method: "GET", sessionToken: null, data: null);
+            var path = string.Format("requestCaptcha?width={0}&height={1}", width, height);
+            var command = new AVCommand(path, "GET", null, data: null);
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).OnSuccess(t =>
             {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
@@ -353,14 +337,14 @@ namespace LeanCloud {
         /// <param name="code">User's input of this captcha.</param>
         /// <param name="cancellationToken">CancellationToken.</param>
         /// <returns></returns>
-        public static Task<string> VerifyCaptchaAsync(string code, string token, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<string> VerifyCaptchaAsync(string code, string token, CancellationToken cancellationToken = default)
         {
             var data = new Dictionary<string, object>
             {
                 { "captcha_token", token },
                 { "captcha_code", code },
             };
-            var command = new AVCommand("verifyCaptcha", method: "POST", sessionToken: null, data: data);
+            var command = new AVCommand("verifyCaptcha", "POST", null, data: data);
             return AVPlugins.Instance.CommandRunner.RunCommandAsync(command, cancellationToken: cancellationToken).ContinueWith(t =>
             {
                 if (!t.Result.Item2.ContainsKey("validate_token"))
@@ -374,7 +358,7 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<IDictionary<string, object>> GetCustomParametersAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<IDictionary<string, object>> GetCustomParametersAsync(CancellationToken cancellationToken = default)
         {
             var command = new AVCommand(string.Format("statistics/apps/{0}/sendPolicy", AVClient.CurrentConfiguration.ApplicationId),
                method: "GET",
@@ -397,7 +381,7 @@ namespace LeanCloud {
             public string Signature { internal set; get; }
         }
 
-        public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(CancellationToken cancellationToken = default)
         {
             return AVUser.GetCurrentUserAsync(cancellationToken).OnSuccess(t =>
             {
@@ -405,7 +389,7 @@ namespace LeanCloud {
             }).Unwrap();
         }
 
-        public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(AVUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(AVUser user, CancellationToken cancellationToken = default)
         {
             var command = new AVCommand(string.Format("rtm/sign"),
                     method: "POST",
@@ -518,7 +502,7 @@ namespace LeanCloud {
                 var user = t.Result;
                 var encodedParameters = Encode(parameters);
                 var command = new AVCommand(
-                    string.Format("call/{0}", Uri.EscapeUriString(this.FunctionName)),
+                    string.Format("call/{0}", Uri.EscapeUriString(FunctionName)),
                     method: "POST",
                     sessionToken: user != null ? user.SessionToken : null,
                     data: encodedParameters);

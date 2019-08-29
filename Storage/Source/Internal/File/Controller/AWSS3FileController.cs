@@ -18,7 +18,7 @@ namespace LeanCloud.Storage.Internal
 
         }
 
-        public override Task<FileState> SaveAsync(FileState state, Stream dataStream, string sessionToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public override Task<FileState> SaveAsync(FileState state, Stream dataStream, string sessionToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken = default)
         {
             if (state.Url != null)
             {

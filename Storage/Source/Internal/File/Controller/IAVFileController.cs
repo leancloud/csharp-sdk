@@ -9,7 +9,7 @@ namespace LeanCloud.Storage.Internal
     {
         Task<FileState> SaveAsync(FileState state,
             Stream dataStream,
-            String sessionToken,
+            string sessionToken,
             IProgress<AVUploadProgressEventArgs> progress,
             CancellationToken cancellationToken);
 

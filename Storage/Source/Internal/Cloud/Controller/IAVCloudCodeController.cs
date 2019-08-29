@@ -7,7 +7,7 @@ namespace LeanCloud.Storage.Internal
 {
     public interface IAVCloudCodeController
     {
-        Task<T> CallFunctionAsync<T>(String name,
+        Task<T> CallFunctionAsync<T>(string name,
             IDictionary<string, object> parameters,
             string sessionToken,
             CancellationToken cancellationToken);
