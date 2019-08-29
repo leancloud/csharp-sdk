@@ -23,7 +23,7 @@ namespace LeanCloud {
     /// await obj.SaveAsync();
     /// </code>
     /// </example>
-    public partial class AVFile : IJsonConvertible {
+    public class AVFile : IJsonConvertible {
         internal static int objectCounter = 0;
         internal static readonly object Mutex = new object();
         private FileState state;
@@ -45,7 +45,7 @@ namespace LeanCloud {
                 MimeType = mimeType,
                 MetaData = metaData
             };
-            this.dataStream = data;
+            dataStream = data;
             lock (Mutex) {
                 objectCounter++;
                 state.counter = objectCounter;
@@ -132,7 +132,7 @@ namespace LeanCloud {
                 objectCounter++;
                 state.counter = objectCounter;
             }
-            this.isExternal = true;
+            isExternal = true;
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace LeanCloud {
         }
 
         internal AVFile(FileState filestate) {
-            this.state = filestate;
+            state = filestate;
         }
         internal AVFile(string objectId)
             : this(new FileState() {
@@ -258,7 +258,7 @@ namespace LeanCloud {
         #endregion
 
         IDictionary<string, object> IJsonConvertible.ToJSON() {
-            if (this.IsDirty) {
+            if (IsDirty) {
                 throw new InvalidOperationException(
                   "AVFile must be saved before it can be serialized.");
             }
@@ -292,14 +292,14 @@ namespace LeanCloud {
         internal Task SaveExternal() {
             Dictionary<string, object> strs = new Dictionary<string, object>()
             {
-                { "url", this.Url.ToString() },
-                { "name",this.Name },
-                { "mime_type",this.MimeType},
-                { "metaData",this.MetaData}
+                { "url", Url.ToString() },
+                { "name", Name },
+                { "mime_type", MimeType},
+                { "metaData", MetaData}
             };
             AVCommand cmd = null;
 
-            if (!string.IsNullOrEmpty(this.ObjectId)) {
+            if (!string.IsNullOrEmpty(ObjectId)) {
                 cmd = new AVCommand {
                     Path = $"files/{ObjectId}",
                     Method = HttpMethod.Put,
@@ -331,7 +331,7 @@ namespace LeanCloud {
         public string ObjectId {
             get {
                 string str;
-                lock (this.mutex) {
+                lock (mutex) {
                     str = state.ObjectId;
                 }
                 return str;
@@ -359,8 +359,7 @@ namespace LeanCloud {
         }
 
         static AVFile() {
-            Dictionary<string, string> strs = new Dictionary<string, string>()
-            {
+            Dictionary<string, string> strs = new Dictionary<string, string> {
                 { "ai", "application/postscript" },
                 { "aif", "audio/x-aiff" },
                 { "aifc", "audio/x-aiff" },
@@ -550,15 +549,15 @@ namespace LeanCloud {
                 { "xyz", "chemical/x-xyz" },
                 { "zip", "application/zip" },
             };
-            AVFile.MIMETypesDictionary = strs;
+            MIMETypesDictionary = strs;
         }
         internal static string GetMIMEType(string fileName) {
             try {
                 string str = Path.GetExtension(fileName).Remove(0, 1);
-                if (!AVFile.MIMETypesDictionary.ContainsKey(str)) {
+                if (!MIMETypesDictionary.ContainsKey(str)) {
                     return "unknown/unknown";
                 }
-                return AVFile.MIMETypesDictionary[str];
+                return MIMETypesDictionary[str];
             } catch {
                 return "unknown/unknown";
             }
@@ -585,11 +584,12 @@ namespace LeanCloud {
         }
 
         public static AVFile CreateWithData(string objectId, string name, string url, IDictionary<string, object> metaData) {
-            var fileState = new FileState();
-            fileState.Name = name;
-            fileState.ObjectId = objectId;
-            fileState.Url = new Uri(url);
-            fileState.MetaData = metaData;
+            var fileState = new FileState {
+                Name = name,
+                ObjectId = objectId,
+                Url = new Uri(url),
+                MetaData = metaData
+            };
             return CreateWithState(fileState);
         }
         /// <summary>
@@ -602,7 +602,7 @@ namespace LeanCloud {
         }
 
         internal void MergeFromJSON(IDictionary<string, object> jsonData) {
-            lock (this.mutex) {
+            lock (mutex) {
                 state.ObjectId = jsonData["objectId"] as string;
                 state.Url = new Uri(jsonData["url"] as string, UriKind.Absolute);
                 if (jsonData.ContainsKey("name")) {

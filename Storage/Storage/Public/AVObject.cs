@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,19 +11,8 @@ using System.Collections;
 
 namespace LeanCloud {
     /// <summary>
-    /// The AVObject is a local representation of data that can be saved and
-    /// retrieved from the LeanCloud cloud.</summary>
-    /// <remarks>
-    /// <para>
-    /// The basic workflow for creating new data is to construct a new AVObject,
-    /// use the indexer to fill it with data, and then use SaveAsync() to persist to the
-    /// database.
-    /// </para>
-    /// <para>
-    /// The basic workflow for accessing existing data is to use a AVQuery
-    /// to specify which existing data to retrieve.
-    /// </para>
-    /// </remarks>
+    /// AVObject
+    /// </summary>
     public class AVObject : IEnumerable<KeyValuePair<string, object>>, INotifyPropertyChanged, INotifyPropertyUpdated, INotifyCollectionPropertyUpdated {
         private static readonly string AutoClassName = "_Automatic";
 
@@ -615,7 +602,7 @@ string propertyName
             var saveDirtyFileTasks = DeepTraversal(obj, true)
                 .OfType<AVFile>()
                 .Where(f => f.IsDirty)
-                .Select(f => f.SaveAsync(cancellationToken)).ToList();
+                .Select(f => f.SaveAsync(cancellationToken: cancellationToken)).ToList();
 
             return Task.WhenAll(saveDirtyFileTasks).OnSuccess(_ => {
                 IEnumerable<AVObject> remaining = new List<AVObject>(uniqueObjects);
@@ -740,7 +727,7 @@ string propertyName
         /// <returns>The list passed in for convenience.</returns>
         public static Task<IEnumerable<T>> FetchAllIfNeededAsync<T>(
             IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
-            return AVObject.EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) => {
+            return EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) => {
                 return FetchAllInternalAsync(objects, false, toAwait, cancellationToken);
             }, cancellationToken);
         }
@@ -763,7 +750,7 @@ string propertyName
         /// <returns>The list passed in for convenience.</returns>
         public static Task<IEnumerable<T>> FetchAllAsync<T>(
             IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
-            return AVObject.EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) => {
+            return EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) => {
                 return FetchAllInternalAsync(objects, true, toAwait, cancellationToken);
             }, cancellationToken);
         }
@@ -872,7 +859,7 @@ string propertyName
             var uniqueObjects = new HashSet<AVObject>(objects.OfType<AVObject>().ToList(),
               new IdentityEqualityComparer<AVObject>());
 
-            return AVObject.EnqueueForAll<object>(uniqueObjects, toAwait => {
+            return EnqueueForAll<object>(uniqueObjects, toAwait => {
                 var states = uniqueObjects.Select(t => t.state).ToList();
                 return toAwait.OnSuccess(_ => {
                     var deleteTasks = ObjectController.DeleteAllAsync(states, cancellationToken);
