@@ -13,9 +13,9 @@ namespace LeanCloud.Storage.Internal {
             var command = new EngineCommand {
                 Path = $"functions/{Uri.EscapeUriString(name)}",
                 Method = HttpMethod.Post,
-                Content = parameters
+                Content = parameters ?? new Dictionary<string, object>()
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).OnSuccess(t => {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
                 if (!decoded.ContainsKey("result")) {
                     return default;
@@ -28,7 +28,7 @@ namespace LeanCloud.Storage.Internal {
             var command = new EngineCommand {
                 Path = $"call/{Uri.EscapeUriString(name)}",
                 Method = HttpMethod.Post,
-                Content = parameters
+                Content = parameters ?? new Dictionary<string, object>()
             };
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).OnSuccess(t => {
                 var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
