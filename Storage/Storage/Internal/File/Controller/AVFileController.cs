@@ -22,8 +22,7 @@ namespace LeanCloud.Storage.Internal {
             IProgress<AVUploadProgressEventArgs> progress,
             CancellationToken cancellationToken = default) {
             if (state.Url != null) {
-                // !isDirty
-                return Task<FileState>.FromResult(state);
+                return SaveWithUrl(state);
             }
 
             return GetFileToken(state, cancellationToken).OnSuccess(t => {
@@ -50,14 +49,45 @@ namespace LeanCloud.Storage.Internal {
             return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
         }
 
+        internal Task<FileState> SaveWithUrl(FileState state) {
+            Dictionary<string, object> strs = new Dictionary<string, object> {
+                { "url", state.Url.ToString() },
+                { "name", state.Name },
+                { "mime_type", state.MimeType },
+                { "metaData", state.MetaData }
+            };
+            AVCommand cmd = null;
+
+            if (!string.IsNullOrEmpty(state.ObjectId)) {
+                cmd = new AVCommand {
+                    Path = $"files/{state.ObjectId}",
+                    Method = HttpMethod.Put,
+                    Content = strs
+                };
+            } else {
+                cmd = new AVCommand {
+                    Path = "files",
+                    Method = HttpMethod.Post,
+                    Content = strs
+                };
+            }
+
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(cmd).OnSuccess(t => {
+                var result = t.Result.Item2;
+                state.ObjectId = result["objectId"].ToString();
+                return state;
+            });
+        }
+
         internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken) {
             string str = fileState.Name;
-            IDictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("name", str);
-            parameters.Add("key", GetUniqueName(fileState));
-            parameters.Add("__type", "File");
-            parameters.Add("mime_type", AVFile.GetMIMEType(str));
-            parameters.Add("metaData", fileState.MetaData);
+            IDictionary<string, object> parameters = new Dictionary<string, object> {
+                { "name", str },
+                { "key", GetUniqueName(fileState) },
+                { "__type", "File" },
+                { "mime_type", AVFile.GetMIMEType(str) },
+                { "metaData", fileState.MetaData }
+            };
 
             var command = new AVCommand {
                 Path = "fileTokens",
