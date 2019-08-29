@@ -7,18 +7,8 @@ using System.Net.Http;
 
 namespace LeanCloud {
     /// <summary>
-    /// The AVCloud class provides methods for interacting with LeanCloud Cloud Functions.
+    /// AVCloud，提供与 LeanCloud 云函数交互的接口
     /// </summary>
-    /// <example>
-    /// For example, this sample code calls the
-    /// "validateGame" Cloud Function and calls processResponse if the call succeeded
-    /// and handleError if it failed.
-    ///
-    /// <code>
-    /// var result =
-    ///     await AVCloud.CallFunctionAsync&lt;IDictionary&lt;string, object&gt;&gt;("validateGame", parameters);
-    /// </code>
-    /// </example>
     public static class AVCloud {
         internal static AVCloudCodeController CloudCodeController {
             get {
@@ -111,13 +101,12 @@ namespace LeanCloud {
 
         /// <summary>
         /// 发送手机短信，并指定模板以及传入模板所需的参数。
-        /// Exceptions:
-        ///   AVOSCloud.AVException:
-        ///   手机号为空。
+        /// </summary>
         /// <param name="mobilePhoneNumber"></param>
-        /// <param name="template">Sms's template</param>
-        /// <param name="env">Template variables env.</param>
-        /// <param name="sign">Sms's sign.</param>
+        /// <param name="template"></param>
+        /// <param name="env"></param>
+        /// <param name="sign"></param>
+        /// <param name="validateToken"></param>
         /// <returns></returns>
         public static Task RequestSMSCodeAsync(
             string mobilePhoneNumber,
@@ -218,7 +207,6 @@ namespace LeanCloud {
             /// Verify the user's input of catpcha.
             /// </summary>
             /// <param name="code">User's input of this captcha.</param>
-            /// <param name="cancellationToken">CancellationToken.</param>
             /// <returns></returns>
             public Task VerifyAsync(string code) {
                 return AVCloud.VerifyCaptchaAsync(code, Token);

@@ -275,35 +275,12 @@ namespace LeanCloud {
         /// <summary>
         /// Saves the file to the LeanCloud cloud.
         /// </summary>
-        public Task SaveAsync() {
-            return SaveAsync(null, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Saves the file to the LeanCloud cloud.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public Task SaveAsync(CancellationToken cancellationToken) {
-            return SaveAsync(null, cancellationToken);
-        }
-
-        /// <summary>
-        /// Saves the file to the LeanCloud cloud.
-        /// </summary>
-        /// <param name="progress">The progress callback.</param>
-        public Task SaveAsync(IProgress<AVUploadProgressEventArgs> progress) {
-            return SaveAsync(progress, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Saves the file to the LeanCloud cloud.
-        /// </summary>
         /// <param name="progress">The progress callback.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public Task SaveAsync(IProgress<AVUploadProgressEventArgs> progress,
-            CancellationToken cancellationToken) {
-            if (this.isExternal)
-                return this.SaveExternal();
+        public Task SaveAsync(IProgress<AVUploadProgressEventArgs> progress = null,
+            CancellationToken cancellationToken = default) {
+            if (isExternal)
+                return SaveExternal();
 
             return taskQueue.Enqueue(
                 toAwait => FileController.SaveAsync(state, dataStream, progress, cancellationToken), cancellationToken)
