@@ -13,7 +13,6 @@ namespace LeanCloud {
     public class AVFile : IJsonConvertible {
         private FileState state;
         private readonly Stream dataStream;
-        private readonly TaskQueue taskQueue = new TaskQueue();
 
         #region Constructor
         /// <summary>
