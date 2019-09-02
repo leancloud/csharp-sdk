@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LeanCloud;
 
 namespace LeanCloudTests {
+    [TestFixture]
     public class RoleTest {
         [SetUp]
         public void SetUp() {
