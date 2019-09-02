@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Reflection;
-using LeanCloud.Storage.Internal;
 
-namespace LeanCloud.Storage.Internal
-{
-    internal class ObjectSubclassInfo
-    {
-        public ObjectSubclassInfo(Type type, ConstructorInfo constructor)
-        {
+namespace LeanCloud.Storage.Internal {
+    internal class ObjectSubclassInfo {
+        public ObjectSubclassInfo(Type type, ConstructorInfo constructor) {
             TypeInfo = type.GetTypeInfo();
             ClassName = GetClassName(TypeInfo);
             Constructor = constructor;
@@ -28,15 +21,13 @@ namespace LeanCloud.Storage.Internal
         public IDictionary<string, string> PropertyMappings { get; private set; }
         private ConstructorInfo Constructor { get; set; }
 
-        public AVObject Instantiate()
-        {
+        public AVObject Instantiate() {
             return (AVObject)Constructor.Invoke(null);
         }
 
-        internal static string GetClassName(TypeInfo type)
-        {
+        internal static string GetClassName(TypeInfo type) {
             var attribute = type.GetCustomAttribute<AVClassNameAttribute>();
-            return attribute != null ? attribute.ClassName : null;
+            return attribute?.ClassName;
         }
     }
 }

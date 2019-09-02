@@ -13,11 +13,9 @@ namespace LeanCloudTests {
 
         [Test]
         public async Task Save() {
-            TestContext.Out.WriteLine($"before at {Thread.CurrentThread.ManagedThreadId}");
             AVObject obj = AVObject.Create("Foo");
             obj["content"] = "hello, world";
             await obj.SaveAsync();
-            TestContext.Out.WriteLine($"{obj.ObjectId} saved at {Thread.CurrentThread.ManagedThreadId}");
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
             Assert.NotNull(obj.UpdatedAt);
@@ -26,11 +24,27 @@ namespace LeanCloudTests {
         [Test]
         public async Task SaveWithOptions() {
             AVObject account = AVObject.CreateWithoutData("Account", "5d65fa5330863b008065e476");
+            account["balance"] = 100;
+            await account.SaveAsync();
             AVQuery<AVObject> query = new AVQuery<AVObject>("Account");
             query.WhereGreaterThan("balance", 80);
             account["balance"] = 50;
             await account.SaveAsync(true, query);
             TestContext.Out.WriteLine($"balance: {account["balance"]}");
+        }
+
+        [Test]
+        public async Task SaveBatch() {
+            List<AVObject> objList = new List<AVObject>();
+            for (int i = 0; i < 5; i++) {
+                AVObject obj = AVObject.Create("Foo");
+                obj["content"] = "batch object";
+                objList.Add(obj);
+            }
+            await objList.SaveAllAsync();
+            objList.ForEach(obj => {
+                Assert.NotNull(obj.ObjectId);
+            });
         }
 
         [Test]
@@ -55,6 +69,41 @@ namespace LeanCloudTests {
             await obj.FetchAsync(includes: new List<string> { "tag" });
             AVObject tag = obj["tag"] as AVObject;
             TestContext.Out.WriteLine($"{tag["name"]}");
+        }
+
+        [Test]
+        public async Task FetchAll() {
+            List<AVObject> objList = new List<AVObject> {
+                AVObject.CreateWithoutData("Tag", "5d64e5ebc05a8000730340ba"),
+                AVObject.CreateWithoutData("Tag", "5d64e5eb12215f0073db271c"),
+                AVObject.CreateWithoutData("Tag", "5d64e57f43e78c0068a14315")
+            };
+            await objList.FetchAllAsync();
+            objList.ForEach(obj => {
+                Assert.NotNull(obj.ObjectId);
+                TestContext.Out.WriteLine($"{obj.ObjectId}, {obj["name"]}");
+            });
+        }
+
+        [Test]
+        public async Task Delete() {
+            AVObject obj = AVObject.Create("Foo");
+            obj["content"] = "hello, world";
+            await obj.SaveAsync();
+            Assert.NotNull(obj);
+            await obj.DeleteAsync();
+        }
+
+        [Test]
+        public async Task DeleteAll() {
+            List<AVObject> objList = new List<AVObject>();
+            for (int i = 0; i < 5; i++) {
+                AVObject obj = AVObject.Create("Foo");
+                obj["content"] = "batch object";
+                objList.Add(obj);
+            }
+            await objList.SaveAllAsync();
+            await AVObject.DeleteAllAsync(objList);
         }
     }
 }

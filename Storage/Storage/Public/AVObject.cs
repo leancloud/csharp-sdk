@@ -17,7 +17,7 @@ namespace LeanCloud {
         private static readonly string AutoClassName = "_Automatic";
 
 #if UNITY
-    private static readonly bool isCompiledByIL2CPP = AppDomain.CurrentDomain.FriendlyName.Equals("IL2CPP Root Domain");
+        private static readonly bool isCompiledByIL2CPP = AppDomain.CurrentDomain.FriendlyName.Equals("IL2CPP Root Domain");
 #else
         private static readonly bool isCompiledByIL2CPP = false;
 #endif
@@ -192,7 +192,7 @@ namespace LeanCloud {
 
         #endregion
 
-        public static IDictionary<String, String> GetPropertyMappings(string className) {
+        public static IDictionary<string, string> GetPropertyMappings(string className) {
             return SubclassingController.GetPropertyMappings(className);
         }
 
@@ -246,7 +246,7 @@ string propertyName
 string propertyName
 #endif
 ) {
-            return GetProperty<T>(default(T), propertyName);
+            return GetProperty<T>(default, propertyName);
         }
 
         /// <summary>
@@ -262,9 +262,8 @@ string propertyName
 #else
  string propertyName
 #endif
-) {
-            T result;
-            if (TryGetValue<T>(GetFieldForPropertyName(ClassName, propertyName), out result)) {
+        ) {
+            if (TryGetValue(GetFieldForPropertyName(ClassName, propertyName), out T result)) {
                 return result;
             }
             return defaultValue;

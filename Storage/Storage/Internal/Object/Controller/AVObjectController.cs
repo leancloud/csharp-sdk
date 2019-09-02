@@ -15,7 +15,7 @@ namespace LeanCloud.Storage.Internal {
                 Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}?{AVClient.BuildQueryString(queryString)}",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).OnSuccess(t => {
                 return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
             });
         }
@@ -44,7 +44,7 @@ namespace LeanCloud.Storage.Internal {
                 string encode = AVClient.BuildQueryString(args);
                 command.Path = $"{command.Path}?{encode}";
             }
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(t => {
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).OnSuccess(t => {
                 var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
                 serverState = serverState.MutatedClone(mutableClone => {
                     mutableClone.IsNew = t.Result.Item1 == System.Net.HttpStatusCode.Created;
@@ -82,7 +82,7 @@ namespace LeanCloud.Storage.Internal {
                 Path = $"classes/{state.ClassName}/{state.ObjectId}",
                 Method = HttpMethod.Delete
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
+            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
         }
 
         public IList<Task> DeleteAllAsync(IList<IObjectState> states,
@@ -131,8 +131,8 @@ namespace LeanCloud.Storage.Internal {
 
             var encodedRequests = requests.Select(r => {
                 var results = new Dictionary<string, object> {
-                    { "method", r.Method },
-                    { "path", r.Path },
+                    { "method", r.Method.Method },
+                    { "path", $"/{AVClient.APIVersion}/{r.Path}" },
                 };
 
                 if (r.Content != null) {
@@ -147,7 +147,7 @@ namespace LeanCloud.Storage.Internal {
                     { "requests", encodedRequests }
                 }
             };
-            AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).ContinueWith(t => {
+            AVPlugins.Instance.CommandRunner.RunCommandAsync<IList<object>>(command, cancellationToken).ContinueWith(t => {
                 if (t.IsFaulted || t.IsCanceled) {
                     foreach (var tcs in tcss) {
                         if (t.IsFaulted) {
@@ -159,7 +159,7 @@ namespace LeanCloud.Storage.Internal {
                     return;
                 }
 
-                var resultsArray = Conversion.As<IList<object>>(t.Result.Item2["results"]);
+                var resultsArray = t.Result.Item2;
                 int resultLength = resultsArray.Count;
                 if (resultLength != batchSize) {
                     foreach (var tcs in tcss) {

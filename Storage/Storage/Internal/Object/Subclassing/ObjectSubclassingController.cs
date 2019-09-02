@@ -11,7 +11,7 @@ namespace LeanCloud.Storage.Internal {
 
         private readonly ReaderWriterLockSlim mutex;
         private readonly IDictionary<string, ObjectSubclassInfo> registeredSubclasses;
-        private Dictionary<string, Action> registerActions;
+        private readonly Dictionary<string, Action> registerActions;
 
         public ObjectSubclassingController() {
             mutex = new ReaderWriterLockSlim();
@@ -38,10 +38,8 @@ namespace LeanCloud.Storage.Internal {
         }
 
         public bool IsTypeValid(string className, Type type) {
-            ObjectSubclassInfo subclassInfo = null;
-
             mutex.EnterReadLock();
-            registeredSubclasses.TryGetValue(className, out subclassInfo);
+            registeredSubclasses.TryGetValue(className, out ObjectSubclassInfo subclassInfo);
             mutex.ExitReadLock();
 
             return subclassInfo == null
@@ -63,12 +61,12 @@ namespace LeanCloud.Storage.Internal {
                 // TOCTTOU bug.
                 mutex.EnterWriteLock();
 
-                ObjectSubclassInfo previousInfo = null;
-                if (registeredSubclasses.TryGetValue(className, out previousInfo)) {
+                if (registeredSubclasses.TryGetValue(className, out ObjectSubclassInfo previousInfo)) {
                     if (typeInfo.IsAssignableFrom(previousInfo.TypeInfo)) {
                         // Previous subclass is more specific or equal to the current type, do nothing.
                         return;
-                    } else if (previousInfo.TypeInfo.IsAssignableFrom(typeInfo)) {
+                    }
+                    if (previousInfo.TypeInfo.IsAssignableFrom(typeInfo)) {
                         // Previous subclass is parent of new child, fallthrough and actually register
                         // this class.
                         /* Do nothing */
@@ -91,10 +89,9 @@ namespace LeanCloud.Storage.Internal {
                 mutex.ExitWriteLock();
             }
 
-            Action toPerform;
 
             mutex.EnterReadLock();
-            registerActions.TryGetValue(className, out toPerform);
+            registerActions.TryGetValue(className, out Action toPerform);
             mutex.ExitReadLock();
 
             toPerform?.Invoke();
@@ -113,10 +110,9 @@ namespace LeanCloud.Storage.Internal {
         }
 
         public AVObject Instantiate(string className) {
-            ObjectSubclassInfo info = null;
 
             mutex.EnterReadLock();
-            registeredSubclasses.TryGetValue(className, out info);
+            registeredSubclasses.TryGetValue(className, out ObjectSubclassInfo info);
             mutex.ExitReadLock();
 
             return info != null
