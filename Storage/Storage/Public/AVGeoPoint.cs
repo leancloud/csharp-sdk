@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using LeanCloud.Storage.Internal;
 
-namespace LeanCloud
-{
+namespace LeanCloud {
     /// <summary>
     /// AVGeoPoint represents a latitude / longitude point that may be associated
     /// with a key in a AVObject or used as a reference point for geo queries.
@@ -11,16 +10,14 @@ namespace LeanCloud
     ///
     /// Only one key in a class may contain a GeoPoint.
     /// </summary>
-    public struct AVGeoPoint : IJsonConvertible
-    {
+    public struct AVGeoPoint : IJsonConvertible {
         /// <summary>
         /// Constructs a AVGeoPoint with the specified latitude and longitude.
         /// </summary>
         /// <param name="latitude">The point's latitude.</param>
         /// <param name="longitude">The point's longitude.</param>
         public AVGeoPoint(double latitude, double longitude)
-          : this()
-        {
+          : this() {
             Latitude = latitude;
             Longitude = longitude;
         }
@@ -30,18 +27,13 @@ namespace LeanCloud
         /// Gets or sets the latitude of the GeoPoint. Valid range is [-90, 90].
         /// Extremes should not be used.
         /// </summary>
-        public double Latitude
-        {
-            get
-            {
+        public double Latitude {
+            get {
                 return latitude;
             }
-            set
-            {
-                if (value > 90 || value < -90)
-                {
-                    throw new ArgumentOutOfRangeException("value",
-                      "Latitude must be within the range [-90, 90]");
+            set {
+                if (value > 90 || value < -90) {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Latitude must be within the range [-90, 90]");
                 }
                 latitude = value;
             }
@@ -52,18 +44,13 @@ namespace LeanCloud
         /// Gets or sets the longitude. Valid range is [-180, 180].
         /// Extremes should not be used.
         /// </summary>
-        public double Longitude
-        {
-            get
-            {
+        public double Longitude {
+            get {
                 return longitude;
             }
-            set
-            {
-                if (value > 180 || value < -180)
-                {
-                    throw new ArgumentOutOfRangeException("value",
-                      "Longitude must be within the range [-180, 180]");
+            set {
+                if (value > 180 || value < -180) {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Longitude must be within the range [-180, 180]");
                 }
                 longitude = value;
             }
@@ -75,8 +62,7 @@ namespace LeanCloud
         /// </summary>
         /// <param name="point">GeoPoint describing the other point being measured against.</param>
         /// <returns>The distance in between the two points.</returns>
-        public AVGeoDistance DistanceTo(AVGeoPoint point)
-        {
+        public AVGeoDistance DistanceTo(AVGeoPoint point) {
             double d2r = Math.PI / 180; // radian conversion factor
             double lat1rad = Latitude * d2r;
             double long1rad = longitude * d2r;
@@ -94,10 +80,8 @@ namespace LeanCloud
             return new AVGeoDistance(2 * Math.Asin(Math.Sqrt(a)));
         }
 
-        IDictionary<string, object> IJsonConvertible.ToJSON()
-        {
-            return new Dictionary<string, object>
-            {
+        IDictionary<string, object> IJsonConvertible.ToJSON() {
+            return new Dictionary<string, object> {
                 { "__type", "GeoPoint" },
                 { "latitude", Latitude },
                 { "longitude", Longitude }
