@@ -66,7 +66,9 @@ namespace LeanCloud.Storage.Internal {
                 }
             }
             // Session Token
-            if (AVUser.CurrentUser != null && !string.IsNullOrEmpty(AVUser.CurrentUser.SessionToken)) {
+            if (!request.Headers.Contains("X-LC-Session") &&
+                AVUser.CurrentUser != null &&
+                !string.IsNullOrEmpty(AVUser.CurrentUser.SessionToken)) {
                 request.Headers.Add("X-LC-Session", AVUser.CurrentUser.SessionToken);
             }
             PrintRequest(httpClient, request, content);

@@ -34,7 +34,7 @@ namespace LeanCloudTests {
                 ApplicationKey = appKey,
                 MasterKey = masterKey,
                 ApiServer = apiServer,
-                EngineServer = engineServer,
+                EngineServer = engineServer
             });
             AVClient.UseMasterKey = !string.IsNullOrEmpty(masterKey);
             AVClient.HttpLog(TestContext.Out.WriteLine);

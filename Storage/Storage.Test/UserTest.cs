@@ -42,7 +42,7 @@ namespace LeanCloudTests {
 
         [Test]
         public async Task Become() {
-            AVUser user = await AVUser.BecomeAsync("36idbfnt8hlmdo4rki0f5hevq");
+            AVUser user = await AVUser.BecomeAsync("o8onm9bq8z127lz837mi6qhcg");
             Assert.AreEqual(user, AVUser.CurrentUser);
             TestContext.Out.WriteLine($"{AVUser.CurrentUser.SessionToken} login");
         }

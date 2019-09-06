@@ -31,24 +31,6 @@ namespace LeanCloudTests {
         }
 
         [Test]
-        public async Task TestHttp() {
-            if (SynchronizationContext.Current == null) {
-                TestContext.Out.WriteLine("is null");
-            }
-            TestContext.Out.WriteLine($"current {SynchronizationContext.Current}");
-            var client = new HttpClient();
-            TestContext.Out.WriteLine($"request at {Thread.CurrentThread.ManagedThreadId}");
-            string url = $"{AVClient.CurrentConfiguration.RTMServer}/v1/route?appId={AVClient.CurrentConfiguration.ApplicationId}&secure=1";
-            var res = await client.GetAsync(url);
-            TestContext.Out.WriteLine($"get at {Thread.CurrentThread.ManagedThreadId}");
-            var data = await res.Content.ReadAsStringAsync();
-            res.Dispose();
-            TestContext.Out.WriteLine($"response at {Thread.CurrentThread.ManagedThreadId}");
-            TestContext.Out.WriteLine(data);
-            Assert.Pass();
-        }
-
-        [Test]
         public async Task TestMassiveRequest() {
             await Task.Run(() => {
                 for (int i = 0; i < 10; i++) {
