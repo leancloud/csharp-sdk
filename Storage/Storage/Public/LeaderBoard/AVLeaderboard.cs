@@ -138,7 +138,7 @@ namespace LeanCloud {
         /// <param name="order">排序方式</param>
         /// <param name="versionChangeInterval">版本更新频率</param>
         /// <param name="updateStrategy">成绩更新策略</param>
-        public static Task<AVLeaderboard> CreateLeaderboard(string statisticName, 
+        public static async Task<AVLeaderboard> CreateLeaderboard(string statisticName, 
             AVLeaderboardOrder order = AVLeaderboardOrder.DESCENDING,
             AVLeaderboardUpdateStrategy updateStrategy = AVLeaderboardUpdateStrategy.BETTER,
             AVLeaderboardVersionChangeInterval versionChangeInterval = AVLeaderboardVersionChangeInterval.WEEK) {
@@ -157,14 +157,13 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
-                try {
-                    var leaderboard = Parse(t.Result.Item2);
-                    return leaderboard;
-                } catch (Exception e) {
-                    throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
-                }
-            });
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            try {
+                var leaderboard = Parse(result.Item2);
+                return leaderboard;
+            } catch (Exception e) {
+                throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
+            }
         }
 
         /// <summary>
@@ -195,7 +194,7 @@ namespace LeanCloud {
         /// <param name="user">用户</param>
         /// <param name="statistics">成绩</param>
         /// <param name="overwrite">是否强行覆盖</param>
-        public static Task<List<AVStatistic>> UpdateStatistics(AVUser user, Dictionary<string, double> statistics, bool overwrite = false) {
+        public static async Task<List<AVStatistic>> UpdateStatistics(AVUser user, Dictionary<string, double> statistics, bool overwrite = false) {
             if (user == null) {
                 throw new ArgumentNullException(nameof(user));
             }
@@ -219,18 +218,17 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
-                try {
-                    List<AVStatistic> statisticList = new List<AVStatistic>();
-                    List<object> list = t.Result.Item2["results"] as List<object>;
-                    foreach (object obj in list) {
-                        statisticList.Add(AVStatistic.Parse(obj as IDictionary<string, object>));
-                    }
-                    return statisticList;
-                } catch (Exception e) {
-                    throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            try {
+                List<AVStatistic> statisticList = new List<AVStatistic>();
+                List<object> list = result.Item2["results"] as List<object>;
+                foreach (object obj in list) {
+                    statisticList.Add(AVStatistic.Parse(obj as IDictionary<string, object>));
                 }
-            });
+                return statisticList;
+            } catch (Exception e) {
+                throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
+            }
         }
 
         /// <summary>
@@ -239,7 +237,7 @@ namespace LeanCloud {
         /// <returns>成绩列表</returns>
         /// <param name="user">用户</param>
         /// <param name="statisticNames">名称列表</param>
-        public static Task<List<AVStatistic>> GetStatistics(AVUser user, List<string> statisticNames = null) {
+        public static async Task<List<AVStatistic>> GetStatistics(AVUser user, List<string> statisticNames = null) {
             if (user == null) {
                 throw new ArgumentNullException(nameof(user));
             }
@@ -252,18 +250,17 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Post
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => { 
-                try {
-                    List<AVStatistic> statisticList = new List<AVStatistic>();
-                    List<object> list = t.Result.Item2["results"] as List<object>;
-                    foreach (object obj in list) {
-                        statisticList.Add(AVStatistic.Parse(obj as IDictionary<string, object>));
-                    }
-                    return statisticList;
-                } catch (Exception e) {
-                    throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            try {
+                List<AVStatistic> statisticList = new List<AVStatistic>();
+                List<object> list = result.Item2["results"] as List<object>;
+                foreach (object obj in list) {
+                    statisticList.Add(AVStatistic.Parse(obj as IDictionary<string, object>));
                 }
-            });
+                return statisticList;
+            } catch (Exception e) {
+                throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
+            }
         }
 
         /// <summary>
@@ -271,7 +268,7 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="user">用户</param>
         /// <param name="statisticNames">名称列表</param>
-        public static Task DeleteStatistics(AVUser user, List<string> statisticNames) {
+        public static async Task DeleteStatistics(AVUser user, List<string> statisticNames) {
             if (user == null) {
                 throw new ArgumentNullException(nameof(user));
             }
@@ -285,7 +282,7 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Delete,
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
         /// <summary>
@@ -294,21 +291,20 @@ namespace LeanCloud {
         /// <returns>排行榜归档列表</returns>
         /// <param name="skip">跳过数量</param>
         /// <param name="limit">分页数量</param>
-        public Task<List<AVLeaderboardArchive>> GetArchives(int skip = 0, int limit = 10) {
+        public async Task<List<AVLeaderboardArchive>> GetArchives(int skip = 0, int limit = 10) {
             var path = string.Format("leaderboard/leaderboards/{0}/archives", StatisticName);
             path = string.Format("{0}?skip={1}&limit={2}", path, skip, limit);
             var command = new AVCommand {
                 Path = path,
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
-                List<AVLeaderboardArchive> archives = new List<AVLeaderboardArchive>();
-                List<object> list = t.Result.Item2["results"] as List<object>;
-                foreach (object obj in list) {
-                    archives.Add(AVLeaderboardArchive.Parse(obj as IDictionary<string, object>));
-                }
-                return archives;
-            });
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            List<AVLeaderboardArchive> archives = new List<AVLeaderboardArchive>();
+            List<object> list = result.Item2["results"] as List<object>;
+            foreach (object obj in list) {
+                archives.Add(AVLeaderboardArchive.Parse(obj as IDictionary<string, object>));
+            }
+            return archives;
         }
 
         /// <summary>
@@ -336,7 +332,7 @@ namespace LeanCloud {
             return GetResults(AVUser.CurrentUser, version, skip, limit, selectUserKeys, includeStatistics);
         }
 
-        Task<List<AVRanking>> GetResults(AVUser user,
+        async Task<List<AVRanking>> GetResults(AVUser user,
             int version, int skip, int limit,
             List<string> selectUserKeys,
             List<string> includeStatistics) {
@@ -361,18 +357,17 @@ namespace LeanCloud {
                 Path = path,
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
-                try {
-                    List<AVRanking> rankingList = new List<AVRanking>();
-                    List<object> list = t.Result.Item2["results"] as List<object>;
-                    foreach (object obj in list) {
-                        rankingList.Add(AVRanking.Parse(obj as IDictionary<string, object>));
-                    }
-                    return rankingList;
-                } catch (Exception e) {
-                    throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            try {
+                List<AVRanking> rankingList = new List<AVRanking>();
+                List<object> list = result.Item2["results"] as List<object>;
+                foreach (object obj in list) {
+                    rankingList.Add(AVRanking.Parse(obj as IDictionary<string, object>));
                 }
-            });
+                return rankingList;
+            } catch (Exception e) {
+                throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
+            }
         }
 
         /// <summary>
@@ -380,14 +375,13 @@ namespace LeanCloud {
         /// </summary>
         /// <returns>排行榜对象</returns>
         /// <param name="updateStrategy">更新策略</param>
-        public Task<AVLeaderboard> UpdateUpdateStrategy(AVLeaderboardUpdateStrategy updateStrategy) {
+        public async Task<AVLeaderboard> UpdateUpdateStrategy(AVLeaderboardUpdateStrategy updateStrategy) {
             var data = new Dictionary<string, object> {
                 { "updateStrategy", updateStrategy.ToString().ToLower() }
             };
-            return Update(data).OnSuccess(t => {
-                UpdateStrategy = (AVLeaderboardUpdateStrategy)Enum.Parse(typeof(AVLeaderboardUpdateStrategy), t.Result["updateStrategy"].ToString().ToUpper());
-                return this;
-            });
+            var result = await Update(data);
+            UpdateStrategy = (AVLeaderboardUpdateStrategy)Enum.Parse(typeof(AVLeaderboardUpdateStrategy), result["updateStrategy"].ToString().ToUpper());
+            return this;
         }
 
         /// <summary>
@@ -395,67 +389,63 @@ namespace LeanCloud {
         /// </summary>
         /// <returns>排行榜对象</returns>
         /// <param name="versionChangeInterval">版本更新频率</param>
-        public Task<AVLeaderboard> UpdateVersionChangeInterval(AVLeaderboardVersionChangeInterval versionChangeInterval) {
+        public async Task<AVLeaderboard> UpdateVersionChangeInterval(AVLeaderboardVersionChangeInterval versionChangeInterval) {
             var data = new Dictionary<string, object> {
                 { "versionChangeInterval", versionChangeInterval.ToString().ToLower() }
             };
-            return Update(data).OnSuccess(t => {
-                VersionChangeInterval = (AVLeaderboardVersionChangeInterval)Enum.Parse(typeof(AVLeaderboardVersionChangeInterval), t.Result["versionChangeInterval"].ToString().ToUpper());
-                return this;
-            });
+            var result = await Update(data);
+            VersionChangeInterval = (AVLeaderboardVersionChangeInterval)Enum.Parse(typeof(AVLeaderboardVersionChangeInterval), result["versionChangeInterval"].ToString().ToUpper());
+            return this;
         }
 
-        Task<IDictionary<string,object>> Update(Dictionary<string, object> data) {
+        async Task<IDictionary<string,object>> Update(Dictionary<string, object> data) {
             var path = string.Format("leaderboard/leaderboards/{0}", StatisticName);
             var command = new AVCommand {
                 Path = path,
                 Method = HttpMethod.Put,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => {
-                return t.Result.Item2;
-            });
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            return result.Item2;
         }
 
         /// <summary>
         /// 拉取排行榜数据
         /// </summary>
         /// <returns>排行榜对象</returns>
-        public Task<AVLeaderboard> Fetch() {
+        public async Task<AVLeaderboard> Fetch() {
             var path = string.Format("leaderboard/leaderboards/{0}", StatisticName);
             var command = new AVCommand {
                 Path = path,
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => { 
-                try {
-                    // 反序列化 Leaderboard 对象
-                    var leaderboard = Parse(t.Result.Item2);
-                    return leaderboard;
-                } catch (Exception e) {
-                    throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
-                }
-            });
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            try {
+                // 反序列化 Leaderboard 对象
+                var leaderboard = Parse(result.Item2);
+                return leaderboard;
+            } catch (Exception e) {
+                throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
+            }
         }
 
         /// <summary>
         /// 重置排行榜
         /// </summary>
         /// <returns>排行榜对象</returns>
-        public Task<AVLeaderboard> Reset() {
+        public async Task<AVLeaderboard> Reset() {
             var path = string.Format("leaderboard/leaderboards/{0}/incrementVersion", StatisticName);
             var command = new AVCommand {
                 Path = path,
                 Method = HttpMethod.Put
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command).OnSuccess(t => { 
-                try {
-                    Init(t.Result.Item2);
-                    return this;
-                } catch (Exception e) { 
-                    throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
-                }
-            });
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            try {
+                Init(result.Item2);
+                return this;
+            } catch (Exception e) {
+                throw new AVException(AVException.ErrorCode.InvalidJSON, e.Message);
+            }
         }
 
         /// <summary>

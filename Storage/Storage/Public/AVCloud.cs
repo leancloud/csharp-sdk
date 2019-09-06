@@ -220,19 +220,18 @@ namespace LeanCloud {
         /// <param name="height">captcha image height.</param>
         /// <param name="cancellationToken">CancellationToken.</param>
         /// <returns>an instance of Captcha.</returns>
-        public static Task<Captcha> RequestCaptchaAsync(int width = 85, int height = 30, CancellationToken cancellationToken = default) {
+        public static async Task<Captcha> RequestCaptchaAsync(int width = 85, int height = 30, CancellationToken cancellationToken = default) {
             var path = string.Format("requestCaptcha?width={0}&height={1}", width, height);
             var command = new AVCommand {
                 Path = $"requestCaptcha?width={width}&height={height}",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).OnSuccess(t => {
-                var decoded = AVDecoder.Instance.Decode(t.Result.Item2) as IDictionary<string, object>;
-                return new Captcha() {
-                    Token = decoded["captcha_token"] as string,
-                    Url = decoded["captcha_url"] as string,
-                };
-            });
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var decoded = AVDecoder.Instance.Decode(result.Item2) as IDictionary<string, object>;
+            return new Captcha {
+                Token = decoded["captcha_token"] as string,
+                Url = decoded["captcha_url"] as string,
+            };
         }
 
         /// <summary>
@@ -242,7 +241,7 @@ namespace LeanCloud {
         /// <param name="code">User's input of this captcha.</param>
         /// <param name="cancellationToken">CancellationToken.</param>
         /// <returns></returns>
-        public static Task<string> VerifyCaptchaAsync(string code, string token, CancellationToken cancellationToken = default) {
+        public static async Task<string> VerifyCaptchaAsync(string code, string token, CancellationToken cancellationToken = default) {
             var data = new Dictionary<string, object> {
                 { "captcha_token", token },
                 { "captcha_code", code },
@@ -252,11 +251,11 @@ namespace LeanCloud {
                 Method = HttpMethod.Post,
                 Content = data
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).ContinueWith(t => {
-                if (!t.Result.Item2.ContainsKey("validate_token"))
-                    throw new KeyNotFoundException("validate_token");
-                return t.Result.Item2["validate_token"] as string;
-            });
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            if (result.Item2.TryGetValue("validate_token", out object tokenObj)) {
+                return tokenObj as string;
+            }
+            throw new KeyNotFoundException("validate_token");
         }
 
         /// <summary>
@@ -264,16 +263,15 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task<IDictionary<string, object>> GetCustomParametersAsync(CancellationToken cancellationToken = default) {
+        public static async Task<IDictionary<string, object>> GetCustomParametersAsync(CancellationToken cancellationToken = default) {
             var command = new AVCommand {
                 Path = $"statistics/apps/{AVClient.CurrentConfiguration.ApplicationId}/sendPolicy",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).OnSuccess(t => {
-                var settings = t.Result.Item2;
-                var CloudParameters = settings["parameters"] as IDictionary<string, object>;
-                return CloudParameters;
-            });
+            var data = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var settings = data.Item2;
+            var CloudParameters = settings["parameters"] as IDictionary<string, object>;
+            return CloudParameters;
         }
 
         public class RealtimeSignature {
@@ -283,7 +281,7 @@ namespace LeanCloud {
             public string Signature { internal set; get; }
         }
 
-        public static Task<RealtimeSignature> RequestRealtimeSignatureAsync(CancellationToken cancellationToken = default) {
+        public static async Task<RealtimeSignature> RequestRealtimeSignatureAsync(CancellationToken cancellationToken = default) {
             var command = new AVCommand {
                 Path = "rtm/sign",
                 Method = HttpMethod.Post,
@@ -291,15 +289,14 @@ namespace LeanCloud {
                     { "session_token", AVUser.CurrentUser?.SessionToken }
                 }
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).OnSuccess(t => {
-                var body = t.Result.Item2;
-                return new RealtimeSignature() {
-                    Nonce = body["nonce"] as string,
-                    Timestamp = (long)body["timestamp"],
-                    ClientId = body["client_id"] as string,
-                    Signature = body["signature"] as string,
-                };
-            });
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var body = result.Item2;
+            return new RealtimeSignature() {
+                Nonce = body["nonce"] as string,
+                Timestamp = (long)body["timestamp"],
+                ClientId = body["client_id"] as string,
+                Signature = body["signature"] as string,
+            };
         }
 
         /// <summary>

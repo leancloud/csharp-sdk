@@ -10,8 +10,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using LeanCloud.Storage.Internal;
 
-namespace LeanCloud
-{
+namespace LeanCloud {
     public class AVQuery<T> where T : AVObject {
         public string ClassName {
             get; internal set;
@@ -24,7 +23,8 @@ namespace LeanCloud
                     return $"classes/{Uri.EscapeDataString(ClassName)}";
                 }
                 return path;
-            } set {
+            }
+            set {
                 path = value;
             }
         }
@@ -202,56 +202,41 @@ namespace LeanCloud
             });
         }
 
-        public Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken = default)
-        {
-            return QueryController.FindAsync<T>(this, AVUser.CurrentUser, cancellationToken).OnSuccess(t => {
-                IEnumerable<IObjectState> states = t.Result;
-                return (from state in states
-                        select AVObject.FromState<T>(state, ClassName));
-            });
+        public async Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken = default) {
+            IEnumerable<IObjectState> states = await QueryController.FindAsync(this, AVUser.CurrentUser, cancellationToken);
+            return (from state in states
+                    select AVObject.FromState<T>(state, ClassName));
         }
 
-        public Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
-        {
-            return QueryController.FirstAsync<T>(this, AVUser.CurrentUser, cancellationToken).OnSuccess(t => {
-                IObjectState state = t.Result;
-                return state == null ? default : AVObject.FromState<T>(state, ClassName);
-            });
+        public async Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default) {
+            IObjectState state = await QueryController.FirstAsync<T>(this, AVUser.CurrentUser, cancellationToken);
+            return state == null ? default : AVObject.FromState<T>(state, ClassName);
         }
 
-        public Task<T> FirstAsync(CancellationToken cancellationToken = default)
-        {
-            return FirstOrDefaultAsync(cancellationToken).OnSuccess(t =>
-            {
-                if (t.Result == null)
-                {
-                    throw new AVException(AVException.ErrorCode.ObjectNotFound,
-                      "No results matched the query.");
-                }
-                return t.Result;
-            });
+        public async Task<T> FirstAsync(CancellationToken cancellationToken = default) {
+            var result = await FirstOrDefaultAsync(cancellationToken);
+            if (result == null) {
+                throw new AVException(AVException.ErrorCode.ObjectNotFound,
+                  "No results matched the query.");
+            }
+            return result;
         }
 
-        public Task<int> CountAsync(CancellationToken cancellationToken = default)
-        {
+        public Task<int> CountAsync(CancellationToken cancellationToken = default) {
             return QueryController.CountAsync(this, AVUser.CurrentUser, cancellationToken);
         }
 
-        public Task<T> GetAsync(string objectId, CancellationToken cancellationToken)
-        {
+        public async Task<T> GetAsync(string objectId, CancellationToken cancellationToken) {
             AVQuery<T> singleItemQuery = new AVQuery<T>(ClassName)
                 .WhereEqualTo("objectId", objectId);
             singleItemQuery = new AVQuery<T>(singleItemQuery, includes: this.includes, selectedKeys: this.selectedKeys, limit: 1);
-            return singleItemQuery.FindAsync(cancellationToken).OnSuccess(t =>
-            {
-                var result = t.Result.FirstOrDefault();
-                if (result == null)
-                {
-                    throw new AVException(AVException.ErrorCode.ObjectNotFound,
-                      "Object with the given objectId not found.");
-                }
-                return result;
-            });
+            var result = await singleItemQuery.FindAsync(cancellationToken);
+            var first = result.FirstOrDefault();
+            if (first == null) {
+                throw new AVException(AVException.ErrorCode.ObjectNotFound,
+                  "Object with the given objectId not found.");
+            }
+            return first;
         }
 
         #region CQL
@@ -289,22 +274,20 @@ namespace LeanCloud
             return RebuildObjectFromCloudQueryResult(queryString);
         }
 
-        internal static Task<IEnumerable<T>> RebuildObjectFromCloudQueryResult(string queryString) {
+        internal static async Task<IEnumerable<T>> RebuildObjectFromCloudQueryResult(string queryString) {
             var command = new AVCommand {
                 Path = queryString,
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: CancellationToken.None).OnSuccess(t =>
-            {
-                var items = t.Result.Item2["results"] as IList<object>;
-                var className = t.Result.Item2["className"].ToString();
+            var result = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, CancellationToken.None);
+            var items = result.Item2["results"] as IList<object>;
+            var className = result.Item2["className"].ToString();
 
-                IEnumerable<IObjectState> states = (from item in items
-                                                    select AVObjectCoder.Instance.Decode(item as IDictionary<string, object>, AVDecoder.Instance));
+            IEnumerable<IObjectState> states = (from item in items
+                                                select AVObjectCoder.Instance.Decode(item as IDictionary<string, object>, AVDecoder.Instance));
 
-                return (from state in states
-                        select AVObject.FromState<T>(state, className));
-            });
+            return from state in states
+                    select AVObject.FromState<T>(state, className);
         }
 
         #endregion

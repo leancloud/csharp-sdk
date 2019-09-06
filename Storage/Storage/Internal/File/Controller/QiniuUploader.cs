@@ -22,16 +22,15 @@ namespace LeanCloud.Storage.Internal {
         internal static string UP_HOST = "https://up.qbox.me";
         private readonly object mutex = new object();
 
-        public Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken) {
+        public async Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken) {
             state.frozenData = dataStream;
             state.CloudName = fileToken["key"] as string;
             MergeFromJSON(state, fileToken);
-            return UploadNextChunk(state, dataStream, string.Empty, 0, progress).OnSuccess(_ => {
-                return state;
-            });
+            await UploadNextChunk(state, dataStream, string.Empty, 0, progress);
+            return state;
         }
 
-        Task UploadNextChunk(FileState state, Stream dataStream, string context, long offset, IProgress<AVUploadProgressEventArgs> progress) {
+        async Task UploadNextChunk(FileState state, Stream dataStream, string context, long offset, IProgress<AVUploadProgressEventArgs> progress) {
             var totalSize = dataStream.Length;
             var remainingSize = totalSize - state.completed;
 
@@ -43,29 +42,27 @@ namespace LeanCloud.Storage.Internal {
                 }
             }
             if (state.completed == totalSize) {
-                return QiniuMakeFile(state, state.frozenData, state.token, state.CloudName, totalSize, state.block_ctxes.ToArray(), CancellationToken.None);
-            }
-            if (state.completed % BLOCKSIZE == 0) {
+                await QiniuMakeFile(state, state.frozenData, state.token, state.CloudName, totalSize, state.block_ctxes.ToArray(), CancellationToken.None);
+            } else if (state.completed % BLOCKSIZE == 0) {
                 var firstChunkBinary = GetChunkBinary(state.completed, dataStream);
 
                 var blockSize = remainingSize > BLOCKSIZE ? BLOCKSIZE : remainingSize;
-                return MakeBlock(state, firstChunkBinary, blockSize).OnSuccess(t => {
-                    var dict = t.Result;
-                    var ctx = dict["ctx"].ToString();
-                    offset = long.Parse(dict["offset"].ToString());
-                    var host = dict["host"].ToString();
+                var result = await MakeBlock(state, firstChunkBinary, blockSize);
+                var dict = result;
+                var ctx = dict["ctx"].ToString();
+                offset = long.Parse(dict["offset"].ToString());
+                var host = dict["host"].ToString();
 
-                    state.completed += firstChunkBinary.Length;
-                    if (state.completed % BLOCKSIZE == 0 || state.completed == totalSize) {
-                        state.block_ctxes.Add(ctx);
-                    }
+                state.completed += firstChunkBinary.Length;
+                if (state.completed % BLOCKSIZE == 0 || state.completed == totalSize) {
+                    state.block_ctxes.Add(ctx);
+                }
 
-                    return UploadNextChunk(state, dataStream, ctx, offset, progress);
-                }).Unwrap();
-            }
-            var chunkBinary = GetChunkBinary(state.completed, dataStream);
-            return PutChunk(state, chunkBinary, context, offset).OnSuccess(t => {
-                var dict = t.Result;
+                await UploadNextChunk(state, dataStream, ctx, offset, progress);
+            } else {
+                var chunkBinary = GetChunkBinary(state.completed, dataStream);
+                var result = await PutChunk(state, chunkBinary, context, offset);
+                var dict = result;
                 var ctx = dict["ctx"].ToString();
 
                 offset = long.Parse(dict["offset"].ToString());
@@ -74,9 +71,8 @@ namespace LeanCloud.Storage.Internal {
                 if (state.completed % BLOCKSIZE == 0 || state.completed == totalSize) {
                     state.block_ctxes.Add(ctx);
                 }
-
-                return UploadNextChunk(state, dataStream, ctx, offset, progress);
-            }).Unwrap();
+                await UploadNextChunk(state, dataStream, ctx, offset, progress);
+            }   
         }
 
         byte[] GetChunkBinary(long completed, Stream dataStream) {

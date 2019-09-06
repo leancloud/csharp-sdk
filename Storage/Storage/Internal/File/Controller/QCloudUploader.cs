@@ -19,26 +19,28 @@ namespace LeanCloud.Storage.Internal {
         bool done;
         private long sliceSize = (long)CommonSize.KB512;
 
-        public Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken) {
+        public async Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress, CancellationToken cancellationToken) {
             fileState = state;
             data = dataStream;
             uploadUrl = fileToken["upload_url"].ToString();
             token = fileToken["token"].ToString();
             fileState.ObjectId = fileToken["objectId"].ToString();
             bucket = fileToken["bucket"].ToString();
-
-            return FileSlice(cancellationToken).OnSuccess(t => {
-                if (done) return Task<FileState>.FromResult(state);
-                var response = t.Result.Item2;
-                var resumeData = response["data"] as IDictionary<string, object>;
-                if (resumeData.ContainsKey("access_url")) return Task<FileState>.FromResult(state);
-                var sliceSession = resumeData["session"].ToString();
-                var sliceOffset = long.Parse(resumeData["offset"].ToString());
-                return UploadSlice(sliceSession, sliceOffset, dataStream, progress, cancellationToken);
-            }).Unwrap();
+            var result = await FileSlice(cancellationToken);
+            if (done) {
+                return state;
+            }
+            var response = result.Item2;
+            var resumeData = response["data"] as IDictionary<string, object>;
+            if (resumeData.ContainsKey("access_url")) {
+                return state;
+            }
+            var sliceSession = resumeData["session"].ToString();
+            var sliceOffset = long.Parse(resumeData["offset"].ToString());
+            return await UploadSlice(sliceSession, sliceOffset, dataStream, progress, cancellationToken);
         }
 
-        Task<FileState> UploadSlice(
+        async Task<FileState> UploadSlice(
             string sessionId,
             long offset,
             Stream dataStream,
@@ -55,21 +57,20 @@ namespace LeanCloud.Storage.Internal {
             }
 
             if (offset == dataLength) {
-                return Task.FromResult<FileState>(fileState);
+                return fileState;
             }
 
             var sliceFile = GetNextBinary(offset, dataStream);
-            return ExcuteUpload(sessionId, offset, sliceFile, cancellationToken).OnSuccess(_ => {
-                offset += sliceFile.Length;
-                if (offset == dataLength) {
-                    done = true;
-                    return Task.FromResult<FileState>(fileState);
-                }
-                var response = _.Result.Item2;
-                var resumeData = response["data"] as IDictionary<string, object>;
-                var sliceSession = resumeData["session"].ToString();
-                return UploadSlice(sliceSession, offset, dataStream, progress, cancellationToken);
-            }).Unwrap();
+            var result = await ExcuteUpload(sessionId, offset, sliceFile, cancellationToken);
+            offset += sliceFile.Length;
+            if (offset == dataLength) {
+                done = true;
+                return fileState;
+            }
+            var response = result.Item2;
+            var resumeData = response["data"] as IDictionary<string, object>;
+            var sliceSession = resumeData["session"].ToString();
+            return await UploadSlice(sliceSession, offset, dataStream, progress, cancellationToken);
         }
 
         Task<Tuple<HttpStatusCode, IDictionary<string, object>>> ExcuteUpload(string sessionId, long offset, byte[] sliceFile, CancellationToken cancellationToken) {
@@ -81,19 +82,18 @@ namespace LeanCloud.Storage.Internal {
             return PostToQCloud(body, sliceFile, cancellationToken);
         }
 
-        Task<Tuple<HttpStatusCode, IDictionary<string, object>>> FileSlice(CancellationToken cancellationToken) {
+        async Task<Tuple<HttpStatusCode, IDictionary<string, object>>> FileSlice(CancellationToken cancellationToken) {
             SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider();
             var body = new Dictionary<string, object>();
             if (data.Length <= (long)CommonSize.KB512) {
                 body.Add("op", "upload");
                 body.Add("sha", HexStringFromBytes(sha1.ComputeHash(data)));
                 var wholeFile = GetNextBinary(0, data);
-                return PostToQCloud(body, wholeFile, cancellationToken).OnSuccess(_ => {
-                    if (_.Result.Item1 == HttpStatusCode.OK) {
-                        done = true;
-                    }
-                    return _.Result;
-                });
+                var result = await PostToQCloud(body, wholeFile, cancellationToken);
+                if (result.Item1 == HttpStatusCode.OK) {
+                    done = true;
+                }
+                return result;
             } else {
                 body.Add("op", "upload_slice");
                 body.Add("filesize", data.Length);
@@ -101,7 +101,7 @@ namespace LeanCloud.Storage.Internal {
                 body.Add("slice_size", (long)CommonSize.KB512);
             }
 
-            return PostToQCloud(body, null, cancellationToken);
+            return await PostToQCloud(body, null, cancellationToken);
         }
         public static string HexStringFromBytes(byte[] bytes) {
             var sb = new StringBuilder();
