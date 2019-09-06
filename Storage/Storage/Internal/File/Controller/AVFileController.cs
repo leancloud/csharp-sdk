@@ -17,39 +17,36 @@ namespace LeanCloud.Storage.Internal {
         const string QCloud = "qcloud";
         const string AWS = "s3";
 
-        public Task<FileState> SaveAsync(FileState state,
+        public async Task<FileState> SaveAsync(FileState state,
             Stream dataStream,
             IProgress<AVUploadProgressEventArgs> progress,
             CancellationToken cancellationToken = default) {
             if (state.Url != null) {
-                return SaveWithUrl(state);
+                return await SaveWithUrl(state);
             }
 
-            return GetFileToken(state, cancellationToken).OnSuccess(t => {
-                // 根据 provider 区分 cdn
-                var ret = t.Result;
-                var fileToken = ret.Item2;
-                var provider = fileToken["provider"] as string;
-                switch (provider) {
-                    case QCloud:
-                        return new QCloudUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
-                    case AWS:
-                        return new AWSUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
-                    default:
-                        return new QiniuUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
-                }
-            }).Unwrap();
+            var data = await GetFileToken(state, cancellationToken);
+            var fileToken = data.Item2;
+            var provider = fileToken["provider"] as string;
+            switch (provider) {
+                case QCloud:
+                    return await new QCloudUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
+                case AWS:
+                    return await new AWSUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
+                default:
+                    return await new QiniuUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
+            }
         }
 
-        public Task DeleteAsync(FileState state, CancellationToken cancellationToken) {
+        public async Task DeleteAsync(FileState state, CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"files/{state.ObjectId}",
                 Method = HttpMethod.Delete
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
+            await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken);
         }
 
-        internal Task<FileState> SaveWithUrl(FileState state) {
+        internal async Task<FileState> SaveWithUrl(FileState state) {
             Dictionary<string, object> strs = new Dictionary<string, object> {
                 { "url", state.Url.ToString() },
                 { "name", state.Name },
@@ -72,14 +69,13 @@ namespace LeanCloud.Storage.Internal {
                 };
             }
 
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(cmd).OnSuccess(t => {
-                var result = t.Result.Item2;
-                state.ObjectId = result["objectId"].ToString();
-                return state;
-            });
+            var data = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(cmd);
+            var result = data.Item2;
+            state.ObjectId = result["objectId"].ToString();
+            return state;
         }
 
-        internal Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken) {
+        internal async Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken) {
             string str = fileState.Name;
             IDictionary<string, object> parameters = new Dictionary<string, object> {
                 { "name", str },
@@ -94,24 +90,22 @@ namespace LeanCloud.Storage.Internal {
                 Method = HttpMethod.Post,
                 Content = parameters
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            return await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
         }
 
-        public Task<FileState> GetAsync(string objectId, CancellationToken cancellationToken) {
+        public async Task<FileState> GetAsync(string objectId, CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"files/{objectId}",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken: cancellationToken).OnSuccess(_ => {
-                var result = _.Result;
-                var jsonData = result.Item2;
-                cancellationToken.ThrowIfCancellationRequested();
-                return new FileState {
-                    ObjectId = jsonData["objectId"] as string,
-                    Name = jsonData["name"] as string,
-                    Url = new Uri(jsonData["url"] as string, UriKind.Absolute),
-                };
-            });
+            var data = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var jsonData = data.Item2;
+            cancellationToken.ThrowIfCancellationRequested();
+            return new FileState {
+                ObjectId = jsonData["objectId"] as string,
+                Name = jsonData["name"] as string,
+                Url = new Uri(jsonData["url"] as string, UriKind.Absolute),
+            };
         }
 
         internal static string GetUniqueName(FileState state) {

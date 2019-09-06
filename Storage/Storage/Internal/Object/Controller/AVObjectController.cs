@@ -8,19 +8,19 @@ using System.Net.Http;
 
 namespace LeanCloud.Storage.Internal {
     public class AVObjectController {
-        public Task<IObjectState> FetchAsync(IObjectState state,
+        public async Task<IObjectState> FetchAsync(IObjectState state,
             IDictionary<string, object> queryString,
             CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}?{AVClient.BuildQueryString(queryString)}",
                 Method = HttpMethod.Get
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).OnSuccess(t => {
-                return AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
-            });
+            var data = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var objState = AVObjectCoder.Instance.Decode(data.Item2, AVDecoder.Instance);
+            return objState;
         }
 
-        public Task<IObjectState> SaveAsync(IObjectState state,
+        public async Task<IObjectState> SaveAsync(IObjectState state,
             IDictionary<string, IAVFieldOperation> operations,
             bool fetchWhenSave,
             AVQuery<AVObject> query,
@@ -44,13 +44,12 @@ namespace LeanCloud.Storage.Internal {
                 string encode = AVClient.BuildQueryString(args);
                 command.Path = $"{command.Path}?{encode}";
             }
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken).OnSuccess(t => {
-                var serverState = AVObjectCoder.Instance.Decode(t.Result.Item2, AVDecoder.Instance);
-                serverState = serverState.MutatedClone(mutableClone => {
-                    mutableClone.IsNew = t.Result.Item1 == System.Net.HttpStatusCode.Created;
-                });
-                return serverState;
+            var data = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            var serverState = AVObjectCoder.Instance.Decode(data.Item2, AVDecoder.Instance);
+            serverState = serverState.MutatedClone(mutableClone => {
+                mutableClone.IsNew = data.Item1 == System.Net.HttpStatusCode.Created;
             });
+            return serverState;
         }
 
         public IList<Task<IObjectState>> SaveAllAsync(IList<IObjectState> states,
@@ -76,13 +75,13 @@ namespace LeanCloud.Storage.Internal {
             return stateTasks;
         }
 
-        public Task DeleteAsync(IObjectState state,
+        public async Task DeleteAsync(IObjectState state,
             CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"classes/{state.ClassName}/{state.ObjectId}",
                 Method = HttpMethod.Delete
             };
-            return AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
         }
 
         public IList<Task> DeleteAllAsync(IList<IObjectState> states,
@@ -99,6 +98,7 @@ namespace LeanCloud.Storage.Internal {
 
         // TODO (hallucinogen): move this out to a class to be used by Analytics
         private const int MaximumBatchSize = 50;
+
         internal IList<Task<IDictionary<string, object>>> ExecuteBatchRequests(IList<AVCommand> requests,
             CancellationToken cancellationToken) {
             var tasks = new List<Task<IDictionary<string, object>>>();

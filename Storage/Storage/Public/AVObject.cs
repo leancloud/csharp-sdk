@@ -814,49 +814,26 @@ string propertyName
 
         #region Delete Object
 
-        internal Task DeleteAsync(Task toAwait, CancellationToken cancellationToken) {
+        /// <summary>
+        /// Deletes this object on the server.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public async Task DeleteAsync(CancellationToken cancellationToken = default) {
             if (ObjectId == null) {
-                return Task.FromResult(0);
+                return;
             }
-            
-            return toAwait.OnSuccess(_ => {
-                return ObjectController.DeleteAsync(State, cancellationToken);
-            }).Unwrap().OnSuccess(_ => IsDirty = true);
-        }
-
-        /// <summary>
-        /// Deletes this object on the server.
-        /// </summary>
-        public Task DeleteAsync() {
-            return DeleteAsync(CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Deletes this object on the server.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public Task DeleteAsync(CancellationToken cancellationToken) {
-            return taskQueue.Enqueue(toAwait => DeleteAsync(toAwait, cancellationToken),
-              cancellationToken);
+            await ObjectController.DeleteAsync(State, cancellationToken);
+            IsDirty = true;
         }
 
         /// <summary>
         /// Deletes each object in the provided list.
         /// </summary>
         /// <param name="objects">The objects to delete.</param>
-        public static Task DeleteAllAsync<T>(IEnumerable<T> objects) where T : AVObject {
-            return DeleteAllAsync(objects, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Deletes each object in the provided list.
-        /// </summary>
-        /// <param name="objects">The objects to delete.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public static Task DeleteAllAsync<T>(
-            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
+        public static Task DeleteAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default)
+            where T : AVObject {
             var uniqueObjects = new HashSet<AVObject>(objects.OfType<AVObject>().ToList(),
-              new IdentityEqualityComparer<AVObject>());
+                new IdentityEqualityComparer<AVObject>());
 
             return EnqueueForAll<object>(uniqueObjects, toAwait => {
                 var states = uniqueObjects.Select(t => t.state).ToList();
@@ -1094,7 +1071,7 @@ string propertyName
         /// </summary>
         internal virtual void OnSettingValue(ref string key, ref object value) {
             if (key == null) {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
         }
 
@@ -1151,8 +1128,7 @@ string propertyName
         }
 
         internal void SetIfDifferent<T>(string key, T value) {
-            T current;
-            bool hasCurrent = TryGetValue<T>(key, out current);
+            bool hasCurrent = TryGetValue<T>(key, out T current);
             if (value == null) {
                 if (hasCurrent) {
                     PerformOperation(key, AVDeleteOperation.Instance);
@@ -1313,10 +1289,10 @@ string propertyName
         /// <returns></returns>
         public AVQuery<T> GetRelationRevserseQuery<T>(string parentClassName, string key) where T : AVObject {
             if (string.IsNullOrEmpty(parentClassName)) {
-                throw new ArgumentNullException("parentClassName", "can not query a relation without parentClassName.");
+                throw new ArgumentNullException(nameof(parentClassName), "can not query a relation without parentClassName.");
             }
             if (string.IsNullOrEmpty(key)) {
-                throw new ArgumentNullException("key", "can not query a relation without key.");
+                throw new ArgumentNullException(nameof(key), "can not query a relation without key.");
             }
             return new AVQuery<T>(parentClassName).WhereEqualTo(key, this);
         }
@@ -1604,7 +1580,7 @@ string propertyName
             // types.
             if (SubclassingController.GetType(className) != null) {
                 throw new ArgumentException(
-                  "Use the class-specific query properties for class " + className, "className");
+                  "Use the class-specific query properties for class " + className, nameof(className));
             }
             return new AVQuery<AVObject>(className);
         }
@@ -1665,7 +1641,7 @@ string propertyName
         }
 
         private SynchronizedEventHandler<PropertyUpdatedEventArgs> propertyUpdated =
-    new SynchronizedEventHandler<PropertyUpdatedEventArgs>();
+            new SynchronizedEventHandler<PropertyUpdatedEventArgs>();
 
         public event PropertyUpdatedEventHandler PropertyUpdated {
             add {
@@ -1681,7 +1657,7 @@ string propertyName
         }
 
         private SynchronizedEventHandler<CollectionPropertyUpdatedEventArgs> collectionUpdated =
-new SynchronizedEventHandler<CollectionPropertyUpdatedEventArgs>();
+            new SynchronizedEventHandler<CollectionPropertyUpdatedEventArgs>();
 
         public event CollectionPropertyUpdatedEventHandler CollectionPropertyUpdated {
             add {

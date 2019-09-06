@@ -34,6 +34,27 @@ namespace LeanCloudTests {
         }
 
         [Test]
+        public async Task SaveWithPointer() {
+            AVObject comment = AVObject.Create("Comment");
+            comment["content"] = "Hello, Comment";
+            
+
+            AVObject post = AVObject.Create("Post");
+            post["name"] = "New Post";
+
+            AVObject category = AVObject.Create("Category");
+            post["category"] = category;
+
+            comment["post"] = post;
+
+            AVObject testPost = AVObject.Create("Post");
+            testPost["name"] = "Test Post";
+            comment["test_post"] = testPost;
+
+            await comment.SaveAsync();
+        }
+
+        [Test]
         public async Task SaveBatch() {
             List<AVObject> objList = new List<AVObject>();
             for (int i = 0; i < 5; i++) {

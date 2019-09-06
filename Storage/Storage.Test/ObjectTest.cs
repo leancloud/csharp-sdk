@@ -45,7 +45,7 @@ namespace LeanCloudTests {
             res.Dispose();
             TestContext.Out.WriteLine($"response at {Thread.CurrentThread.ManagedThreadId}");
             TestContext.Out.WriteLine(data);
-            Assert.Pass();   
+            Assert.Pass();
         }
 
         [Test]

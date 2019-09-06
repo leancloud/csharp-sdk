@@ -40,17 +40,17 @@ namespace LeanCloud.Storage.Internal {
             get; internal set;
         }
 
-        public DateTime FetchedAt {
+        public DateTimeOffset FetchedAt {
             get; internal set;
         }
 
         public AppRouterState() {
-            FetchedAt = DateTime.Now;
+            FetchedAt = DateTimeOffset.Now;
         }
 
         public bool IsExpired {
             get {
-                return DateTime.Now > FetchedAt + TimeSpan.FromSeconds(TTL);
+                return DateTimeOffset.Now > FetchedAt.AddSeconds(TTL);
             }
         }
 
