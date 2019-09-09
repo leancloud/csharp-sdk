@@ -18,9 +18,9 @@ namespace LeanCloud.Storage.Internal
         public object Encode()
         {
             return new Dictionary<string, object> {
-        {"__op", "Remove"},
-        {"objects", PointerOrLocalIdEncoder.Instance.Encode(objects)}
-      };
+                { "__op", "Remove" },
+                { "objects", PointerOrLocalIdEncoder.Instance.Encode(objects) }
+            };
         }
 
         public IAVFieldOperation MergeWithPrevious(IAVFieldOperation previous)

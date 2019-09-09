@@ -35,20 +35,19 @@ namespace LeanCloudTests {
 
         [Test]
         public async Task SaveWithPointer() {
-            AVObject comment = AVObject.Create("Comment");
-            comment["content"] = "Hello, Comment";
+            AVObject comment = new AVObject("Comment") {
+                { "content", "Hello, Comment" }
+            };
             
-
-            AVObject post = AVObject.Create("Post");
-            post["name"] = "New Post";
-
-            AVObject category = AVObject.Create("Category");
-            post["category"] = category;
-
+            AVObject post = new AVObject("Post") {
+                { "name", "New Post" },
+                { "category", new AVObject("Category") }
+            };
             comment["post"] = post;
 
-            AVObject testPost = AVObject.Create("Post");
-            testPost["name"] = "Test Post";
+            AVObject testPost = new AVObject("Post") {
+                { "name", "Test Post" }
+            };
             comment["test_post"] = testPost;
 
             await comment.SaveAsync();
@@ -125,6 +124,13 @@ namespace LeanCloudTests {
             }
             await objList.SaveAllAsync();
             await AVObject.DeleteAllAsync(objList);
+        }
+
+        [Test]
+        public void Set() {
+            AVObject obj = AVObject.Create("Foo");
+            obj["hello"] = "world";
+            TestContext.Out.WriteAsync(obj["hello"] as string);
         }
     }
 }

@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using LeanCloud;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,12 +31,13 @@ namespace LeanCloudTests {
 
         [Test]
         public async Task TestMassiveRequest() {
+            ThreadPool.SetMaxThreads(1, 1);
             await Task.Run(() => {
                 for (int i = 0; i < 10; i++) {
                     for (int j = 0; j < 50; j++) {
                         AVObject obj = AVObject.Create("Foo");
                         obj.SaveAsync().ContinueWith(_ => {
-                            TestContext.Out.WriteLine($"{obj.ObjectId} saved");
+                            TestContext.Out.WriteLine($"{obj.ObjectId} saved at {Thread.CurrentThread.ManagedThreadId}");
                         });
                     }
                     Thread.Sleep(1000);

@@ -378,8 +378,8 @@ string propertyName
                     if (value is AVObject) {
                         // Resolve fetched object.
                         var avObject = value as AVObject;
-                        if (fetchedObject.ContainsKey(avObject.ObjectId)) {
-                            value = fetchedObject[avObject.ObjectId];
+                        if (fetchedObject.TryGetValue(avObject.ObjectId, out AVObject obj)) {
+                            value = obj;
                         }
                     }
                     newServerData[pair.Key] = value;
@@ -542,10 +542,10 @@ string propertyName
             }
         }
 
-        public virtual Task SaveAsync(bool fetchWhenSave = false, AVQuery<AVObject> query = null, CancellationToken cancellationToken = default) {
+        public virtual async Task SaveAsync(bool fetchWhenSave = false, AVQuery<AVObject> query = null, CancellationToken cancellationToken = default) {
             IDictionary<string, IAVFieldOperation> currentOperations = null;
             if (!IsDirty) {
-                return Task.FromResult(0);
+                return;
             }
             
             Task deepSaveTask;
@@ -555,21 +555,18 @@ string propertyName
                 deepSaveTask = DeepSaveAsync(estimatedData, cancellationToken);
             }
 
-            return deepSaveTask.OnSuccess(_ => {
-                return ObjectController.SaveAsync(state,
-                    currentOperations,
-                    FetchWhenSave || fetchWhenSave,
-                    query,
-                    cancellationToken);
-            }).Unwrap().ContinueWith(t => {
-                if (t.IsFaulted || t.IsCanceled) {
-                    HandleFailedSave(currentOperations);
-                } else {
-                    var serverState = t.Result;
-                    HandleSave(serverState);
-                }
-                return t;
-            }).Unwrap();
+            try {
+                await deepSaveTask;
+                IObjectState objState = await ObjectController.SaveAsync(state,
+                        currentOperations,
+                        FetchWhenSave || fetchWhenSave,
+                        query,
+                        cancellationToken);
+                HandleSave(objState);
+            } catch (Exception e) {
+                HandleFailedSave(currentOperations);
+                throw e;
+            }
         }
 
         internal virtual Task<AVObject> FetchAsyncInternal(
@@ -591,69 +588,60 @@ string propertyName
             });
         }
 
-        private static Task DeepSaveAsync(object obj, CancellationToken cancellationToken) {
+        private static async Task DeepSaveAsync(object obj, CancellationToken cancellationToken) {
             var objects = new List<AVObject>();
             CollectDirtyChildren(obj, objects);
 
-            var uniqueObjects = new HashSet<AVObject>(objects,
-                new IdentityEqualityComparer<AVObject>());
+            var uniqueObjects = new HashSet<AVObject>(objects, new IdentityEqualityComparer<AVObject>());
 
+            // 先保存文件对象（后面可以考虑将 AVFile 作为 AVObject 的子类型进行保存）
             var saveDirtyFileTasks = DeepTraversal(obj, true)
                 .OfType<AVFile>()
                 .Where(f => f.IsDirty)
                 .Select(f => f.SaveAsync(cancellationToken: cancellationToken)).ToList();
+            await Task.WhenAll(saveDirtyFileTasks);
 
-            return Task.WhenAll(saveDirtyFileTasks).OnSuccess(_ => {
-                IEnumerable<AVObject> remaining = new List<AVObject>(uniqueObjects);
-                return InternalExtensions.WhileAsync(() => Task.FromResult(remaining.Any()), () => {
-                    // Partition the objects into two sets: those that can be saved immediately,
-                    // and those that rely on other objects to be created first.
-                    var current = (from item in remaining
-                                   where item.CanBeSerialized
-                                   select item).ToList();
-                    var nextBatch = (from item in remaining
-                                     where !item.CanBeSerialized
-                                     select item).ToList();
-                    remaining = nextBatch;
+            IEnumerable<AVObject> remaining = new List<AVObject>(uniqueObjects);
+            while (remaining.Any()) {
+                // Partition the objects into two sets: those that can be saved immediately,
+                // and those that rely on other objects to be created first.
+                var current = (from item in remaining
+                               where item.CanBeSerialized
+                               select item).ToList();
+                var nextBatch = (from item in remaining
+                                 where !item.CanBeSerialized
+                                 select item).ToList();
+                remaining = nextBatch;
 
-                    if (current.Count == 0) {
-                        // We do cycle-detection when building the list of objects passed to this
-                        // function, so this should never get called. But we should check for it
-                        // anyway, so that we get an exception instead of an infinite loop.
-                        throw new InvalidOperationException(
-                          "Unable to save a AVObject with a relation to a cycle.");
+                if (current.Count == 0) {
+                    // We do cycle-detection when building the list of objects passed to this
+                    // function, so this should never get called. But we should check for it
+                    // anyway, so that we get an exception instead of an infinite loop.
+                    throw new InvalidOperationException(
+                      "Unable to save a AVObject with a relation to a cycle.");
+                }
+
+                var states = (from item in current
+                              select item.state).ToList();
+                var operationsList = (from item in current
+                                      select item.StartSave()).ToList();
+
+                var saveTasks = ObjectController.SaveAllAsync(states,
+                    operationsList,
+                    cancellationToken);
+
+                try {
+                    var serverStates = await Task.WhenAll(saveTasks);
+                    foreach (var pair in current.Zip(serverStates, (item, state) => new { item, state })) {
+                        pair.item.HandleSave(pair.state);
                     }
-
-                    // Save all of the objects in current.
-                    return AVObject.EnqueueForAll<object>(current, toAwait => {
-                        return toAwait.OnSuccess(__ => {
-                            var states = (from item in current
-                                          select item.state).ToList();
-                            var operationsList = (from item in current
-                                                  select item.StartSave()).ToList();
-
-                            var saveTasks = ObjectController.SaveAllAsync(states,
-                                operationsList,
-                                cancellationToken);
-
-                            return Task.WhenAll(saveTasks).ContinueWith(t => {
-                                if (t.IsFaulted || t.IsCanceled) {
-                                    foreach (var pair in current.Zip(operationsList, (item, ops) => new { item, ops })) {
-                                        pair.item.HandleFailedSave(pair.ops);
-                                    }
-                                } else {
-                                    var serverStates = t.Result;
-                                    foreach (var pair in current.Zip(serverStates, (item, state) => new { item, state })) {
-                                        pair.item.HandleSave(pair.state);
-                                    }
-                                }
-                                cancellationToken.ThrowIfCancellationRequested();
-                                return t;
-                            }).Unwrap();
-                        }).Unwrap().OnSuccess(t => (object)null);
-                    }, cancellationToken);
-                });
-            }).Unwrap();
+                } catch (Exception e) {
+                    foreach (var pair in current.Zip(operationsList, (item, ops) => new { item, ops })) {
+                        pair.item.HandleFailedSave(pair.ops);
+                    }
+                    throw e;
+                }
+            }
         }
 
         /// <summary>
@@ -1091,10 +1079,8 @@ string propertyName
 
                     var value = estimatedData[key];
 
-                    // A relation may be deserialized without a parent or key. Either way,
-                    // make sure it's consistent.
-                    var relation = value as AVRelationBase;
-                    if (relation != null) {
+                    if (value is AVRelationBase) {
+                        var relation = value as AVRelationBase;
                         relation.EnsureParentAndKey(this, key);
                     }
 
