@@ -20,6 +20,14 @@ namespace LeanCloudTests {
             }
         }
 
+        public static void InitOldEastChina(bool master = false) {
+            if (master) {
+                Init("SpT4SjWdvM9TSvCTKk6rqYQ9-9Nh9j0Va", "4NvN2OfdsWFC7qzzNcNS6paS", "https://4eTwHdYh.api.lncldapi.com", "https://4eTwHdYh.engine.lncldapi.com", "eqEp4n89h4zanWFskDDpIwL4");
+            } else {
+                Init("SpT4SjWdvM9TSvCTKk6rqYQ9-9Nh9j0Va", "4NvN2OfdsWFC7qzzNcNS6paS", "https://4eTwHdYh.api.lncldapi.com", "https://4eTwHdYh.engine.lncldapi.com");
+            }
+        }
+
         public static void InitUS(bool master = false) {
             if (master) {
                 Init("MFAS1GnOyomRLSQYRaxdgdPz-MdYXbMMI", "p42JUxdxb95K5G8187t5ba3l", "https://MFAS1GnO.api.lncldglobal.com", "https://MFAS1GnO.engine.lncldglobal.com", "Ahb1wdFLwMgKwEaEicHRXbCY");

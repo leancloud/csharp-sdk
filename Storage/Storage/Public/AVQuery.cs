@@ -60,7 +60,7 @@ namespace LeanCloud {
             ClassName = className;
         }
 
-        private AVQuery(AVQuery<T> source,
+        protected AVQuery(AVQuery<T> source,
             IDictionary<string, object> where = null,
             IEnumerable<string> replacementOrderBy = null,
             IEnumerable<string> thenBy = null,
@@ -202,18 +202,18 @@ namespace LeanCloud {
             });
         }
 
-        public async Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken = default) {
+        public virtual async Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken = default) {
             IEnumerable<IObjectState> states = await QueryController.FindAsync(this, AVUser.CurrentUser, cancellationToken);
             return (from state in states
                     select AVObject.FromState<T>(state, ClassName));
         }
 
-        public async Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default) {
+        public virtual async Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default) {
             IObjectState state = await QueryController.FirstAsync<T>(this, AVUser.CurrentUser, cancellationToken);
             return state == null ? default : AVObject.FromState<T>(state, ClassName);
         }
 
-        public async Task<T> FirstAsync(CancellationToken cancellationToken = default) {
+        public virtual async Task<T> FirstAsync(CancellationToken cancellationToken = default) {
             var result = await FirstOrDefaultAsync(cancellationToken);
             if (result == null) {
                 throw new AVException(AVException.ErrorCode.ObjectNotFound,
@@ -222,11 +222,11 @@ namespace LeanCloud {
             return result;
         }
 
-        public Task<int> CountAsync(CancellationToken cancellationToken = default) {
+        public virtual Task<int> CountAsync(CancellationToken cancellationToken = default) {
             return QueryController.CountAsync(this, AVUser.CurrentUser, cancellationToken);
         }
 
-        public async Task<T> GetAsync(string objectId, CancellationToken cancellationToken) {
+        public virtual async Task<T> GetAsync(string objectId, CancellationToken cancellationToken) {
             AVQuery<T> singleItemQuery = new AVQuery<T>(ClassName)
                 .WhereEqualTo("objectId", objectId);
             singleItemQuery = new AVQuery<T>(singleItemQuery, includes: this.includes, selectedKeys: this.selectedKeys, limit: 1);

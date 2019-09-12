@@ -158,6 +158,7 @@ namespace LeanCloud {
 
             AVObject.RegisterSubclass<AVUser>();
             AVObject.RegisterSubclass<AVRole>();
+            AVObject.RegisterSubclass<AVFile>();
         }
 
         internal static void Clear() {

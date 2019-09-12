@@ -114,7 +114,7 @@ namespace LeanCloud.Storage.Internal
         {
             if (className == "_File")
             {
-                return AVFile.CreateWithoutData(objectId);
+                return AVFile.CreateWithoutData("_File", objectId);
             }
             return AVObject.CreateWithoutData(className, objectId);
         }
@@ -131,8 +131,8 @@ namespace LeanCloud.Storage.Internal
         protected virtual object DecodeAVFile(IDictionary<string, object> dict)
         {
             var objectId = dict["objectId"] as string;
-            var file = AVFile.CreateWithoutData(objectId);
-            file.MergeFromJSON(dict);
+            var file = AVFile.CreateWithoutData("_File", objectId);
+            //file.MergeFromJSON(dict);
             return file;
         }
 

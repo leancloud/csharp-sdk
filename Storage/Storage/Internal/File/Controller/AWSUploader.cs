@@ -7,30 +7,33 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace LeanCloud.Storage.Internal {
-    internal class AWSUploader : IFileUploader {
-        public async Task<FileState> Upload(FileState state, Stream dataStream, IDictionary<string, object> fileToken, IProgress<AVUploadProgressEventArgs> progress,
-            CancellationToken cancellationToken) {
-            var uploadUrl = fileToken["upload_url"].ToString();
-            state.ObjectId = fileToken["objectId"].ToString();
-            string url = fileToken["url"] as string;
-            state.Url = new Uri(url, UriKind.Absolute);
-            return await PutFile(state, uploadUrl, dataStream);
+    internal class AWSUploader {
+        internal string UploadUrl {
+            get; set;
         }
 
-        internal async Task<FileState> PutFile(FileState state, string uploadUrl, Stream dataStream) {
+        internal string MimeType {
+            get; set;
+        }
+
+        internal Stream Stream {
+            get; set;
+        }
+
+        internal async Task Upload(CancellationToken cancellationToken = default) {
             HttpClient client = new HttpClient();
             HttpRequestMessage request = new HttpRequestMessage {
-                RequestUri = new Uri(uploadUrl),
+                RequestUri = new Uri(UploadUrl),
                 Method = HttpMethod.Put,
-                Content = new StreamContent(dataStream)
+                Content = new StreamContent(Stream)
             };
             request.Headers.Add("Cache-Control", "public, max-age=31536000");
-            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(state.MimeType);
-            request.Content.Headers.ContentLength = dataStream.Length;
-            await client.SendAsync(request);
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(MimeType);
+            request.Content.Headers.ContentLength = Stream.Length;
+            HttpResponseMessage response = await client.SendAsync(request, cancellationToken);
+            response.Dispose();
             client.Dispose();
             request.Dispose();
-            return state;
         }
     }
 }

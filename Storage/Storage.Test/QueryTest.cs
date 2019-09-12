@@ -14,7 +14,9 @@ namespace LeanCloudTests {
         [Test]
         public async Task BasicQuery() {
             var query = new AVQuery<AVObject>("Foo");
-            query.WhereEqualTo("content", "hello");
+            query.WhereGreaterThanOrEqualTo("a", 100);
+            query.WhereLessThanOrEqualTo("a", 100);
+            //query.WhereEqualTo("content", "hello");
             var results = await query.FindAsync();
             foreach (var result in results) {
                 TestContext.Out.WriteLine(result.ObjectId);
@@ -51,6 +53,24 @@ namespace LeanCloudTests {
             AVQuery<AVObject> query = AVQuery<AVObject>.And(new List<AVQuery<AVObject>> { q1, q2 });
             IEnumerable<AVObject> results = await query.FindAsync();
             TestContext.Out.WriteLine($"Count: {results.Count()}");
+            foreach (AVObject result in results) {
+                TestContext.Out.WriteLine(result.ObjectId);
+            }
+        }
+
+        [Test]
+        public async Task OrPro() {
+            AVQuery<AVObject> q1 = AVQuery<AVObject>.Or(new List<AVQuery<AVObject>> {
+                new AVQuery<AVObject>("Account").WhereEqualTo("balance", 100)
+            });
+            AVQuery<AVObject> q2 = AVQuery<AVObject>.Or(new List<AVQuery<AVObject>> {
+                new AVQuery<AVObject>("Account").WhereEqualTo("balance", 200)
+            });
+            AVQuery<AVObject> query = AVQuery<AVObject>.Or(new List<AVQuery<AVObject>> {
+                q1, q2
+            });
+            query.WhereEqualTo("balance", 100);
+            IEnumerable<AVObject> results = await query.FindAsync();
             foreach (AVObject result in results) {
                 TestContext.Out.WriteLine(result.ObjectId);
             }

@@ -806,7 +806,7 @@ string propertyName
         /// Deletes this object on the server.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public async Task DeleteAsync(CancellationToken cancellationToken = default) {
+        public virtual async Task DeleteAsync(CancellationToken cancellationToken = default) {
             if (ObjectId == null) {
                 return;
             }

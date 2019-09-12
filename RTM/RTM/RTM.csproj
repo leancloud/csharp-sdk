@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Class1.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Storage\Storage\Storage.csproj" />
+    <ProjectReference Include="..\..\AppRouter\AppRouter\AppRouter.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Internal\WebSocket\Unity\websocket-sharp.dll" />
+  </ItemGroup>
+</Project>

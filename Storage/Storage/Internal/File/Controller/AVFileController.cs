@@ -17,26 +17,26 @@ namespace LeanCloud.Storage.Internal {
         const string QCloud = "qcloud";
         const string AWS = "s3";
 
-        public async Task<FileState> SaveAsync(FileState state,
-            Stream dataStream,
-            IProgress<AVUploadProgressEventArgs> progress,
-            CancellationToken cancellationToken = default) {
-            if (state.Url != null) {
-                return await SaveWithUrl(state);
-            }
+        //public async Task<FileState> SaveAsync(FileState state,
+        //    Stream dataStream,
+        //    IProgress<AVUploadProgressEventArgs> progress,
+        //    CancellationToken cancellationToken = default) {
+        //    if (state.Url != null) {
+        //        return await SaveWithUrl(state);
+        //    }
 
-            var data = await GetFileToken(state, cancellationToken);
-            var fileToken = data.Item2;
-            var provider = fileToken["provider"] as string;
-            switch (provider) {
-                case QCloud:
-                    return await new QCloudUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
-                case AWS:
-                    return await new AWSUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
-                default:
-                    return await new QiniuUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
-            }
-        }
+        //    var data = await GetFileToken(state, cancellationToken);
+        //    var fileToken = data.Item2;
+        //    var provider = fileToken["provider"] as string;
+        //    switch (provider) {
+        //        case QCloud:
+        //            return await new QCloudUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
+        //        case AWS:
+        //            return await new AWSUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
+        //        default:
+        //            return await new QiniuUploader().Upload(state, dataStream, fileToken, progress, cancellationToken);
+        //    }
+        //}
 
         public async Task DeleteAsync(FileState state, CancellationToken cancellationToken) {
             var command = new AVCommand {
@@ -75,14 +75,13 @@ namespace LeanCloud.Storage.Internal {
             return state;
         }
 
-        internal async Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(FileState fileState, CancellationToken cancellationToken) {
-            string str = fileState.Name;
+        internal async Task<Tuple<HttpStatusCode, IDictionary<string, object>>> GetFileToken(string name, IDictionary<string, object> metaData, CancellationToken cancellationToken = default) {
             IDictionary<string, object> parameters = new Dictionary<string, object> {
-                { "name", str },
-                { "key", GetUniqueName(fileState) },
+                { "name", name },
+                { "key", GetUniqueName(name) },
                 { "__type", "File" },
-                { "mime_type", AVFile.GetMIMEType(str) },
-                { "metaData", fileState.MetaData }
+                { "mime_type", AVFile.GetMIMEType(name) },
+                { "metaData", metaData }
             };
 
             var command = new AVCommand {
@@ -90,7 +89,7 @@ namespace LeanCloud.Storage.Internal {
                 Method = HttpMethod.Post,
                 Content = parameters
             };
-            return await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
+            return await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
         }
 
         public async Task<FileState> GetAsync(string objectId, CancellationToken cancellationToken) {
@@ -108,9 +107,9 @@ namespace LeanCloud.Storage.Internal {
             };
         }
 
-        internal static string GetUniqueName(FileState state) {
+        internal static string GetUniqueName(string name) {
             string key = Guid.NewGuid().ToString();
-            string extension = Path.GetExtension(state.Name);
+            string extension = Path.GetExtension(name);
             key += extension;
             return key;
         }
