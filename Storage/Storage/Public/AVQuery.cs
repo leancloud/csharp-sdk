@@ -29,7 +29,8 @@ namespace LeanCloud {
             }
         }
 
-        internal IDictionary<string, object> where;
+        internal QueryCompositionalCondition condition;
+
         internal ReadOnlyCollection<string> orderBy;
         internal ReadOnlyCollection<string> includes;
         internal ReadOnlyCollection<string> selectedKeys;
@@ -58,148 +59,41 @@ namespace LeanCloud {
                 throw new ArgumentNullException(nameof(className));
             }
             ClassName = className;
-        }
-
-        protected AVQuery(AVQuery<T> source,
-            IDictionary<string, object> where = null,
-            IEnumerable<string> replacementOrderBy = null,
-            IEnumerable<string> thenBy = null,
-            int? skip = null,
-            int? limit = null,
-            IEnumerable<string> includes = null,
-            IEnumerable<string> selectedKeys = null,
-            string redirectClassNameForKey = null) {
-
-            if (source == null) {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            ClassName = source.ClassName;
-            this.where = source.where;
-            this.orderBy = source.orderBy;
-            this.skip = source.skip;
-            this.limit = source.limit;
-            this.includes = source.includes;
-            this.selectedKeys = source.selectedKeys;
-            this.redirectClassNameForKey = source.redirectClassNameForKey;
-
-            if (where != null) {
-                var newWhere = MergeWhereClauses(where);
-                this.where = new Dictionary<string, object>(newWhere);
-            }
-
-            if (replacementOrderBy != null) {
-                this.orderBy = new ReadOnlyCollection<string>(replacementOrderBy.ToList());
-            }
-
-            if (thenBy != null) {
-                if (this.orderBy == null) {
-                    throw new ArgumentException("You must call OrderBy before calling ThenBy.");
-                }
-                var newOrderBy = new List<string>(this.orderBy);
-                newOrderBy.AddRange(thenBy);
-                this.orderBy = new ReadOnlyCollection<string>(newOrderBy);
-            }
-
-            // Remove duplicates.
-            if (this.orderBy != null) {
-                var newOrderBy = new HashSet<string>(this.orderBy);
-                this.orderBy = new ReadOnlyCollection<string>(newOrderBy.ToList<string>());
-            }
-
-            if (skip != null) {
-                this.skip = (this.skip ?? 0) + skip;
-            }
-
-            if (limit != null) {
-                this.limit = limit;
-            }
-
-            if (includes != null) {
-                var newIncludes = MergeIncludes(includes);
-                this.includes = new ReadOnlyCollection<string>(newIncludes.ToList());
-            }
-
-            if (selectedKeys != null) {
-                var newSelectedKeys = MergeSelectedKeys(selectedKeys);
-                this.selectedKeys = new ReadOnlyCollection<string>(newSelectedKeys.ToList());
-            }
-
-            if (redirectClassNameForKey != null) {
-                this.redirectClassNameForKey = redirectClassNameForKey;
-            }
-        }
-
-        HashSet<string> MergeIncludes(IEnumerable<string> otherIncludes) {
-            if (includes == null) {
-                return new HashSet<string>(otherIncludes);
-            }
-            var newIncludes = new HashSet<string>(includes);
-            foreach (var item in otherIncludes) {
-                newIncludes.Add(item);
-            }
-            return newIncludes;
-        }
-
-        HashSet<string> MergeSelectedKeys(IEnumerable<string> otherSelectedKeys) {
-            if (selectedKeys == null) {
-                return new HashSet<string>(otherSelectedKeys);
-            }
-            var newSelectedKeys = new HashSet<string>(selectedKeys);
-            foreach (var item in otherSelectedKeys) {
-                newSelectedKeys.Add(item);
-            }
-            return newSelectedKeys;
-        }
-
-        public static AVQuery<T> Or(IEnumerable<AVQuery<T>> queries) {
-            string className = null;
-            var orValue = new List<IDictionary<string, object>>();
-            // We need to cast it to non-generic IEnumerable because of AOT-limitation
-            var nonGenericQueries = (IEnumerable)queries;
-            foreach (var obj in nonGenericQueries) {
-                var q = (AVQuery<T>)obj;
-                if (className != null && q.ClassName != className) {
-                    throw new ArgumentException("All of the queries in an or query must be on the same class.");
-                }
-                className = q.ClassName;
-                var parameters = q.BuildParameters();
-                if (parameters.Count == 0) {
-                    continue;
-                }
-                if (!parameters.TryGetValue("where", out object where) || parameters.Count > 1) {
-                    throw new ArgumentException("None of the queries in an or query can have non-filtering clauses");
-                }
-                orValue.Add(where as IDictionary<string, object>);
-            }
-            return new AVQuery<T>(new AVQuery<T>(className), new Dictionary<string, object> {
-                  { "$or", orValue }
-            });
+            condition = new QueryCompositionalCondition();
         }
 
         public static AVQuery<T> And(IEnumerable<AVQuery<T>> queries) {
+            AVQuery<T> composition = new AVQuery<T>();
             string className = null;
-            var andValue = new List<IDictionary<string, object>>();
-            // We need to cast it to non-generic IEnumerable because of AOT-limitation
-            var nonGenericQueries = (IEnumerable)queries;
-            foreach (var obj in nonGenericQueries) {
-                var q = (AVQuery<T>)obj;
-                if (className != null && q.ClassName != className) {
-                    throw new ArgumentException("All of the queries in an or query must be on the same class.");
+            if (queries != null) {
+                foreach (AVQuery<T> query in queries) {
+                    if (className != null && className != query.ClassName) {
+                        throw new ArgumentException("All of the queries in an or query must be on the same class.");
+                    }
+                    composition.AddCondition(query.condition);
+                    className = query.ClassName;
                 }
-                className = q.ClassName;
-                var parameters = q.BuildParameters();
-                if (parameters.Count == 0) {
-                    continue;
-                }
-                if (!parameters.TryGetValue("where", out object where) || parameters.Count > 1) {
-                    throw new ArgumentException("None of the queries in an or query can have non-filtering clauses");
-                }
-                andValue.Add(where as IDictionary<string, object>);
             }
-            return new AVQuery<T>(new AVQuery<T>(className), new Dictionary<string, object> {
-                  { "$and", andValue }
-            });
+            composition.ClassName = className;
+            return composition;
+        }
+
+        public static AVQuery<T> Or(IEnumerable<AVQuery<T>> queries) {
+            AVQuery<T> composition = new AVQuery<T> {
+                condition = new QueryCompositionalCondition(QueryCompositionalCondition.OR)
+            };
+            string className = null;
+            if (queries != null) {
+                foreach (AVQuery<T> query in queries) {
+                    if (className != null && className != query.ClassName) {
+                        throw new ArgumentException("All of the queries in an or query must be on the same class.");
+                    }
+                    composition.AddCondition(query.condition);
+                    className = query.ClassName;
+                }
+            }
+            composition.ClassName = className;
+            return composition;
         }
 
         public virtual async Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken = default) {
@@ -229,7 +123,9 @@ namespace LeanCloud {
         public virtual async Task<T> GetAsync(string objectId, CancellationToken cancellationToken) {
             AVQuery<T> singleItemQuery = new AVQuery<T>(ClassName)
                 .WhereEqualTo("objectId", objectId);
-            singleItemQuery = new AVQuery<T>(singleItemQuery, includes: this.includes, selectedKeys: this.selectedKeys, limit: 1);
+            singleItemQuery.includes = includes;
+            singleItemQuery.selectedKeys = selectedKeys;
+            singleItemQuery.limit = 1;
             var result = await singleItemQuery.FindAsync(cancellationToken);
             var first = result.FirstOrDefault();
             if (first == null) {
@@ -246,18 +142,9 @@ namespace LeanCloud {
         /// <param name="cql">CQL 语句</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>返回符合条件的对象集合</returns>
-        public static Task<IEnumerable<T>> DoCloudQueryAsync(string cql, CancellationToken cancellationToken) {
+        public static Task<IEnumerable<T>> DoCloudQueryAsync(string cql, CancellationToken cancellationToken = default) {
             var queryString = $"cloudQuery?cql={Uri.EscapeDataString(cql)}";
             return RebuildObjectFromCloudQueryResult(queryString);
-        }
-
-        /// <summary>
-        /// 执行 CQL 查询
-        /// </summary>
-        /// <param name="cql"></param>
-        /// <returns></returns>
-        public static Task<IEnumerable<T>> DoCloudQueryAsync(string cql) {
-            return DoCloudQueryAsync(cql, CancellationToken.None);
         }
 
         /// <summary>
@@ -292,35 +179,6 @@ namespace LeanCloud {
 
         #endregion
 
-        IDictionary<string, object> MergeWhereClauses(IDictionary<string, object> otherWhere) {
-            if (where == null) {
-                where = otherWhere;
-                return where;
-            }
-            var newWhere = new Dictionary<string, object>(where);
-            foreach (var pair in otherWhere) {
-                var condition = pair.Value as IDictionary<string, object>;
-                if (newWhere.ContainsKey(pair.Key)) {
-                    var oldCondition = newWhere[pair.Key] as IDictionary<string, object>;
-                    if (oldCondition == null || condition == null) {
-                        throw new ArgumentException("More than one where clause for the given key provided.");
-                    }
-                    var newCondition = new Dictionary<string, object>(oldCondition);
-                    foreach (var conditionPair in condition) {
-                        if (newCondition.ContainsKey(conditionPair.Key)) {
-                            throw new ArgumentException("More than one condition for the given key provided.");
-                        }
-                        newCondition[conditionPair.Key] = conditionPair.Value;
-                    }
-                    newWhere[pair.Key] = newCondition;
-                } else {
-                    newWhere[pair.Key] = pair.Value;
-                }
-            }
-            where = newWhere;
-            return where;
-        }
-
         /// <summary>
         /// 构建查询字符串
         /// </summary>
@@ -328,8 +186,8 @@ namespace LeanCloud {
         /// <returns></returns>
         public IDictionary<string, object> BuildParameters(bool includeClassName = false) {
             Dictionary<string, object> result = new Dictionary<string, object>();
-            if (where != null) {
-                result["where"] = PointerOrLocalIdEncoder.Instance.Encode(where);
+            if (condition != null) {
+                result["where"] = condition.ToJSON();
             }
             if (orderBy != null) {
                 result["order"] = string.Join(",", orderBy.ToArray());
@@ -367,7 +225,7 @@ namespace LeanCloud {
 
             var other = obj as AVQuery<T>;
             return ClassName.Equals(other.ClassName) &&
-                   where.CollectionsEqual(other.where) &&
+                   condition.Equals(other.condition) &&
                    orderBy.CollectionsEqual(other.orderBy) &&
                    includes.CollectionsEqual(other.includes) &&
                    selectedKeys.CollectionsEqual(other.selectedKeys) &&
@@ -441,94 +299,68 @@ namespace LeanCloud {
         #region Where
 
         public AVQuery<T> WhereContainedIn<TIn>(string key, IEnumerable<TIn> values) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$in", values.ToList() } } }
-            });
+            AddCondition(key, "$in", values.ToList());
             return this;
         }
 
         public AVQuery<T> WhereContainsAll<TIn>(string key, IEnumerable<TIn> values) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$all", values.ToList() } } }
-            });
+            AddCondition(key, "$all", values.ToList());
             return this;
         }
 
         public AVQuery<T> WhereContains(string key, string substring) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$regex", RegexQuote(substring) } } }
-            });
+            AddCondition(key, "$regex", RegexQuote(substring));
             return this;
         }
 
         public AVQuery<T> WhereDoesNotExist(string key) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$exists", false } } }
-            });
+            AddCondition(key, "$exists", false);
             return this;
         }
 
         public AVQuery<T> WhereDoesNotMatchQuery<TOther>(string key, AVQuery<TOther> query)
             where TOther : AVObject {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$notInQuery", query.BuildParameters(true) } } }
-            });
+            AddCondition(key, "$notInQuery", query.BuildParameters(true));
             return this;
         }
 
         public AVQuery<T> WhereEndsWith(string key, string suffix) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$regex", RegexQuote(suffix) + "$" } } }
-            });
+            AddCondition(key, "$regex", RegexQuote(suffix) + "$");
             return this;
         }
 
         public AVQuery<T> WhereEqualTo(string key, object value) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, value }
-            });
+            AddCondition(new QueryEqualCondition(key, value));
             return this;
         }
 
         public AVQuery<T> WhereSizeEqualTo(string key, uint size) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$size", size } } }
-            });
+            AddCondition(key, "$size", size);
             return this;
         }
 
         public AVQuery<T> WhereExists(string key) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$exists", true } } }
-            });
+            AddCondition(key, "$exists", true);
             return this;
         }
 
         public AVQuery<T> WhereGreaterThan(string key, object value) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$gt", value } } }
-            });
+            AddCondition(key, "$gt", value);
             return this;
         }
 
         public AVQuery<T> WhereGreaterThanOrEqualTo(string key, object value) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$gte", value } } }
-            });
+            AddCondition(key, "$gte", value);
             return this;
         }
 
         public AVQuery<T> WhereLessThan(string key, object value) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$lt", value } } }
-            });
+            AddCondition(key, "$lt", value);
             return this;
         }
 
         public AVQuery<T> WhereLessThanOrEqualTo(string key, object value) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$lte", value } } }
-            });
+            AddCondition(key, "$lte", value);
             return this;
         }
 
@@ -537,9 +369,8 @@ namespace LeanCloud {
                 throw new ArgumentException(
                   "Only ECMAScript-compatible regexes are supported. Please use the ECMAScript RegexOptions flag when creating your regex.");
             }
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, EncodeRegex(regex, modifiers) }
-            });
+            AddCondition(key, "$regex", regex.ToString());
+            AddCondition(key, "options", modifiers);
             return this;
         }
 
@@ -561,9 +392,7 @@ namespace LeanCloud {
                 { "query", query.BuildParameters(true)},
                 { "key", keyInQuery}
             };
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$select", parameters } } }
-            });
+            AddCondition(key, "$select", parameters);
             return this;
         }
 
@@ -573,78 +402,52 @@ namespace LeanCloud {
                 { "query", query.BuildParameters(true)},
                 { "key", keyInQuery}
             };
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$dontSelect", parameters } } }
-            });
+            AddCondition(key, "$dontSelect", parameters);
             return this;
         }
 
         public AVQuery<T> WhereMatchesQuery<TOther>(string key, AVQuery<TOther> query)
             where TOther : AVObject {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$inQuery", query.BuildParameters(true) } } }
-            });
+            AddCondition(key, "$inQuery", query.BuildParameters(true));
             return this;
         }
 
         public AVQuery<T> WhereNear(string key, AVGeoPoint point) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$nearSphere", point } } }
-            });
+            AddCondition(key, "$nearSphere", point);
             return this;
         }
 
         public AVQuery<T> WhereNotContainedIn<TIn>(string key, IEnumerable<TIn> values) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$nin", values.ToList() } } }
-            });
+            AddCondition(key, "$nin", values.ToList());
             return this;
         }
 
         public AVQuery<T> WhereNotEqualTo(string key, object value) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$ne", value } } }
-            });
+            AddCondition(key, "$ne", value);
             return this;
         }
 
         public AVQuery<T> WhereStartsWith(string key, string suffix) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$regex", "^" + RegexQuote(suffix) } } }
-            });
+            AddCondition(key, "$regex", "^" + RegexQuote(suffix));
             return this;
         }
 
         public AVQuery<T> WhereWithinGeoBox(string key, AVGeoPoint southwest, AVGeoPoint northeast) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$within",
-                            new Dictionary<string, object> {
-                                { "$box", new[] {southwest, northeast}}
-                            } } } }
-            });
+            Dictionary<string, object> value = new Dictionary<string, object> {
+                { "$box", new[] { southwest, northeast } }
+            };
+            AddCondition(key, "$within", value);
             return this;
         }
 
         public AVQuery<T> WhereWithinDistance(string key, AVGeoPoint point, AVGeoDistance maxDistance) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$nearSphere", point } } }
-            });
-            MergeWhereClauses(new Dictionary<string, object> {
-                { key, new Dictionary<string, object>{ { "$maxDistance", maxDistance.Radians } } }
-            });
+            AddCondition(key, "$nearSphere", point);
+            AddCondition(key, "$maxDistance", maxDistance.Radians);
             return this;
         }
 
-        internal AVQuery<T> WhereRelatedTo(AVObject parent, string key) {
-            MergeWhereClauses(new Dictionary<string, object> {
-                {
-                    "$relatedTo",
-                    new Dictionary<string, object> {
-                        { "object", parent },
-                        { "key", key }
-                    }
-                }
-            });
+        public AVQuery<T> WhereRelatedTo(AVObject parent, string key) {
+            AddCondition(new QueryRelatedCondition(parent, key));
             return this;
         }
 
@@ -654,25 +457,22 @@ namespace LeanCloud {
             return "\\Q" + input.Replace("\\E", "\\E\\\\E\\Q") + "\\E";
         }
 
-        private IDictionary<string, object> EncodeRegex(Regex regex, string modifiers) {
-            var options = GetRegexOptions(regex, modifiers);
-            var dict = new Dictionary<string, object>();
-            dict["$regex"] = regex.ToString();
-            if (!string.IsNullOrEmpty(options)) {
-                dict["$options"] = options;
-            }
-            return dict;
+        public IDictionary<string, object> BuildWhere() {
+            IDictionary<string, object> where = condition.ToJSON();
+            return where;
         }
 
-        private string GetRegexOptions(Regex regex, string modifiers) {
-            string result = modifiers ?? "";
-            if (regex.Options.HasFlag(RegexOptions.IgnoreCase) && !modifiers.Contains("i")) {
-                result += "i";
-            }
-            if (regex.Options.HasFlag(RegexOptions.Multiline) && !modifiers.Contains("m")) {
-                result += "m";
-            }
-            return result;
+        void AddCondition(string key, string op, object value) {
+            QueryOperationCondition cond = new QueryOperationCondition {
+                Key = key,
+                Op = op,
+                Value = value
+            };
+            condition.AddCondition(cond);
+        }
+
+        void AddCondition(IQueryCondition cond) {
+            condition.AddCondition(cond);
         }
     }
 }

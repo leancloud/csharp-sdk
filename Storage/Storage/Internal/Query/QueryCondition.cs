@@ -1,13 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 
 namespace LeanCloud.Storage.Internal {
-    /// <summary>
-    /// 查询条件类
-    /// </summary>
-    public class QueryCondition : IEquatable<QueryCondition> {
+    internal class QueryOperationCondition : IQueryCondition {
         public string Key {
             get; set;
         }
@@ -20,25 +14,19 @@ namespace LeanCloud.Storage.Internal {
             get; set;
         }
 
-        public bool Equals(QueryCondition other) {
-            return Key == other.Key && Op == other.Op;
+        public bool Equals(IQueryCondition other) {
+            if (other is QueryOperationCondition) {
+                QueryOperationCondition otherCond = other as QueryOperationCondition;
+                return Key == otherCond.Key && Op == otherCond.Op;
+            }
+            return false;
         }
 
-        public override bool Equals(object obj) {
-            return obj is QueryCondition && Equals(obj as QueryCondition);
-        }
-
-        public override int GetHashCode() {
-            return Key.GetHashCode() * 31 + Op.GetHashCode();
-        }
-
-        internal IDictionary<string, object> ToDictionary() {
+        public IDictionary<string, object> ToJSON() {
             return new Dictionary<string, object> {
-                {
-                    Key, new Dictionary<string, object> {
-                    { Op, PointerOrLocalIdEncoder.Instance.Encode(Value) }
-                }
-                }
+                { Key, new Dictionary<string, object> {
+                    { Op, Value }
+                } }
             };
         }
     }

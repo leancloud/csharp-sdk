@@ -37,8 +37,8 @@ namespace LeanCloud.Storage.Internal {
                 args.Add("fetchWhenSave", fetchWhenSave);
             }
             // 查询条件
-            if (query != null && query.where != null) {
-                args.Add("where", PointerOrLocalIdEncoder.Instance.Encode(query.where));
+            if (query != null && query.condition != null) {
+                args.Add("where", query.BuildWhere());
             }
             if (args.Count > 0) {
                 string encode = AVClient.BuildQueryString(args);
