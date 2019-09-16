@@ -28,7 +28,7 @@ namespace LeanCloud {
         /// <summary>
         /// LeanCloud SDK 配置
         /// </summary>
-        public struct Configuration {
+        public class Configuration {
             /// <summary>
             /// App Id
             /// </summary>
@@ -116,6 +116,12 @@ namespace LeanCloud {
                 ApplicationId = applicationId,
                 ApplicationKey = applicationKey
             });
+        }
+
+        public static void SetServerURL(string serverUrl) {
+            CurrentConfiguration.ApiServer = serverUrl;
+            CurrentConfiguration.EngineServer = serverUrl;
+            CurrentConfiguration.RTMServer = serverUrl;
         }
 
         internal static Action<string> LogTracker { get; private set; }
