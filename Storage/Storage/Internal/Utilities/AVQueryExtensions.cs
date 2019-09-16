@@ -17,10 +17,6 @@ namespace LeanCloud.Storage.Internal {
       return query.ClassName;
     }
 
-    public static IDictionary<string, object> BuildParameters<T>(this AVQuery<T> query) where T: AVObject {
-      return query.BuildParameters(false);
-    }
-
     public static object GetConstraint<T>(this AVQuery<T> query, string key) where T : AVObject {
       return query.GetConstraint(key);
     }

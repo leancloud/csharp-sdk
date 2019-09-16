@@ -704,38 +704,6 @@ namespace LeanCloud
         }
 
         /// <summary>
-        /// Performs a subsequent ordering of a query based upon the key selector provided.
-        /// </summary>
-        /// <typeparam name="TSource">The type of AVObject being queried for.</typeparam>
-        /// <typeparam name="TSelector">The type of key returned by keySelector.</typeparam>
-        /// <param name="source">The query to order.</param>
-        /// <param name="keySelector">A function to extract a key from the AVObject.</param>
-        /// <returns>A new AVQuery based on Source whose results will be ordered by
-        /// the key specified in the keySelector.</returns>
-        public static AVQuery<TSource> ThenBy<TSource, TSelector>(
-            this AVQuery<TSource> source, Expression<Func<TSource, TSelector>> keySelector)
-            where TSource : AVObject
-        {
-            return source.ThenBy(GetOrderByPath(keySelector));
-        }
-
-        /// <summary>
-        /// Performs a subsequent ordering of a query based upon the key selector provided.
-        /// </summary>
-        /// <typeparam name="TSource">The type of AVObject being queried for.</typeparam>
-        /// <typeparam name="TSelector">The type of key returned by keySelector.</typeparam>
-        /// <param name="source">The query to order.</param>
-        /// <param name="keySelector">A function to extract a key from the AVObject.</param>
-        /// <returns>A new AVQuery based on Source whose results will be ordered by
-        /// the key specified in the keySelector.</returns>
-        public static AVQuery<TSource> ThenByDescending<TSource, TSelector>(
-            this AVQuery<TSource> source, Expression<Func<TSource, TSelector>> keySelector)
-            where TSource : AVObject
-        {
-            return source.ThenByDescending(GetOrderByPath(keySelector));
-        }
-
-        /// <summary>
         /// Correlates the elements of two queries based on matching keys.
         /// </summary>
         /// <typeparam name="TOuter">The type of AVObjects of the first query.</typeparam>

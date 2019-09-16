@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -30,13 +29,6 @@ namespace LeanCloud {
         }
 
         internal QueryCompositionalCondition condition;
-
-        internal ReadOnlyCollection<string> orderBy;
-        internal ReadOnlyCollection<string> includes;
-        internal ReadOnlyCollection<string> selectedKeys;
-        internal string redirectClassNameForKey;
-        internal int? skip;
-        internal int? limit;
 
         internal static AVQueryController QueryController {
             get {
@@ -121,12 +113,9 @@ namespace LeanCloud {
         }
 
         public virtual async Task<T> GetAsync(string objectId, CancellationToken cancellationToken) {
-            AVQuery<T> singleItemQuery = new AVQuery<T>(ClassName)
-                .WhereEqualTo("objectId", objectId);
-            singleItemQuery.includes = includes;
-            singleItemQuery.selectedKeys = selectedKeys;
-            singleItemQuery.limit = 1;
-            var result = await singleItemQuery.FindAsync(cancellationToken);
+            WhereEqualTo("objectId", objectId);
+            Limit(1);
+            var result = await FindAsync(cancellationToken);
             var first = result.FirstOrDefault();
             if (first == null) {
                 throw new AVException(AVException.ErrorCode.ObjectNotFound,
@@ -180,40 +169,6 @@ namespace LeanCloud {
         #endregion
 
         /// <summary>
-        /// 构建查询字符串
-        /// </summary>
-        /// <param name="includeClassName">是否包含 ClassName </param>
-        /// <returns></returns>
-        public IDictionary<string, object> BuildParameters(bool includeClassName = false) {
-            Dictionary<string, object> result = new Dictionary<string, object>();
-            if (condition != null) {
-                result["where"] = condition.ToJSON();
-            }
-            if (orderBy != null) {
-                result["order"] = string.Join(",", orderBy.ToArray());
-            }
-            if (skip != null) {
-                result["skip"] = skip.Value;
-            }
-            if (limit != null) {
-                result["limit"] = limit.Value;
-            }
-            if (includes != null) {
-                result["include"] = string.Join(",", includes.ToArray());
-            }
-            if (selectedKeys != null) {
-                result["keys"] = string.Join(",", selectedKeys.ToArray());
-            }
-            if (includeClassName) {
-                result["className"] = ClassName;
-            }
-            if (redirectClassNameForKey != null) {
-                result["redirectClassNameForKey"] = redirectClassNameForKey;
-            }
-            return result;
-        }
-
-        /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
@@ -225,12 +180,7 @@ namespace LeanCloud {
 
             var other = obj as AVQuery<T>;
             return ClassName.Equals(other.ClassName) &&
-                   condition.Equals(other.condition) &&
-                   orderBy.CollectionsEqual(other.orderBy) &&
-                   includes.CollectionsEqual(other.includes) &&
-                   selectedKeys.CollectionsEqual(other.selectedKeys) &&
-                   Equals(skip, other.skip) &&
-                   Equals(limit, other.limit);
+                   condition.Equals(other.condition);
         }
 
         public override int GetHashCode() {
@@ -240,59 +190,34 @@ namespace LeanCloud {
         #region Order By
 
         public AVQuery<T> OrderBy(string key) {
-            orderBy = new ReadOnlyCollection<string>(new List<string> { key });
+            condition.OrderBy(key);
             return this;
         }
 
         public AVQuery<T> OrderByDescending(string key) {
-            orderBy = new ReadOnlyCollection<string>(new List<string> { "-" + key });
-            return this;
-        }
-
-        public AVQuery<T> ThenBy(string key) {
-            if (orderBy == null) {
-                throw new ArgumentException("You must call OrderBy before calling ThenBy");
-            }
-            List<string> newOrderBy = orderBy.ToList();
-            newOrderBy.Add(key);
-            orderBy = new ReadOnlyCollection<string>(newOrderBy);
-            return this;
-        }
-
-        public AVQuery<T> ThenByDescending(string key) {
-            if (orderBy == null) {
-                throw new ArgumentException("You must call OrderBy before calling ThenBy");
-            }
-            List<string> newOrderBy = orderBy.ToList();
-            newOrderBy.Add($"-{key}");
-            orderBy = new ReadOnlyCollection<string>(newOrderBy);
+            condition.OrderByDescending(key);
             return this;
         }
 
         #endregion
 
         public AVQuery<T> Include(string key) {
-            includes = new ReadOnlyCollection<string>(new List<string> { key });
+            condition.Include(key);
             return this;
         }
 
         public AVQuery<T> Select(string key) {
-            selectedKeys = new ReadOnlyCollection<string>(new List<string> { key });
+            condition.Select(key);
             return this;
         }
 
         public AVQuery<T> Skip(int count) {
-            skip = count;
+            condition.Skip(count);
             return this;
         }
 
         public AVQuery<T> Limit(int count) {
-            limit = count;
-            return this;
-        }
-
-        internal AVQuery<T> RedirectClassName(string key) {
-            redirectClassNameForKey = key;
+            condition.Limit(count);
             return this;
         }
 
@@ -320,7 +245,7 @@ namespace LeanCloud {
 
         public AVQuery<T> WhereDoesNotMatchQuery<TOther>(string key, AVQuery<TOther> query)
             where TOther : AVObject {
-            AddCondition(key, "$notInQuery", query.BuildParameters(true));
+            AddCondition(key, "$notInQuery", query.BuildParameters(query.ClassName));
             return this;
         }
 
@@ -389,7 +314,7 @@ namespace LeanCloud {
         public AVQuery<T> WhereMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query)
             where TOther : AVObject {
             var parameters = new Dictionary<string, object> {
-                { "query", query.BuildParameters(true)},
+                { "query", query.BuildParameters(query.ClassName)},
                 { "key", keyInQuery}
             };
             AddCondition(key, "$select", parameters);
@@ -399,7 +324,7 @@ namespace LeanCloud {
         public AVQuery<T> WhereDoesNotMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query)
             where TOther : AVObject {
             var parameters = new Dictionary<string, object> {
-                { "query", query.BuildParameters(true)},
+                { "query", query.BuildParameters(query.ClassName)},
                 { "key", keyInQuery}
             };
             AddCondition(key, "$dontSelect", parameters);
@@ -408,7 +333,7 @@ namespace LeanCloud {
 
         public AVQuery<T> WhereMatchesQuery<TOther>(string key, AVQuery<TOther> query)
             where TOther : AVObject {
-            AddCondition(key, "$inQuery", query.BuildParameters(true));
+            AddCondition(key, "$inQuery", query.BuildParameters(query.ClassName));
             return this;
         }
 
@@ -452,6 +377,10 @@ namespace LeanCloud {
         }
 
         #endregion
+
+        internal IDictionary<string, object> BuildParameters(string className = null) {
+            return condition.BuildParameters(className);
+        }
 
         private string RegexQuote(string input) {
             return "\\Q" + input.Replace("\\E", "\\E\\\\E\\Q") + "\\E";

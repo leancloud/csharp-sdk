@@ -12,7 +12,7 @@ namespace LeanCloud.Realtime
     /// <summary>
     /// 对话查询类
     /// </summary>
-    public class AVIMConversationQuery : AVQuery<AVObject>
+    public class AVIMConversationQuery
     {
         internal AVIMClient CurrentClient { get; set; }
         internal AVIMConversationQuery(AVIMClient _currentClient)

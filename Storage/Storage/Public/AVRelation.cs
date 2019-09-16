@@ -63,7 +63,6 @@ namespace LeanCloud {
             }
 
             return new AVQuery<T>(parent.ClassName)
-              .RedirectClassName(key)
               .WhereRelatedTo(parent, key);
         }
 
