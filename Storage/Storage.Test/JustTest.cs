@@ -1,5 +1,6 @@
 ﻿using System;
-namespace Storage.Test {
+
+namespace LeanCloud.Test {
     public class JustTest {
         public class Animal {
 

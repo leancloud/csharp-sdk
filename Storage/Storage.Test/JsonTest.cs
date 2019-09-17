@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using LeanCloud.Storage.Internal;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     public class JsonTest {
         [Test]
         public void Deserialize() {

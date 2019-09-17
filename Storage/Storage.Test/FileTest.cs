@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     public class FileTest {
         string saveFileId;
 

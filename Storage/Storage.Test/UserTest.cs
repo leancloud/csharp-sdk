@@ -5,7 +5,7 @@ using System.Linq;
 using System;
 using LeanCloud;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     public class UserTest {
         [SetUp]
         public void SetUp() {

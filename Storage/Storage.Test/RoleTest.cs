@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LeanCloud;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     [TestFixture]
     public class RoleTest {
         [SetUp]

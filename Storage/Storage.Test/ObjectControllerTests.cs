@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using LeanCloud;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     public class ObjectControllerTests {
         [SetUp]
         public void SetUp() {

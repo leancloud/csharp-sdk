@@ -28,7 +28,10 @@ namespace LeanCloud {
             }
         }
 
-        internal QueryCompositionalCondition condition;
+        /// <summary>
+        /// 根查询条件，默认是 and 查询，可以设置为 or 查询
+        /// </summary>
+        QueryCompositionalCondition condition;
 
         static AVQueryController QueryController {
             get {
@@ -48,7 +51,7 @@ namespace LeanCloud {
             condition = new QueryCompositionalCondition();
         }
 
-        #region Composition
+        #region Compositional Query
 
         public static AVQuery<T> And(IEnumerable<AVQuery<T>> queries) {
             AVQuery<T> composition = new AVQuery<T>();
@@ -123,6 +126,7 @@ namespace LeanCloud {
         }
 
         #region CQL
+
         /// <summary>
         /// 执行 CQL 查询
         /// </summary>
@@ -166,27 +170,6 @@ namespace LeanCloud {
 
         #endregion
 
-        /// <summary>
-        /// Determines whether the specified object is equal to the current object.
-        /// </summary>
-        /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns><c>true</c> if the specified object is equal to the current object; otherwise, <c>false</c></returns>
-        public override bool Equals(object obj) {
-            if (obj == null || !(obj is AVQuery<T>)) {
-                return false;
-            }
-
-            var other = obj as AVQuery<T>;
-            return ClassName.Equals(other.ClassName) &&
-                   condition.Equals(other.condition);
-        }
-
-        public override int GetHashCode() {
-            return base.GetHashCode();
-        }
-
-        #region Order By
-
         public AVQuery<T> OrderBy(string key) {
             condition.OrderBy(key);
             return this;
@@ -196,8 +179,6 @@ namespace LeanCloud {
             condition.OrderByDescending(key);
             return this;
         }
-
-        #endregion
 
         public AVQuery<T> Include(string key) {
             condition.Include(key);
@@ -355,7 +336,7 @@ namespace LeanCloud {
 
         #endregion
 
-        internal IDictionary<string, object> BuildParameters(string className = null) {
+        public IDictionary<string, object> BuildParameters(string className = null) {
             return condition.BuildParameters(className);
         }
 

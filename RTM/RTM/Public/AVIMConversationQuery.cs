@@ -24,19 +24,7 @@ namespace LeanCloud.Realtime
         bool compact;
         bool withLastMessageRefreshed;
 
-        private AVIMConversationQuery(AVIMConversationQuery source,
-            IDictionary<string, object> where = null,
-            IEnumerable<string> replacementOrderBy = null,
-            IEnumerable<string> thenBy = null,
-            int? skip = null,
-            int? limit = null,
-            IEnumerable<string> includes = null,
-            IEnumerable<string> selectedKeys = null,
-            string redirectClassNameForKey = null)
-            : base(source, where, replacementOrderBy, thenBy, skip, limit, includes, selectedKeys, redirectClassNameForKey)
-        {
-
-        }
+        
 
         /// <summary>
         /// Creates the instance.
@@ -108,7 +96,7 @@ namespace LeanCloud.Realtime
             return cmd;
         }
 
-        public override Task<int> CountAsync(CancellationToken cancellationToken = default) {
+        public Task<int> CountAsync(CancellationToken cancellationToken = default) {
             var convCmd = GenerateQueryCommand();
             convCmd.Count();
             convCmd.Limit(0);
@@ -131,7 +119,7 @@ namespace LeanCloud.Realtime
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override Task<IEnumerable<AVIMConversation>> FindAsync(CancellationToken cancellationToken = default)
+        public Task<IEnumerable<AVIMConversation>> FindAsync(CancellationToken cancellationToken = default)
         {
             var convCmd = this.GenerateQueryCommand().Option("query");
             return CurrentClient.RunCommandAsync(convCmd).OnSuccess(t =>
@@ -156,12 +144,12 @@ namespace LeanCloud.Realtime
             });
         }
 
-        public override Task<AVIMConversation> FirstAsync(CancellationToken cancellationToken = default)
+        public Task<AVIMConversation> FirstAsync(CancellationToken cancellationToken = default)
         {
             return this.FirstOrDefaultAsync();
         }
 
-        public override Task<AVIMConversation> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
+        public Task<AVIMConversation> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
         {
             var firstQuery = this.Limit(1);
             return firstQuery.FindAsync().OnSuccess(t =>
@@ -170,7 +158,7 @@ namespace LeanCloud.Realtime
             });
         }
 
-        public override Task<AVIMConversation> GetAsync(string objectId, CancellationToken cancellationToken = default)
+        public Task<AVIMConversation> GetAsync(string objectId, CancellationToken cancellationToken = default)
         {
             var idQuery = this.WhereEqualTo("objectId", objectId);
             return idQuery.FirstAsync();

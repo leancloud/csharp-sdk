@@ -3,7 +3,7 @@ using LeanCloud;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     [AVClassName("Account")]
     public class Account : AVObject {
         [AVFieldName("name")]

@@ -37,7 +37,7 @@ namespace LeanCloud.Storage.Internal {
                 args.Add("fetchWhenSave", fetchWhenSave);
             }
             // 查询条件
-            if (query != null && query.condition != null) {
+            if (query != null) {
                 args.Add("where", query.BuildWhere());
             }
             if (args.Count > 0) {

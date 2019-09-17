@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Newtonsoft.Json;
-using LeanCloud;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     public class QueryTest {
         [SetUp]
         public void SetUp() {

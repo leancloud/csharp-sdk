@@ -3,7 +3,7 @@ using LeanCloud;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     public class ObjectTests {
         [SetUp]
         public void SetUp() {

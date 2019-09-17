@@ -2,7 +2,7 @@
 using LeanCloud;
 using NUnit.Framework;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     public static class Utils {
         public static void InitNorthChina(bool master = false) {
             if (master) {

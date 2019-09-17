@@ -3,7 +3,7 @@ using LeanCloud;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     public class CloudFunctionTest {
         [SetUp]
         public void SetUp() {

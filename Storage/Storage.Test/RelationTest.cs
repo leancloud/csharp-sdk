@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LeanCloudTests {
+namespace LeanCloud.Test {
     public class RelationTest {
         [SetUp]
         public void SetUp() {
