@@ -30,20 +30,14 @@ namespace LeanCloud {
 
         internal QueryCompositionalCondition condition;
 
-        internal static AVQueryController QueryController {
+        static AVQueryController QueryController {
             get {
                 return AVPlugins.Instance.QueryController;
             }
         }
 
-        internal static ObjectSubclassingController SubclassingController {
-            get {
-                return AVPlugins.Instance.SubclassingController;
-            }
-        }
-
         public AVQuery()
-            : this(SubclassingController.GetClassName(typeof(T))) {
+            : this(AVPlugins.Instance.SubclassingController.GetClassName(typeof(T))) {
         }
 
         public AVQuery(string className) {
@@ -54,6 +48,8 @@ namespace LeanCloud {
             condition = new QueryCompositionalCondition();
         }
 
+        #region Composition
+
         public static AVQuery<T> And(IEnumerable<AVQuery<T>> queries) {
             AVQuery<T> composition = new AVQuery<T>();
             string className = null;
@@ -62,7 +58,7 @@ namespace LeanCloud {
                     if (className != null && className != query.ClassName) {
                         throw new ArgumentException("All of the queries in an or query must be on the same class.");
                     }
-                    composition.AddCondition(query.condition);
+                    composition.condition.AddCondition(query.condition);
                     className = query.ClassName;
                 }
             }
@@ -80,7 +76,7 @@ namespace LeanCloud {
                     if (className != null && className != query.ClassName) {
                         throw new ArgumentException("All of the queries in an or query must be on the same class.");
                     }
-                    composition.AddCondition(query.condition);
+                    composition.condition.AddCondition(query.condition);
                     className = query.ClassName;
                 }
             }
@@ -88,14 +84,16 @@ namespace LeanCloud {
             return composition;
         }
 
+        #endregion
+
         public virtual async Task<IEnumerable<T>> FindAsync(CancellationToken cancellationToken = default) {
-            IEnumerable<IObjectState> states = await QueryController.FindAsync(this, AVUser.CurrentUser, cancellationToken);
+            IEnumerable<IObjectState> states = await QueryController.FindAsync(this, cancellationToken);
             return (from state in states
                     select AVObject.FromState<T>(state, ClassName));
         }
 
         public virtual async Task<T> FirstOrDefaultAsync(CancellationToken cancellationToken = default) {
-            IObjectState state = await QueryController.FirstAsync<T>(this, AVUser.CurrentUser, cancellationToken);
+            IObjectState state = await QueryController.FirstAsync<T>(this, cancellationToken);
             return state == null ? default : AVObject.FromState<T>(state, ClassName);
         }
 
@@ -109,7 +107,7 @@ namespace LeanCloud {
         }
 
         public virtual Task<int> CountAsync(CancellationToken cancellationToken = default) {
-            return QueryController.CountAsync(this, AVUser.CurrentUser, cancellationToken);
+            return QueryController.CountAsync(this, cancellationToken);
         }
 
         public virtual async Task<T> GetAsync(string objectId, CancellationToken cancellationToken) {
@@ -224,78 +222,72 @@ namespace LeanCloud {
         #region Where
 
         public AVQuery<T> WhereContainedIn<TIn>(string key, IEnumerable<TIn> values) {
-            AddCondition(key, "$in", values.ToList());
+            condition.WhereContainedIn(key, values);
             return this;
         }
 
         public AVQuery<T> WhereContainsAll<TIn>(string key, IEnumerable<TIn> values) {
-            AddCondition(key, "$all", values.ToList());
+            condition.WhereContainsAll(key, values);
             return this;
         }
 
         public AVQuery<T> WhereContains(string key, string substring) {
-            AddCondition(key, "$regex", RegexQuote(substring));
+            condition.WhereContains(key, substring);
             return this;
         }
 
         public AVQuery<T> WhereDoesNotExist(string key) {
-            AddCondition(key, "$exists", false);
+            condition.WhereDoesNotExist(key);
             return this;
         }
 
-        public AVQuery<T> WhereDoesNotMatchQuery<TOther>(string key, AVQuery<TOther> query)
-            where TOther : AVObject {
-            AddCondition(key, "$notInQuery", query.BuildParameters(query.ClassName));
+        public AVQuery<T> WhereDoesNotMatchQuery<TOther>(string key, AVQuery<TOther> query) where TOther : AVObject {
+            condition.WhereDoesNotMatchQuery(key, query);
             return this;
         }
 
         public AVQuery<T> WhereEndsWith(string key, string suffix) {
-            AddCondition(key, "$regex", RegexQuote(suffix) + "$");
+            condition.WhereEndsWith(key, suffix);
             return this;
         }
 
         public AVQuery<T> WhereEqualTo(string key, object value) {
-            AddCondition(new QueryEqualCondition(key, value));
+            condition.WhereEqualTo(key, value);
             return this;
         }
 
         public AVQuery<T> WhereSizeEqualTo(string key, uint size) {
-            AddCondition(key, "$size", size);
+            condition.WhereSizeEqualTo(key, size);
             return this;
         }
 
         public AVQuery<T> WhereExists(string key) {
-            AddCondition(key, "$exists", true);
+            condition.WhereExists(key);
             return this;
         }
 
         public AVQuery<T> WhereGreaterThan(string key, object value) {
-            AddCondition(key, "$gt", value);
+            condition.WhereGreaterThan(key, value);
             return this;
         }
 
         public AVQuery<T> WhereGreaterThanOrEqualTo(string key, object value) {
-            AddCondition(key, "$gte", value);
+            condition.WhereGreaterThanOrEqualTo(key, value);
             return this;
         }
 
         public AVQuery<T> WhereLessThan(string key, object value) {
-            AddCondition(key, "$lt", value);
+            condition.WhereLessThan(key, value);
             return this;
         }
 
         public AVQuery<T> WhereLessThanOrEqualTo(string key, object value) {
-            AddCondition(key, "$lte", value);
+            condition.WhereLessThanOrEqualTo(key, value);
             return this;
         }
 
         public AVQuery<T> WhereMatches(string key, Regex regex, string modifiers) {
-            if (!regex.Options.HasFlag(RegexOptions.ECMAScript)) {
-                throw new ArgumentException(
-                  "Only ECMAScript-compatible regexes are supported. Please use the ECMAScript RegexOptions flag when creating your regex.");
-            }
-            AddCondition(key, "$regex", regex.ToString());
-            AddCondition(key, "options", modifiers);
+            condition.WhereMatches(key, regex, modifiers);
             return this;
         }
 
@@ -311,68 +303,53 @@ namespace LeanCloud {
             return WhereMatches(key, pattern, null);
         }
 
-        public AVQuery<T> WhereMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query)
-            where TOther : AVObject {
-            var parameters = new Dictionary<string, object> {
-                { "query", query.BuildParameters(query.ClassName)},
-                { "key", keyInQuery}
-            };
-            AddCondition(key, "$select", parameters);
+        public AVQuery<T> WhereMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query) where TOther : AVObject {
+            condition.WhereMatchesKeyInQuery(key, keyInQuery, query);
             return this;
         }
 
-        public AVQuery<T> WhereDoesNotMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query)
-            where TOther : AVObject {
-            var parameters = new Dictionary<string, object> {
-                { "query", query.BuildParameters(query.ClassName)},
-                { "key", keyInQuery}
-            };
-            AddCondition(key, "$dontSelect", parameters);
+        public AVQuery<T> WhereDoesNotMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query) where TOther : AVObject {
+            condition.WhereDoesNotMatchesKeyInQuery(key, keyInQuery, query);
             return this;
         }
 
-        public AVQuery<T> WhereMatchesQuery<TOther>(string key, AVQuery<TOther> query)
-            where TOther : AVObject {
-            AddCondition(key, "$inQuery", query.BuildParameters(query.ClassName));
+        public AVQuery<T> WhereMatchesQuery<TOther>(string key, AVQuery<TOther> query) where TOther : AVObject {
+            condition.WhereMatchesQuery(key, query);
             return this;
         }
 
         public AVQuery<T> WhereNear(string key, AVGeoPoint point) {
-            AddCondition(key, "$nearSphere", point);
+            condition.WhereNear(key, point);
             return this;
         }
 
         public AVQuery<T> WhereNotContainedIn<TIn>(string key, IEnumerable<TIn> values) {
-            AddCondition(key, "$nin", values.ToList());
+            condition.WhereNotContainedIn(key, values);
             return this;
         }
 
         public AVQuery<T> WhereNotEqualTo(string key, object value) {
-            AddCondition(key, "$ne", value);
+            condition.WhereNotEqualTo(key, value);
             return this;
         }
 
         public AVQuery<T> WhereStartsWith(string key, string suffix) {
-            AddCondition(key, "$regex", "^" + RegexQuote(suffix));
+            condition.WhereStartsWith(key, suffix);
             return this;
         }
 
         public AVQuery<T> WhereWithinGeoBox(string key, AVGeoPoint southwest, AVGeoPoint northeast) {
-            Dictionary<string, object> value = new Dictionary<string, object> {
-                { "$box", new[] { southwest, northeast } }
-            };
-            AddCondition(key, "$within", value);
+            condition.WhereWithinGeoBox(key, southwest, northeast);
             return this;
         }
 
         public AVQuery<T> WhereWithinDistance(string key, AVGeoPoint point, AVGeoDistance maxDistance) {
-            AddCondition(key, "$nearSphere", point);
-            AddCondition(key, "$maxDistance", maxDistance.Radians);
+            condition.WhereWithinDistance(key, point, maxDistance);
             return this;
         }
 
         public AVQuery<T> WhereRelatedTo(AVObject parent, string key) {
-            AddCondition(new QueryRelatedCondition(parent, key));
+            condition.WhereRelatedTo(parent, key);
             return this;
         }
 
@@ -382,26 +359,8 @@ namespace LeanCloud {
             return condition.BuildParameters(className);
         }
 
-        private string RegexQuote(string input) {
-            return "\\Q" + input.Replace("\\E", "\\E\\\\E\\Q") + "\\E";
-        }
-
         public IDictionary<string, object> BuildWhere() {
-            IDictionary<string, object> where = condition.ToJSON();
-            return where;
-        }
-
-        void AddCondition(string key, string op, object value) {
-            QueryOperationCondition cond = new QueryOperationCondition {
-                Key = key,
-                Op = op,
-                Value = value
-            };
-            condition.AddCondition(cond);
-        }
-
-        void AddCondition(IQueryCondition cond) {
-            condition.AddCondition(cond);
+            return condition.ToJSON();
         }
     }
 }

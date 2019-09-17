@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace LeanCloud.Storage.Internal {
-    public class QueryEqualCondition : IQueryCondition {
+    internal class QueryEqualCondition : IQueryCondition {
         string key;
         object value;
 

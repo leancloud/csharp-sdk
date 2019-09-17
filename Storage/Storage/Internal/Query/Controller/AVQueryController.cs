@@ -7,16 +7,13 @@ using System.Threading.Tasks;
 
 namespace LeanCloud.Storage.Internal {
     public class AVQueryController {
-        public async Task<IEnumerable<IObjectState>> FindAsync<T>(AVQuery<T> query, AVUser user,
-            CancellationToken cancellationToken) where T : AVObject {
+        public async Task<IEnumerable<IObjectState>> FindAsync<T>(AVQuery<T> query, CancellationToken cancellationToken) where T : AVObject {
             IList<object> items = await FindAsync<IList<object>>(query.Path, query.BuildParameters(), "results", cancellationToken);
             return from item in items
                    select AVObjectCoder.Instance.Decode(item as IDictionary<string, object>, AVDecoder.Instance);
         }
 
-        public async Task<int> CountAsync<T>(AVQuery<T> query,
-            AVUser user,
-            CancellationToken cancellationToken) where T : AVObject {
+        public async Task<int> CountAsync<T>(AVQuery<T> query, CancellationToken cancellationToken) where T : AVObject {
             var parameters = query.BuildParameters();
             parameters["limit"] = 0;
             parameters["count"] = 1;
@@ -24,9 +21,7 @@ namespace LeanCloud.Storage.Internal {
             return Convert.ToInt32(ret);
         }
 
-        public async Task<IObjectState> FirstAsync<T>(AVQuery<T> query,
-            AVUser user,
-            CancellationToken cancellationToken) where T : AVObject {
+        public async Task<IObjectState> FirstAsync<T>(AVQuery<T> query, CancellationToken cancellationToken) where T : AVObject {
             var parameters = query.BuildParameters();
             parameters["limit"] = 1;
             IList<object> items = await FindAsync<IList<object>>(query.Path, query.BuildParameters(), "results", cancellationToken);
