@@ -5,6 +5,6 @@ namespace LeanCloud.Storage.Internal {
     /// IEquatable<IQueryCondition> 用于比对（替换）相同的查询条件
     /// IJsonConvertible 用于生成序列化 Dictionary
     /// </summary>
-    internal interface IQueryCondition : IEquatable<IQueryCondition>, IJsonConvertible {
+    public interface IQueryCondition : IEquatable<IQueryCondition>, IJsonConvertible {
     }
 }

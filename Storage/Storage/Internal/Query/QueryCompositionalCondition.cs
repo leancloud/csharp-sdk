@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace LeanCloud.Storage.Internal {
-    internal class QueryCompositionalCondition : IQueryCondition {
-        internal const string AND = "$and";
-        internal const string OR = "$or";
+    public class QueryCombinedCondition : IQueryCondition {
+        public const string AND = "$and";
+        public const string OR = "$or";
 
         readonly List<IQueryCondition> conditions;
         readonly string composition;
@@ -17,7 +17,7 @@ namespace LeanCloud.Storage.Internal {
         internal int skip;
         internal int limit;
 
-        internal QueryCompositionalCondition(string composition = AND) {
+        public QueryCombinedCondition(string composition = AND) {
             conditions = new List<IQueryCondition>();
             this.composition = composition;
             skip = 0;
@@ -177,21 +177,21 @@ namespace LeanCloud.Storage.Internal {
 
         #endregion
 
-        internal void OrderBy(string key) {
+        public void OrderBy(string key) {
             if (orderBy == null) {
                 orderBy = new List<string>();
             }
             orderBy.Add(key);
         }
 
-        internal void OrderByDescending(string key) {
+        public void OrderByDescending(string key) {
             if (orderBy == null) {
                 orderBy = new List<string>();
             }
             orderBy.Add($"-{key}");
         }
 
-        internal void Include(string key) {
+        public void Include(string key) {
             if (includes == null) {
                 includes = new HashSet<string>();
             }
@@ -202,7 +202,7 @@ namespace LeanCloud.Storage.Internal {
             }
         }
 
-        internal void Select(string key) {
+        public void Select(string key) {
             if (selectedKeys == null) {
                 selectedKeys = new HashSet<string>();
             }
@@ -213,15 +213,15 @@ namespace LeanCloud.Storage.Internal {
             }
         }
 
-        internal void Skip(int count) {
+        public void Skip(int count) {
             skip = count;
         }
 
-        internal void Limit(int count) {
+        public void Limit(int count) {
             limit = count;
         }
 
-        internal void AddCondition(string key, string op, object value) {
+        public void AddCondition(string key, string op, object value) {
             QueryOperationCondition cond = new QueryOperationCondition {
                 Key = key,
                 Op = op,
@@ -230,7 +230,7 @@ namespace LeanCloud.Storage.Internal {
             AddCondition(cond);
         }
 
-        internal void AddCondition(IQueryCondition condition) {
+        public void AddCondition(IQueryCondition condition) {
             if (condition == null) {
                 return;
             }
@@ -245,7 +245,7 @@ namespace LeanCloud.Storage.Internal {
         /// 构建查询字符串
         /// </summary>
         /// <returns></returns>
-        internal IDictionary<string, object> BuildParameters(string className) {
+        public IDictionary<string, object> BuildParameters(string className) {
             Dictionary<string, object> result = new Dictionary<string, object>();
             if (conditions != null) {
                 result["where"] = ToJSON();

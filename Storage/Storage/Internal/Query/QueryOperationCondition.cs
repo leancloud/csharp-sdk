@@ -15,8 +15,7 @@ namespace LeanCloud.Storage.Internal {
         }
 
         public bool Equals(IQueryCondition other) {
-            if (other is QueryOperationCondition) {
-                QueryOperationCondition otherCond = other as QueryOperationCondition;
+            if (other is QueryOperationCondition otherCond) {
                 return Key == otherCond.Key && Op == otherCond.Op;
             }
             return false;

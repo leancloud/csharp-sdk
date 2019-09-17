@@ -3,110 +3,80 @@ using LeanCloud.Storage.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
-namespace LeanCloud.Realtime
-{
+namespace LeanCloud.Realtime {
     /// <summary>
     /// 对话查询类
     /// </summary>
-    public class AVIMConversationQuery
-    {
+    public class AVIMConversationQuery {
         internal AVIMClient CurrentClient { get; set; }
-        internal AVIMConversationQuery(AVIMClient _currentClient)
-            : base()
-        {
-            CurrentClient = _currentClient;
-        }
-
-        bool compact;
-        bool withLastMessageRefreshed;
-
         
+        QueryCombinedCondition condition;
 
-        /// <summary>
-        /// Creates the instance.
-        /// </summary>
-        /// <returns>The instance.</returns>
-        /// <param name="where">Where.</param>
-        /// <param name="replacementOrderBy">Replacement order by.</param>
-        /// <param name="thenBy">Then by.</param>
-        /// <param name="skip">Skip.</param>
-        /// <param name="limit">Limit.</param>
-        /// <param name="includes">Includes.</param>
-        /// <param name="selectedKeys">Selected keys.</param>
-        /// <param name="redirectClassNameForKey">Redirect class name for key.</param>
-        public AVIMConversationQuery CreateInstance(
-            IDictionary<string, object> where = null,
-            IEnumerable<string> replacementOrderBy = null,
-            IEnumerable<string> thenBy = null,
-            int? skip = null,
-            int? limit = null,
-            IEnumerable<string> includes = null,
-            IEnumerable<string> selectedKeys = null,
-            String redirectClassNameForKey = null)
-        {
-            var rtn = new AVIMConversationQuery(this, where, replacementOrderBy, thenBy, skip, limit, includes);
-            rtn.CurrentClient = this.CurrentClient;
-            rtn.compact = this.compact;
-            rtn.withLastMessageRefreshed = this.withLastMessageRefreshed;
-            return rtn;
+        public AVIMConversationQuery() {
+            condition = new QueryCombinedCondition();
         }
 
-        /// <summary>
-        /// Withs the last message refreshed.
-        /// </summary>
-        /// <returns>The last message refreshed.</returns>
-        /// <param name="enabled">If set to <c>true</c> enabled.</param>
-        public AVIMConversationQuery WithLastMessageRefreshed(bool enabled)
-        {
-            this.withLastMessageRefreshed = enabled;
-            return this;
-        }
-
-        public AVIMConversationQuery Compact(bool enabled)
-        {
-            this.compact = enabled;
-            return this;
-        }
-
-
-        internal ConversationCommand GenerateQueryCommand()
-        {
+        internal ConversationCommand GenerateQueryCommand() {
             var cmd = new ConversationCommand();
-            
-            var queryParameters = this.BuildParameters(false);
-            if (queryParameters != null)
-            {
-                if (queryParameters.Keys.Contains("where"))
-                    cmd.Where(queryParameters["where"]);
 
-                if (queryParameters.Keys.Contains("skip"))
-                    cmd.Skip(int.Parse(queryParameters["skip"].ToString()));
-
-                if (queryParameters.Keys.Contains("limit"))
-                    cmd.Limit(int.Parse(queryParameters["limit"].ToString()));
-
-                if (queryParameters.Keys.Contains("sort"))
-                    cmd.Sort(queryParameters["order"].ToString());
+            var queryParameters = BuildParameters();
+            if (queryParameters != null) {
+                if (queryParameters.TryGetValue("where", out object where)) {
+                    cmd.Where(where);
+                }
+                if (queryParameters.TryGetValue("skip", out object skip)) {
+                    cmd.Skip((int)skip);
+                }
+                if (queryParameters.TryGetValue("limit", out object limit)) {
+                    cmd.Limit((int)limit);
+                }
+                if (queryParameters.TryGetValue("order", out object order)) {
+                    cmd.Sort(order.ToString());
+                }
             }
 
             return cmd;
         }
 
-        public Task<int> CountAsync(CancellationToken cancellationToken = default) {
+        #region Combined Query
+
+        public static AVIMConversationQuery And(IEnumerable<AVIMConversationQuery> queries) {
+            AVIMConversationQuery composition = new AVIMConversationQuery();
+            if (queries != null) {
+                foreach (AVIMConversationQuery query in queries) {
+                    composition.condition.AddCondition(query.condition);
+                }
+            }
+            return composition;
+        }
+
+        public static AVIMConversationQuery Or(IEnumerable<AVIMConversationQuery> queries) {
+            AVIMConversationQuery composition = new AVIMConversationQuery {
+                condition = new QueryCombinedCondition(QueryCombinedCondition.OR)
+            };
+            if (queries != null) {
+                foreach (AVIMConversationQuery query in queries) {
+                    composition.condition.AddCondition(query.condition);
+                }
+            }
+            return composition;
+        }
+
+        #endregion
+
+        public Task<int> CountAsync() {
             var convCmd = GenerateQueryCommand();
             convCmd.Count();
             convCmd.Limit(0);
             var cmd = convCmd.Option("query");
-            return CurrentClient.RunCommandAsync(convCmd).OnSuccess(t =>
-            {
+            return CurrentClient.RunCommandAsync(convCmd).OnSuccess(t => {
                 var result = t.Result.Item2;
 
-                if (result.ContainsKey("count"))
-                {
+                if (result.ContainsKey("count")) {
                     return int.Parse(result["count"].ToString());
                 }
                 return 0;
@@ -117,24 +87,16 @@ namespace LeanCloud.Realtime
         /// <summary>
         /// 查找符合条件的对话
         /// </summary>
-        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<IEnumerable<AVIMConversation>> FindAsync(CancellationToken cancellationToken = default)
-        {
-            var convCmd = this.GenerateQueryCommand().Option("query");
-            return CurrentClient.RunCommandAsync(convCmd).OnSuccess(t =>
-            {
+        public Task<IEnumerable<AVIMConversation>> FindAsync() {
+            var convCmd = GenerateQueryCommand().Option("query");
+            return CurrentClient.RunCommandAsync(convCmd).OnSuccess(t => {
                 var result = t.Result.Item2;
 
                 IList<AVIMConversation> rtn = new List<AVIMConversation>();
-                var conList = result["results"] as IList<object>;
-                if (conList != null)
-                {
-                    foreach (var c in conList)
-                    {
-                        var cData = c as IDictionary<string, object>;
-                        if (cData != null)
-                        {
+                if (result["results"] is IList<object> conList) {
+                    foreach (var c in conList) {
+                        if (c is IDictionary<string, object> cData) {
                             var con = AVIMConversation.CreateWithData(cData, CurrentClient);
                             rtn.Add(con);
                         }
@@ -144,25 +106,194 @@ namespace LeanCloud.Realtime
             });
         }
 
-        public Task<AVIMConversation> FirstAsync(CancellationToken cancellationToken = default)
-        {
-            return this.FirstOrDefaultAsync();
+        public Task<AVIMConversation> FirstAsync() {
+            return FirstOrDefaultAsync();
         }
 
-        public Task<AVIMConversation> FirstOrDefaultAsync(CancellationToken cancellationToken = default)
-        {
-            var firstQuery = this.Limit(1);
-            return firstQuery.FindAsync().OnSuccess(t =>
-            {
+        public Task<AVIMConversation> FirstOrDefaultAsync() {
+            var firstQuery = Limit(1);
+            return firstQuery.FindAsync().OnSuccess(t => {
                 return t.Result.FirstOrDefault();
             });
         }
 
-        public Task<AVIMConversation> GetAsync(string objectId, CancellationToken cancellationToken = default)
-        {
-            var idQuery = this.WhereEqualTo("objectId", objectId);
+        public Task<AVIMConversation> GetAsync(string objectId) {
+            var idQuery = WhereEqualTo("objectId", objectId);
             return idQuery.FirstAsync();
         }
-    }
 
+        public AVIMConversationQuery OrderBy(string key) {
+            condition.OrderBy(key);
+            return this;
+        }
+
+        public AVIMConversationQuery OrderByDescending(string key) {
+            condition.OrderByDescending(key);
+            return this;
+        }
+
+        public AVIMConversationQuery Include(string key) {
+            condition.Include(key);
+            return this;
+        }
+
+        public AVIMConversationQuery Select(string key) {
+            condition.Select(key);
+            return this;
+        }
+
+        public AVIMConversationQuery Skip(int count) {
+            condition.Skip(count);
+            return this;
+        }
+
+        public AVIMConversationQuery Limit(int count) {
+            condition.Limit(count);
+            return this;
+        }
+
+        #region Where
+
+        public AVIMConversationQuery WhereContainedIn<TIn>(string key, IEnumerable<TIn> values) {
+            condition.WhereContainedIn(key, values);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereContainsAll<TIn>(string key, IEnumerable<TIn> values) {
+            condition.WhereContainsAll(key, values);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereContains(string key, string substring) {
+            condition.WhereContains(key, substring);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereDoesNotExist(string key) {
+            condition.WhereDoesNotExist(key);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereDoesNotMatchQuery<TOther>(string key, AVQuery<TOther> query) where TOther : AVObject {
+            condition.WhereDoesNotMatchQuery(key, query);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereEndsWith(string key, string suffix) {
+            condition.WhereEndsWith(key, suffix);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereEqualTo(string key, object value) {
+            condition.WhereEqualTo(key, value);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereSizeEqualTo(string key, uint size) {
+            condition.WhereSizeEqualTo(key, size);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereExists(string key) {
+            condition.WhereExists(key);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereGreaterThan(string key, object value) {
+            condition.WhereGreaterThan(key, value);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereGreaterThanOrEqualTo(string key, object value) {
+            condition.WhereGreaterThanOrEqualTo(key, value);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereLessThan(string key, object value) {
+            condition.WhereLessThan(key, value);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereLessThanOrEqualTo(string key, object value) {
+            condition.WhereLessThanOrEqualTo(key, value);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereMatches(string key, Regex regex, string modifiers) {
+            condition.WhereMatches(key, regex, modifiers);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereMatches(string key, Regex regex) {
+            return WhereMatches(key, regex, null);
+        }
+
+        public AVIMConversationQuery WhereMatches(string key, string pattern, string modifiers) {
+            return WhereMatches(key, new Regex(pattern, RegexOptions.ECMAScript), modifiers);
+        }
+
+        public AVIMConversationQuery WhereMatches(string key, string pattern) {
+            return WhereMatches(key, pattern, null);
+        }
+
+        public AVIMConversationQuery WhereMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query) where TOther : AVObject {
+            condition.WhereMatchesKeyInQuery(key, keyInQuery, query);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereDoesNotMatchesKeyInQuery<TOther>(string key, string keyInQuery, AVQuery<TOther> query) where TOther : AVObject {
+            condition.WhereDoesNotMatchesKeyInQuery(key, keyInQuery, query);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereMatchesQuery<TOther>(string key, AVQuery<TOther> query) where TOther : AVObject {
+            condition.WhereMatchesQuery(key, query);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereNear(string key, AVGeoPoint point) {
+            condition.WhereNear(key, point);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereNotContainedIn<TIn>(string key, IEnumerable<TIn> values) {
+            condition.WhereNotContainedIn(key, values);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereNotEqualTo(string key, object value) {
+            condition.WhereNotEqualTo(key, value);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereStartsWith(string key, string suffix) {
+            condition.WhereStartsWith(key, suffix);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereWithinGeoBox(string key, AVGeoPoint southwest, AVGeoPoint northeast) {
+            condition.WhereWithinGeoBox(key, southwest, northeast);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereWithinDistance(string key, AVGeoPoint point, AVGeoDistance maxDistance) {
+            condition.WhereWithinDistance(key, point, maxDistance);
+            return this;
+        }
+
+        public AVIMConversationQuery WhereRelatedTo(AVObject parent, string key) {
+            condition.WhereRelatedTo(parent, key);
+            return this;
+        }
+
+        #endregion
+
+        public IDictionary<string, object> BuildParameters(string className = null) {
+            return condition.BuildParameters(className);
+        }
+
+        public IDictionary<string, object> BuildWhere() {
+            return condition.ToJSON();
+        }
+    }
 }

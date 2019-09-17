@@ -31,7 +31,7 @@ namespace LeanCloud {
         /// <summary>
         /// 根查询条件，默认是 and 查询，可以设置为 or 查询
         /// </summary>
-        QueryCompositionalCondition condition;
+        QueryCombinedCondition condition;
 
         static AVQueryController QueryController {
             get {
@@ -48,10 +48,10 @@ namespace LeanCloud {
                 throw new ArgumentNullException(nameof(className));
             }
             ClassName = className;
-            condition = new QueryCompositionalCondition();
+            condition = new QueryCombinedCondition();
         }
 
-        #region Compositional Query
+        #region Combined Query
 
         public static AVQuery<T> And(IEnumerable<AVQuery<T>> queries) {
             AVQuery<T> composition = new AVQuery<T>();
@@ -71,7 +71,7 @@ namespace LeanCloud {
 
         public static AVQuery<T> Or(IEnumerable<AVQuery<T>> queries) {
             AVQuery<T> composition = new AVQuery<T> {
-                condition = new QueryCompositionalCondition(QueryCompositionalCondition.OR)
+                condition = new QueryCombinedCondition(QueryCombinedCondition.OR)
             };
             string className = null;
             if (queries != null) {
