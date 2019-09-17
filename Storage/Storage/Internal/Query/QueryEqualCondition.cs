@@ -2,8 +2,8 @@
 
 namespace LeanCloud.Storage.Internal {
     internal class QueryEqualCondition : IQueryCondition {
-        string key;
-        object value;
+        readonly string key;
+        readonly object value;
 
         public QueryEqualCondition(string key, object value) {
             this.key = key;

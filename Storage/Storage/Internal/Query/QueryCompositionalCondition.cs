@@ -222,11 +222,7 @@ namespace LeanCloud.Storage.Internal {
         }
 
         public void AddCondition(string key, string op, object value) {
-            QueryOperationCondition cond = new QueryOperationCondition {
-                Key = key,
-                Op = op,
-                Value = value
-            };
+            QueryOperationCondition cond = new QueryOperationCondition(key, op, value);
             AddCondition(cond);
         }
 

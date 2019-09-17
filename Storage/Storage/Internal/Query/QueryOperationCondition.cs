@@ -2,29 +2,27 @@
 
 namespace LeanCloud.Storage.Internal {
     internal class QueryOperationCondition : IQueryCondition {
-        public string Key {
-            get; set;
-        }
+        readonly string key;
+        readonly string op;
+        readonly object value;
 
-        public string Op {
-            get; set;
-        }
-
-        public object Value {
-            get; set;
+        public QueryOperationCondition(string key, string op, object value) {
+            this.key = key;
+            this.op = op;
+            this.value = value;
         }
 
         public bool Equals(IQueryCondition other) {
             if (other is QueryOperationCondition otherCond) {
-                return Key == otherCond.Key && Op == otherCond.Op;
+                return key == otherCond.key && op == otherCond.op;
             }
             return false;
         }
 
         public IDictionary<string, object> ToJSON() {
             return new Dictionary<string, object> {
-                { Key, new Dictionary<string, object> {
-                    { Op, Value }
+                { key, new Dictionary<string, object> {
+                    { op, value }
                 } }
             };
         }
