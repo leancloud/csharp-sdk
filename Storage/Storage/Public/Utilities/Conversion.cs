@@ -61,42 +61,6 @@ namespace LeanCloud.Utilities
                 return (T)Convert.ChangeType(value, typeof(T));
             }
 
-            if (ReflectionHelpers.IsConstructedGenericType(typeof(T)))
-            {
-                // Add lifting for nullables. Only supports conversions between primitives.
-                if (ReflectionHelpers.IsNullable(typeof(T)))
-                {
-                    var innerType = ReflectionHelpers.GetGenericTypeArguments(typeof(T))[0];
-                    if (ReflectionHelpers.IsPrimitive(innerType))
-                    {
-                        return (T)Convert.ChangeType(value, innerType);
-                    }
-                }
-                Type listType = GetInterfaceType(value.GetType(), typeof(IList<>));
-                var la = typeof(T).GetGenericTypeDefinition();
-                var ilb = typeof(IList<>);
-                var lb = typeof(List<>);
-                if (listType != null &&
-                    (la == ilb || la == lb))
-                {
-                    var wrapperType = typeof(FlexibleListWrapper<,>)
-                      .MakeGenericType(ReflectionHelpers.GetGenericTypeArguments(typeof(T))[0],
-                                       ReflectionHelpers.GetGenericTypeArguments(listType)[0]);
-                    return Activator.CreateInstance(wrapperType, value);
-                }
-                Type dictType = GetInterfaceType(value.GetType(), typeof(IDictionary<,>));
-                var da = typeof(T).GetGenericTypeDefinition();
-                var db = typeof(IDictionary<,>);
-                if (dictType != null &&
-                  da == db)
-                {
-                    var wrapperType = typeof(FlexibleDictionaryWrapper<,>)
-                      .MakeGenericType(ReflectionHelpers.GetGenericTypeArguments(typeof(T))[1],
-                                       ReflectionHelpers.GetGenericTypeArguments(dictType)[1]);
-                    return Activator.CreateInstance(wrapperType, value);
-                }
-            }
-
             return value;
         }
 

@@ -77,9 +77,6 @@ namespace LeanCloud.Storage.Internal {
         private object EncodeList(IList<object> list) {
             List<object> newArray = new List<object>();
             foreach (object item in list) {
-                if (!IsValidType(item)) {
-                    throw new ArgumentException("Invalid type for value in an array");
-                }
                 newArray.Add(Encode(item));
             }
             return newArray;

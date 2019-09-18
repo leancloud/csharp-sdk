@@ -556,12 +556,6 @@ namespace LeanCloud
             var fieldPath = GetValue(leftTransformed.Arguments[0]) as string;
             var filterValue = GetValue(node.Right);
 
-            if (filterValue != null && !AVEncoder.IsValidType(filterValue))
-            {
-                throw new InvalidOperationException(
-                  "Where clauses must use types compatible with AVObjects.");
-            }
-
             switch (node.NodeType)
             {
                 case ExpressionType.GreaterThan:

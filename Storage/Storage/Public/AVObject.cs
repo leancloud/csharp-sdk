@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
+using System.Linq;
 using System.Collections.Concurrent;
 
 namespace LeanCloud {
@@ -436,8 +437,7 @@ string propertyName
         /// <param name="traverseAVObjects">Whether to traverse into AVObjects' children</param>
         /// <param name="yieldRoot">Whether to include the root in the result</param>
         /// <returns></returns>
-        internal static IEnumerable<object> DeepTraversal(
-            object root, bool traverseAVObjects = false, bool yieldRoot = false) {
+        internal static IEnumerable<object> DeepTraversal(object root, bool traverseAVObjects = false, bool yieldRoot = false) {
             var items = DeepTraversalInternal(root,
                 traverseAVObjects,
                 new HashSet<object>(new IdentityEqualityComparer<object>()));
@@ -448,22 +448,17 @@ string propertyName
             }
         }
 
-        private static IEnumerable<object> DeepTraversalInternal(
-            object root, bool traverseAVObjects, ICollection<object> seen) {
+        private static IEnumerable<object> DeepTraversalInternal(object root, bool traverseAVObjects, ICollection<object> seen) {
             seen.Add(root);
-            var itemsToVisit = isCompiledByIL2CPP ? (System.Collections.IEnumerable)null : (IEnumerable<object>)null;
-            var dict = Conversion.As<IDictionary<string, object>>(root);
-            if (dict != null) {
+            IEnumerable itemsToVisit = null;
+            if (root is IDictionary dict) {
                 itemsToVisit = dict.Values;
-            } else {
-                var list = Conversion.As<IList<object>>(root);
-                if (list != null) {
-                    itemsToVisit = list;
-                } else if (traverseAVObjects) {
-                    var obj = root as AVObject;
-                    if (obj != null) {
-                        itemsToVisit = obj.Keys.ToList().Select(k => obj[k]);
-                    }
+            } else if (root is IList list) {
+                itemsToVisit = list;
+            } else if (traverseAVObjects) {
+                var obj = root as AVObject;
+                if (obj != null) {
+                    itemsToVisit = obj.Keys.ToList().Select(k => obj[k]);
                 }
             }
             if (itemsToVisit != null) {
@@ -1104,11 +1099,6 @@ string propertyName
         internal void Set(string key, object value) {
             lock (mutex) {
                 OnSettingValue(ref key, ref value);
-
-                if (!AVEncoder.IsValidType(value)) {
-                    throw new ArgumentException("Invalid type for value: " + value.GetType().ToString());
-                }
-
                 PerformOperation(key, new AVSetOperation(value));
             }
         }
