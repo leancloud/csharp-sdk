@@ -10,17 +10,9 @@ namespace LeanCloud.Storage.Internal {
         public DateTime? UpdatedAt { get; set; }
         public DateTime? CreatedAt { get; set; }
 
-        // Initialize serverData to avoid further null checking.
-        private IDictionary<string, object> serverData = new Dictionary<string, object>();
         public IDictionary<string, object> ServerData {
-            get {
-                return serverData;
-            }
-
-            set {
-                serverData = value;
-            }
-        }
+            get; set;
+        } = new Dictionary<string, object>();
 
         public object this[string key] {
             get {
@@ -35,8 +27,7 @@ namespace LeanCloud.Storage.Internal {
         public void Apply(IDictionary<string, IAVFieldOperation> operationSet) {
             // Apply operationSet
             foreach (var pair in operationSet) {
-                object oldValue;
-                ServerData.TryGetValue(pair.Key, out oldValue);
+                ServerData.TryGetValue(pair.Key, out object oldValue);
                 var newValue = pair.Value.Apply(oldValue, pair.Key);
                 if (newValue != AVDeleteOperation.DeleteToken) {
                     ServerData[pair.Key] = newValue;

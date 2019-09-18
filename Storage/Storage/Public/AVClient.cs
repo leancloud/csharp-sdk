@@ -118,10 +118,14 @@ namespace LeanCloud {
             });
         }
 
-        public static void SetServerURL(string serverUrl) {
-            CurrentConfiguration.ApiServer = serverUrl;
-            CurrentConfiguration.EngineServer = serverUrl;
-            CurrentConfiguration.RTMServer = serverUrl;
+        public static void Initialize(string applicationId, string applicationKey, string serverUrl) {
+            Initialize(new Configuration {
+                ApplicationId = applicationId,
+                ApplicationKey = applicationKey,
+                ApiServer = serverUrl,
+                EngineServer = serverUrl,
+                RTMServer = serverUrl
+            });
         }
 
         internal static Action<string> LogTracker { get; private set; }

@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
+using System.Collections.Concurrent;
 
 namespace LeanCloud {
     /// <summary>
@@ -971,8 +972,7 @@ string propertyName
             List<string> appliedKeys = new List<string>();
             lock (mutex) {
                 foreach (var pair in operations) {
-                    object oldValue;
-                    map.TryGetValue(pair.Key, out oldValue);
+                    map.TryGetValue(pair.Key, out object oldValue);
                     var newValue = pair.Value.Apply(oldValue, pair.Key);
                     if (newValue != AVDeleteOperation.DeleteToken) {
                         map[pair.Key] = newValue;

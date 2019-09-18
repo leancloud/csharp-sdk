@@ -15,6 +15,11 @@ namespace LeanCloud.Test {
         public async Task Save() {
             AVObject obj = AVObject.Create("Foo");
             obj["content"] = "hello, world";
+            obj["list"] = new List<int> { 1, 1, 2, 3, 5, 8 };
+            obj["dict"] = new Dictionary<string, int> {
+                { "hello", 1 },
+                { "world", 2 }
+            };
             await obj.SaveAsync();
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
