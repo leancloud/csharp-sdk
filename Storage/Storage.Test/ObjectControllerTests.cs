@@ -47,16 +47,24 @@ namespace LeanCloud.Test {
             
             AVObject post = new AVObject("Post") {
                 { "name", "New Post" },
-                { "category", new AVObject("Category") }
+                { "category", new AVObject("Category") {
+                    { "name", "new post category" }
+                } }
             };
             comment["post"] = post;
 
             AVObject testPost = new AVObject("Post") {
-                { "name", "Test Post" }
+                { "name", "Test Post" },
+                { "category", new AVObject("Category") {
+                    { "name", "test post category" }
+                } }
             };
             comment["test_post"] = testPost;
 
             await comment.SaveAsync();
+            TestContext.Out.WriteLine(post);
+            TestContext.Out.WriteLine(testPost);
+            TestContext.Out.WriteLine(comment);
         }
 
         [Test]
@@ -137,9 +145,12 @@ namespace LeanCloud.Test {
         }
 
         [Test]
-        public void Set() {
+        public async Task Set() {
             AVObject obj = AVObject.Create("Foo");
             obj["hello"] = "world";
+            await obj.SaveAsync();
+            obj["world"] = "aaa";
+            obj.Revert();
             TestContext.Out.WriteAsync(obj["hello"] as string);
         }
     }

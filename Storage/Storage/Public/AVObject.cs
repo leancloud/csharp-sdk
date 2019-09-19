@@ -8,8 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
-using System.Linq;
-using System.Collections.Concurrent;
 
 namespace LeanCloud {
     /// <summary>
@@ -17,13 +15,6 @@ namespace LeanCloud {
     /// </summary>
     public class AVObject : IEnumerable<KeyValuePair<string, object>>, INotifyPropertyChanged, INotifyPropertyUpdated, INotifyCollectionPropertyUpdated {
         private static readonly string AutoClassName = "_Automatic";
-
-#if UNITY
-        private static readonly bool isCompiledByIL2CPP = AppDomain.CurrentDomain.FriendlyName.Equals("IL2CPP Root Domain");
-#else
-        private static readonly bool isCompiledByIL2CPP = false;
-#endif
-
 
         internal readonly object mutex = new object();
 
@@ -75,7 +66,7 @@ namespace LeanCloud {
         /// Constructor for use in AVObject subclasses. Subclasses must specify a AVClassName attribute.
         /// </summary>
         protected AVObject()
-          : this(AutoClassName) {
+            : this(AutoClassName) {
         }
 
         /// <summary>
@@ -1008,7 +999,7 @@ string propertyName
                 // We've just applied a bunch of operations to estimatedData which
                 // may have changed all of its keys. Notify of all keys and properties
                 // mapped to keys being changed.
-                OnFieldsChanged(changedKeys);
+                OnFieldsChanged(null);
             }
         }
 
