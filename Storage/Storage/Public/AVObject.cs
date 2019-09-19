@@ -455,11 +455,8 @@ string propertyName
                 itemsToVisit = dict.Values;
             } else if (root is IList list) {
                 itemsToVisit = list;
-            } else if (traverseAVObjects) {
-                var obj = root as AVObject;
-                if (obj != null) {
-                    itemsToVisit = obj.Keys.ToList().Select(k => obj[k]);
-                }
+            } else if (traverseAVObjects && root is AVObject obj) {
+                itemsToVisit = obj.Keys.ToList().Select(k => obj[k]);
             }
             if (itemsToVisit != null) {
                 foreach (var i in itemsToVisit) {
@@ -591,11 +588,11 @@ string propertyName
             var uniqueObjects = new HashSet<AVObject>(objects, new IdentityEqualityComparer<AVObject>());
 
             // 先保存文件对象（后面可以考虑将 AVFile 作为 AVObject 的子类型进行保存）
-            var saveDirtyFileTasks = DeepTraversal(obj, true)
-                .OfType<AVFile>()
-                .Where(f => f.IsDirty)
-                .Select(f => f.SaveAsync(cancellationToken: cancellationToken)).ToList();
-            await Task.WhenAll(saveDirtyFileTasks);
+            //var saveDirtyFileTasks = DeepTraversal(obj, true)
+            //    .OfType<AVFile>()
+            //    .Where(f => f.IsDirty)
+            //    .Select(f => f.SaveAsync(cancellationToken: cancellationToken)).ToList();
+            //await Task.WhenAll(saveDirtyFileTasks);
 
             IEnumerable<AVObject> remaining = new List<AVObject>(uniqueObjects);
             while (remaining.Any()) {
