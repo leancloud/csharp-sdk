@@ -790,11 +790,11 @@ string propertyName
         /// Deletes this object on the server.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public virtual async Task DeleteAsync(CancellationToken cancellationToken = default) {
+        public virtual async Task DeleteAsync(AVQuery<AVObject> query = null, CancellationToken cancellationToken = default) {
             if (ObjectId == null) {
                 return;
             }
-            await ObjectController.DeleteAsync(State, cancellationToken);
+            await ObjectController.DeleteAsync(State, query, cancellationToken);
             IsDirty = true;
         }
 

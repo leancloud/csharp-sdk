@@ -258,7 +258,12 @@ namespace LeanCloud
             /// <summary>
             /// 手机号不合法
             /// </summary>
-            MobilePhoneInvalid = 253
+            MobilePhoneInvalid = 253,
+
+            /// <summary>
+            /// 按条件更新/删除失败
+            /// </summary>
+            NoEffectOnUpdatingOrDeleting = 305,
         }
 
         internal AVException(ErrorCode code, string message, Exception cause = null)
