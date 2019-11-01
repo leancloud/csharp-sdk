@@ -167,11 +167,21 @@ namespace LeanCloud.Test {
             List<AVObject> objList = new List<AVObject>();
             for (int i = 0; i < 5; i++) {
                 AVObject obj = AVObject.Create("Foo");
+                obj.ACL = new AVACL {
+                    PublicReadAccess = true,
+                    PublicWriteAccess = i % 2 == 0
+                };
                 obj["content"] = "batch object";
                 objList.Add(obj);
             }
             await objList.SaveAllAsync();
-            await AVObject.DeleteAllAsync(objList);
+            try {
+                await AVObject.DeleteAllAsync(objList);
+            } catch (AggregateException e) {
+                foreach (AVException ie in e.InnerExceptions) {
+                    TestContext.Out.WriteLine($"{ie.Code} : {ie.Message}");
+                }
+            }            
         }
 
         [Test]

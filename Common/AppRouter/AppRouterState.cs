@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace LeanCloud.Storage.Internal {
+namespace LeanCloud.Common {
     public class AppRouterState {
         const string EAST_CHINA_SUFFIX = "-9Nh9j0Va";
         const string US_SUFFIX = "-MdYXbMMI";
@@ -93,6 +93,5 @@ namespace LeanCloud.Storage.Internal {
                     };
             }
         }
-
     }
 }

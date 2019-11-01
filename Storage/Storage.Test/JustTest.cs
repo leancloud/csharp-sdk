@@ -28,6 +28,16 @@ namespace LeanCloud.Test {
         }
 
         [Test]
+        public void Zip() {
+            List<int> l1 = new List<int> { 1, 2, 3, 4 };
+            List<int> l2 = new List<int> { 1, 1, 2 };
+            var l3 = l1.Zip(l2, (e1, e2) => $"{e1}-{e2}");
+            foreach (var e in l3) {
+                TestContext.Out.WriteLine($"{e}");
+            }
+        }
+
+        [Test]
         public void GenericType() {
             List<int> list = new List<int> { 1, 1, 2, 3, 5, 8 };
             Type type = list.GetType();

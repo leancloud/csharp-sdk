@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,7 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Storage\Storage\Storage.csproj" />
-    <ProjectReference Include="..\..\AppRouter\AppRouter\AppRouter.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Internal\WebSocket\Unity\websocket-sharp.dll" />

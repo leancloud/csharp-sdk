@@ -122,7 +122,7 @@ namespace LeanCloud.Storage.Internal {
             return tasks;
         }
 
-        private IList<Task<IDictionary<string, object>>> ExecuteBatchRequest(IList<AVCommand> requests,
+        private async Task<IList<Task<IDictionary<string, object>>>> ExecuteBatchRequest(IList<AVCommand> requests,
             CancellationToken cancellationToken) {
             var tasks = new List<Task<IDictionary<string, object>>>();
             int batchSize = requests.Count;
@@ -151,26 +151,16 @@ namespace LeanCloud.Storage.Internal {
                     { "requests", encodedRequests }
                 }
             };
-            AVPlugins.Instance.CommandRunner.RunCommandAsync<IList<object>>(command, cancellationToken).ContinueWith(t => {
-                if (t.IsFaulted || t.IsCanceled) {
-                    foreach (var tcs in tcss) {
-                        if (t.IsFaulted) {
-                            tcs.TrySetException(t.Exception);
-                        } else if (t.IsCanceled) {
-                            tcs.TrySetCanceled();
-                        }
-                    }
-                    return;
-                }
 
-                var resultsArray = t.Result.Item2;
+            try {
+                var response = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IList<object>>(command, cancellationToken);
+                var resultsArray = response.Item2;
                 int resultLength = resultsArray.Count;
                 if (resultLength != batchSize) {
                     foreach (var tcs in tcss) {
                         tcs.TrySetException(new InvalidOperationException(
                             "Batch command result count expected: " + batchSize + " but was: " + resultLength + "."));
                     }
-                    return;
                 }
 
                 for (int i = 0; i < batchSize; ++i) {
@@ -188,9 +178,11 @@ namespace LeanCloud.Storage.Internal {
                             "Invalid batch command response."));
                     }
                 }
-            });
-
-            return tasks;
+            } catch (Exception e) {
+                foreach (var tcs in tcss) {
+                    tcs.TrySetException(e);
+                }
+            }
         }
     }
 }

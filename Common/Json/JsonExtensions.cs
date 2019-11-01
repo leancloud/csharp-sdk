@@ -1,8 +1,7 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Threading.Tasks;
 
-namespace LeanCloud.Storage.Internal {
+namespace LeanCloud.Common {
     /// <summary>
     /// 为 Json 解析提供异步接口
     /// </summary>
