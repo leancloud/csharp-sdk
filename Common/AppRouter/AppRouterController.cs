@@ -6,11 +6,32 @@ using Newtonsoft.Json;
 
 namespace LeanCloud.Common {
     public class AppRouterController {
-        private AppRouterState currentState;
+        readonly string appId;
 
-        private readonly SemaphoreSlim locker = new SemaphoreSlim(1);
+        AppRouter currentState;
 
-        public async Task<AppRouterState> Get(string appId) {
+        readonly SemaphoreSlim locker = new SemaphoreSlim(1);
+
+        public AppRouterController(string appId, string server) {
+            if (!IsInternationalApp(appId) && string.IsNullOrEmpty(server)) {
+                // 国内 App 必须设置域名
+                throw new ArgumentException("You must init with your domain.");
+            }
+            if (!string.IsNullOrEmpty(server)) {
+                currentState = new AppRouter {
+                    ApiServer = server,
+                    EngineServer = server,
+                    PushServer = server,
+                    RTMServer = server,
+                    StatsServer = server,
+                    PlayServer = server,
+                    TTL = -1
+                };
+            }
+            this.appId = appId;
+        }
+
+        public async Task<AppRouter> Get() {
             if (string.IsNullOrEmpty(appId)) {
                 throw new ArgumentNullException(nameof(appId));
             }
@@ -23,9 +44,9 @@ namespace LeanCloud.Common {
             try {
                 if (currentState == null) {
                     try {
-                        currentState = await QueryAsync(appId);
+                        currentState = await QueryAsync();
                     } catch (Exception) {
-                        currentState = AppRouterState.GetFallbackServers(appId);
+                        currentState = AppRouter.GetFallbackServers(appId);
                     }
                 }
                 return currentState;
@@ -34,7 +55,7 @@ namespace LeanCloud.Common {
             }
         }
 
-        async Task<AppRouterState> QueryAsync(string appId) {
+        async Task<AppRouter> QueryAsync() {
             HttpClient client = null;
             HttpRequestMessage request = null;
             HttpResponseMessage response = null;
@@ -51,9 +72,9 @@ namespace LeanCloud.Common {
 
                 response = await client.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
-                HttpUtils.PrintResponse(response);
+                HttpUtils.PrintResponse(response, content);
 
-                AppRouterState state = JsonConvert.DeserializeObject<AppRouterState>(content);
+                AppRouter state = JsonConvert.DeserializeObject<AppRouter>(content);
                 state.Source = "router";
 
                 return state;
@@ -72,6 +93,14 @@ namespace LeanCloud.Common {
 
         public void Clear() {
             currentState = null;
+        }
+
+        static bool IsInternationalApp(string appId) {
+            if (appId.Length < 9) {
+                return false;
+            }
+            string suffix = appId.Substring(appId.Length - 9);
+            return suffix == "-MdYXbMMI";
         }
     }
 }

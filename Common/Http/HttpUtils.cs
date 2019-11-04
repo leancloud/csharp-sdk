@@ -3,7 +3,7 @@ using System.Text;
 using System.Net.Http;
 
 namespace LeanCloud.Common {
-    public class HttpUtils {
+    public static class HttpUtils {
         public static void PrintRequest(HttpClient client, HttpRequestMessage request, string content = null) {
             if (client == null) {
                 return;
