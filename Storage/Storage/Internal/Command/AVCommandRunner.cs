@@ -5,9 +5,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text;
 using System.Linq;
 using Newtonsoft.Json;
+using LeanCloud.Common;
 
 namespace LeanCloud.Storage.Internal {
     /// <summary>
@@ -44,6 +44,7 @@ namespace LeanCloud.Storage.Internal {
             httpClient.DefaultRequestHeaders.Add("X-LC-Prod", AVClient.UseProduction ? USE_PRODUCTION : USE_DEVELOPMENT);
         }
 
+
         /// <summary>
         /// 
         /// </summary>
@@ -71,14 +72,14 @@ namespace LeanCloud.Storage.Internal {
                 !string.IsNullOrEmpty(AVUser.CurrentUser.SessionToken)) {
                 request.Headers.Add("X-LC-Session", AVUser.CurrentUser.SessionToken);
             }
-            PrintRequest(httpClient, request, content);
+            HttpUtils.PrintRequest(httpClient, request, content);
 
             var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             request.Dispose();
 
             var resultString = await response.Content.ReadAsStringAsync();
             response.Dispose();
-            PrintResponse(response, resultString);
+            HttpUtils.PrintResponse(response, resultString);
 
             var ret = new Tuple<HttpStatusCode, string>(response.StatusCode, resultString);
 
@@ -115,33 +116,65 @@ namespace LeanCloud.Storage.Internal {
             return new Tuple<HttpStatusCode, T>(responseCode, default);
         }
 
-        static void PrintRequest(HttpClient client, HttpRequestMessage request, string content) {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("=== HTTP Request Start ===");
-            sb.AppendLine($"URL: {request.RequestUri}");
-            sb.AppendLine($"Method: {request.Method}");
-            sb.AppendLine($"Headers: ");
-            foreach (var header in client.DefaultRequestHeaders) {
-                sb.AppendLine($"\t{header.Key}: {string.Join(",", header.Value.ToArray())}");
+
+        // TODO (hallucinogen): move this out to a class to be used by Analytics
+        private const int MaximumBatchSize = 50;
+
+        internal async Task<IList<IDictionary<string, object>>> ExecuteBatchRequests(IList<AVCommand> requests,
+            CancellationToken cancellationToken) {
+            var results = new List<IDictionary<string, object>>();
+            int batchSize = requests.Count;
+
+            IEnumerable<AVCommand> remaining = requests;
+            while (batchSize > MaximumBatchSize) {
+                var process = remaining.Take(MaximumBatchSize).ToList();
+                remaining = remaining.Skip(MaximumBatchSize);
+
+                results.AddRange(await ExecuteBatchRequest(process, cancellationToken));
+
+                batchSize = remaining.Count();
             }
-            foreach (var header in request.Headers) {
-                sb.AppendLine($"\t{header.Key}: {string.Join(",", header.Value.ToArray())}");
-            }
-            foreach (var header in request.Content.Headers) {
-                sb.AppendLine($"\t{header.Key}: {string.Join(",", header.Value.ToArray())}");
-            }
-            sb.AppendLine($"Content: {content}");
-            sb.AppendLine("=== HTTP Request End ===");
-            AVClient.PrintLog(sb.ToString());
+            results.AddRange(await ExecuteBatchRequest(remaining.ToList(), cancellationToken));
+
+            return results;
         }
 
-        static void PrintResponse(HttpResponseMessage response, string content) {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("=== HTTP Response Start ===");
-            sb.AppendLine($"URL: {response.RequestMessage.RequestUri}");
-            sb.AppendLine($"Content: {content}");
-            sb.AppendLine("=== HTTP Response End ===");
-            AVClient.PrintLog(sb.ToString());
+        internal async Task<IList<IDictionary<string, object>>> ExecuteBatchRequest(IList<AVCommand> requests, CancellationToken cancellationToken) {
+            var tasks = new List<Task<IDictionary<string, object>>>();
+            int batchSize = requests.Count;
+            var tcss = new List<TaskCompletionSource<IDictionary<string, object>>>();
+            for (int i = 0; i < batchSize; ++i) {
+                var tcs = new TaskCompletionSource<IDictionary<string, object>>();
+                tcss.Add(tcs);
+                tasks.Add(tcs.Task);
+            }
+
+            var encodedRequests = requests.Select(r => {
+                var results = new Dictionary<string, object> {
+                    { "method", r.Method.Method },
+                    { "path", $"/{AVClient.APIVersion}/{r.Path}" },
+                };
+
+                if (r.Content != null) {
+                    results["body"] = r.Content;
+                }
+                return results;
+            }).Cast<object>().ToList();
+            var command = new AVCommand {
+                Path = "batch",
+                Method = HttpMethod.Post,
+                Content = new Dictionary<string, object> {
+                    { "requests", encodedRequests }
+                }
+            };
+
+            try {
+                List<IDictionary<string, object>> result = new List<IDictionary<string, object>>();
+                var response = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IList<object>>(command, cancellationToken);
+                return response.Item2.Cast<IDictionary<string, object>>().ToList();
+            } catch (Exception e) {
+                throw e;
+            }
         }
     }
 }

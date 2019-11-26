@@ -610,12 +610,11 @@ string propertyName
                 var operationsList = (from item in current
                                       select item.StartSave()).ToList();
 
-                var saveTasks = ObjectController.SaveAllAsync(states,
+                var serverStates = await ObjectController.SaveAllAsync(states,
                     operationsList,
                     cancellationToken);
 
                 try {
-                    var serverStates = await Task.WhenAll(saveTasks);
                     foreach (var pair in current.Zip(serverStates, (item, state) => new { item, state })) {
                         pair.item.HandleSave(pair.state);
                     }
@@ -802,25 +801,16 @@ string propertyName
         /// Deletes each object in the provided list.
         /// </summary>
         /// <param name="objects">The objects to delete.</param>
-        public static Task DeleteAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default)
+        public static async Task DeleteAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default)
             where T : AVObject {
             var uniqueObjects = new HashSet<AVObject>(objects.OfType<AVObject>().ToList(),
                 new IdentityEqualityComparer<AVObject>());
 
-            return EnqueueForAll<object>(uniqueObjects, toAwait => {
-                var states = uniqueObjects.Select(t => t.state).ToList();
-                return toAwait.OnSuccess(_ => {
-                    var deleteTasks = ObjectController.DeleteAllAsync(states, cancellationToken);
-                    return Task.WhenAll(deleteTasks);
-                }).Unwrap().OnSuccess(t => {
-                    // Dirty all objects in memory.
-                    foreach (var obj in uniqueObjects) {
-                        obj.IsDirty = true;
-                    }
-
-                    return (object)null;
-                });
-            }, cancellationToken);
+            var states = uniqueObjects.Select(t => t.state).ToList();
+            await ObjectController.DeleteAllAsync(states, cancellationToken);
+            foreach (var obj in uniqueObjects) {
+                obj.IsDirty = true;
+            }
         }
 
         #endregion

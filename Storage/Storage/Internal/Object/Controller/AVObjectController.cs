@@ -51,10 +51,9 @@ namespace LeanCloud.Storage.Internal {
             return serverState;
         }
 
-        public IList<Task<IObjectState>> SaveAllAsync(IList<IObjectState> states,
+        public async Task<IList<IObjectState>> SaveAllAsync(IList<IObjectState> states,
             IList<IDictionary<string, IAVFieldOperation>> operationsList,
             CancellationToken cancellationToken) {
-
             var requests = states
               .Zip(operationsList, (item, ops) => new AVCommand {
                   Path = item.ObjectId == null ? $"classes/{Uri.EscapeDataString(item.ClassName)}" : $"classes/{Uri.EscapeDataString(item.ClassName)}/{Uri.EscapeDataString(item.ObjectId)}",
@@ -62,16 +61,15 @@ namespace LeanCloud.Storage.Internal {
                   Content = AVObject.ToJSONObjectForSaving(ops)
               })
               .ToList();
-
-            var batchTasks = ExecuteBatchRequests(requests, cancellationToken);
-            var stateTasks = new List<Task<IObjectState>>();
-            foreach (var task in batchTasks) {
-                stateTasks.Add(task.OnSuccess(t => {
-                    return AVObjectCoder.Instance.Decode(t.Result, AVDecoder.Instance);
-                }));
+            IList<IObjectState> list = new List<IObjectState>();
+            var result = await AVPlugins.Instance.CommandRunner.ExecuteBatchRequests(requests, cancellationToken);
+            foreach (var data in result) {
+                if (data.TryGetValue("success", out object val)) {
+                    IObjectState obj = AVObjectCoder.Instance.Decode(val as IDictionary<string, object>, AVDecoder.Instance);
+                    list.Add(obj);
+                }
             }
-
-            return stateTasks;
+            return list;
         }
 
         public async Task DeleteAsync(IObjectState state, AVQuery<AVObject> query, CancellationToken cancellationToken) {
@@ -88,7 +86,7 @@ namespace LeanCloud.Storage.Internal {
             await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
         }
 
-        public IList<Task> DeleteAllAsync(IList<IObjectState> states,
+        public async Task DeleteAllAsync(IList<IObjectState> states,
             CancellationToken cancellationToken) {
             var requests = states
               .Where(item => item.ObjectId != null)
@@ -97,92 +95,9 @@ namespace LeanCloud.Storage.Internal {
                   Method = HttpMethod.Delete
               })
               .ToList();
-            return ExecuteBatchRequests(requests, cancellationToken).Cast<Task>().ToList();
-        }
+            await AVPlugins.Instance.CommandRunner.ExecuteBatchRequests(requests, cancellationToken);
+            // TODO 判断是否全部失败或者网络错误
 
-        // TODO (hallucinogen): move this out to a class to be used by Analytics
-        private const int MaximumBatchSize = 50;
-
-        internal IList<Task<IDictionary<string, object>>> ExecuteBatchRequests(IList<AVCommand> requests,
-            CancellationToken cancellationToken) {
-            var tasks = new List<Task<IDictionary<string, object>>>();
-            int batchSize = requests.Count;
-
-            IEnumerable<AVCommand> remaining = requests;
-            while (batchSize > MaximumBatchSize) {
-                var process = remaining.Take(MaximumBatchSize).ToList();
-                remaining = remaining.Skip(MaximumBatchSize);
-
-                tasks.AddRange(ExecuteBatchRequest(process, cancellationToken));
-
-                batchSize = remaining.Count();
-            }
-            tasks.AddRange(ExecuteBatchRequest(remaining.ToList(), cancellationToken));
-
-            return tasks;
-        }
-
-        private async Task<IList<Task<IDictionary<string, object>>>> ExecuteBatchRequest(IList<AVCommand> requests,
-            CancellationToken cancellationToken) {
-            var tasks = new List<Task<IDictionary<string, object>>>();
-            int batchSize = requests.Count;
-            var tcss = new List<TaskCompletionSource<IDictionary<string, object>>>();
-            for (int i = 0; i < batchSize; ++i) {
-                var tcs = new TaskCompletionSource<IDictionary<string, object>>();
-                tcss.Add(tcs);
-                tasks.Add(tcs.Task);
-            }
-
-            var encodedRequests = requests.Select(r => {
-                var results = new Dictionary<string, object> {
-                    { "method", r.Method.Method },
-                    { "path", $"/{AVClient.APIVersion}/{r.Path}" },
-                };
-
-                if (r.Content != null) {
-                    results["body"] = r.Content;
-                }
-                return results;
-            }).Cast<object>().ToList();
-            var command = new AVCommand {
-                Path = "batch",
-                Method = HttpMethod.Post,
-                Content = new Dictionary<string, object> {
-                    { "requests", encodedRequests }
-                }
-            };
-
-            try {
-                var response = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IList<object>>(command, cancellationToken);
-                var resultsArray = response.Item2;
-                int resultLength = resultsArray.Count;
-                if (resultLength != batchSize) {
-                    foreach (var tcs in tcss) {
-                        tcs.TrySetException(new InvalidOperationException(
-                            "Batch command result count expected: " + batchSize + " but was: " + resultLength + "."));
-                    }
-                }
-
-                for (int i = 0; i < batchSize; ++i) {
-                    var result = resultsArray[i] as Dictionary<string, object>;
-                    var tcs = tcss[i];
-
-                    if (result.ContainsKey("success")) {
-                        tcs.TrySetResult(result["success"] as IDictionary<string, object>);
-                    } else if (result.ContainsKey("error")) {
-                        var error = result["error"] as IDictionary<string, object>;
-                        long errorCode = long.Parse(error["code"].ToString());
-                        tcs.TrySetException(new AVException((AVException.ErrorCode)errorCode, error["error"] as string));
-                    } else {
-                        tcs.TrySetException(new InvalidOperationException(
-                            "Invalid batch command response."));
-                    }
-                }
-            } catch (Exception e) {
-                foreach (var tcs in tcss) {
-                    tcs.TrySetException(e);
-                }
-            }
         }
     }
 }

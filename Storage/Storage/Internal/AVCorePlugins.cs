@@ -1,4 +1,5 @@
-﻿
+﻿using LeanCloud.Common;
+
 namespace LeanCloud.Storage.Internal {
     public class AVPlugins {
         private static readonly object instanceMutex = new object();
@@ -52,7 +53,8 @@ namespace LeanCloud.Storage.Internal {
         public AppRouterController AppRouterController {
             get {
                 lock (mutex) {
-                    appRouterController = appRouterController ?? new AppRouterController();
+                    var conf = AVClient.CurrentConfiguration;
+                    appRouterController = appRouterController ?? new AppRouterController(conf.ApplicationId, conf.ApiServer);
                     return appRouterController;
                 }
             }
