@@ -592,10 +592,7 @@ string propertyName
                 var current = (from item in remaining
                                where item.CanBeSerialized
                                select item).ToList();
-                var nextBatch = (from item in remaining
-                                 where !item.CanBeSerialized
-                                 select item).ToList();
-                remaining = nextBatch;
+                remaining = remaining.Except(current).ToList();
 
                 if (current.Count == 0) {
                     // We do cycle-detection when building the list of objects passed to this
