@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -51,19 +52,20 @@ namespace LeanCloud.Storage.Internal {
                 return jsonConvertible.ToJSON();
             }
 
-            //var dict = Conversion.As<IDictionary<string, object>>(value);
-            //if (dict != null) {
-            //    var json = new Dictionary<string, object>();
-            //    foreach (var pair in dict) {
-            //        json[pair.Key] = Encode(pair.Value);
-            //    }
-            //    return json;
-            //}
+            if (value is IDictionary) {
+                IDictionary dict = value as IDictionary;
+                var json = new Dictionary<string, object>();
+                foreach (var key in dict.Keys) {
+                    object v = dict[key];
+                    json[key.ToString()] = Encode(v);
+                }
+                return json;
+            }
 
-            //var list = Conversion.As<IList<object>>(value);
-            //if (list != null) {
-            //    return EncodeList(list);
-            //}
+            if (value is IList) {
+                IList list = value as IList;
+                return EncodeList(list);
+            }
 
             if (value is IAVFieldOperation operation) {
                 return operation.Encode();
@@ -74,7 +76,7 @@ namespace LeanCloud.Storage.Internal {
 
         protected abstract IDictionary<string, object> EncodeAVObject(AVObject value);
 
-        private object EncodeList(IList<object> list) {
+        private object EncodeList(IList list) {
             List<object> newArray = new List<object>();
             foreach (object item in list) {
                 newArray.Add(Encode(item));

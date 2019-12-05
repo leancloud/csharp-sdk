@@ -280,5 +280,18 @@ namespace LeanCloud.Test {
 
             Assert.ThrowsAsync<AVException>(async () => await a.Save());
         }
+
+        [Test]
+        public async Task SimpleSavePointerCollection() {
+            AVObject p = new AVObject("P");
+            AVObject c1 = new AVObject("C1");
+            AVObject c2 = new AVObject("C2");
+            p["cList"] = new List<AVObject> { c1, c2 };
+            p["cDict"] = new Dictionary<string, object> {
+                { "c1", c1 },
+                { "c2", c2 }
+            };
+            await p.Save();
+        }
     }
 }
