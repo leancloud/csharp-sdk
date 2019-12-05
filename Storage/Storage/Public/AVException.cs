@@ -264,6 +264,11 @@ namespace LeanCloud
             /// 按条件更新/删除失败
             /// </summary>
             NoEffectOnUpdatingOrDeleting = 305,
+
+            /// <summary>
+            /// 循环引用
+            /// </summary>
+            CircleReference = 400,
         }
 
         internal AVException(ErrorCode code, string message, Exception cause = null)

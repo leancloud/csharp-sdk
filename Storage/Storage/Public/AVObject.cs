@@ -1,6 +1,7 @@
 ﻿using LeanCloud.Storage.Internal;
 using LeanCloud.Utilities;
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,19 +9,49 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
+using System.Collections.Concurrent;
 
 namespace LeanCloud {
     /// <summary>
     /// AVObject
     /// </summary>
     public class AVObject : IEnumerable<KeyValuePair<string, object>>, INotifyPropertyChanged, INotifyPropertyUpdated, INotifyCollectionPropertyUpdated {
+        internal class Batch {
+            internal HashSet<AVObject> Objects {
+                get; set;
+            }
+
+            public Batch() {
+                Objects = new HashSet<AVObject>();
+            }
+
+            public Batch(IEnumerable<AVObject> objects) : this() {
+                foreach (AVObject obj in objects) {
+                    Objects.Add(obj);
+                }
+            }
+
+            public override string ToString() {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("----------------------------");
+                foreach (AVObject obj in Objects) {
+                    sb.AppendLine(obj.ClassName);
+                }
+                sb.AppendLine("----------------------------");
+                return sb.ToString();
+            }
+        }
+
+
         private static readonly string AutoClassName = "_Automatic";
 
         internal readonly object mutex = new object();
 
         private readonly LinkedList<IDictionary<string, IAVFieldOperation>> operationSetQueue =
             new LinkedList<IDictionary<string, IAVFieldOperation>>();
-        private readonly IDictionary<string, object> estimatedData = new Dictionary<string, object>();
+
+        private readonly ConcurrentDictionary<string, IAVFieldOperation> operationDict = new ConcurrentDictionary<string, IAVFieldOperation>();
+        private readonly ConcurrentDictionary<string, object> estimatedData = new ConcurrentDictionary<string, object>();
 
         private static readonly ThreadLocal<bool> isCreatingPointer = new ThreadLocal<bool>(() => false);
 
@@ -210,7 +241,7 @@ namespace LeanCloud {
             this[GetFieldForPropertyName(ClassName, propertyName)] = value;
         }
 
-        /// <summary>
+        /// <summar、y>
         /// Gets a relation for a property based upon its associated AVFieldName attribute.
         /// </summary>
         /// <returns>The AVRelation for the property.</returns>
@@ -974,9 +1005,9 @@ string propertyName
                         if (oldValue != value) {
                             converdKeys.Add(key);
                         }
-                        estimatedData.Remove(key);
+                        estimatedData.TryRemove(key, out _);
                     }
-                    estimatedData.Add(item);
+                    estimatedData.TryAdd(item.Key, item.Value);
                 }
                 changedKeys = converdKeys;
                 foreach (var operations in operationSetQueue) {
@@ -1003,7 +1034,7 @@ string propertyName
                 if (newValue != AVDeleteOperation.DeleteToken) {
                     estimatedData[key] = newValue;
                 } else {
-                    estimatedData.Remove(key);
+                    estimatedData.TryRemove(key, out _);
                 }
 
                 IAVFieldOperation oldOperation;
@@ -1622,6 +1653,106 @@ string propertyName
         protected virtual void OnCollectionPropertyUpdated(string propertyName, NotifyCollectionUpdatedAction action, IEnumerable oldValues, IEnumerable newValues) {
             collectionUpdated?.Invoke(this, new CollectionPropertyUpdatedEventArgs(propertyName, action, oldValues, newValues));
         }
+
+
+
+
+
+
+
+
+
+        #region refactor
+
+        static bool HasCircleReference(object obj, HashSet<AVObject> parents) {
+            if (parents.Contains(obj)) {
+                return true;
+            }
+            IEnumerable deps = null;
+            if (obj is IList) {
+                deps = obj as IList;
+            } else if (obj is IDictionary) {
+                deps = (obj as IDictionary).Values;
+            } else if (obj is AVObject) {
+                deps = (obj as AVObject).estimatedData.Values;
+            }
+            HashSet<AVObject> depParent = new HashSet<AVObject>(parents);
+            if (obj is AVObject) {
+                depParent.Add(obj as AVObject);
+            }
+            if (deps != null) {
+                foreach (object dep in deps) {
+                    HashSet<AVObject> p = new HashSet<AVObject>(depParent);
+                    if (HasCircleReference(dep, p)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        static Stack<Batch> BatchObjects(IEnumerable<AVObject> avObjects) {
+            Stack<Batch> batches = new Stack<Batch>();
+
+            IEnumerable<object> deps = avObjects;
+            do {
+                // 只添加本层依赖的 LCObject
+                IEnumerable<AVObject> depAVObjs = deps.OfType<AVObject>();
+                if (depAVObjs.Any()) {
+                    batches.Push(new Batch(depAVObjs));
+                }
+
+                HashSet<object> childSets = new HashSet<object>();
+                foreach (object dep in deps) {
+                    IEnumerable children = null;
+                    if (dep is IList) {
+                        children = dep as IList;
+                    } else if (dep is IDictionary) {
+                        children = (dep as IDictionary).Values;
+                    } else if (dep is AVObject && (dep as AVObject).ObjectId == null) {
+                        // 如果依赖是 AVObject 类型并且还没有保存过，则应该遍历其依赖
+                        children = (dep as AVObject).estimatedData.Values;
+                    }
+                    if (children != null) {
+                        foreach (object child in children) {
+                            childSets.Add(child);
+                        }
+                    }
+                }
+                deps = childSets;
+            } while (deps != null && deps.Any());
+
+            return batches;
+        }
+
+        public virtual async Task Save() {
+            if (HasCircleReference(this, new HashSet<AVObject>())) {
+                throw new AVException(AVException.ErrorCode.CircleReference, "Found a circle dependency when save");
+            }
+            Stack<Batch> batches = BatchObjects(new List<AVObject> { this });
+            while (batches.Any()) {
+                Batch batch = batches.Pop();
+                IList<AVObject> dirtyObjects = batch.Objects.Where(o => o.IsDirty).ToList();
+                IList<IObjectState> states = (from item in dirtyObjects
+                                             select item.state).ToList();
+                IList<IDictionary<string, IAVFieldOperation>> operationList = (from item in dirtyObjects
+                                                                               select item.StartSave()).ToList();
+                var serverStates = await ObjectController.SaveAllAsync(states, operationList, CancellationToken.None);
+
+                try {
+                    foreach (var pair in dirtyObjects.Zip(serverStates, (item, state) => new { item, state })) {
+                        pair.item.HandleSave(pair.state);
+                    }
+                } catch (Exception e) {
+                    foreach (var pair in dirtyObjects.Zip(operationList, (item, ops) => new { item, ops })) {
+                        pair.item.HandleFailedSave(pair.ops);
+                    }
+                    throw e;
+                }
+            }
+        }
+
+        #endregion
     }
 
     public interface INotifyPropertyUpdated {

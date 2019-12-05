@@ -1,9 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using LeanCloud.Common;
 
 namespace Common.Test {
-    public class Tests {
+    public class AppRouterTest {
         static void Print(LogLevel level, string info) {
             switch (level) {
                 case LogLevel.Debug:
@@ -23,23 +24,43 @@ namespace Common.Test {
 
         [SetUp]
         public void SetUp() {
-            TestContext.Out.WriteLine("Set up");
             Logger.LogDelegate += Print;
         }
 
         [TearDown]
         public void TearDown() {
-            TestContext.Out.WriteLine("Tear down");
             Logger.LogDelegate -= Print;
         }
 
         [Test]
-        public async Task AppRouter() {
-            var appRouter = new AppRouterController();
-            for (int i = 0; i < 100; i++) {
-                var state = await appRouter.Get("BMYV4RKSTwo8WSqt8q9ezcWF-gzGzoHsz");
-                TestContext.Out.WriteLine(state.ApiServer);
-            }
+        public void ChineseApp() {
+            Exception e = Assert.Catch(() => {
+                string appId = "BMYV4RKSTwo8WSqt8q9ezcWF-gzGzoHsz";
+                AppRouterController appRouter = new AppRouterController(appId, null);
+                TestContext.WriteLine("init done");
+            });
+            TestContext.WriteLine(e.Message);
+        }
+
+        [Test]
+        public async Task ChineseAppWithDomain() {
+            string appId = "BMYV4RKSTwo8WSqt8q9ezcWF-gzGzoHsz";
+            string server = "https://bmyv4rks.lc-cn-n1-shared.com";
+            AppRouterController appRouterController = new AppRouterController(appId, server);
+            AppRouter appRouterState = await appRouterController.Get();
+            Assert.AreEqual(appRouterState.ApiServer, server);
+            Assert.AreEqual(appRouterState.EngineServer, server);
+            Assert.AreEqual(appRouterState.PushServer, server);
+            Assert.AreEqual(appRouterState.RTMServer, server);
+            Assert.AreEqual(appRouterState.StatsServer, server);
+            Assert.AreEqual(appRouterState.PlayServer, server);
+        }
+
+        [Test]
+        public void InternationalApp() {
+            string appId = "BMYV4RKSTwo8WSqt8q9ezcWF-MdYXbMMI";
+            _ = new AppRouterController(appId, null);
+            TestContext.WriteLine("International app init done");
         }
     }
 }

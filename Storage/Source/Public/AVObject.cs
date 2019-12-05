@@ -1181,7 +1181,7 @@ string propertyName
                 // The task produced by taskStart. By running this immediately, we allow everything prior
                 // to toAwait to run before waiting for all of the queues on all of the objects.
                 Task<T> fullTask = taskStart(readyToStart.Task);
-
+                
                 // Add fullTask to each of the objects' queues.
                 var childTasks = new List<Task>();
                 foreach (AVObject obj in objects)

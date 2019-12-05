@@ -3,12 +3,19 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using LeanCloud.Common;
 
 namespace LeanCloud.Test {
     public class ObjectTests {
         [SetUp]
         public void SetUp() {
+            Logger.LogDelegate += Utils.Print;
             Utils.InitNorthChina();
+        }
+
+        [TearDown]
+        public void TearDown() {
+            Logger.LogDelegate -= Utils.Print;
         }
 
         [Test]
@@ -20,7 +27,7 @@ namespace LeanCloud.Test {
                 { "hello", 1 },
                 { "world", 2 }
             };
-            await obj.SaveAsync();
+            await obj.Save();
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
             Assert.NotNull(obj.UpdatedAt);
@@ -38,32 +45,57 @@ namespace LeanCloud.Test {
             TestContext.Out.WriteLine($"balance: {account["balance"]}");
         }
 
+        //[Test]
+        //public async Task SaveWithPointer() {
+        //    AVObject comment = new AVObject("Comment") {
+        //        { "content", "Hello, Comment" }
+        //    };
+
+        //    AVObject post = new AVObject("Post") {
+        //        { "name", "New Post" },
+        //        { "category", new AVObject("Category") {
+        //            { "name", "new post category" }
+        //        } }
+        //    };
+        //    comment["post"] = post;
+
+        //    AVObject testPost = new AVObject("Post") {
+        //        { "name", "Test Post" },
+        //        { "category", new AVObject("Category") {
+        //            { "name", "test post category" }
+        //        } }
+        //    };
+        //    comment["test_post"] = testPost;
+
+        //    await comment.Save();
+        //    TestContext.Out.WriteLine(post);
+        //    TestContext.Out.WriteLine(testPost);
+        //    TestContext.Out.WriteLine(comment);
+        //}
+
         [Test]
         public async Task SaveWithPointer() {
-            AVObject comment = new AVObject("Comment") {
-                { "content", "Hello, Comment" }
-            };
+            AVObject parent = new AVObject("Parent");
+            AVObject c1 = new AVObject("C1");
+            AVObject c2 = new AVObject("C2");
+            parent["c1"] = c1;
+            parent["c2"] = c2;
+            await parent.Save();
+        }
 
-            AVObject post = new AVObject("Post") {
-                { "name", "New Post" },
-                { "category", new AVObject("Category") {
-                    { "name", "new post category" }
-                } }
+        [Test]
+        public async Task SaveWithPointerArray() {
+            AVObject parent = new AVObject("Parent");
+            AVObject c1 = new AVObject("C1");
+            AVObject c2 = new AVObject("C2");
+            parent["iList"] = new List<int> { 1, 1, 2, 3 };
+            parent["cList"] = new List<AVObject> { c1, c2 };
+            parent["cDict"] = new Dictionary<string, AVObject> {
+                { "c1", c1 },
+                { "c2", c2 }
             };
-            comment["post"] = post;
+            await parent.SaveAsync();
 
-            AVObject testPost = new AVObject("Post") {
-                { "name", "Test Post" },
-                { "category", new AVObject("Category") {
-                    { "name", "test post category" }
-                } }
-            };
-            comment["test_post"] = testPost;
-
-            await comment.SaveAsync();
-            TestContext.Out.WriteLine(post);
-            TestContext.Out.WriteLine(testPost);
-            TestContext.Out.WriteLine(comment);
         }
 
         [Test]
@@ -198,6 +230,55 @@ namespace LeanCloud.Test {
                     Thread.Sleep(1000);
                 }
             });
+        }
+
+        [Test]
+        public void SimpleCircleReference() {
+            AVObject a = new AVObject("A");
+            AVObject b = new AVObject("B");
+            a["b"] = b;
+            b["a"] = a;
+
+            Assert.ThrowsAsync<AVException>(async () => await a.Save());
+        }
+
+        [Test]
+        public void IndirectCircleReference() {
+            AVObject a = new AVObject("A");
+            AVObject b = new AVObject("B");
+            AVObject c = new AVObject("C");
+            a["b"] = b;
+            b["c"] = c;
+            c["a"] = a;
+
+            Assert.ThrowsAsync<AVException>(async () => await a.Save());
+        }
+
+        [Test]
+        public void SimpleCollectionPointerCircleReference() {
+            AVObject a = new AVObject("A");
+            AVObject b = new AVObject("B");
+            a["children"] = new List<object> { 1, b };
+            b["children"] = new Dictionary<string, object> {
+                { "c", a }
+            };
+
+            Assert.ThrowsAsync<AVException>(async () => await a.Save());
+        }
+
+        [Test]
+        public void IndirectCollectionPointerCircleReference() {
+            AVObject a = new AVObject("A");
+            AVObject b = new AVObject("B");
+            AVObject c = new AVObject("C");
+
+            a["children"] = new List<object> { 1, b };
+            b["children"] = new List<object> { 2, c };
+            c["children"] = new Dictionary<string, object> {
+                { "c", a }
+            };
+
+            Assert.ThrowsAsync<AVException>(async () => await a.Save());
         }
     }
 }
