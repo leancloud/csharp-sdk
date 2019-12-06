@@ -72,6 +72,27 @@ namespace LeanCloud.Storage.Internal {
             return list;
         }
 
+        public async Task<IList<IObjectState>> SaveAllAsync(IList<AVObject> avObjects, CancellationToken cancellationToken) {
+            List<AVCommand> commandList = new List<AVCommand>();
+            foreach (AVObject avObj in avObjects) {
+                AVCommand command = new AVCommand {
+                    Path = avObj.ObjectId == null ? $"classes/{Uri.EscapeDataString(avObj.ClassName)}" : $"classes/{Uri.EscapeDataString(avObj.ClassName)}/{Uri.EscapeDataString(avObj.ObjectId)}",
+                    Method = avObj.ObjectId == null ? HttpMethod.Post : HttpMethod.Put,
+                    Content = AVObject.ToJSONObjectForSaving(avObj.StartSave())
+                };
+                commandList.Add(command);
+            }
+            IList<IObjectState> list = new List<IObjectState>();
+            var result = await AVPlugins.Instance.CommandRunner.ExecuteBatchRequests(commandList, cancellationToken);
+            foreach (var data in result) {
+                if (data.TryGetValue("success", out object val)) {
+                    IObjectState obj = AVObjectCoder.Instance.Decode(val as IDictionary<string, object>, AVDecoder.Instance);
+                    list.Add(obj);
+                }
+            }
+            return list;
+        }
+
         public async Task DeleteAsync(IObjectState state, AVQuery<AVObject> query, CancellationToken cancellationToken) {
             var command = new AVCommand {
                 Path = $"classes/{state.ClassName}/{state.ObjectId}",
