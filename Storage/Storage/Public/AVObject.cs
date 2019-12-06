@@ -1567,15 +1567,10 @@ string propertyName
 
         static Stack<Batch> BatchObjects(IEnumerable<AVObject> avObjects) {
             Stack<Batch> batches = new Stack<Batch>();
+            batches.Push(new Batch(avObjects));
 
-            IEnumerable<object> deps = avObjects;
-            do {
-                // 只添加本层依赖的 LCObject
-                IEnumerable<AVObject> depAVObjs = deps.OfType<AVObject>();
-                if (depAVObjs.Any()) {
-                    batches.Push(new Batch(depAVObjs));
-                }
-
+            IEnumerable<object> deps = from avObj in avObjects select avObj.estimatedData.Values;
+            do { 
                 HashSet<object> childSets = new HashSet<object>();
                 foreach (object dep in deps) {
                     IEnumerable children = null;
@@ -1585,6 +1580,7 @@ string propertyName
                         children = (dep as IDictionary).Values;
                     } else if (dep is AVObject && (dep as AVObject).ObjectId == null) {
                         // 如果依赖是 AVObject 类型并且还没有保存过，则应该遍历其依赖
+                        // TODO 这里应该是从 Operation 中查找新增的对象
                         children = (dep as AVObject).estimatedData.Values;
                     }
                     if (children != null) {
@@ -1592,6 +1588,10 @@ string propertyName
                             childSets.Add(child);
                         }
                     }
+                }
+                IEnumerable<AVObject> depAVObjs = deps.OfType<AVObject>().Where(o => o.ObjectId == null);
+                if (depAVObjs.Any()) {
+                    batches.Push(new Batch(depAVObjs));
                 }
                 deps = childSets;
             } while (deps != null && deps.Any());

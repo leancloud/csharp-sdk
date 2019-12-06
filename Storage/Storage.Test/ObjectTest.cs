@@ -293,5 +293,15 @@ namespace LeanCloud.Test {
             };
             await p.Save();
         }
+
+        [Test]
+        public async Task SaveWithQuery() {
+            AVObject p = new AVObject("P");
+            AVObject c1 = AVObject.CreateWithoutData("C1", "5dea05578a84ab00680b7ae5");
+            AVObject c2 = new AVObject("C2");
+            p["c"] = c1;
+            c1["c"] = c2;
+            await p.Save();
+        }
     }
 }
