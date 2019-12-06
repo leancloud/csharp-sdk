@@ -15,7 +15,7 @@ namespace LeanCloud {
     /// <summary>
     /// AVObject
     /// </summary>
-    public class AVObject : IEnumerable<KeyValuePair<string, object>>, INotifyPropertyChanged, INotifyPropertyUpdated, INotifyCollectionPropertyUpdated {
+    public class AVObject : IEnumerable<KeyValuePair<string, object>> {
         internal class Batch {
             internal HashSet<AVObject> Objects {
                 get; set;
@@ -132,7 +132,6 @@ namespace LeanCloud {
             state = new MutableObjectState {
                 ClassName = className
             };
-            OnPropertyChanged("ClassName");
 
             operationSetQueue.AddLast(new Dictionary<string, IAVFieldOperation>());
             if (!isPointer) {
@@ -322,7 +321,6 @@ string propertyName
                 if (wasDirty) {
                     CurrentOperations.Clear();
                     RebuildEstimatedData();
-                    OnPropertyChanged("IsDirty");
                 }
             }
         }
@@ -333,8 +331,7 @@ string propertyName
             }
         }
 
-        internal void HandleFailedSave(
-            IDictionary<string, IAVFieldOperation> operationsBeforeSave) {
+        internal void HandleFailedSave(IDictionary<string, IAVFieldOperation> operationsBeforeSave) {
             lock (mutex) {
                 var opNode = operationSetQueue.Find(operationsBeforeSave);
                 var nextOperations = opNode.Next.Value;
@@ -351,9 +348,6 @@ string propertyName
                         operation2 = operation1;
                     }
                     nextOperations[pair.Key] = operation2;
-                }
-                if (!wasDirty && nextOperations == CurrentOperations && operationsBeforeSave.Count > 0) {
-                    OnPropertyChanged("IsDirty");
                 }
             }
         }
@@ -382,15 +376,6 @@ string propertyName
                 if (serverState.ObjectId != null) {
                     // If the objectId is being merged in, consider this object to be fetched.
                     hasBeenFetched = true;
-                    OnPropertyChanged("IsDataAvailable");
-                }
-
-                if (serverState.UpdatedAt != null) {
-                    OnPropertyChanged("UpdatedAt");
-                }
-
-                if (serverState.CreatedAt != null) {
-                    OnPropertyChanged("CreatedAt");
                 }
 
                 // We cache the fetched object because subsequent Save operation might flush
@@ -552,7 +537,6 @@ string propertyName
             lock (mutex) {
                 var currentOperations = CurrentOperations;
                 operationSetQueue.AddLast(new Dictionary<string, IAVFieldOperation>());
-                OnPropertyChanged("IsDirty");
                 return currentOperations;
             }
         }
@@ -1014,10 +998,6 @@ string propertyName
                     var appliedKeys = ApplyOperations(operations, estimatedData);
                     changedKeys = converdKeys.Concat(appliedKeys);
                 }
-                // We've just applied a bunch of operations to estimatedData which
-                // may have changed all of its keys. Notify of all keys and properties
-                // mapped to keys being changed.
-                OnFieldsChanged(null);
             }
         }
 
@@ -1042,15 +1022,6 @@ string propertyName
                 CurrentOperations.TryGetValue(key, out oldOperation);
                 var newOperation = operation.MergeWithPrevious(oldOperation);
                 CurrentOperations[key] = newOperation;
-                if (!wasDirty) {
-                    OnPropertyChanged("IsDirty");
-                    if (ifDirtyBeforePerform != wasDirty) {
-                        OnPropertyUpdated("IsDirty", ifDirtyBeforePerform, wasDirty);
-                    }
-                }
-
-                OnFieldsChanged(new[] { key });
-                OnPropertyUpdated(key, oldValue, newValue);
             }
         }
 
@@ -1179,8 +1150,6 @@ string propertyName
                 CheckKeyIsMutable(key);
 
                 PerformOperation(key, new AVAddOperation(values.Cast<object>()));
-
-                OnCollectionPropertyUpdated(key, NotifyCollectionUpdatedAction.Add, null, values);
             }
         }
 
@@ -1221,8 +1190,6 @@ string propertyName
                 CheckKeyIsMutable(key);
 
                 PerformOperation(key, new AVRemoveOperation(values.Cast<object>()));
-
-                OnCollectionPropertyUpdated(key, NotifyCollectionUpdatedAction.Remove, values, null);
             }
         }
 
@@ -1404,7 +1371,6 @@ string propertyName
                 MutateState(mutableClone => {
                     mutableClone.IsNew = value;
                 });
-                OnPropertyChanged("IsNew");
             }
         }
 
@@ -1448,7 +1414,6 @@ string propertyName
             internal set {
                 lock (mutex) {
                     dirty = value;
-                    OnPropertyChanged("IsDirty");
                 }
             }
         }
@@ -1495,7 +1460,6 @@ string propertyName
                 MutateState(mutableClone => {
                     mutableClone.ObjectId = objectId;
                 });
-                OnPropertyChanged("ObjectId");
             }
         }
 
@@ -1566,96 +1530,6 @@ string propertyName
             }
             return new AVQuery<AVObject>(className);
         }
-
-        /// <summary>
-        /// Raises change notifications for all properties associated with the given
-        /// field names. If fieldNames is null, this will notify for all known field-linked
-        /// properties (e.g. this happens when we recalculate all estimated data from scratch)
-        /// </summary>
-        protected virtual void OnFieldsChanged(IEnumerable<string> fieldNames) {
-            var mappings = SubclassingController.GetPropertyMappings(ClassName);
-            IEnumerable<string> properties;
-
-            if (fieldNames != null && mappings != null) {
-                properties = from m in mappings
-                             join f in fieldNames on m.Value equals f
-                             select m.Key;
-            } else if (mappings != null) {
-                properties = mappings.Keys;
-            } else {
-                properties = Enumerable.Empty<string>();
-            }
-
-            foreach (var property in properties) {
-                OnPropertyChanged(property);
-            }
-            OnPropertyChanged("Item[]");
-        }
-
-        /// <summary>
-        /// Raises change notifications for a property. Passing null or the empty string
-        /// notifies the binding framework that all properties/indexes have changed.
-        /// Passing "Item[]" tells the binding framework that all indexed values
-        /// have changed (but not all properties)
-        /// </summary>
-        protected virtual void OnPropertyChanged(
-#if !UNITY
-[CallerMemberName] string propertyName = null
-#else
-string propertyName
-#endif
-) {
-            propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private SynchronizedEventHandler<PropertyChangedEventArgs> propertyChanged =
-            new SynchronizedEventHandler<PropertyChangedEventArgs>();
-        /// <summary>
-        /// Occurs when a property value changes.
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged {
-            add {
-                propertyChanged.Add(value);
-            }
-            remove {
-                propertyChanged.Remove(value);
-            }
-        }
-
-        private SynchronizedEventHandler<PropertyUpdatedEventArgs> propertyUpdated =
-            new SynchronizedEventHandler<PropertyUpdatedEventArgs>();
-
-        public event PropertyUpdatedEventHandler PropertyUpdated {
-            add {
-                propertyUpdated.Add(value);
-            }
-            remove {
-                propertyUpdated.Remove(value);
-            }
-        }
-
-        protected virtual void OnPropertyUpdated(string propertyName, object newValue, object oldValue) {
-            propertyUpdated.Invoke(this, new PropertyUpdatedEventArgs(propertyName, oldValue, newValue));
-        }
-
-        private SynchronizedEventHandler<CollectionPropertyUpdatedEventArgs> collectionUpdated =
-            new SynchronizedEventHandler<CollectionPropertyUpdatedEventArgs>();
-
-        public event CollectionPropertyUpdatedEventHandler CollectionPropertyUpdated {
-            add {
-                collectionUpdated.Add(value);
-            }
-            remove {
-                collectionUpdated.Remove(value);
-            }
-        }
-
-        protected virtual void OnCollectionPropertyUpdated(string propertyName, NotifyCollectionUpdatedAction action, IEnumerable oldValues, IEnumerable newValues) {
-            collectionUpdated?.Invoke(this, new CollectionPropertyUpdatedEventArgs(propertyName, action, oldValues, newValues));
-        }
-
-
-
 
 
 
@@ -1733,20 +1607,21 @@ string propertyName
             while (batches.Any()) {
                 Batch batch = batches.Pop();
                 IList<AVObject> dirtyObjects = batch.Objects.Where(o => o.IsDirty).ToList();
-                IList<IObjectState> states = (from item in dirtyObjects
-                                             select item.state).ToList();
-                IList<IDictionary<string, IAVFieldOperation>> operationList = (from item in dirtyObjects
-                                                                               select item.StartSave()).ToList();
-                var serverStates = await ObjectController.SaveAllAsync(states, operationList, CancellationToken.None);
+                //IList<IObjectState> states = (from item in dirtyObjects
+                //                             select item.state).ToList();
+                //IList<IDictionary<string, IAVFieldOperation>> operationList = (from item in dirtyObjects
+                //                                                               select item.StartSave()).ToList();
+                var serverStates = await ObjectController.SaveAllAsync(dirtyObjects, CancellationToken.None);
+                //var serverStates = await ObjectController.SaveAllAsync(states, operationList, CancellationToken.None);
 
                 try {
                     foreach (var pair in dirtyObjects.Zip(serverStates, (item, state) => new { item, state })) {
                         pair.item.HandleSave(pair.state);
                     }
                 } catch (Exception e) {
-                    foreach (var pair in dirtyObjects.Zip(operationList, (item, ops) => new { item, ops })) {
-                        pair.item.HandleFailedSave(pair.ops);
-                    }
+                    //foreach (var pair in dirtyObjects.Zip(operationList, (item, ops) => new { item, ops })) {
+                    //    pair.item.HandleFailedSave(pair.ops);
+                    //}
                     throw e;
                 }
             }
@@ -1754,45 +1629,4 @@ string propertyName
 
         #endregion
     }
-
-    public interface INotifyPropertyUpdated {
-        event PropertyUpdatedEventHandler PropertyUpdated;
-    }
-
-    public interface INotifyCollectionPropertyUpdated {
-        event CollectionPropertyUpdatedEventHandler CollectionPropertyUpdated;
-    }
-
-    public enum NotifyCollectionUpdatedAction {
-        Add,
-        Remove
-    }
-
-    public class CollectionPropertyUpdatedEventArgs : PropertyChangedEventArgs {
-        public CollectionPropertyUpdatedEventArgs(string propertyName, NotifyCollectionUpdatedAction collectionAction, IEnumerable oldValues, IEnumerable newValues) : base(propertyName) {
-            CollectionAction = collectionAction;
-            OldValues = oldValues;
-            NewValues = newValues;
-        }
-
-        public IEnumerable OldValues { get; set; }
-
-        public IEnumerable NewValues { get; set; }
-
-        public NotifyCollectionUpdatedAction CollectionAction { get; set; }
-    }
-
-    public class PropertyUpdatedEventArgs : PropertyChangedEventArgs {
-        public PropertyUpdatedEventArgs(string propertyName, object oldValue, object newValue) : base(propertyName) {
-            OldValue = oldValue;
-            NewValue = newValue;
-        }
-
-        public object OldValue { get; private set; }
-        public object NewValue { get; private set; }
-    }
-
-    public delegate void PropertyUpdatedEventHandler(object sender, PropertyUpdatedEventArgs args);
-
-    public delegate void CollectionPropertyUpdatedEventHandler(object sender, CollectionPropertyUpdatedEventArgs args);
 }
