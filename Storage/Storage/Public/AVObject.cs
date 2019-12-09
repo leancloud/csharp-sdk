@@ -492,10 +492,10 @@ string propertyName
             if (HasCircleReference(this, new HashSet<AVObject>())) {
                 throw new AVException(AVException.ErrorCode.CircleReference, "Found a circle dependency when save");
             }
-            Stack<Batch> batches = BatchObjects(new List<AVObject> { this });
+            Stack<Batch> batches = BatchObjects(new List<AVObject> { this }, false);
             await SaveBatches(batches, cancellationToken);
-            // TODO query
-
+            IObjectState result = await ObjectController.SaveAsync(state, operationDict, fetchWhenSave, query, cancellationToken);
+            HandleSave(result);
         }
 
         /// <summary>
@@ -509,7 +509,7 @@ string propertyName
                     throw new AVException(AVException.ErrorCode.CircleReference, "Found a circle dependency when save");
                 }
             }
-            Stack<Batch> batches = BatchObjects(objects);
+            Stack<Batch> batches = BatchObjects(objects, true);
             await SaveBatches(batches, cancellationToken);
         }
 
@@ -750,39 +750,6 @@ string propertyName
 
                 if (obj.CheckIsDirty(false)) {
                     dirtyChildren.Add(obj);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Helper version of CollectDirtyChildren so that callers don't have to add the internally
-        /// used parameters.
-        /// </summary>
-        private static void CollectDirtyChildren(object node, IList<AVObject> dirtyChildren) {
-            CollectDirtyChildren(node,
-                dirtyChildren,
-                new HashSet<AVObject>(new IdentityEqualityComparer<AVObject>()),
-                new HashSet<AVObject>(new IdentityEqualityComparer<AVObject>()));
-        }
-
-        /// <summary>
-        /// Returns true if the given object can be serialized for saving as a value
-        /// that is pointed to by a AVObject.
-        /// </summary>
-        private static bool CanBeSerializedAsValue(object value) {
-            return DeepTraversal(value, yieldRoot: true)
-              .OfType<AVObject>()
-              .All(o => o.ObjectId != null);
-        }
-
-        private bool CanBeSerialized {
-            get {
-                // This method is only used for batching sets of objects for saveAll
-                // and when saving children automatically. Since it's only used to
-                // determine whether or not save should be called on them, it only
-                // needs to examine their current values, so we use estimatedData.
-                lock (mutex) {
-                    return CanBeSerializedAsValue(estimatedData);
                 }
             }
         }
@@ -1089,8 +1056,7 @@ string propertyName
         /// <returns>A AVRelation for the key.</returns>
         public AVRelation<T> GetRelation<T>(string key) where T : AVObject {
             // All the sanity checking is done when add or remove is called.
-            AVRelation<T> relation = null;
-            TryGetValue(key, out relation);
+            TryGetValue(key, out AVRelation<T> relation);
             return relation ?? new AVRelation<T>(this, key);
         }
 
@@ -1422,10 +1388,11 @@ string propertyName
             return false;
         }
 
-        static Stack<Batch> BatchObjects(IEnumerable<AVObject> avObjects) {
+        static Stack<Batch> BatchObjects(IEnumerable<AVObject> avObjects, bool containsSelf) {
             Stack<Batch> batches = new Stack<Batch>();
-            // 根节点作为第一批次，不适用依赖引用的判断规则
-            batches.Push(new Batch(avObjects));
+            if (containsSelf) {
+                batches.Push(new Batch(avObjects));
+            }
 
             IEnumerable<object> deps = from avObj in avObjects select avObj.estimatedData.Values;
             do { 
