@@ -1567,6 +1567,7 @@ string propertyName
 
         static Stack<Batch> BatchObjects(IEnumerable<AVObject> avObjects) {
             Stack<Batch> batches = new Stack<Batch>();
+            // 根节点作为第一批次，不适用依赖引用的判断规则
             batches.Push(new Batch(avObjects));
 
             IEnumerable<object> deps = from avObj in avObjects select avObj.estimatedData.Values;
