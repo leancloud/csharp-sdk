@@ -27,7 +27,7 @@ namespace LeanCloud.Test {
                 { "hello", 1 },
                 { "world", 2 }
             };
-            await obj.Save();
+            await obj.SaveAsync();
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
             Assert.NotNull(obj.UpdatedAt);
@@ -80,7 +80,7 @@ namespace LeanCloud.Test {
             AVObject c2 = new AVObject("C2");
             parent["c1"] = c1;
             parent["c2"] = c2;
-            await parent.Save();
+            await parent.SaveAsync();
         }
 
         [Test]
@@ -239,7 +239,7 @@ namespace LeanCloud.Test {
             a["b"] = b;
             b["a"] = a;
 
-            Assert.ThrowsAsync<AVException>(async () => await a.Save());
+            Assert.ThrowsAsync<AVException>(async () => await a.SaveAsync());
         }
 
         [Test]
@@ -251,7 +251,7 @@ namespace LeanCloud.Test {
             b["c"] = c;
             c["a"] = a;
 
-            Assert.ThrowsAsync<AVException>(async () => await a.Save());
+            Assert.ThrowsAsync<AVException>(async () => await a.SaveAsync());
         }
 
         [Test]
@@ -263,7 +263,7 @@ namespace LeanCloud.Test {
                 { "c", a }
             };
 
-            Assert.ThrowsAsync<AVException>(async () => await a.Save());
+            Assert.ThrowsAsync<AVException>(async () => await a.SaveAsync());
         }
 
         [Test]
@@ -278,7 +278,7 @@ namespace LeanCloud.Test {
                 { "c", a }
             };
 
-            Assert.ThrowsAsync<AVException>(async () => await a.Save());
+            Assert.ThrowsAsync<AVException>(async () => await a.SaveAsync());
         }
 
         [Test]
@@ -291,7 +291,7 @@ namespace LeanCloud.Test {
                 { "c1", c1 },
                 { "c2", c2 }
             };
-            await p.Save();
+            await p.SaveAsync();
         }
 
         [Test]
@@ -301,7 +301,7 @@ namespace LeanCloud.Test {
             AVObject c2 = new AVObject("C2");
             p["c"] = c1;
             c1["c"] = c2;
-            await p.Save();
+            await p.SaveAsync();
         }
     }
 }

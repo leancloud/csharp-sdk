@@ -192,14 +192,9 @@ namespace LeanCloud {
                 throw new InvalidOperationException("Cannot sign up a user that already exists.");
             }
 
-            IDictionary<string, IAVFieldOperation> currentOperations = StartSave();
-            try {
-                var serverState = await UserController.SignUpAsync(State, currentOperations);
-                HandleSave(serverState);
-                CurrentUser = this;
-            } catch (Exception) {
-                HandleFailedSave(currentOperations);
-            }
+            var serverState = await UserController.SignUpAsync(State, operationDict);
+            HandleSave(serverState);
+            CurrentUser = this;
         }
 
         /// <summary>

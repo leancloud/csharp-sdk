@@ -78,7 +78,7 @@ namespace LeanCloud.Storage.Internal {
                 AVCommand command = new AVCommand {
                     Path = avObj.ObjectId == null ? $"classes/{Uri.EscapeDataString(avObj.ClassName)}" : $"classes/{Uri.EscapeDataString(avObj.ClassName)}/{Uri.EscapeDataString(avObj.ObjectId)}",
                     Method = avObj.ObjectId == null ? HttpMethod.Post : HttpMethod.Put,
-                    Content = AVObject.ToJSONObjectForSaving(avObj.StartSave())
+                    Content = AVObject.ToJSONObjectForSaving(avObj.operationDict)
                 };
                 commandList.Add(command);
             }

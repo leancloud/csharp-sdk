@@ -37,7 +37,7 @@ namespace LeanCloud.Storage.Internal
 
         public static IDictionary<string, IAVFieldOperation> GetCurrentOperations(this AVObject obj)
         {
-            return obj.CurrentOperations;
+            return obj.operationDict;
         }
 
         public static IDictionary<string, object> Encode(this AVObject obj)
