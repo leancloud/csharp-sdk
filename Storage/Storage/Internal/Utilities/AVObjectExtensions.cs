@@ -45,11 +45,6 @@ namespace LeanCloud.Storage.Internal
             return PointerOrLocalIdEncoder.Instance.EncodeAVObject(obj, false);
         }
 
-        public static IEnumerable<object> DeepTraversal(object root, bool traverseAVObjects = false, bool yieldRoot = false)
-        {
-            return AVObject.DeepTraversal(root, traverseAVObjects, yieldRoot);
-        }
-
         public static void SetIfDifferent<T>(this AVObject obj, string key, T value)
         {
             obj.SetIfDifferent<T>(key, value);

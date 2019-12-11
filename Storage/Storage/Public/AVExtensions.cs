@@ -13,23 +13,14 @@ namespace LeanCloud {
     public static class AVExtensions {
         /// <summary>
         /// Saves all of the AVObjects in the enumeration. Equivalent to
-        /// calling <see cref="AVObject.SaveAllAsync{T}(IEnumerable{T})"/>.
-        /// </summary>
-        /// <param name="objects">The objects to save.</param>
-        public static Task SaveAllAsync<T>(this IEnumerable<T> objects) where T : AVObject {
-            return AVObject.SaveAllAsync(objects);
-        }
-
-        /// <summary>
-        /// Saves all of the AVObjects in the enumeration. Equivalent to
         /// calling
         /// <see cref="AVObject.SaveAllAsync{T}(IEnumerable{T}, CancellationToken)"/>.
         /// </summary>
         /// <param name="objects">The objects to save.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public static Task SaveAllAsync<T>(
-            this IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
-            return AVObject.SaveAllAsync(objects, cancellationToken);
+        public static Task SaveAllAsync<T>(this IEnumerable<T> objects, bool fetchWhenSave = false, AVQuery<AVObject> query = null, CancellationToken cancellationToken = default)
+            where T : AVObject {
+            return AVObject.SaveAllAsync(objects, fetchWhenSave, query, cancellationToken);
         }
 
         /// <summary>

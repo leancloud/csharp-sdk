@@ -93,30 +93,9 @@ namespace LeanCloud.Storage.Internal {
             return list;
         }
 
-        public async Task DeleteAsync(IObjectState state, AVQuery<AVObject> query, CancellationToken cancellationToken) {
-            var command = new AVCommand {
-                Path = $"classes/{state.ClassName}/{state.ObjectId}",
-                Method = HttpMethod.Delete
-            };
-            if (query != null) {
-                Dictionary<string, object> where = new Dictionary<string, object> {
-                    { "where", query.BuildWhere() }
-                };
-                command.Path = $"{command.Path}?{AVClient.BuildQueryString(where)}";
-            }
-            await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
-        }
-
         public async Task DeleteAllAsync(IList<IObjectState> states,
             CancellationToken cancellationToken) {
-            var requests = states
-              .Where(item => item.ObjectId != null)
-              .Select(item => new AVCommand {
-                  Path = $"classes/{Uri.EscapeDataString(item.ClassName)}/{Uri.EscapeDataString(item.ObjectId)}",
-                  Method = HttpMethod.Delete
-              })
-              .ToList();
-            await AVPlugins.Instance.CommandRunner.ExecuteBatchRequests(requests, cancellationToken);
+            
             // TODO 判断是否全部失败或者网络错误
 
         }

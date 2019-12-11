@@ -3,7 +3,7 @@ using LeanCloud.Utilities;
 using System;
 using System.Text;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Net.Http;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -42,12 +42,60 @@ namespace LeanCloud {
             }
         }
 
+        
+        public string ClassName {
+            get {
+                return state.ClassName;
+            }
+        }
+
+        [AVFieldName("objectId")]
+        public string ObjectId {
+            get {
+                return state.ObjectId;
+            }
+            set {
+                IsDirty = true;
+                SetObjectIdInternal(value);
+            }
+        }
+
+        [AVFieldName("ACL")]
+        public AVACL ACL {
+            get {
+                return GetProperty<AVACL>(null, "ACL");
+            }
+            set {
+                SetProperty(value, "ACL");
+            }
+        }
+
+        [AVFieldName("createdAt")]
+        public DateTime? CreatedAt {
+            get {
+                return state.CreatedAt;
+            }
+        }
+
+        [AVFieldName("updatedAt")]
+        public DateTime? UpdatedAt {
+            get {
+                return state.UpdatedAt;
+            }
+        }
+
+        public ICollection<string> Keys {
+            get {
+                return estimatedData.Keys.Union(serverData.Keys).ToArray();
+            }
+        }
 
         private static readonly string AutoClassName = "_Automatic";
 
         internal readonly object mutex = new object();
 
         internal readonly ConcurrentDictionary<string, IAVFieldOperation> operationDict = new ConcurrentDictionary<string, IAVFieldOperation>();
+        private readonly ConcurrentDictionary<string, object> serverData = new ConcurrentDictionary<string, object>();
         private readonly ConcurrentDictionary<string, object> estimatedData = new ConcurrentDictionary<string, object>();
 
         private static readonly ThreadLocal<bool> isCreatingPointer = new ThreadLocal<bool>(() => false);
@@ -345,19 +393,19 @@ string propertyName
 
                 // We cache the fetched object because subsequent Save operation might flush
                 // the fetched objects into Pointers.
-                IDictionary<string, AVObject> fetchedObject = CollectFetchedObjects();
+                //IDictionary<string, AVObject> fetchedObject = CollectFetchedObjects();
 
-                foreach (var pair in serverState) {
-                    var value = pair.Value;
-                    if (value is AVObject) {
-                        // Resolve fetched object.
-                        var avObject = value as AVObject;
-                        if (fetchedObject.TryGetValue(avObject.ObjectId, out AVObject obj)) {
-                            value = obj;
-                        }
-                    }
-                    newServerData[pair.Key] = value;
-                }
+                //foreach (var pair in serverState) {
+                //    var value = pair.Value;
+                //    if (value is AVObject) {
+                //        // Resolve fetched object.
+                //        var avObject = value as AVObject;
+                //        if (fetchedObject.TryGetValue(avObject.ObjectId, out AVObject obj)) {
+                //            value = obj;
+                //        }
+                //    }
+                //    newServerData[pair.Key] = value;
+                //}
 
                 IsDirty = false;
                 serverState = serverState.MutatedClone(mutableClone => {
@@ -385,76 +433,6 @@ string propertyName
                 state = other.State;
             }
             RebuildEstimatedData();
-        }
-
-        private bool HasDirtyChildren {
-            get {
-                lock (mutex) {
-                    return FindUnsavedChildren().FirstOrDefault() != null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Flattens dictionaries and lists into a single enumerable of all contained objects
-        /// that can then be queried over.
-        /// </summary>
-        /// <param name="root">The root of the traversal</param>
-        /// <param name="traverseAVObjects">Whether to traverse into AVObjects' children</param>
-        /// <param name="yieldRoot">Whether to include the root in the result</param>
-        /// <returns></returns>
-        internal static IEnumerable<object> DeepTraversal(object root, bool traverseAVObjects = false, bool yieldRoot = false) {
-            var items = DeepTraversalInternal(root,
-                traverseAVObjects,
-                new HashSet<object>(new IdentityEqualityComparer<object>()));
-            if (yieldRoot) {
-                return new[] { root }.Concat(items);
-            } else {
-                return items;
-            }
-        }
-
-        private static IEnumerable<object> DeepTraversalInternal(object root, bool traverseAVObjects, ICollection<object> seen) {
-            seen.Add(root);
-            IEnumerable itemsToVisit = null;
-            if (root is IDictionary dict) {
-                itemsToVisit = dict.Values;
-            } else if (root is IList list) {
-                itemsToVisit = list;
-            } else if (traverseAVObjects && root is AVObject obj) {
-                itemsToVisit = obj.Keys.ToList().Select(k => obj[k]);
-            }
-            if (itemsToVisit != null) {
-                foreach (var i in itemsToVisit) {
-                    if (!seen.Contains(i)) {
-                        yield return i;
-                        var children = DeepTraversalInternal(i, traverseAVObjects, seen);
-                        foreach (var child in children) {
-                            yield return child;
-                        }
-                    }
-                }
-            }
-        }
-
-        private IEnumerable<AVObject> FindUnsavedChildren() {
-            return DeepTraversal(estimatedData)
-                .OfType<AVObject>()
-                .Where(o => o.IsDirty);
-        }
-
-        /// <summary>
-        /// Deep traversal of this object to grab a copy of any object referenced by this object.
-        /// These instances may have already been fetched, and we don't want to lose their data when
-        /// refreshing or saving.
-        /// </summary>
-        /// <returns>Map of objectId to AVObject which have been fetched.</returns>
-        private IDictionary<string, AVObject> CollectFetchedObjects() {
-            return DeepTraversal(estimatedData)
-               .OfType<AVObject>()
-               .Where(o => o.ObjectId != null && o.IsDataAvailable)
-               .GroupBy(o => o.ObjectId)
-               .ToDictionary(group => group.Key, group => group.Last());
         }
 
         public static IDictionary<string, object> ToJSONObjectForSaving(IDictionary<string, IAVFieldOperation> operations) {
@@ -502,7 +480,7 @@ string propertyName
         /// Saves each object in the provided list.
         /// </summary>
         /// <param name="objects">The objects to save.</param>
-        public static async Task SaveAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default)
+        public static async Task SaveAllAsync<T>(IEnumerable<T> objects, bool fetchWhenSave = false, AVQuery<AVObject> query = null, CancellationToken cancellationToken = default)
             where T : AVObject {
             foreach (T obj in objects) {
                 if (HasCircleReference(obj, new HashSet<AVObject>())) {
@@ -696,7 +674,17 @@ string propertyName
             if (ObjectId == null) {
                 return;
             }
-            await ObjectController.DeleteAsync(State, query, cancellationToken);
+            var command = new AVCommand {
+                Path = $"classes/{state.ClassName}/{state.ObjectId}",
+                Method = HttpMethod.Delete
+            };
+            if (query != null) {
+                Dictionary<string, object> where = new Dictionary<string, object> {
+                    { "where", query.BuildWhere() }
+                };
+                command.Path = $"{command.Path}?{AVClient.BuildQueryString(where)}";
+            }
+            await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
             IsDirty = true;
         }
 
@@ -709,50 +697,22 @@ string propertyName
             var uniqueObjects = new HashSet<AVObject>(objects.OfType<AVObject>().ToList(),
                 new IdentityEqualityComparer<AVObject>());
 
-            var states = uniqueObjects.Select(t => t.state).ToList();
-            await ObjectController.DeleteAllAsync(states, cancellationToken);
+            var states = uniqueObjects.Select(t => t.state);
+            var requests = states
+                .Where(item => item.ObjectId != null)
+                .Select(item => new AVCommand {
+                    Path = $"classes/{Uri.EscapeDataString(item.ClassName)}/{Uri.EscapeDataString(item.ObjectId)}",
+                    Method = HttpMethod.Delete
+                })
+                .ToList();
+            await AVPlugins.Instance.CommandRunner.ExecuteBatchRequests(requests, cancellationToken);
+
             foreach (var obj in uniqueObjects) {
                 obj.IsDirty = true;
             }
         }
 
         #endregion
-
-        private static void CollectDirtyChildren(object node,
-            IList<AVObject> dirtyChildren,
-            ICollection<AVObject> seen,
-            ICollection<AVObject> seenNew) {
-            foreach (var obj in DeepTraversal(node).OfType<AVObject>()) {
-                ICollection<AVObject> scopedSeenNew;
-                // Check for cycles of new objects. Any such cycle means it will be impossible to save
-                // this collection of objects, so throw an exception.
-                if (obj.ObjectId != null) {
-                    scopedSeenNew = new HashSet<AVObject>(new IdentityEqualityComparer<AVObject>());
-                } else {
-                    if (seenNew.Contains(obj)) {
-                        throw new InvalidOperationException("Found a circular dependency while saving");
-                    }
-                    scopedSeenNew = new HashSet<AVObject>(seenNew, new IdentityEqualityComparer<AVObject>());
-                    scopedSeenNew.Add(obj);
-                }
-
-                // Check for cycles of any object. If this occurs, then there's no problem, but
-                // we shouldn't recurse any deeper, because it would be an infinite recursion.
-                if (seen.Contains(obj)) {
-                    return;
-                }
-                seen.Add(obj);
-
-                // Recurse into this object's children looking for dirty children.
-                // We only need to look at the child object's current estimated data,
-                // because that's the only data that might need to be saved now.
-                CollectDirtyChildren(obj.estimatedData, dirtyChildren, seen, scopedSeenNew);
-
-                if (obj.CheckIsDirty(false)) {
-                    dirtyChildren.Add(obj);
-                }
-            }
-        }
 
         /// <summary>
         /// Adds a task to the queue for all of the given objects.
@@ -1123,16 +1083,14 @@ string propertyName
         private void CheckGetAccess(string key) {
             lock (mutex) {
                 if (!CheckIsDataAvailable(key)) {
-                    throw new InvalidOperationException(
-                        "AVObject has no data for this key. Call FetchIfNeededAsync() to get the data.");
+                    throw new InvalidOperationException("AVObject has no data for this key. Call FetchIfNeededAsync() to get the data.");
                 }
             }
         }
 
         private void CheckKeyIsMutable(string key) {
             if (!IsKeyMutable(key)) {
-                throw new InvalidOperationException(
-                  "Cannot change the `" + key + "` property of a `" + ClassName + "` object.");
+                throw new InvalidOperationException($"Cannot change the `{key}` property of a `{ClassName}` object.");
             }
         }
 
@@ -1150,81 +1108,6 @@ string propertyName
                     object.Equals(ClassName, other.ClassName) &&
                     object.Equals(ObjectId, other.ObjectId);
             }
-        }
-
-        /// <summary>
-        /// Gets a set view of the keys contained in this object. This does not include createdAt,
-        /// updatedAt, or objectId. It does include things like username and ACL.
-        /// </summary>
-        public ICollection<string> Keys {
-            get {
-                lock (mutex) {
-                    return estimatedData.Keys;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the AVACL governing this object.
-        /// </summary>
-        [AVFieldName("ACL")]
-        public AVACL ACL {
-            get { return GetProperty<AVACL>(null, "ACL"); }
-            set { SetProperty(value, "ACL"); }
-        }
-
-        /// <summary>
-        /// Returns true if this object was created by the LeanCloud server when the
-        /// object might have already been there (e.g. in the case of a Facebook
-        /// login)
-        /// </summary>
-#if !UNITY
-        public
-#else
-    internal
-#endif
- bool IsNew {
-            get {
-                return state.IsNew;
-            }
-#if !UNITY
-            internal
-#endif
-      set {
-                MutateState(mutableClone => {
-                    mutableClone.IsNew = value;
-                });
-            }
-        }
-
-        /// <summary>
-        /// Gets the last time this object was updated as the server sees it, so that if you make changes
-        /// to a AVObject, then wait a while, and then call <see cref="SaveAsync(bool, AVQuery{AVObject}, CancellationToken)"/>, the updated time
-        /// will be the time of the <see cref="SaveAsync(bool, AVQuery{AVObject}, CancellationToken)"/> call rather than the time the object was
-        /// changed locally.
-        /// </summary>
-        [AVFieldName("updatedAt")]
-        public DateTime? UpdatedAt {
-            get {
-                return state.UpdatedAt;
-            }
-        }
-
-        /// <summary>
-        /// Gets the first time this object was saved as the server sees it, so that if you create a
-        /// AVObject, then wait a while, and then call <see cref="SaveAsync(bool, AVQuery{AVObject}, CancellationToken)"/>, the
-        /// creation time will be the time of the first <see cref="SaveAsync(bool, AVQuery{AVObject}, CancellationToken)"/> call rather than
-        /// the time the object was created locally.
-        /// </summary>
-        [AVFieldName("createdAt")]
-        public DateTime? CreatedAt {
-            get {
-                return state.CreatedAt;
-            }
-        }
-
-        public bool FetchWhenSave {
-            get; set;
         }
 
         /// <summary>
@@ -1255,25 +1138,11 @@ string propertyName
 
         private bool CheckIsDirty(bool considerChildren) {
             lock (mutex) {
-                return (dirty || operationDict.Count > 0 || (considerChildren && HasDirtyChildren));
+                return dirty || operationDict.Count > 0;
             }
         }
 
-        /// <summary>
-        /// Gets or sets the object id. An object id is assigned as soon as an object is
-        /// saved to the server. The combination of a <see cref="ClassName"/> and an
-        /// <see cref="ObjectId"/> uniquely identifies an object in your application.
-        /// </summary>
-        [AVFieldName("objectId")]
-        public string ObjectId {
-            get {
-                return state.ObjectId;
-            }
-            set {
-                IsDirty = true;
-                SetObjectIdInternal(value);
-            }
-        }
+        
         /// <summary>
         /// Sets the objectId without marking dirty.
         /// </summary>
@@ -1283,15 +1152,6 @@ string propertyName
                 MutateState(mutableClone => {
                     mutableClone.ObjectId = objectId;
                 });
-            }
-        }
-
-        /// <summary>
-        /// Gets the class name for the AVObject.
-        /// </summary>
-        public string ClassName {
-            get {
-                return state.ClassName;
             }
         }
 
@@ -1335,29 +1195,10 @@ string propertyName
             }
         }
 
-        /// <summary>
-        /// Gets a <see cref="AVQuery{AVObject}"/> for the type of object specified by
-        /// <paramref name="className"/>
-        /// </summary>
-        /// <param name="className">The class name of the object.</param>
-        /// <returns>A new <see cref="AVQuery{AVObject}"/>.</returns>
-        public static AVQuery<AVObject> GetQuery(string className) {
-            // Since we can't return a AVQuery<AVUser> (due to strong-typing with
-            // generics), we'll require you to go through subclasses. This is a better
-            // experience anyway, especially with LINQ integration, since you'll get
-            // strongly-typed queries and compile-time checking of property names and
-            // types.
-            if (SubclassingController.GetType(className) != null) {
-                throw new ArgumentException(
-                  "Use the class-specific query properties for class " + className, nameof(className));
-            }
-            return new AVQuery<AVObject>(className);
+        public static AVQuery<T> GetQuery<T>(string className)
+            where T : AVObject {
+            return new AVQuery<T>(className);
         }
-
-
-
-
-
 
         #region refactor
 
@@ -1394,7 +1235,7 @@ string propertyName
                 batches.Push(new Batch(avObjects));
             }
 
-            IEnumerable<object> deps = from avObj in avObjects select avObj.estimatedData.Values;
+            IEnumerable<object> deps = avObjects.Select(avObj => avObj.estimatedData.Values);
             do { 
                 HashSet<object> childSets = new HashSet<object>();
                 foreach (object dep in deps) {
@@ -1405,7 +1246,7 @@ string propertyName
                         children = (dep as IDictionary).Values;
                     } else if (dep is AVObject && (dep as AVObject).ObjectId == null) {
                         // 如果依赖是 AVObject 类型并且还没有保存过，则应该遍历其依赖
-                        // TODO 这里应该是从 Operation 中查找新增的对象
+                        // 这里应该是从 Operation 中查找新增的对象
                         children = (dep as AVObject).estimatedData.Values;
                     }
                     if (children != null) {

@@ -69,5 +69,23 @@ namespace Common.Test {
                 TestContext.WriteLine($"{delta.Key} : {delta.Value}");
             }
         }
+
+        [Test]
+        public void Union() {
+            Dictionary<string, int> dict1 = new Dictionary<string, int> {
+                { "a", 1 },
+                { "b", 2 },
+                { "c", 3 }
+            };
+            Dictionary<string, string> dict2 = new Dictionary<string, string> {
+                { "b", "b" },
+                { "c", "c" },
+                { "d", "d" }
+            };
+            IEnumerable<string> keys = dict1.Keys.Union(dict2.Keys);
+            foreach (string key in keys) {
+                TestContext.WriteLine(key);
+            }
+        }
     }
 }

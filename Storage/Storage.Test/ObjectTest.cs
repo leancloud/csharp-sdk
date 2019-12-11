@@ -27,7 +27,7 @@ namespace LeanCloud.Test {
                 { "hello", 1 },
                 { "world", 2 }
             };
-            await obj.SaveAsync();
+            await obj.SaveAsync(fetchWhenSave: true);
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
             Assert.NotNull(obj.UpdatedAt);
@@ -292,16 +292,22 @@ namespace LeanCloud.Test {
                 { "c2", c2 }
             };
             await p.SaveAsync();
+            Assert.NotNull(p.ObjectId);
+            Assert.NotNull(p.CreatedAt);
+            Assert.NotNull(c1.ObjectId);
+            Assert.NotNull(c2.ObjectId);
         }
 
         [Test]
-        public async Task SaveWithQuery() {
+        public async Task SaveWithExistedObject() {
             AVObject p = new AVObject("P");
             AVObject c1 = AVObject.CreateWithoutData("C1", "5dea05578a84ab00680b7ae5");
             AVObject c2 = new AVObject("C2");
             p["c"] = c1;
             c1["c"] = c2;
             await p.SaveAsync();
+            Assert.NotNull(p.ObjectId);
+            Assert.NotNull(p.CreatedAt);
         }
     }
 }
