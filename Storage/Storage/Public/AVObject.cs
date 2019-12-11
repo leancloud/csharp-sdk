@@ -5,44 +5,13 @@ using System.Text;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Concurrent;
 
 namespace LeanCloud {
-    /// <summary>
-    /// AVObject
-    /// </summary>
     public class AVObject : IEnumerable<KeyValuePair<string, object>> {
-        internal class Batch {
-            internal HashSet<AVObject> Objects {
-                get; set;
-            }
-
-            public Batch() {
-                Objects = new HashSet<AVObject>();
-            }
-
-            public Batch(IEnumerable<AVObject> objects) : this() {
-                foreach (AVObject obj in objects) {
-                    Objects.Add(obj);
-                }
-            }
-
-            public override string ToString() {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine("----------------------------");
-                foreach (AVObject obj in Objects) {
-                    sb.AppendLine(obj.ClassName);
-                }
-                sb.AppendLine("----------------------------");
-                return sb.ToString();
-            }
-        }
-
-        
         public string ClassName {
             get {
                 return state.ClassName;
@@ -92,8 +61,6 @@ namespace LeanCloud {
 
         private static readonly string AutoClassName = "_Automatic";
 
-        internal readonly object mutex = new object();
-
         internal readonly ConcurrentDictionary<string, IAVFieldOperation> operationDict = new ConcurrentDictionary<string, IAVFieldOperation>();
         private readonly ConcurrentDictionary<string, object> serverData = new ConcurrentDictionary<string, object>();
         private readonly ConcurrentDictionary<string, object> estimatedData = new ConcurrentDictionary<string, object>();
@@ -102,16 +69,12 @@ namespace LeanCloud {
 
         private bool hasBeenFetched;
         private bool dirty;
-        internal TaskQueue taskQueue = new TaskQueue();
 
         private IObjectState state;
-        internal void MutateState(Action<MutableObjectState> func) {
-            lock (mutex) {
-                state = state.MutatedClone(func);
 
-                // Refresh the estimated data.
-                RebuildEstimatedData();
-            }
+        internal void MutateState(Action<MutableObjectState> func) {
+            state = state.MutatedClone(func);
+            RebuildEstimatedData();
         }
 
         public IObjectState State {
@@ -138,28 +101,11 @@ namespace LeanCloud {
 
         #region AVObject Creation
 
-        /// <summary>
-        /// Constructor for use in AVObject subclasses. Subclasses must specify a AVClassName attribute.
-        /// </summary>
         protected AVObject()
             : this(AutoClassName) {
         }
 
-        /// <summary>
-        /// Constructs a new AVObject with no data in it. A AVObject constructed in this way will
-        /// not have an ObjectId and will not persist to the database until <see cref="SaveAsync(bool, AVQuery{AVObject}, CancellationToken)"/>
-        /// is called.
-        /// </summary>
-        /// <remarks>
-        /// Class names must be alphanumerical plus underscore, and start with a letter. It is recommended
-        /// to name classes in CamelCaseLikeThis.
-        /// </remarks>
-        /// <param name="className">The className for this AVObject.</param>
         public AVObject(string className) {
-            // We use a ThreadLocal rather than passing a parameter so that createWithoutData can do the
-            // right thing with subclasses. It's ugly and terrible, but it does provide the development
-            // experience we generally want, so... yeah. Sorry to whomever has to deal with this in the
-            // future. I pinky-swear we won't make a habit of this -- you believe me, don't you?
             var isPointer = isCreatingPointer.Value;
             isCreatingPointer.Value = false;
 
@@ -169,7 +115,6 @@ namespace LeanCloud {
             if (AutoClassName.Equals(className)) {
                 className = SubclassingController.GetClassName(GetType());
             }
-            // If this is supposed to be created by a factory but wasn't, throw an exception
             if (!SubclassingController.IsTypeValid(className, GetType())) {
                 throw new ArgumentException(
                   "You must create this type of AVObject using AVObject.Create() or the proper subclass.");
@@ -187,25 +132,10 @@ namespace LeanCloud {
             }
         }
 
-        /// <summary>
-        /// Creates a new AVObject based upon a class name. If the class name is a special type (e.g.
-        /// for <see cref="AVUser"/>), then the appropriate type of AVObject is returned.
-        /// </summary>
-        /// <param name="className">The class of object to create.</param>
-        /// <returns>A new AVObject for the given class name.</returns>
         public static AVObject Create(string className) {
             return SubclassingController.Instantiate(className);
         }
 
-        /// <summary>
-        /// Creates a reference to an existing AVObject for use in creating associations between
-        /// AVObjects. Calling <see cref="AVObject.IsDataAvailable"/> on this object will return
-        /// <c>false</c> until <see cref="AVExtensions.FetchIfNeededAsync{T}(T)"/> has been called.
-        /// No network request will be made.
-        /// </summary>
-        /// <param name="className">The object's class.</param>
-        /// <param name="objectId">The object id for the referenced object.</param>
-        /// <returns>A AVObject without data.</returns>
         public static AVObject CreateWithoutData(string className, string objectId) {
             isCreatingPointer.Value = true;
             try {
@@ -213,8 +143,7 @@ namespace LeanCloud {
                 result.ObjectId = objectId;
                 result.IsDirty = false;
                 if (result.IsDirty) {
-                    throw new InvalidOperationException(
-                      "A AVObject subclass default constructor must not make changes to the object that cause it to be dirty.");
+                    throw new InvalidOperationException("A AVObject subclass default constructor must not make changes to the object that cause it to be dirty.");
                 }
                 return result;
             } finally {
@@ -222,31 +151,14 @@ namespace LeanCloud {
             }
         }
 
-        /// <summary>
-        /// Creates a new AVObject based upon a given subclass type.
-        /// </summary>
-        /// <returns>A new AVObject for the given class name.</returns>
         public static T Create<T>() where T : AVObject {
             return (T)SubclassingController.Instantiate(SubclassingController.GetClassName(typeof(T)));
         }
 
-        /// <summary>
-        /// Creates a reference to an existing AVObject for use in creating associations between
-        /// AVObjects. Calling <see cref="AVObject.IsDataAvailable"/> on this object will return
-        /// <c>false</c> until <see cref="AVExtensions.FetchIfNeededAsync{T}(T)"/> has been called.
-        /// No network request will be made.
-        /// </summary>
-        /// <param name="objectId">The object id for the referenced object.</param>
-        /// <returns>A AVObject without data.</returns>
         public static T CreateWithoutData<T>(string objectId) where T : AVObject {
             return (T)CreateWithoutData(SubclassingController.GetClassName(typeof(T)), objectId);
         }
 
-        ///<summary>
-        /// restore a AVObject of subclass instance from IObjectState.
-        /// </summary>
-        /// <param name="state">IObjectState after encode from Dictionary.</param>
-        /// <param name="defaultClassName">The name of the subclass.</param>
         public static T FromState<T>(IObjectState state, string defaultClassName) where T : AVObject {
             string className = state.ClassName ?? defaultClassName;
 
@@ -263,90 +175,34 @@ namespace LeanCloud {
         }
 
         private static string GetFieldForPropertyName(string className, string propertyName) {
-            SubclassingController.GetPropertyMappings(className).TryGetValue(propertyName, out string fieldName);
-            return fieldName;
+            if (SubclassingController.GetPropertyMappings(className).TryGetValue(propertyName, out string fieldName)) {
+                return fieldName;
+            }
+            return null;
         }
 
-        /// <summary>
-        /// Sets the value of a property based upon its associated AVFieldName attribute.
-        /// </summary>
-        /// <param name="value">The new value.</param>
-        /// <param name="propertyName">The name of the property.</param>
-        /// <typeparam name="T">The type for the property.</typeparam>
-        protected virtual void SetProperty<T>(T value,
-#if !UNITY
- [CallerMemberName] string propertyName = null
-#else
- string propertyName
-#endif
-) {
+        protected virtual void SetProperty<T>(T value, string propertyName) {
             this[GetFieldForPropertyName(ClassName, propertyName)] = value;
         }
 
-        /// <summary>
-        /// Gets a relation for a property based upon its associated AVFieldName attribute.
-        /// </summary>
-        /// <returns>The AVRelation for the property.</returns>
-        /// <param name="propertyName">The name of the property.</param>
-        /// <typeparam name="T">The AVObject subclass type of the AVRelation.</typeparam>
-        protected AVRelation<T> GetRelationProperty<T>(
-#if !UNITY
-[CallerMemberName] string propertyName = null
-#else
-string propertyName
-#endif
-) where T : AVObject {
+        protected AVRelation<T> GetRelationProperty<T>(string propertyName) where T : AVObject {
             return GetRelation<T>(GetFieldForPropertyName(ClassName, propertyName));
         }
 
-        /// <summary>
-        /// Gets the value of a property based upon its associated AVFieldName attribute.
-        /// </summary>
-        /// <returns>The value of the property.</returns>
-        /// <param name="propertyName">The name of the property.</param>
-        /// <typeparam name="T">The return type of the property.</typeparam>
-        protected virtual T GetProperty<T>(
-#if !UNITY
-[CallerMemberName] string propertyName = null
-#else
-string propertyName
-#endif
-) {
+        protected virtual T GetProperty<T>(string propertyName) {
             return GetProperty<T>(default, propertyName);
         }
 
-        /// <summary>
-        /// Gets the value of a property based upon its associated AVFieldName attribute.
-        /// </summary>
-        /// <returns>The value of the property.</returns>
-        /// <param name="defaultValue">The value to return if the property is not present on the AVObject.</param>
-        /// <param name="propertyName">The name of the property.</param>
-        /// <typeparam name="T">The return type of the property.</typeparam>
-        protected virtual T GetProperty<T>(T defaultValue,
-#if !UNITY
- [CallerMemberName] string propertyName = null
-#else
- string propertyName
-#endif
-        ) {
+        protected virtual T GetProperty<T>(T defaultValue, string propertyName) {
             if (TryGetValue(GetFieldForPropertyName(ClassName, propertyName), out T result)) {
                 return result;
             }
             return defaultValue;
         }
 
-        /// <summary>
-        /// Allows subclasses to set values for non-pointer construction.
-        /// </summary>
         internal virtual void SetDefaultValues() {
         }
 
-        /// <summary>
-        /// Registers a custom subclass type with the LeanCloud SDK, enabling strong-typing of those AVObjects whenever
-        /// they appear. Subclasses must specify the AVClassName attribute, have a default constructor, and properties
-        /// backed by AVObject fields should have AVFieldName attributes supplied.
-        /// </summary>
-        /// <typeparam name="T">The AVObject subclass type to register.</typeparam>
         public static void RegisterSubclass<T>() where T : AVObject, new() {
             SubclassingController.RegisterSubclass(typeof(T));
         }
@@ -355,83 +211,65 @@ string propertyName
             SubclassingController.UnregisterSubclass(typeof(T));
         }
 
-        /// <summary>
-        /// Clears any changes to this object made since the last call to <see cref="SaveAsync(bool, AVQuery{AVObject}, CancellationToken)"/>.
-        /// </summary>
         public void Revert() {
-            lock (mutex) {
-                if (operationDict.Any()) {
-                    operationDict.Clear();
-                    RebuildEstimatedData();
-                }
+            if (operationDict.Any()) {
+                operationDict.Clear();
+                RebuildEstimatedData();
             }
         }
 
         internal virtual void HandleFetchResult(IObjectState serverState) {
-            lock (mutex) {
-                MergeFromServer(serverState);
-            }
+            MergeFromServer(serverState);
         }
 
         internal virtual void HandleSave(IObjectState serverState) {
-            lock (mutex) {
-                state = state.MutatedClone((objectState) => objectState.Apply(operationDict));
-                MergeFromServer(serverState);
-            }
+            state = state.MutatedClone((objectState) => objectState.Apply(operationDict));
+            MergeFromServer(serverState);
         }
 
         public virtual void MergeFromServer(IObjectState serverState) {
             // Make a new serverData with fetched values.
             var newServerData = serverState.ToDictionary(t => t.Key, t => t.Value);
 
-            lock (mutex) {
-                // Trigger handler based on serverState
-                if (serverState.ObjectId != null) {
-                    // If the objectId is being merged in, consider this object to be fetched.
-                    hasBeenFetched = true;
-                }
+            // Trigger handler based on serverState
+            hasBeenFetched |= serverState.ObjectId != null;
 
-                // We cache the fetched object because subsequent Save operation might flush
-                // the fetched objects into Pointers.
-                //IDictionary<string, AVObject> fetchedObject = CollectFetchedObjects();
+            // We cache the fetched object because subsequent Save operation might flush
+            // the fetched objects into Pointers.
+            //IDictionary<string, AVObject> fetchedObject = CollectFetchedObjects();
 
-                //foreach (var pair in serverState) {
-                //    var value = pair.Value;
-                //    if (value is AVObject) {
-                //        // Resolve fetched object.
-                //        var avObject = value as AVObject;
-                //        if (fetchedObject.TryGetValue(avObject.ObjectId, out AVObject obj)) {
-                //            value = obj;
-                //        }
-                //    }
-                //    newServerData[pair.Key] = value;
-                //}
+            //foreach (var pair in serverState) {
+            //    var value = pair.Value;
+            //    if (value is AVObject) {
+            //        // Resolve fetched object.
+            //        var avObject = value as AVObject;
+            //        if (fetchedObject.TryGetValue(avObject.ObjectId, out AVObject obj)) {
+            //            value = obj;
+            //        }
+            //    }
+            //    newServerData[pair.Key] = value;
+            //}
 
-                IsDirty = false;
-                serverState = serverState.MutatedClone(mutableClone => {
-                    mutableClone.ServerData = newServerData;
-                });
-                MutateState(mutableClone => {
-                    mutableClone.Apply(serverState);
-                });
-            }
+            IsDirty = false;
+            serverState = serverState.MutatedClone(mutableClone => {
+                mutableClone.ServerData = newServerData;
+            });
+            MutateState(mutableClone => {
+                mutableClone.Apply(serverState);
+            });
         }
 
         internal void MergeFromObject(AVObject other) {
-            lock (mutex) {
-                if (this == other) {
-                    return;
-                }
+            if (this == other) {
+                return;
             }
 
             operationDict.Clear();
             foreach (KeyValuePair<string, IAVFieldOperation> entry in other.operationDict) {
                 operationDict.AddOrUpdate(entry.Key, entry.Value, (key, value) => value);
             }
+            state = other.State;
 
-            lock (mutex) {
-                state = other.State;
-            }
             RebuildEstimatedData();
         }
 
@@ -448,11 +286,9 @@ string propertyName
 
         internal IDictionary<string, object> EncodeForSaving(IDictionary<string, object> data) {
             var result = new Dictionary<string, object>();
-            lock (this.mutex) {
-                foreach (var key in data.Keys) {
-                    var value = data[key];
-                    result.Add(key, PointerOrLocalIdEncoder.Instance.Encode(value));
-                }
+            foreach (var key in data.Keys) {
+                var value = data[key];
+                result.Add(key, PointerOrLocalIdEncoder.Instance.Encode(value));
             }
 
             return result;
@@ -476,11 +312,7 @@ string propertyName
             HandleSave(result);
         }
 
-        /// <summary>
-        /// Saves each object in the provided list.
-        /// </summary>
-        /// <param name="objects">The objects to save.</param>
-        public static async Task SaveAllAsync<T>(IEnumerable<T> objects, bool fetchWhenSave = false, AVQuery<AVObject> query = null, CancellationToken cancellationToken = default)
+        public static async Task SaveAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default)
             where T : AVObject {
             foreach (T obj in objects) {
                 if (HasCircleReference(obj, new HashSet<AVObject>())) {
@@ -507,169 +339,82 @@ string propertyName
             }
         }
 
-        internal virtual Task<AVObject> FetchAsyncInternal(
-              Task toAwait,
-              IDictionary<string, object> queryString,
-              CancellationToken cancellationToken) {
-            return toAwait.OnSuccess(_ => {
-                if (ObjectId == null) {
-                    throw new InvalidOperationException("Cannot refresh an object that hasn't been saved to the server.");
-                }
-                if (queryString == null) {
-                    queryString = new Dictionary<string, object>();
-                }
-
-                return ObjectController.FetchAsync(state, queryString, cancellationToken);
-            }).Unwrap().OnSuccess(t => {
-                HandleFetchResult(t.Result);
-                return this;
-            });
+        internal virtual async Task<AVObject> FetchAsyncInternal(IDictionary<string, object> queryString, CancellationToken cancellationToken = default) {
+            if (ObjectId == null) {
+                throw new InvalidOperationException("Cannot refresh an object that hasn't been saved to the server.");
+            }
+            if (queryString == null) {
+                queryString = new Dictionary<string, object>();
+            }
+            IObjectState objectState = await ObjectController.FetchAsync(state, queryString, cancellationToken);
+            HandleFetchResult(objectState);
+            return this;
         }
 
         #endregion
 
         #region Fetch Object(s)
 
-        /// <summary>
-        /// Fetches this object with the data from the server.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        internal Task<AVObject> FetchAsyncInternal(CancellationToken cancellationToken) {
-            return FetchAsyncInternal(null, cancellationToken);
-        }
-
-        internal Task<AVObject> FetchAsyncInternal(IDictionary<string, object> queryString, CancellationToken cancellationToken) {
-            return taskQueue.Enqueue(toAwait => FetchAsyncInternal(toAwait, queryString, cancellationToken),
-               cancellationToken);
-        }
-
-        internal Task<AVObject> FetchIfNeededAsyncInternal(
-            Task toAwait, CancellationToken cancellationToken) {
-            if (!IsDataAvailable) {
-                return FetchAsyncInternal(toAwait, null, cancellationToken);
-            }
-            return Task.FromResult(this);
-        }
-
-        /// <summary>
-        /// If this AVObject has not been fetched (i.e. <see cref="IsDataAvailable"/> returns
-        /// false), fetches this object with the data from the server.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        internal Task<AVObject> FetchIfNeededAsyncInternal(CancellationToken cancellationToken) {
-            return taskQueue.Enqueue(toAwait => FetchIfNeededAsyncInternal(toAwait, cancellationToken),
-              cancellationToken);
-        }
-
-        /// <summary>
-        /// Fetches all of the objects that don't have data in the provided list.
-        /// </summary>
-        /// <returns>The list passed in for convenience.</returns>
         public static Task<IEnumerable<T>> FetchAllIfNeededAsync<T>(
-            IEnumerable<T> objects) where T : AVObject {
-            return FetchAllIfNeededAsync(objects, CancellationToken.None);
+            IEnumerable<T> objects, CancellationToken cancellationToken = default) where T : AVObject {
+            return FetchAllInternalAsync(objects, false, cancellationToken);
         }
 
-        /// <summary>
-        /// Fetches all of the objects that don't have data in the provided list.
-        /// </summary>
-        /// <param name="objects">The objects to fetch.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The list passed in for convenience.</returns>
-        public static Task<IEnumerable<T>> FetchAllIfNeededAsync<T>(
-            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
-            return EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) => {
-                return FetchAllInternalAsync(objects, false, toAwait, cancellationToken);
-            }, cancellationToken);
+        public static Task<IEnumerable<T>> FetchAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default) where T : AVObject {
+            return FetchAllInternalAsync(objects, true, cancellationToken);
         }
 
-        /// <summary>
-        /// Fetches all of the objects in the provided list.
-        /// </summary>
-        /// <param name="objects">The objects to fetch.</param>
-        /// <returns>The list passed in for convenience.</returns>
-        public static Task<IEnumerable<T>> FetchAllAsync<T>(
-            IEnumerable<T> objects) where T : AVObject {
-            return FetchAllAsync(objects, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Fetches all of the objects in the provided list.
-        /// </summary>
-        /// <param name="objects">The objects to fetch.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The list passed in for convenience.</returns>
-        public static Task<IEnumerable<T>> FetchAllAsync<T>(
-            IEnumerable<T> objects, CancellationToken cancellationToken) where T : AVObject {
-            return EnqueueForAll(objects.Cast<AVObject>(), (Task toAwait) => {
-                return FetchAllInternalAsync(objects, true, toAwait, cancellationToken);
-            }, cancellationToken);
-        }
-
-        /// <summary>
-        /// Fetches all of the objects in the list.
-        /// </summary>
-        /// <param name="objects">The objects to fetch.</param>
-        /// <param name="force">If false, only objects without data will be fetched.</param>
-        /// <param name="toAwait">A task to await before starting.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The list passed in for convenience.</returns>
         private static Task<IEnumerable<T>> FetchAllInternalAsync<T>(
-            IEnumerable<T> objects, bool force, Task toAwait, CancellationToken cancellationToken) where T : AVObject {
-            return toAwait.OnSuccess(_ => {
-                if (objects.Any(obj => { return obj.state.ObjectId == null; })) {
-                    throw new InvalidOperationException("You cannot fetch objects that haven't already been saved.");
-                }
+            IEnumerable<T> objects, bool force, CancellationToken cancellationToken) where T : AVObject {
 
-                var objectsToFetch = (from obj in objects
-                                      where force || !obj.IsDataAvailable
-                                      select obj).ToList();
+            if (objects.Any(obj => { return obj.state.ObjectId == null; })) {
+                throw new InvalidOperationException("You cannot fetch objects that haven't already been saved.");
+            }
 
-                if (objectsToFetch.Count == 0) {
-                    return Task.FromResult(objects);
-                }
+            var objectsToFetch = (from obj in objects
+                                  where force || !obj.IsDataAvailable
+                                  select obj).ToList();
 
-                // Do one Find for each class.
-                var findsByClass =
-                  (from obj in objectsToFetch
-                   group obj.ObjectId by obj.ClassName into classGroup
-                   where classGroup.Count() > 0
-                   select new {
-                       ClassName = classGroup.Key,
-                       FindTask = new AVQuery<AVObject>(classGroup.Key)
-                       .WhereContainedIn("objectId", classGroup)
-                       .FindAsync(cancellationToken)
-                   }).ToDictionary(pair => pair.ClassName, pair => pair.FindTask);
+            if (objectsToFetch.Count == 0) {
+                return Task.FromResult(objects);
+            }
 
-                // Wait for all the Finds to complete.
-                return Task.WhenAll(findsByClass.Values.ToList()).OnSuccess(__ => {
-                    if (cancellationToken.IsCancellationRequested) {
-                        return objects;
-                    }
+            // Do one Find for each class.
+            var findsByClass =
+              (from obj in objectsToFetch
+               group obj.ObjectId by obj.ClassName into classGroup
+               where classGroup.Any()
+               select new {
+                   ClassName = classGroup.Key,
+                   FindTask = new AVQuery<AVObject>(classGroup.Key)
+                   .WhereContainedIn("objectId", classGroup)
+                   .FindAsync(cancellationToken)
+               }).ToDictionary(pair => pair.ClassName, pair => pair.FindTask);
 
-                    // Merge the data from the Finds into the input objects.
-                    var pairs = from obj in objectsToFetch
-                                from result in findsByClass[obj.ClassName].Result
-                                where result.ObjectId == obj.ObjectId
-                                select new { obj, result };
-                    foreach (var pair in pairs) {
-                        pair.obj.MergeFromObject(pair.result);
-                        pair.obj.hasBeenFetched = true;
-                    }
-
+            // Wait for all the Finds to complete.
+            return Task.WhenAll(findsByClass.Values.ToList()).OnSuccess(__ => {
+                if (cancellationToken.IsCancellationRequested) {
                     return objects;
-                });
-            }).Unwrap();
+                }
+
+                // Merge the data from the Finds into the input objects.
+                var pairs = from obj in objectsToFetch
+                            from result in findsByClass[obj.ClassName].Result
+                            where result.ObjectId == obj.ObjectId
+                            select new { obj, result };
+                foreach (var pair in pairs) {
+                    pair.obj.MergeFromObject(pair.result);
+                    pair.obj.hasBeenFetched = true;
+                }
+
+                return objects;
+            });
         }
 
         #endregion
 
         #region Delete Object
 
-        /// <summary>
-        /// Deletes this object on the server.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
         public virtual async Task DeleteAsync(AVQuery<AVObject> query = null, CancellationToken cancellationToken = default) {
             if (ObjectId == null) {
                 return;
@@ -688,10 +433,6 @@ string propertyName
             IsDirty = true;
         }
 
-        /// <summary>
-        /// Deletes each object in the provided list.
-        /// </summary>
-        /// <param name="objects">The objects to delete.</param>
         public static async Task DeleteAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default)
             where T : AVObject {
             var uniqueObjects = new HashSet<AVObject>(objects.OfType<AVObject>().ToList(),
@@ -714,319 +455,134 @@ string propertyName
 
         #endregion
 
-        /// <summary>
-        /// Adds a task to the queue for all of the given objects.
-        /// </summary>
-        private static Task<T> EnqueueForAll<T>(IEnumerable<AVObject> objects,
-            Func<Task, Task<T>> taskStart, CancellationToken cancellationToken) {
-            // The task that will be complete when all of the child queues indicate they're ready to start.
-            var readyToStart = new TaskCompletionSource<object>();
-
-            // First, we need to lock the mutex for the queue for every object. We have to hold this
-            // from at least when taskStart() is called to when obj.taskQueue enqueue is called, so
-            // that saves actually get executed in the order they were setup by taskStart().
-            // The locks have to be sorted so that we always acquire them in the same order.
-            // Otherwise, there's some risk of deadlock.
-            var lockSet = new LockSet(objects.Select(o => o.taskQueue.Mutex));
-
-            lockSet.Enter();
-            try {
-
-                // The task produced by taskStart. By running this immediately, we allow everything prior
-                // to toAwait to run before waiting for all of the queues on all of the objects.
-                Task<T> fullTask = taskStart(readyToStart.Task);
-
-                // Add fullTask to each of the objects' queues.
-                var childTasks = new List<Task>();
-                foreach (AVObject obj in objects) {
-                    obj.taskQueue.Enqueue((Task task) => {
-                        childTasks.Add(task);
-                        return fullTask;
-                    }, cancellationToken);
-                }
-
-                // When all of the objects' queues are ready, signal fullTask that it's ready to go on.
-                Task.WhenAll(childTasks.ToArray()).ContinueWith((Task task) => {
-                    readyToStart.SetResult(null);
-                });
-
-                return fullTask;
-            } finally {
-                lockSet.Exit();
-            }
-        }
-
-        /// <summary>
-        /// Removes a key from the object's data if it exists.
-        /// </summary>
-        /// <param name="key">The key to remove.</param>
         public virtual void Remove(string key) {
-            lock (mutex) {
-                CheckKeyIsMutable(key);
-
-                PerformOperation(key, AVDeleteOperation.Instance);
-            }
+            CheckKeyIsMutable(key);
+            PerformOperation(key, AVDeleteOperation.Instance);
         }
 
 
         private IEnumerable<string> ApplyOperations(IDictionary<string, IAVFieldOperation> operations, IDictionary<string, object> map) {
             List<string> appliedKeys = new List<string>();
-            lock (mutex) {
-                foreach (var pair in operations) {
-                    map.TryGetValue(pair.Key, out object oldValue);
-                    var newValue = pair.Value.Apply(oldValue, pair.Key);
-                    if (newValue != AVDeleteOperation.DeleteToken) {
-                        map[pair.Key] = newValue;
-                    } else {
-                        map.Remove(pair.Key);
-                    }
-                    appliedKeys.Add(pair.Key);
+            foreach (var pair in operations) {
+                map.TryGetValue(pair.Key, out object oldValue);
+                var newValue = pair.Value.Apply(oldValue, pair.Key);
+                if (newValue != AVDeleteOperation.DeleteToken) {
+                    map[pair.Key] = newValue;
+                } else {
+                    map.Remove(pair.Key);
                 }
+                appliedKeys.Add(pair.Key);
             }
             return appliedKeys;
         }
 
-        /// <summary>
-        /// Regenerates the estimatedData map from the serverData and operations.
-        /// </summary>
         internal void RebuildEstimatedData() {
             estimatedData.Clear();
             ApplyOperations(operationDict, estimatedData);
         }
 
-        /// <summary>
-        /// PerformOperation is like setting a value at an index, but instead of
-        /// just taking a new value, it takes a AVFieldOperation that modifies the value.
-        /// </summary>
         internal void PerformOperation(string key, IAVFieldOperation operation) {
-            lock (mutex) {
-                estimatedData.TryGetValue(key, out object oldValue);
-                object newValue = operation.Apply(oldValue, key);
-                if (newValue != AVDeleteOperation.DeleteToken) {
-                    estimatedData[key] = newValue;
-                } else {
-                    estimatedData.TryRemove(key, out _);
-                }
-
-                if (operationDict.TryGetValue(key, out IAVFieldOperation oldOperation)) {
-                    operation = operation.MergeWithPrevious(oldOperation);
-                }
-                operationDict[key] = operation;
+            estimatedData.TryGetValue(key, out object oldValue);
+            object newValue = operation.Apply(oldValue, key);
+            if (newValue != AVDeleteOperation.DeleteToken) {
+                estimatedData[key] = newValue;
+            } else {
+                estimatedData.TryRemove(key, out _);
             }
+
+            if (operationDict.TryGetValue(key, out IAVFieldOperation oldOperation)) {
+                operation = operation.MergeWithPrevious(oldOperation);
+            }
+            operationDict[key] = operation;
         }
 
-        /// <summary>
-        /// Override to run validations on key/value pairs. Make sure to still
-        /// call the base version.
-        /// </summary>
         internal virtual void OnSettingValue(ref string key, ref object value) {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
             }
         }
 
-        /// <summary>
-        /// Gets or sets a value on the object. It is recommended to name
-        /// keys in partialCamelCaseLikeThis.
-        /// </summary>
-        /// <param name="key">The key for the object. Keys must be alphanumeric plus underscore
-        /// and start with a letter.</param>
-        /// <exception cref="System.Collections.Generic.KeyNotFoundException">The property is
-        /// retrieved and <paramref name="key"/> is not found.</exception>
-        /// <returns>The value for the key.</returns>
         virtual public object this[string key] {
             get {
-                lock (mutex) {
-                    CheckGetAccess(key);
+                CheckGetAccess(key);
 
-                    if (!estimatedData.TryGetValue(key, out object value)) {
-                        value = state[key];
-                    }
-
-                    if (value is AVRelationBase) {
-                        var relation = value as AVRelationBase;
-                        relation.EnsureParentAndKey(this, key);
-                    }
-
-                    return value;
+                if (!estimatedData.TryGetValue(key, out object value)) {
+                    value = state[key];
                 }
+
+                if (value is AVRelationBase) {
+                    var relation = value as AVRelationBase;
+                    relation.EnsureParentAndKey(this, key);
+                }
+
+                return value;
             }
             set {
-                lock (mutex) {
-                    CheckKeyIsMutable(key);
-
-                    Set(key, value);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Perform Set internally which is not gated by mutability check.
-        /// </summary>
-        /// <param name="key">key for the object.</param>
-        /// <param name="value">the value for the key.</param>
-        internal void Set(string key, object value) {
-            lock (mutex) {
-                OnSettingValue(ref key, ref value);
-                PerformOperation(key, new AVSetOperation(value));
-            }
-        }
-
-        internal void SetIfDifferent<T>(string key, T value) {
-            bool hasCurrent = TryGetValue<T>(key, out T current);
-            if (value == null) {
-                if (hasCurrent) {
-                    PerformOperation(key, AVDeleteOperation.Instance);
-                }
-                return;
-            }
-            if (!hasCurrent || !value.Equals(current)) {
+                CheckKeyIsMutable(key);
                 Set(key, value);
             }
         }
 
+        internal void Set(string key, object value) {
+            OnSettingValue(ref key, ref value);
+            PerformOperation(key, new AVSetOperation(value));
+        }
+
         #region Atomic Increment
 
-        /// <summary>
-        /// Atomically increments the given key by 1.
-        /// </summary>
-        /// <param name="key">The key to increment.</param>
         public void Increment(string key) {
             Increment(key, 1);
         }
 
-        /// <summary>
-        /// Atomically increments the given key by the given number.
-        /// </summary>
-        /// <param name="key">The key to increment.</param>
-        /// <param name="amount">The amount to increment by.</param>
         public void Increment(string key, long amount) {
-            lock (mutex) {
-                CheckKeyIsMutable(key);
-
-                PerformOperation(key, new AVIncrementOperation(amount));
-            }
+            CheckKeyIsMutable(key);
+            PerformOperation(key, new AVIncrementOperation(amount));
         }
 
-        /// <summary>
-        /// Atomically increments the given key by the given number.
-        /// </summary>
-        /// <param name="key">The key to increment.</param>
-        /// <param name="amount">The amount to increment by.</param>
         public void Increment(string key, double amount) {
-            lock (mutex) {
-                CheckKeyIsMutable(key);
-
-                PerformOperation(key, new AVIncrementOperation(amount));
-            }
+            CheckKeyIsMutable(key);
+            PerformOperation(key, new AVIncrementOperation(amount));
         }
 
         #endregion
 
-        /// <summary>
-        /// Atomically adds an object to the end of the list associated with the given key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The object to add.</param>
         public void AddToList(string key, object value) {
             AddRangeToList(key, new[] { value });
         }
 
-        /// <summary>
-        /// Atomically adds objects to the end of the list associated with the given key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="values">The objects to add.</param>
         public void AddRangeToList<T>(string key, IEnumerable<T> values) {
-            lock (mutex) {
-                CheckKeyIsMutable(key);
-
-                PerformOperation(key, new AVAddOperation(values.Cast<object>()));
-            }
+            CheckKeyIsMutable(key);
+            PerformOperation(key, new AVAddOperation(values.Cast<object>()));
         }
 
-        /// <summary>
-        /// Atomically adds an object to the end of the list associated with the given key,
-        /// only if it is not already present in the list. The position of the insert is not
-        /// guaranteed.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The object to add.</param>
         public void AddUniqueToList(string key, object value) {
             AddRangeUniqueToList(key, new object[] { value });
         }
 
-        /// <summary>
-        /// Atomically adds objects to the end of the list associated with the given key,
-        /// only if they are not already present in the list. The position of the inserts are not
-        /// guaranteed.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="values">The objects to add.</param>
         public void AddRangeUniqueToList<T>(string key, IEnumerable<T> values) {
-            lock (mutex) {
-                CheckKeyIsMutable(key);
-
-                PerformOperation(key, new AVAddUniqueOperation(values.Cast<object>()));
-            }
+            CheckKeyIsMutable(key);
+            PerformOperation(key, new AVAddUniqueOperation(values.Cast<object>()));
         }
 
-        /// <summary>
-        /// Atomically removes all instances of the objects in <paramref name="values"/>
-        /// from the list associated with the given key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="values">The objects to remove.</param>
         public void RemoveAllFromList<T>(string key, IEnumerable<T> values) {
-            lock (mutex) {
-                CheckKeyIsMutable(key);
-
-                PerformOperation(key, new AVRemoveOperation(values.Cast<object>()));
-            }
+            CheckKeyIsMutable(key);
+            PerformOperation(key, new AVRemoveOperation(values.Cast<object>()));
         }
 
-        /// <summary>
-        /// Returns whether this object has a particular key.
-        /// </summary>
-        /// <param name="key">The key to check for</param>
         public bool ContainsKey(string key) {
-            lock (mutex) {
-                return estimatedData.ContainsKey(key);
-            }
+            return estimatedData.ContainsKey(key) || state.ContainsKey(key);
         }
 
-        /// <summary>
-        /// Gets a value for the key of a particular type.
-        /// <typeparam name="T">The type to convert the value to. Supported types are
-        /// AVObject and its descendents, LeanCloud types such as AVRelation and AVGeopoint,
-        /// primitive types,IList&lt;T&gt;, IDictionary&lt;string, T&gt;, and strings.</typeparam>
-        /// <param name="key">The key of the element to get.</param>
-        /// <exception cref="System.Collections.Generic.KeyNotFoundException">The property is
-        /// retrieved and <paramref name="key"/> is not found.</exception>
-        /// </summary>
         public T Get<T>(string key) {
             return Conversion.To<T>(this[key]);
         }
 
-        /// <summary>
-        /// Access or create a Relation value for a key.
-        /// </summary>
-        /// <typeparam name="T">The type of object to create a relation for.</typeparam>
-        /// <param name="key">The key for the relation field.</param>
-        /// <returns>A AVRelation for the key.</returns>
         public AVRelation<T> GetRelation<T>(string key) where T : AVObject {
             // All the sanity checking is done when add or remove is called.
             TryGetValue(key, out AVRelation<T> relation);
             return relation ?? new AVRelation<T>(this, key);
         }
 
-        /// <summary>
-        /// Get relation revserse query.
-        /// </summary>
-        /// <typeparam name="T">AVObject</typeparam>
-        /// <param name="parentClassName">parent className</param>
-        /// <param name="key">key</param>
-        /// <returns></returns>
         public AVQuery<T> GetRelationRevserseQuery<T>(string parentClassName, string key) where T : AVObject {
             if (string.IsNullOrEmpty(parentClassName)) {
                 throw new ArgumentNullException(nameof(parentClassName), "can not query a relation without parentClassName.");
@@ -1037,54 +593,34 @@ string propertyName
             return new AVQuery<T>(parentClassName).WhereEqualTo(key, this);
         }
 
-        /// <summary>
-        /// Populates result with the value for the key, if possible.
-        /// </summary>
-        /// <typeparam name="T">The desired type for the value.</typeparam>
-        /// <param name="key">The key to retrieve a value for.</param>
-        /// <param name="result">The value for the given key, converted to the
-        /// requested type, or null if unsuccessful.</param>
-        /// <returns>true if the lookup and conversion succeeded, otherwise
-        /// false.</returns>
         public virtual bool TryGetValue<T>(string key, out T result) {
-            lock (mutex) {
-                if (ContainsKey(key)) {
-                    try {
-                        var temp = Conversion.To<T>(this[key]);
-                        result = temp;
-                        return true;
-                    } catch (InvalidCastException) {
-                        result = default(T);
-                        return false;
-                    }
+            if (ContainsKey(key)) {
+                try {
+                    var temp = Conversion.To<T>(this[key]);
+                    result = temp;
+                    return true;
+                } catch (InvalidCastException) {
+                    result = default;
+                    return false;
                 }
-                result = default(T);
-                return false;
             }
+            result = default;
+            return false;
         }
 
-        /// <summary>
-        /// Gets whether the AVObject has been fetched.
-        /// </summary>
         public bool IsDataAvailable {
             get {
-                lock (mutex) {
-                    return hasBeenFetched;
-                }
+                return hasBeenFetched;
             }
         }
 
         private bool CheckIsDataAvailable(string key) {
-            lock (mutex) {
-                return IsDataAvailable || estimatedData.ContainsKey(key);
-            }
+            return IsDataAvailable || estimatedData.ContainsKey(key);
         }
 
         private void CheckGetAccess(string key) {
-            lock (mutex) {
-                if (!CheckIsDataAvailable(key)) {
-                    throw new InvalidOperationException("AVObject has no data for this key. Call FetchIfNeededAsync() to get the data.");
-                }
+            if (!CheckIsDataAvailable(key)) {
+                throw new InvalidOperationException("AVObject has no data for this key. Call FetchIfNeededAsync() to get the data.");
             }
         }
 
@@ -1098,101 +634,48 @@ string propertyName
             return true;
         }
 
-        /// <summary>
-        /// A helper function for checking whether two AVObjects point to
-        /// the same object in the cloud.
-        /// </summary>
         public bool HasSameId(AVObject other) {
-            lock (mutex) {
-                return other != null &&
+            return other != null &&
                     object.Equals(ClassName, other.ClassName) &&
                     object.Equals(ObjectId, other.ObjectId);
-            }
         }
 
-        /// <summary>
-        /// Indicates whether this AVObject has unsaved changes.
-        /// </summary>
         public bool IsDirty {
             get {
-                lock (mutex) { return CheckIsDirty(true); }
+                return CheckIsDirty();
             }
             internal set {
-                lock (mutex) {
-                    dirty = value;
-                }
+                dirty = value;
             }
         }
 
-        /// <summary>
-        /// Indicates whether key is unsaved for this AVObject.
-        /// </summary>
-        /// <param name="key">The key to check for.</param>
-        /// <returns><c>true</c> if the key has been altered and not saved yet, otherwise
-        /// <c>false</c>.</returns>
         public bool IsKeyDirty(string key) {
-            lock (mutex) {
-                return operationDict.ContainsKey(key);
-            }
+            return operationDict.ContainsKey(key);
         }
 
-        private bool CheckIsDirty(bool considerChildren) {
-            lock (mutex) {
-                return dirty || operationDict.Count > 0;
-            }
+        private bool CheckIsDirty() {
+            return dirty || operationDict.Count > 0;
         }
 
-        
-        /// <summary>
-        /// Sets the objectId without marking dirty.
-        /// </summary>
-        /// <param name="objectId">The new objectId</param>
         private void SetObjectIdInternal(string objectId) {
-            lock (mutex) {
-                MutateState(mutableClone => {
-                    mutableClone.ObjectId = objectId;
-                });
-            }
+            MutateState(mutableClone => {
+                mutableClone.ObjectId = objectId;
+            });
         }
 
-        /// <summary>
-        /// Adds a value for the given key, throwing an Exception if the key
-        /// already has a value.
-        /// </summary>
-        /// <remarks>
-        /// This allows you to use collection initialization syntax when creating AVObjects,
-        /// such as:
-        /// <code>
-        /// var obj = new AVObject("MyType")
-        /// {
-        ///     {"name", "foo"},
-        ///     {"count", 10},
-        ///     {"found", false}
-        /// };
-        /// </code>
-        /// </remarks>
-        /// <param name="key">The key for which a value should be set.</param>
-        /// <param name="value">The value for the key.</param>
         public void Add(string key, object value) {
-            lock (mutex) {
-                if (this.ContainsKey(key)) {
-                    throw new ArgumentException("Key already exists", key);
-                }
-                this[key] = value;
+            if (ContainsKey(key)) {
+                throw new ArgumentException("Key already exists", key);
             }
+            this[key] = value;
         }
 
-        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>
-            .GetEnumerator() {
-            lock (mutex) {
-                return estimatedData.GetEnumerator();
-            }
+        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator() {
+            return estimatedData.GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-            lock (mutex) {
-                return ((IEnumerable<KeyValuePair<string, object>>)this).GetEnumerator();
-            }
+        IEnumerator IEnumerable.GetEnumerator() {
+            return ((IEnumerable<KeyValuePair<string, object>>)this).GetEnumerator();
         }
 
         public static AVQuery<T> GetQuery<T>(string className)
@@ -1266,5 +749,34 @@ string propertyName
         }
 
         #endregion
+
+        /// <summary>
+        /// 保存 AVObject 时用到的辅助批次工具类
+        /// </summary>
+        internal class Batch {
+            internal HashSet<AVObject> Objects {
+                get; set;
+            }
+
+            public Batch() {
+                Objects = new HashSet<AVObject>();
+            }
+
+            public Batch(IEnumerable<AVObject> objects) : this() {
+                foreach (AVObject obj in objects) {
+                    Objects.Add(obj);
+                }
+            }
+
+            public override string ToString() {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("----------------------------");
+                foreach (AVObject obj in Objects) {
+                    sb.AppendLine(obj.ClassName);
+                }
+                sb.AppendLine("----------------------------");
+                return sb.ToString();
+            }
+        }
     }
 }

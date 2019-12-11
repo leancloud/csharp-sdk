@@ -151,10 +151,8 @@ namespace LeanCloud {
         /// </summary>
         /// <returns></returns>
         public async Task<bool> IsAuthenticatedAsync() {
-            lock (mutex) {
-                if (SessionToken == null || CurrentUser == null || CurrentUser.ObjectId != ObjectId) {
-                    return false;
-                }
+            if (SessionToken == null || CurrentUser == null || CurrentUser.ObjectId != ObjectId) {
+                return false;
             }
             var command = new AVCommand {
                 Path = $"users/me?session_token={SessionToken}",

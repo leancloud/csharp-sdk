@@ -9,8 +9,7 @@ namespace LeanCloud.Storage.Internal {
     public class AVQueryController {
         public async Task<IEnumerable<IObjectState>> FindAsync<T>(AVQuery<T> query, CancellationToken cancellationToken) where T : AVObject {
             IList<object> items = await FindAsync<IList<object>>(query.Path, query.BuildParameters(), "results", cancellationToken);
-            return from item in items
-                   select AVObjectCoder.Instance.Decode(item as IDictionary<string, object>, AVDecoder.Instance);
+            return items.Select(item => AVObjectCoder.Instance.Decode(item as IDictionary<string, object>, AVDecoder.Instance));
         }
 
         public async Task<int> CountAsync<T>(AVQuery<T> query, CancellationToken cancellationToken) where T : AVObject {

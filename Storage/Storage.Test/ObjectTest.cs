@@ -178,6 +178,7 @@ namespace LeanCloud.Test {
             await account.DeleteAsync(condition);
 
             account = new AVObject("Account") {
+                { "name", "acl account" },
                 { "balance", 8 },
             };
             account.ACL = new AVACL {

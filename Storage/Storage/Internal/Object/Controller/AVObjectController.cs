@@ -92,12 +92,5 @@ namespace LeanCloud.Storage.Internal {
             }
             return list;
         }
-
-        public async Task DeleteAllAsync(IList<IObjectState> states,
-            CancellationToken cancellationToken) {
-            
-            // TODO 判断是否全部失败或者网络错误
-
-        }
     }
 }

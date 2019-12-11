@@ -38,8 +38,8 @@ namespace LeanCloud.Test {
         public async Task SubClass() {
             AVObject.RegisterSubclass<Account>();
             AVQuery<Account> query = new AVQuery<Account>();
-            IEnumerable<Account> accountList = await query.FindAsync();
-            foreach (Account account in accountList) {
+            IEnumerable<Account> accounts = await query.FindAsync();
+            foreach (Account account in accounts) {
                 Assert.NotNull(account.Name);
                 Assert.Greater(account.Balance, 0);
                 TestContext.Out.WriteLine($"{account.Name}, {account.Balance}");

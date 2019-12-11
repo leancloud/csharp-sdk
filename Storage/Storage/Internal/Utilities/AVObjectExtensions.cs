@@ -45,11 +45,6 @@ namespace LeanCloud.Storage.Internal
             return PointerOrLocalIdEncoder.Instance.EncodeAVObject(obj, false);
         }
 
-        public static void SetIfDifferent<T>(this AVObject obj, string key, T value)
-        {
-            obj.SetIfDifferent<T>(key, value);
-        }
-
         public static IDictionary<string, object> ServerDataToJSONObjectForSerialization(this AVObject obj)
         {
             return obj.ServerDataToJSONObjectForSerialization();

@@ -18,9 +18,9 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="objects">The objects to save.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public static Task SaveAllAsync<T>(this IEnumerable<T> objects, bool fetchWhenSave = false, AVQuery<AVObject> query = null, CancellationToken cancellationToken = default)
+        public static Task SaveAllAsync<T>(this IEnumerable<T> objects, CancellationToken cancellationToken = default)
             where T : AVObject {
-            return AVObject.SaveAllAsync(objects, fetchWhenSave, query, cancellationToken);
+            return AVObject.SaveAllAsync(objects, cancellationToken);
         }
 
         /// <summary>
@@ -99,26 +99,6 @@ namespace LeanCloud {
                 queryString.Add("returnACL", includeACL);
             }
             return obj.FetchAsyncInternal(queryString, cancellationToken).OnSuccess(t => (T)t.Result);
-        }
-
-        /// <summary>
-        /// If this AVObject has not been fetched (i.e. <see cref="AVObject.IsDataAvailable"/> returns
-        /// false), fetches this object with the data from the server.
-        /// </summary>
-        /// <param name="obj">The AVObject to fetch.</param>
-        public static Task<T> FetchIfNeededAsync<T>(this T obj) where T : AVObject {
-            return obj.FetchIfNeededAsyncInternal(CancellationToken.None).OnSuccess(t => (T)t.Result);
-        }
-
-        /// <summary>
-        /// If this AVObject has not been fetched (i.e. <see cref="AVObject.IsDataAvailable"/> returns
-        /// false), fetches this object with the data from the server.
-        /// </summary>
-        /// <param name="obj">The AVObject to fetch.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        public static Task<T> FetchIfNeededAsync<T>(this T obj, CancellationToken cancellationToken)
-            where T : AVObject {
-            return obj.FetchIfNeededAsyncInternal(cancellationToken).OnSuccess(t => (T)t.Result);
         }
     }
 }
