@@ -27,7 +27,7 @@ namespace LeanCloud.Test {
                 { "hello", 1 },
                 { "world", 2 }
             };
-            await obj.SaveAsync(fetchWhenSave: true);
+            await obj.SaveAsync(true);
             Assert.NotNull(obj.ObjectId);
             Assert.NotNull(obj.CreatedAt);
             Assert.NotNull(obj.UpdatedAt);
@@ -214,7 +214,7 @@ namespace LeanCloud.Test {
                 foreach (AVException ie in e.InnerExceptions) {
                     TestContext.Out.WriteLine($"{ie.Code} : {ie.Message}");
                 }
-            }            
+            }
         }
 
         [Test]

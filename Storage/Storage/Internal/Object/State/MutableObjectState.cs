@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace LeanCloud.Storage.Internal {
@@ -7,6 +6,7 @@ namespace LeanCloud.Storage.Internal {
         public bool IsNew { get; set; }
         public string ClassName { get; set; }
         public string ObjectId { get; set; }
+        public AVACL ACL { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? CreatedAt { get; set; }
 
@@ -42,6 +42,9 @@ namespace LeanCloud.Storage.Internal {
             if (other.ObjectId != null) {
                 ObjectId = other.ObjectId;
             }
+            //if (other.ACL != null) {
+
+            //}
             if (other.UpdatedAt != null) {
                 UpdatedAt = other.UpdatedAt;
             }
@@ -67,7 +70,7 @@ namespace LeanCloud.Storage.Internal {
                 ObjectId = ObjectId,
                 CreatedAt = CreatedAt,
                 UpdatedAt = UpdatedAt,
-                ServerData = this.ToDictionary(t => t.Key, t => t.Value)
+                ServerData = new Dictionary<string, object>(ServerData)
             };
         }
 

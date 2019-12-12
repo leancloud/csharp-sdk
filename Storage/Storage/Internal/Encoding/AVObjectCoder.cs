@@ -39,30 +39,29 @@ namespace LeanCloud.Storage.Internal
         {
             IDictionary<string, object> serverData = new Dictionary<string, object>();
             var mutableData = new Dictionary<string, object>(data);
-            string objectId = extractFromDictionary<string>(mutableData, "objectId", (obj) =>
+            string objectId = ExtractFromDictionary<string>(mutableData, "objectId", (obj) =>
             {
                 return obj as string;
             });
-            DateTime? createdAt = extractFromDictionary<DateTime?>(mutableData, "createdAt", (obj) =>
+            DateTime? createdAt = ExtractFromDictionary<DateTime?>(mutableData, "createdAt", (obj) =>
             {
                 return (DateTime)obj;
             });
-            DateTime? updatedAt = extractFromDictionary<DateTime?>(mutableData, "updatedAt", (obj) =>
+            DateTime? updatedAt = ExtractFromDictionary<DateTime?>(mutableData, "updatedAt", (obj) =>
             {
                 return (DateTime)obj;
             });
 
-            if (mutableData.ContainsKey("ACL"))
+            AVACL acl = ExtractFromDictionary(mutableData, "ACL", (obj) =>
             {
-                serverData["ACL"] = extractFromDictionary<AVACL>(mutableData, "ACL", (obj) =>
-                {
-                    return new AVACL(obj as IDictionary<string, object>);
-                });
-            }
-            string className = extractFromDictionary<string>(mutableData, "className", obj =>
+                return new AVACL(obj as IDictionary<string, object>);
+            });
+            
+            string className = ExtractFromDictionary(mutableData, "className", obj =>
             {
                 return obj as string;
             });
+
             if (createdAt != null && updatedAt == null)
             {
                 updatedAt = createdAt;
@@ -83,6 +82,7 @@ namespace LeanCloud.Storage.Internal
             return new MutableObjectState
             {
                 ObjectId = objectId,
+                ACL = acl,
                 CreatedAt = createdAt,
                 UpdatedAt = updatedAt,
                 ServerData = serverData,
@@ -90,12 +90,11 @@ namespace LeanCloud.Storage.Internal
             };
         }
 
-        private T extractFromDictionary<T>(IDictionary<string, object> data, string key, Func<object, T> action)
+        private T ExtractFromDictionary<T>(IDictionary<string, object> data, string key, Func<object, T> action)
         {
-            T result = default(T);
-            if (data.ContainsKey(key))
-            {
-                result = action(data[key]);
+            T result = default;
+            if (data.TryGetValue(key, out object val)) {
+                result = action(val);
                 data.Remove(key);
             }
 

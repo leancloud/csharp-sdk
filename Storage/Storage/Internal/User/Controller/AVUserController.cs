@@ -52,7 +52,7 @@ namespace LeanCloud.Storage.Internal {
                 Path = path,
                 Method = HttpMethod.Post,
                 Content = new Dictionary<string, object> {
-                    { "authData", authData}
+                    { "authData", authData }
                 }
             };
             var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);

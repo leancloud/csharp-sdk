@@ -12,6 +12,10 @@ using System.Collections.Concurrent;
 
 namespace LeanCloud {
     public class AVObject : IEnumerable<KeyValuePair<string, object>> {
+        static readonly HashSet<string> RESERVED_KEYS = new HashSet<string> {
+            "objectId", "ACL", "createdAt", "updatedAt"
+        };
+
         public string ClassName {
             get {
                 return state.ClassName;
@@ -25,7 +29,9 @@ namespace LeanCloud {
             }
             set {
                 IsDirty = true;
-                SetObjectIdInternal(value);
+                MutateState(mutableClone => {
+                    mutableClone.ObjectId = value;
+                });
             }
         }
 
@@ -35,7 +41,10 @@ namespace LeanCloud {
                 return GetProperty<AVACL>(null, "ACL");
             }
             set {
-                SetProperty(value, "ACL");
+                IsDirty = true;
+                MutateState(mutableClone => {
+                    mutableClone.ACL = value;
+                });
             }
         }
 
@@ -65,9 +74,6 @@ namespace LeanCloud {
         private readonly ConcurrentDictionary<string, object> serverData = new ConcurrentDictionary<string, object>();
         private readonly ConcurrentDictionary<string, object> estimatedData = new ConcurrentDictionary<string, object>();
 
-        private static readonly ThreadLocal<bool> isCreatingPointer = new ThreadLocal<bool>(() => false);
-
-        private bool hasBeenFetched;
         private bool dirty;
 
         private IObjectState state;
@@ -106,9 +112,6 @@ namespace LeanCloud {
         }
 
         public AVObject(string className) {
-            var isPointer = isCreatingPointer.Value;
-            isCreatingPointer.Value = false;
-
             if (className == null) {
                 throw new ArgumentException("You must specify a LeanCloud class name when creating a new AVObject.");
             }
@@ -122,14 +125,7 @@ namespace LeanCloud {
             state = new MutableObjectState {
                 ClassName = className
             };
-
-            if (!isPointer) {
-                hasBeenFetched = true;
-                IsDirty = true;
-            } else {
-                IsDirty = false;
-                hasBeenFetched = false;
-            }
+            IsDirty = true;
         }
 
         public static AVObject Create(string className) {
@@ -137,18 +133,13 @@ namespace LeanCloud {
         }
 
         public static AVObject CreateWithoutData(string className, string objectId) {
-            isCreatingPointer.Value = true;
-            try {
-                var result = SubclassingController.Instantiate(className);
-                result.ObjectId = objectId;
-                result.IsDirty = false;
-                if (result.IsDirty) {
-                    throw new InvalidOperationException("A AVObject subclass default constructor must not make changes to the object that cause it to be dirty.");
-                }
-                return result;
-            } finally {
-                isCreatingPointer.Value = false;
+            var result = SubclassingController.Instantiate(className);
+            result.ObjectId = objectId;
+            result.IsDirty = false;
+            if (result.IsDirty) {
+                throw new InvalidOperationException("A AVObject subclass default constructor must not make changes to the object that cause it to be dirty.");
             }
+            return result;
         }
 
         public static T Create<T>() where T : AVObject {
@@ -230,9 +221,6 @@ namespace LeanCloud {
         public virtual void MergeFromServer(IObjectState serverState) {
             // Make a new serverData with fetched values.
             var newServerData = serverState.ToDictionary(t => t.Key, t => t.Value);
-
-            // Trigger handler based on serverState
-            hasBeenFetched |= serverState.ObjectId != null;
 
             // We cache the fetched object because subsequent Save operation might flush
             // the fetched objects into Pointers.
@@ -367,21 +355,13 @@ namespace LeanCloud {
         private static Task<IEnumerable<T>> FetchAllInternalAsync<T>(
             IEnumerable<T> objects, bool force, CancellationToken cancellationToken) where T : AVObject {
 
-            if (objects.Any(obj => { return obj.state.ObjectId == null; })) {
+            if (objects.Any(obj => obj.state.ObjectId == null)) {
                 throw new InvalidOperationException("You cannot fetch objects that haven't already been saved.");
             }
-
-            var objectsToFetch = (from obj in objects
-                                  where force || !obj.IsDataAvailable
-                                  select obj).ToList();
-
-            if (objectsToFetch.Count == 0) {
-                return Task.FromResult(objects);
-            }
-
+            
             // Do one Find for each class.
             var findsByClass =
-              (from obj in objectsToFetch
+              (from obj in objects
                group obj.ObjectId by obj.ClassName into classGroup
                where classGroup.Any()
                select new {
@@ -398,13 +378,12 @@ namespace LeanCloud {
                 }
 
                 // Merge the data from the Finds into the input objects.
-                var pairs = from obj in objectsToFetch
+                var pairs = from obj in objects
                             from result in findsByClass[obj.ClassName].Result
                             where result.ObjectId == obj.ObjectId
                             select new { obj, result };
                 foreach (var pair in pairs) {
                     pair.obj.MergeFromObject(pair.result);
-                    pair.obj.hasBeenFetched = true;
                 }
 
                 return objects;
@@ -456,7 +435,7 @@ namespace LeanCloud {
         #endregion
 
         public virtual void Remove(string key) {
-            CheckKeyIsMutable(key);
+            CheckKeyValid(key);
             PerformOperation(key, AVDeleteOperation.Instance);
         }
 
@@ -504,7 +483,7 @@ namespace LeanCloud {
 
         virtual public object this[string key] {
             get {
-                CheckGetAccess(key);
+                CheckKeyValid(key);
 
                 if (!estimatedData.TryGetValue(key, out object value)) {
                     value = state[key];
@@ -518,7 +497,7 @@ namespace LeanCloud {
                 return value;
             }
             set {
-                CheckKeyIsMutable(key);
+                CheckKeyValid(key);
                 Set(key, value);
             }
         }
@@ -535,38 +514,52 @@ namespace LeanCloud {
         }
 
         public void Increment(string key, long amount) {
-            CheckKeyIsMutable(key);
+            CheckKeyValid(key);
             PerformOperation(key, new AVIncrementOperation(amount));
         }
 
         public void Increment(string key, double amount) {
-            CheckKeyIsMutable(key);
+            CheckKeyValid(key);
             PerformOperation(key, new AVIncrementOperation(amount));
         }
 
         #endregion
 
         public void AddToList(string key, object value) {
+            CheckKeyValid(key);
             AddRangeToList(key, new[] { value });
         }
 
         public void AddRangeToList<T>(string key, IEnumerable<T> values) {
-            CheckKeyIsMutable(key);
+            CheckKeyValid(key);
             PerformOperation(key, new AVAddOperation(values.Cast<object>()));
         }
 
         public void AddUniqueToList(string key, object value) {
+            CheckKeyValid(key);
             AddRangeUniqueToList(key, new object[] { value });
         }
 
         public void AddRangeUniqueToList<T>(string key, IEnumerable<T> values) {
-            CheckKeyIsMutable(key);
+            CheckKeyValid(key);
             PerformOperation(key, new AVAddUniqueOperation(values.Cast<object>()));
         }
 
         public void RemoveAllFromList<T>(string key, IEnumerable<T> values) {
-            CheckKeyIsMutable(key);
+            CheckKeyValid(key);
             PerformOperation(key, new AVRemoveOperation(values.Cast<object>()));
+        }
+
+        void CheckKeyValid(string key) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (key.StartsWith("_", StringComparison.CurrentCulture)) {
+                throw new ArgumentException("key should not start with _");
+            }
+            if (RESERVED_KEYS.Contains(key)) {
+                throw new ArgumentException($"key: {key} is reserved by LeanCloud");
+            }
         }
 
         public bool ContainsKey(string key) {
@@ -608,32 +601,6 @@ namespace LeanCloud {
             return false;
         }
 
-        public bool IsDataAvailable {
-            get {
-                return hasBeenFetched;
-            }
-        }
-
-        private bool CheckIsDataAvailable(string key) {
-            return IsDataAvailable || estimatedData.ContainsKey(key);
-        }
-
-        private void CheckGetAccess(string key) {
-            if (!CheckIsDataAvailable(key)) {
-                throw new InvalidOperationException("AVObject has no data for this key. Call FetchIfNeededAsync() to get the data.");
-            }
-        }
-
-        private void CheckKeyIsMutable(string key) {
-            if (!IsKeyMutable(key)) {
-                throw new InvalidOperationException($"Cannot change the `{key}` property of a `{ClassName}` object.");
-            }
-        }
-
-        protected virtual bool IsKeyMutable(string key) {
-            return true;
-        }
-
         public bool HasSameId(AVObject other) {
             return other != null &&
                     object.Equals(ClassName, other.ClassName) &&
@@ -655,12 +622,6 @@ namespace LeanCloud {
 
         private bool CheckIsDirty() {
             return dirty || operationDict.Count > 0;
-        }
-
-        private void SetObjectIdInternal(string objectId) {
-            MutateState(mutableClone => {
-                mutableClone.ObjectId = objectId;
-            });
         }
 
         public void Add(string key, object value) {
