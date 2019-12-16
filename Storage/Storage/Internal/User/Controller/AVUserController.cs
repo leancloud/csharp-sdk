@@ -14,9 +14,6 @@ namespace LeanCloud.Storage.Internal {
             };
             var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             var serverState = AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
-            serverState = serverState.MutatedClone(mutableClone => {
-                mutableClone.IsNew = true;
-            });
             return serverState;
         }
 
@@ -37,9 +34,6 @@ namespace LeanCloud.Storage.Internal {
             };
             var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             var serverState = AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
-            serverState = serverState.MutatedClone(mutableClone => {
-                mutableClone.IsNew = ret.Item1 == System.Net.HttpStatusCode.Created;
-            });
             return serverState;
         }
 
@@ -57,9 +51,6 @@ namespace LeanCloud.Storage.Internal {
             };
             var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             var serverState = AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
-            serverState = serverState.MutatedClone(mutableClone => {
-                mutableClone.IsNew = ret.Item1 == System.Net.HttpStatusCode.Created;
-            });
             return serverState;
         }
 
@@ -94,9 +85,6 @@ namespace LeanCloud.Storage.Internal {
             };
             var ret = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command);
             var serverState = AVObjectCoder.Instance.Decode(ret.Item2, AVDecoder.Instance);
-            serverState = serverState.MutatedClone(mutableClone => {
-                mutableClone.IsNew = ret.Item1 == System.Net.HttpStatusCode.Created;
-            });
             return serverState;
         }
 

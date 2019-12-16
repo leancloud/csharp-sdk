@@ -46,23 +46,20 @@ namespace LeanCloud.Storage.Internal
             var operations = value.GetCurrentOperations();
             var operationJSON = AVObject.ToJSONObjectForSaving(operations);
             var objectJSON = value.ToDictionary(kvp => kvp.Key, kvp => PointerOrLocalIdEncoder.Instance.Encode(kvp.Value));
-            foreach (var kvp in operationJSON)
-            {
+            foreach (var kvp in operationJSON) {
                 objectJSON[kvp.Key] = kvp.Value;
             }
-            if (value.CreatedAt.HasValue)
-            {
-                objectJSON["createdAt"] = value.CreatedAt.Value.ToString(AVClient.DateFormatStrings.First(),
-                CultureInfo.InvariantCulture);
+            if (value.CreatedAt.HasValue) {
+                objectJSON["createdAt"] = value.CreatedAt.Value.ToString(AVClient.DateFormatStrings.First(), CultureInfo.InvariantCulture);
             }
-            if (value.UpdatedAt.HasValue)
-            {
-                objectJSON["updatedAt"] = value.UpdatedAt.Value.ToString(AVClient.DateFormatStrings.First(),
-                CultureInfo.InvariantCulture);
+            if (value.UpdatedAt.HasValue) {
+                objectJSON["updatedAt"] = value.UpdatedAt.Value.ToString(AVClient.DateFormatStrings.First(), CultureInfo.InvariantCulture);
             }
-            if(!string.IsNullOrEmpty(value.ObjectId))
-            {
+            if(!string.IsNullOrEmpty(value.ObjectId)) {
                 objectJSON["objectId"] = value.ObjectId;
+            }
+            if (value.ACL != null) {
+                objectJSON["acl"] = Encode(value.ACL);
             }
             objectJSON["className"] = value.ClassName;
             objectJSON["__type"] = "Object";

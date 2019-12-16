@@ -35,16 +35,16 @@ namespace LeanCloud {
             }
         }
 
+        internal AVACL acl;
+
         [AVFieldName("ACL")]
         public AVACL ACL {
+            // 设置 IsDirty 
             get {
-                return GetProperty<AVACL>(null, "ACL");
-            }
-            set {
+                return acl;
+            } set {
+                acl = value;
                 IsDirty = true;
-                MutateState(mutableClone => {
-                    mutableClone.ACL = value;
-                });
             }
         }
 
@@ -86,12 +86,6 @@ namespace LeanCloud {
         public IObjectState State {
             get {
                 return state;
-            }
-        }
-
-        internal static AVObjectController ObjectController {
-            get {
-                return AVPlugins.Instance.ObjectController;
             }
         }
 
@@ -261,6 +255,17 @@ namespace LeanCloud {
             RebuildEstimatedData();
         }
 
+        internal IDictionary<string, object> ToJSONObject() {
+            IDictionary<string, object> result = new Dictionary<string, object>();
+            if (ACL != null) {
+                result["ACL"] = PointerOrLocalIdEncoder.Instance.Encode(ACL);
+            }
+            foreach (KeyValuePair<string, IAVFieldOperation> kv in operationDict) {
+                result[kv.Key] = PointerOrLocalIdEncoder.Instance.Encode(kv.Value);
+            }
+            return result;
+        }
+
         public static IDictionary<string, object> ToJSONObjectForSaving(IDictionary<string, IAVFieldOperation> operations) {
             var result = new Dictionary<string, object>();
             foreach (var pair in operations) {
@@ -296,8 +301,29 @@ namespace LeanCloud {
             }
             Stack<Batch> batches = BatchObjects(new List<AVObject> { this }, false);
             await SaveBatches(batches, cancellationToken);
-            IObjectState result = await ObjectController.SaveAsync(state, operationDict, fetchWhenSave, query, cancellationToken);
-            HandleSave(result);
+
+            IDictionary<string, object> objectJSON = ToJSONObject();
+            var command = new AVCommand {
+                Path = ObjectId == null ? $"classes/{Uri.EscapeDataString(ClassName)}" :
+                                          $"classes/{Uri.EscapeDataString(ClassName)}/{ObjectId}",
+                Method = ObjectId == null ? HttpMethod.Post : HttpMethod.Put,
+                Content = objectJSON
+            };
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            if (fetchWhenSave) {
+                args.Add("fetchWhenSave", fetchWhenSave);
+            }
+            // 查询条件
+            if (query != null) {
+                args.Add("where", query.BuildWhere());
+            }
+            if (args.Count > 0) {
+                string encode = AVClient.BuildQueryString(args);
+                command.Path = $"{command.Path}?{encode}";
+            }
+            var data = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            IObjectState serverState = AVObjectCoder.Instance.Decode(data.Item2, AVDecoder.Instance);
+            HandleSave(serverState);
         }
 
         public static async Task SaveAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default)
@@ -315,10 +341,28 @@ namespace LeanCloud {
             while (batches.Any()) {
                 Batch batch = batches.Pop();
                 IList<AVObject> dirtyObjects = batch.Objects.Where(o => o.IsDirty).ToList();
-                var serverStates = await ObjectController.SaveAllAsync(dirtyObjects, cancellationToken);
+
+                List<AVCommand> commandList = new List<AVCommand>();
+                foreach (AVObject avObj in dirtyObjects) {
+                    AVCommand command = new AVCommand {
+                        Path = avObj.ObjectId == null ? $"classes/{Uri.EscapeDataString(avObj.ClassName)}" :
+                                                        $"classes/{Uri.EscapeDataString(avObj.ClassName)}/{Uri.EscapeDataString(avObj.ObjectId)}",
+                        Method = avObj.ObjectId == null ? HttpMethod.Post : HttpMethod.Put,
+                        Content = avObj.ToJSONObject()
+                    };
+                    commandList.Add(command);
+                }
+                IList<IObjectState> list = new List<IObjectState>();
+                var result = await AVPlugins.Instance.CommandRunner.ExecuteBatchRequests(commandList, cancellationToken);
+                foreach (var data in result) {
+                    if (data.TryGetValue("success", out object val)) {
+                        IObjectState obj = AVObjectCoder.Instance.Decode(val as IDictionary<string, object>, AVDecoder.Instance);
+                        list.Add(obj);
+                    }
+                }
 
                 try {
-                    foreach (var pair in dirtyObjects.Zip(serverStates, (item, state) => new { item, state })) {
+                    foreach (var pair in dirtyObjects.Zip(list, (item, state) => new { item, state })) {
                         pair.item.HandleSave(pair.state);
                     }
                 } catch (Exception e) {
@@ -334,7 +378,14 @@ namespace LeanCloud {
             if (queryString == null) {
                 queryString = new Dictionary<string, object>();
             }
-            IObjectState objectState = await ObjectController.FetchAsync(state, queryString, cancellationToken);
+
+            var command = new AVCommand {
+                Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}?{AVClient.BuildQueryString(queryString)}",
+                Method = HttpMethod.Get
+            };
+            var data = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            IObjectState objectState = AVObjectCoder.Instance.Decode(data.Item2, AVDecoder.Instance);
+
             HandleFetchResult(objectState);
             return this;
         }

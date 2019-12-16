@@ -22,7 +22,6 @@ namespace LeanCloud.Storage.Internal {
 
         private AVCloudCodeController cloudCodeController;
         private AVFileController fileController;
-        private AVObjectController objectController;
         private AVQueryController queryController;
         private AVUserController userController;
         private ObjectSubclassingController subclassingController;
@@ -42,7 +41,6 @@ namespace LeanCloud.Storage.Internal {
 
                 CloudCodeController = null;
                 FileController = null;
-                ObjectController = null;
                 UserController = null;
                 SubclassingController = null;
 
@@ -104,20 +102,6 @@ namespace LeanCloud.Storage.Internal {
             set {
                 lock (mutex) {
                     fileController = value;
-                }
-            }
-        }
-
-        public AVObjectController ObjectController {
-            get {
-                lock (mutex) {
-                    objectController = objectController ?? new AVObjectController();
-                    return objectController;
-                }
-            }
-            set {
-                lock (mutex) {
-                    objectController = value;
                 }
             }
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace LeanCloud.Storage.Internal {
     public class MutableObjectState : IObjectState {
-        public bool IsNew { get; set; }
         public string ClassName { get; set; }
         public string ObjectId { get; set; }
         public AVACL ACL { get; set; }
@@ -38,13 +37,12 @@ namespace LeanCloud.Storage.Internal {
         }
 
         public void Apply(IObjectState other) {
-            IsNew = other.IsNew;
             if (other.ObjectId != null) {
                 ObjectId = other.ObjectId;
             }
-            //if (other.ACL != null) {
-
-            //}
+            if (other.ACL != null) {
+                ACL = other.ACL;
+            }
             if (other.UpdatedAt != null) {
                 UpdatedAt = other.UpdatedAt;
             }
@@ -65,7 +63,6 @@ namespace LeanCloud.Storage.Internal {
 
         protected virtual MutableObjectState MutableClone() {
             return new MutableObjectState {
-                IsNew = IsNew,
                 ClassName = ClassName,
                 ObjectId = ObjectId,
                 CreatedAt = CreatedAt,
