@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using LeanCloud.Common;
+using LeanCloud;
 
 namespace Common.Test {
     public class AppRouterTest {

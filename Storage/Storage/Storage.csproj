@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ReleaseVersion>0.1.0</ReleaseVersion>
+    <RootNamespace>LeanCloud.Storage</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,5 +14,14 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Internal\" />
+    <Folder Include="Internal\Codec\" />
+    <Folder Include="Internal\File\" />
+    <Folder Include="Internal\Http\" />
+    <Folder Include="Internal\Object\" />
+    <Folder Include="Internal\Operation\" />
+    <Folder Include="Internal\Query\" />
   </ItemGroup>
 </Project>

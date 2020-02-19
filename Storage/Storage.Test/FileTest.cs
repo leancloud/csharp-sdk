@@ -10,10 +10,10 @@ namespace LeanCloud.Test {
 
         [SetUp]
         public void SetUp() {
-            Utils.InitNorthChina();
+            //Utils.InitNorthChina();
             //Utils.InitEastChina();
             //Utils.InitOldEastChina();
-            //Utils.InitUS();
+            Utils.InitUS();
         }
 
         [Test, Order(0)]

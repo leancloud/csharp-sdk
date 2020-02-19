@@ -43,7 +43,7 @@ namespace LeanCloud.Storage.Internal {
     }
 
     public static bool CollectionsEqual<T>(this IEnumerable<T> a, IEnumerable<T> b) {
-      return Object.Equals(a, b) ||
+      return Equals(a, b) ||
              (a != null && b != null &&
              a.SequenceEqual(b));
     }

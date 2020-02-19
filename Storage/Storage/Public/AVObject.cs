@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
-using System.Collections.Concurrent;
 
 namespace LeanCloud {
     public class AVObject : IEnumerable<KeyValuePair<string, object>> {
@@ -64,15 +63,15 @@ namespace LeanCloud {
 
         public ICollection<string> Keys {
             get {
-                return estimatedData.Keys.Union(serverData.Keys).ToArray();
+                return estimatedData.Keys;
             }
         }
 
         private static readonly string AutoClassName = "_Automatic";
 
-        internal readonly ConcurrentDictionary<string, IAVFieldOperation> operationDict = new ConcurrentDictionary<string, IAVFieldOperation>();
-        private readonly ConcurrentDictionary<string, object> serverData = new ConcurrentDictionary<string, object>();
-        private readonly ConcurrentDictionary<string, object> estimatedData = new ConcurrentDictionary<string, object>();
+        internal readonly Dictionary<string, IAVFieldOperation> operationDict = new Dictionary<string, IAVFieldOperation>();
+        private Dictionary<string, object> serverData = new Dictionary<string, object>();
+        private Dictionary<string, object> estimatedData = new Dictionary<string, object>();
 
         private bool dirty;
 
@@ -232,6 +231,9 @@ namespace LeanCloud {
             //    newServerData[pair.Key] = value;
             //}
 
+            this.serverData = serverData.Concat(this.serverData.Where(d => !serverData.ContainsKey(d.Key)))
+                .ToDictionary(x => x.Key, x => x.Value);
+
             IsDirty = false;
             serverState = serverState.MutatedClone(mutableClone => {
                 mutableClone.ServerData = newServerData;
@@ -248,7 +250,7 @@ namespace LeanCloud {
 
             operationDict.Clear();
             foreach (KeyValuePair<string, IAVFieldOperation> entry in other.operationDict) {
-                operationDict.AddOrUpdate(entry.Key, entry.Value, (key, value) => value);
+                operationDict.Add(entry.Key, entry.Value);
             }
             state = other.State;
 
@@ -293,7 +295,26 @@ namespace LeanCloud {
                 as IDictionary<string, object>;
         }
 
-        #region Save Object()
+        internal virtual async Task<AVObject> FetchAsyncInternal(IDictionary<string, object> queryString, CancellationToken cancellationToken = default) {
+            if (ObjectId == null) {
+                throw new InvalidOperationException("Cannot refresh an object that hasn't been saved to the server.");
+            }
+            if (queryString == null) {
+                queryString = new Dictionary<string, object>();
+            }
+
+            var command = new AVCommand {
+                Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}?{AVClient.BuildQueryString(queryString)}",
+                Method = HttpMethod.Get
+            };
+            var data = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
+            IObjectState objectState = AVObjectCoder.Instance.Decode(data.Item2, AVDecoder.Instance);
+
+            HandleFetchResult(objectState);
+            return this;
+        }
+
+        #region Save
 
         public virtual async Task SaveAsync(bool fetchWhenSave = false, AVQuery<AVObject> query = null, CancellationToken cancellationToken = default) {
             if (HasCircleReference(this, new HashSet<AVObject>())) {
@@ -371,37 +392,7 @@ namespace LeanCloud {
             }
         }
 
-        internal virtual async Task<AVObject> FetchAsyncInternal(IDictionary<string, object> queryString, CancellationToken cancellationToken = default) {
-            if (ObjectId == null) {
-                throw new InvalidOperationException("Cannot refresh an object that hasn't been saved to the server.");
-            }
-            if (queryString == null) {
-                queryString = new Dictionary<string, object>();
-            }
-
-            var command = new AVCommand {
-                Path = $"classes/{Uri.EscapeDataString(state.ClassName)}/{Uri.EscapeDataString(state.ObjectId)}?{AVClient.BuildQueryString(queryString)}",
-                Method = HttpMethod.Get
-            };
-            var data = await AVPlugins.Instance.CommandRunner.RunCommandAsync<IDictionary<string, object>>(command, cancellationToken);
-            IObjectState objectState = AVObjectCoder.Instance.Decode(data.Item2, AVDecoder.Instance);
-
-            HandleFetchResult(objectState);
-            return this;
-        }
-
         #endregion
-
-        #region Fetch Object(s)
-
-        public static Task<IEnumerable<T>> FetchAllIfNeededAsync<T>(
-            IEnumerable<T> objects, CancellationToken cancellationToken = default) where T : AVObject {
-            return FetchAllInternalAsync(objects, false, cancellationToken);
-        }
-
-        public static Task<IEnumerable<T>> FetchAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default) where T : AVObject {
-            return FetchAllInternalAsync(objects, true, cancellationToken);
-        }
 
         private static Task<IEnumerable<T>> FetchAllInternalAsync<T>(
             IEnumerable<T> objects, bool force, CancellationToken cancellationToken) where T : AVObject {
@@ -409,7 +400,7 @@ namespace LeanCloud {
             if (objects.Any(obj => obj.state.ObjectId == null)) {
                 throw new InvalidOperationException("You cannot fetch objects that haven't already been saved.");
             }
-            
+
             // Do one Find for each class.
             var findsByClass =
               (from obj in objects
@@ -441,9 +432,20 @@ namespace LeanCloud {
             });
         }
 
+        #region Fetch
+
+        public static Task<IEnumerable<T>> FetchAllIfNeededAsync<T>(
+            IEnumerable<T> objects, CancellationToken cancellationToken = default) where T : AVObject {
+            return FetchAllInternalAsync(objects, false, cancellationToken);
+        }
+
+        public static Task<IEnumerable<T>> FetchAllAsync<T>(IEnumerable<T> objects, CancellationToken cancellationToken = default) where T : AVObject {
+            return FetchAllInternalAsync(objects, true, cancellationToken);
+        }
+
         #endregion
 
-        #region Delete Object
+        #region Delete
 
         public virtual async Task DeleteAsync(AVQuery<AVObject> query = null, CancellationToken cancellationToken = default) {
             if (ObjectId == null) {
@@ -490,48 +492,6 @@ namespace LeanCloud {
             PerformOperation(key, AVDeleteOperation.Instance);
         }
 
-
-        private IEnumerable<string> ApplyOperations(IDictionary<string, IAVFieldOperation> operations, IDictionary<string, object> map) {
-            List<string> appliedKeys = new List<string>();
-            foreach (var pair in operations) {
-                map.TryGetValue(pair.Key, out object oldValue);
-                var newValue = pair.Value.Apply(oldValue, pair.Key);
-                if (newValue != AVDeleteOperation.DeleteToken) {
-                    map[pair.Key] = newValue;
-                } else {
-                    map.Remove(pair.Key);
-                }
-                appliedKeys.Add(pair.Key);
-            }
-            return appliedKeys;
-        }
-
-        internal void RebuildEstimatedData() {
-            estimatedData.Clear();
-            ApplyOperations(operationDict, estimatedData);
-        }
-
-        internal void PerformOperation(string key, IAVFieldOperation operation) {
-            estimatedData.TryGetValue(key, out object oldValue);
-            object newValue = operation.Apply(oldValue, key);
-            if (newValue != AVDeleteOperation.DeleteToken) {
-                estimatedData[key] = newValue;
-            } else {
-                estimatedData.TryRemove(key, out _);
-            }
-
-            if (operationDict.TryGetValue(key, out IAVFieldOperation oldOperation)) {
-                operation = operation.MergeWithPrevious(oldOperation);
-            }
-            operationDict[key] = operation;
-        }
-
-        internal virtual void OnSettingValue(ref string key, ref object value) {
-            if (key == null) {
-                throw new ArgumentNullException(nameof(key));
-            }
-        }
-
         virtual public object this[string key] {
             get {
                 CheckKeyValid(key);
@@ -553,11 +513,6 @@ namespace LeanCloud {
             }
         }
 
-        internal void Set(string key, object value) {
-            OnSettingValue(ref key, ref value);
-            PerformOperation(key, new AVSetOperation(value));
-        }
-
         #region Atomic Increment
 
         public void Increment(string key) {
@@ -575,6 +530,8 @@ namespace LeanCloud {
         }
 
         #endregion
+
+        #region List
 
         public void AddToList(string key, object value) {
             CheckKeyValid(key);
@@ -601,6 +558,58 @@ namespace LeanCloud {
             PerformOperation(key, new AVRemoveOperation(values.Cast<object>()));
         }
 
+        #endregion
+
+
+        private IEnumerable<string> ApplyOperations(IDictionary<string, IAVFieldOperation> operations, IDictionary<string, object> map) {
+            List<string> appliedKeys = new List<string>();
+            foreach (var pair in operations) {
+                map.TryGetValue(pair.Key, out object oldValue);
+                var newValue = pair.Value.Apply(oldValue, pair.Key);
+                if (newValue != AVDeleteOperation.DeleteToken) {
+                    map[pair.Key] = newValue;
+                } else {
+                    map.Remove(pair.Key);
+                }
+                appliedKeys.Add(pair.Key);
+            }
+            return appliedKeys;
+        }
+
+        internal void RebuildEstimatedData() {
+            estimatedData.Clear();
+            foreach (KeyValuePair<string, object> entry in serverData) {
+                estimatedData.Add(entry.Key, entry.Value);
+            }
+            ApplyOperations(operationDict, estimatedData);
+        }
+
+        internal void PerformOperation(string key, IAVFieldOperation operation) {
+            estimatedData.TryGetValue(key, out object oldValue);
+            object newValue = operation.Apply(oldValue, key);
+            if (newValue != AVDeleteOperation.DeleteToken) {
+                estimatedData[key] = newValue;
+            } else {
+                estimatedData.Remove(key);
+            }
+
+            if (operationDict.TryGetValue(key, out IAVFieldOperation oldOperation)) {
+                operation = operation.MergeWithPrevious(oldOperation);
+            }
+            operationDict[key] = operation;
+        }
+
+        internal virtual void OnSettingValue(ref string key, ref object value) {
+            if (key == null) {
+                throw new ArgumentNullException(nameof(key));
+            }
+        }
+
+        internal void Set(string key, object value) {
+            OnSettingValue(ref key, ref value);
+            PerformOperation(key, new AVSetOperation(value));
+        }
+
         void CheckKeyValid(string key) {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
@@ -611,6 +620,15 @@ namespace LeanCloud {
             if (RESERVED_KEYS.Contains(key)) {
                 throw new ArgumentException($"key: {key} is reserved by LeanCloud");
             }
+        }
+
+
+
+        public void Add(string key, object value) {
+            if (ContainsKey(key)) {
+                throw new ArgumentException("Key already exists", key);
+            }
+            this[key] = value;
         }
 
         public bool ContainsKey(string key) {
@@ -675,13 +693,6 @@ namespace LeanCloud {
             return dirty || operationDict.Count > 0;
         }
 
-        public void Add(string key, object value) {
-            if (ContainsKey(key)) {
-                throw new ArgumentException("Key already exists", key);
-            }
-            this[key] = value;
-        }
-
         IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator() {
             return estimatedData.GetEnumerator();
         }
@@ -695,7 +706,6 @@ namespace LeanCloud {
             return new AVQuery<T>(className);
         }
 
-        #region refactor
 
         static bool HasCircleReference(object obj, HashSet<AVObject> parents) {
             if (parents.Contains(obj)) {
@@ -759,8 +769,6 @@ namespace LeanCloud {
 
             return batches;
         }
-
-        #endregion
 
         /// <summary>
         /// 保存 AVObject 时用到的辅助批次工具类

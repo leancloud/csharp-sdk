@@ -73,7 +73,7 @@ namespace LeanCloud.Common {
                 response = await client.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
                 HttpUtils.PrintResponse(response, content);
-
+                
                 AppRouter state = JsonConvert.DeserializeObject<AppRouter>(content);
                 state.Source = "router";
 
