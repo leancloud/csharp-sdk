@@ -20,7 +20,7 @@ namespace LeanCloud.Storage {
         /// <summary>
         /// 操作字典
         /// </summary>
-        Dictionary<string, LCOperation> operationDict;
+        Dictionary<string, ILCOperation> operationDict;
 
         public string ClassName {
             get {

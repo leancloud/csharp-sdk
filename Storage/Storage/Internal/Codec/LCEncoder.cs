@@ -17,7 +17,7 @@ namespace LeanCloud.Storage.Internal.Codec {
                 return EncodeDictionary(dict);
             } else if (obj is LCObject lcObj) {
                 return EncodeLCObject(lcObj);
-            } else if (obj is LCOperation op) {
+            } else if (obj is ILCOperation op) {
                 return EncodeOperation(op);
             } else if (obj is ILCQueryCondition cond) {
                 return EncodeQueryCondition(cond);
@@ -74,7 +74,7 @@ namespace LeanCloud.Storage.Internal.Codec {
             };
         }
 
-        static object EncodeOperation(LCOperation operation) {
+        static object EncodeOperation(ILCOperation operation) {
             return null;
         }
 
