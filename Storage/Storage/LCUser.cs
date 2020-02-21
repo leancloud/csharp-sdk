@@ -1,7 +1,9 @@
 ﻿using System;
+
 namespace LeanCloud.Storage {
     public class LCUser : LCObject {
-        public LCUser() {
+        public LCUser() : base("_User") {
+            
         }
     }
 }

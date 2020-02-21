@@ -24,8 +24,8 @@ namespace LeanCloud.Storage.Internal.Codec {
                     }
                 }
                 Dictionary<string, object> d = new Dictionary<string, object>();
-                foreach (KeyValuePair<string, object> kv in dict) {
-                    string key = kv.Key;
+                foreach (DictionaryEntry kv in dict) {
+                    string key = kv.Key.ToString();
                     object value = kv.Value;
                     d[key] = Decode(value); 
                 }

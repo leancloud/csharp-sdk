@@ -32,8 +32,8 @@ namespace LeanCloud.Storage.Internal.Object {
                 return null;
             }
             LCObjectData objectData = new LCObjectData();
-            foreach (KeyValuePair<string, object> kv in dict) {
-                string key = kv.Key;
+            foreach (DictionaryEntry kv in dict) {
+                string key = kv.Key.ToString();
                 object value = kv.Value;
                 if (key == "className") {
                     objectData.ClassName = value.ToString();

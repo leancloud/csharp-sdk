@@ -2,7 +2,7 @@
 
 namespace LeanCloud.Storage {
     public class LCRole : LCObject {
-        public LCRole() {
+        public LCRole() : base("_Role") {
         }
     }
 }

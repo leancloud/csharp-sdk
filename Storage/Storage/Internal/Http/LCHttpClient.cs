@@ -37,8 +37,38 @@ namespace LeanCloud.Storage.Internal.Http {
             client.DefaultRequestHeaders.Add("X-LC-Key", appKey);
         }
 
-        internal Task Get() {
-            return null;
+        internal async Task<Dictionary<string, object>> Get(string path,
+            Dictionary<string, object> headers = null,
+            Dictionary<string, object> queryParams = null) {
+            HttpRequestMessage request = new HttpRequestMessage {
+                RequestUri = new Uri($"{server}/{apiVersion}/{path}"),
+                Method = HttpMethod.Get
+            };
+            HttpUtils.PrintRequest(client, request);
+            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            request.Dispose();
+
+            string resultString = await response.Content.ReadAsStringAsync();
+            response.Dispose();
+            HttpUtils.PrintResponse(response, resultString);
+
+            HttpStatusCode statusCode = response.StatusCode;
+            if (response.IsSuccessStatusCode) {
+                Dictionary<string, object> ret = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
+                return ret;
+            }
+            int code = (int)statusCode;
+            string message = resultString;
+            try {
+                // 尝试获取 LeanCloud 返回错误信息
+                Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
+                code = (int)error["code"];
+                message = error["error"].ToString();
+            } catch (Exception e) {
+                Logger.Error(e.Message);
+            } finally {
+                throw new LCException(code, message);
+            }
         }
 
         internal async Task<Dictionary<string, object>> Post(string path,

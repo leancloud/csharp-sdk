@@ -110,7 +110,7 @@ namespace LeanCloud.Storage.Internal.Query {
             Add(cond);
         }
 
-        void Add(ILCQueryCondition cond) {
+        internal void Add(ILCQueryCondition cond) {
             if (cond == null) {
                 return;
             }
@@ -129,7 +129,7 @@ namespace LeanCloud.Storage.Internal.Query {
             orderByList.Add(key);
         }
 
-        internal void OrderByDesending(string key) {
+        internal void OrderByDescending(string key) {
             OrderBy($"-{key}");
         }
 
