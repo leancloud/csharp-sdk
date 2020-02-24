@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using LeanCloud.Storage.Internal.Object;
 using LeanCloud.Storage.Internal.Operation;
+using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
     /// <summary>
@@ -18,12 +20,12 @@ namespace LeanCloud.Storage {
         /// <summary>
         /// 预算数据
         /// </summary>
-        Dictionary<string, object> estimatedData;
+        internal Dictionary<string, object> estimatedData;
 
         /// <summary>
         /// 操作字典
         /// </summary>
-        Dictionary<string, ILCOperation> operationDict;
+        internal Dictionary<string, ILCOperation> operationDict;
 
         static readonly Dictionary<Type, LCSubclassInfo> subclassTypeDict = new Dictionary<Type, LCSubclassInfo>();
         static readonly Dictionary<string, LCSubclassInfo> subclassNameDict = new Dictionary<string, LCSubclassInfo>();
@@ -59,6 +61,12 @@ namespace LeanCloud.Storage {
         }
 
         bool isNew;
+
+        bool IsDirty {
+            get {
+                return isNew || estimatedData.Count > 0;
+            }
+        }
 
         public LCObject(string className) {
             if (string.IsNullOrEmpty(className)) {
@@ -126,6 +134,72 @@ namespace LeanCloud.Storage {
             }
             LCDeleteOperation deleteOp = new LCDeleteOperation();
             ApplyOperation(key, deleteOp);
+        }
+
+        static async Task SaveBatches(Stack<LCBatch> batches) {
+            while (batches.Count > 0) {
+                LCBatch batch = batches.Pop();
+                List<LCObject> dirtyObjects = batch.objects.Where(item => item.IsDirty)
+                                                            .ToList();
+
+                List<Dictionary<string, object>> requestList = dirtyObjects.Select(item => {
+                    string path = item.ObjectId == null ?
+                                $"/1.1/classes/{item.ClassName}" :
+                                $"/1.1/classes/{item.ClassName}/{item.ClassName}";
+                    string method = item.ObjectId == null ? "POST" : "PUT";
+                    Dictionary<string, object> body = LCEncoder.Encode(item.operationDict) as Dictionary<string, object>;
+                    return new Dictionary<string, object> {
+                        { "path", path },
+                        { "method", method },
+                        { "body", body }
+                    };
+                }).ToList();
+
+                Dictionary<string, object> data = new Dictionary<string, object> {
+                    { "requests", LCEncoder.Encode(requestList) }
+                };
+
+                List<Dictionary<string, object>> results = await LeanCloud.HttpClient.Post<List<Dictionary<string, object>>>("batch", data: data);
+                List<LCObjectData> resultList = results.Select(item => {
+                    if (item.TryGetValue("error", out object message)) {
+                        int code = (int)item["code"];
+                        throw new LCException(code, message as string);
+                    }
+                    return LCObjectData.Decode(item);
+                }).ToList();
+
+                for (int i = 0; i < dirtyObjects.Count; i++) {
+                    LCObject obj = dirtyObjects[i];
+                    LCObjectData objData = resultList[i];
+                    obj.Merge(objData);
+                }
+            }
+        }
+
+        public async Task<LCObject> Save(bool fetchWhenSave = false, LCQuery<LCObject> query = null) {
+            if (LCBatch.HasCircleReference(this, new HashSet<LCObject>())) {
+                throw new ArgumentException("Found a circle dependency when save.");
+            }
+
+            Stack<LCBatch> batches = LCBatch.BatchObjects(new List<LCObject> { this }, false);
+            if (batches.Count > 0) {
+                await SaveBatches(batches);
+            }
+
+            string path = ObjectId == null ? $"classes/{ClassName}" : $"classes/{ClassName}/{ObjectId}";
+            Dictionary<string, object> queryParams = new Dictionary<string, object>();
+            if (fetchWhenSave) {
+                queryParams["fetchWhenSave"] = true;
+            }
+            if (query != null) {
+                queryParams["where"] = query.BuildWhere();
+            }
+            Dictionary<string, object> response = ObjectId == null ?
+                await LeanCloud.HttpClient.Post<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams) :
+                await LeanCloud.HttpClient.Put(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams);
+            LCObjectData data = LCObjectData.Decode(response);
+            Merge(data);
+            return this;
         }
 
         public static void RegisterSubclass(string className, Type type, Func<LCObject> constructor) {

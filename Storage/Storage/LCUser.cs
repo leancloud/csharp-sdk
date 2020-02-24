@@ -2,7 +2,9 @@
 
 namespace LeanCloud.Storage {
     public class LCUser : LCObject {
-        public LCUser() : base("_User") {
+        public const string CLASS_NAME = "_User";
+
+        public LCUser() : base(CLASS_NAME) {
             
         }
     }

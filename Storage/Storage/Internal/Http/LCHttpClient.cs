@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
@@ -40,8 +41,16 @@ namespace LeanCloud.Storage.Internal.Http {
         internal async Task<Dictionary<string, object>> Get(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> queryParams = null) {
+
+            string url = $"{server}/{apiVersion}/{path}";
+            if (queryParams != null) {
+                IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
+                string queries = string.Join("&", queryPairs);
+                url = $"{url}?{queries}";
+            }
+
             HttpRequestMessage request = new HttpRequestMessage {
-                RequestUri = new Uri($"{server}/{apiVersion}/{path}"),
+                RequestUri = new Uri(url),
                 Method = HttpMethod.Get
             };
             HttpUtils.PrintRequest(client, request);
@@ -71,7 +80,7 @@ namespace LeanCloud.Storage.Internal.Http {
             }
         }
 
-        internal async Task<Dictionary<string, object>> Post(string path,
+        internal async Task<T> Post<T>(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> data = null,
             Dictionary<string, object> queryParams = null) {
@@ -79,6 +88,44 @@ namespace LeanCloud.Storage.Internal.Http {
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri($"{server}/{apiVersion}/{path}"),
                 Method = HttpMethod.Post,
+                Content = new StringContent(content)
+            };
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            HttpUtils.PrintRequest(client, request, content);
+            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            request.Dispose();
+
+            string resultString = await response.Content.ReadAsStringAsync();
+            response.Dispose();
+            HttpUtils.PrintResponse(response, resultString);
+
+            HttpStatusCode statusCode = response.StatusCode;
+            if (response.IsSuccessStatusCode) {
+                T ret = JsonConvert.DeserializeObject<T>(resultString, new LeanCloudJsonConverter());
+                return ret;
+            }
+            int code = (int)statusCode;
+            string message = resultString;
+            try {
+                // 尝试获取 LeanCloud 返回错误信息
+                Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
+                code = (int)error["code"];
+                message = error["error"].ToString();
+            } catch (Exception e) {
+                Logger.Error(e.Message);
+            } finally {
+                throw new LCException(code, message);
+            }
+        }
+
+        internal async Task<Dictionary<string, object>> Put(string path,
+            Dictionary<string, object> headers = null,
+            Dictionary<string, object> data = null,
+            Dictionary<string, object> queryParams = null) {
+            string content = (data != null) ? JsonConvert.SerializeObject(data) : null;
+            HttpRequestMessage request = new HttpRequestMessage {
+                RequestUri = new Uri($"{server}/{apiVersion}/{path}"),
+                Method = HttpMethod.Put,
                 Content = new StringContent(content)
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");

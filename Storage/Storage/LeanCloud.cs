@@ -1,4 +1,5 @@
 ﻿using System;
+using LeanCloud.Storage;
 using LeanCloud.Storage.Internal.Http;
 
 namespace LeanCloud {
@@ -27,7 +28,10 @@ namespace LeanCloud {
             if (string.IsNullOrEmpty(appKey)) {
                 throw new ArgumentException(nameof(appKey));
             }
-            // TODO 注册 LeanCloud 内部子类化类型
+            // 注册 LeanCloud 内部子类化类型
+            LCObject.RegisterSubclass(LCUser.CLASS_NAME, typeof(LCUser), () => new LCUser());
+            LCObject.RegisterSubclass(LCRole.CLASS_NAME, typeof(LCRole), () => new LCRole());
+            LCObject.RegisterSubclass(LCFile.CLASS_NAME, typeof(LCFile), () => new LCFile());
 
             HttpClient = new LCHttpClient(appId, appKey, server, SDKVersion, APIVersion);
         }

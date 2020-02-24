@@ -1,7 +1,9 @@
 ﻿using System;
 namespace LeanCloud.Storage {
     public class LCFile : LCObject {
-        public LCFile() : base("_File") {
+        public const string CLASS_NAME = "_File";
+
+        public LCFile() : base(CLASS_NAME) {
         }
     }
 }

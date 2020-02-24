@@ -354,10 +354,10 @@ namespace LeanCloud.Storage {
         }
 
         Dictionary<string, object> BuildParams() {
-            return condition.BuildParams(ClassName);
+            return condition.BuildParams();
         }
 
-        string BuildWhere() {
+        internal string BuildWhere() {
             return condition.BuildWhere();
         }
     }

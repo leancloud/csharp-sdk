@@ -164,9 +164,8 @@ namespace LeanCloud.Storage.Internal.Query {
             };
         }
 
-        internal Dictionary<string, object> BuildParams(string className) {
+        internal Dictionary<string, object> BuildParams() {
             Dictionary<string, object> dict = new Dictionary<string, object> {
-                { "className", className },
                 { "skip", Skip },
                 { "limit", Limit }
             };
