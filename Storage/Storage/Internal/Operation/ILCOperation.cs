@@ -5,7 +5,7 @@ namespace LeanCloud.Storage.Internal.Operation {
     internal interface ILCOperation {
         ILCOperation MergeWithPrevious(ILCOperation previousOp);
 
-        Dictionary<string, object> Encode();
+        object Encode();
 
         object Apply(object oldValue, string key);
 

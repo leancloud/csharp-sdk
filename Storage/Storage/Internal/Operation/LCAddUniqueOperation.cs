@@ -23,7 +23,7 @@ namespace LeanCloud.Storage.Internal.Operation {
             throw new ArgumentException("Operation is invalid after previous operation.");
         }
 
-        public Dictionary<string, object> Encode() {
+        public object Encode() {
             return new Dictionary<string, object> {
                 { "__op", "AddUnique" },
                 { "objects", LCEncoder.Encode(values.ToList()) }

@@ -15,8 +15,8 @@ namespace LeanCloud.Storage.Internal.Operation {
             return this;
         }
 
-        public Dictionary<string, object> Encode() {
-            return LCEncoder.Encode(value) as Dictionary<string, object>;
+        public object Encode() {
+            return LCEncoder.Encode(value);
         }
 
         public object Apply(object oldValue, string key) {

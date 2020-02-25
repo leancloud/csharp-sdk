@@ -87,7 +87,7 @@ namespace LeanCloud.Storage {
             LCObject obj = new LCObject(className);
             obj.data.ObjectId = objectId;
             obj.isNew = false;
-            return null;
+            return obj;
         }
 
         internal static LCObject Create(string className) {
@@ -106,12 +106,14 @@ namespace LeanCloud.Storage {
 
         public object this[string key] {
             get {
-                object value = estimatedData[key];
-                if (value is LCRelation<LCObject> relation) {
-                    relation.Key = key;
-                    relation.Parent = this;
+                if (estimatedData.TryGetValue(key, out object value)) {
+                    if (value is LCRelation<LCObject> relation) {
+                        relation.Key = key;
+                        relation.Parent = this;
+                    }
+                    return value;
                 }
-                return value;
+                return null;
             }
             set {
                 if (string.IsNullOrEmpty(key)) {
@@ -161,11 +163,13 @@ namespace LeanCloud.Storage {
 
                 List<Dictionary<string, object>> results = await LeanCloud.HttpClient.Post<List<Dictionary<string, object>>>("batch", data: data);
                 List<LCObjectData> resultList = results.Select(item => {
-                    if (item.TryGetValue("error", out object message)) {
-                        int code = (int)item["code"];
+                    if (item.TryGetValue("error", out object error)) {
+                        Dictionary<string, object> err = error as Dictionary<string, object>;
+                        int code = (int)err["code"];
+                        string message = (string)err["error"];
                         throw new LCException(code, message as string);
                     }
-                    return LCObjectData.Decode(item);
+                    return LCObjectData.Decode(item["success"] as IDictionary);
                 }).ToList();
 
                 for (int i = 0; i < dirtyObjects.Count; i++) {
@@ -196,9 +200,65 @@ namespace LeanCloud.Storage {
             }
             Dictionary<string, object> response = ObjectId == null ?
                 await LeanCloud.HttpClient.Post<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams) :
-                await LeanCloud.HttpClient.Put(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams);
+                await LeanCloud.HttpClient.Put<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams);
             LCObjectData data = LCObjectData.Decode(response);
             Merge(data);
+            return this;
+        }
+
+        public static async Task<List<LCObject>> SaveAll(List<LCObject> objectList) {
+            if (objectList == null) {
+                throw new ArgumentNullException(nameof(objectList));
+            }
+            foreach (LCObject obj in objectList) {
+                if (LCBatch.HasCircleReference(obj, new HashSet<LCObject>())) {
+                    throw new ArgumentException("Found a circle dependency when save.");
+                }
+            }
+            Stack<LCBatch> batches = LCBatch.BatchObjects(objectList, true);
+            await SaveBatches(batches);
+            return objectList;
+        }
+
+        public async Task Delete() {
+            if (ObjectId == null) {
+                return;
+            }
+            string path = $"classes/{ClassName}/{ObjectId}";
+            await LeanCloud.HttpClient.Delete(path);
+        }
+
+        public static async Task DeleteAll(List<LCObject> objectList) {
+            if (objectList == null || objectList.Count == 0) {
+                throw new ArgumentNullException(nameof(objectList));
+            }
+            IEnumerable<LCObject> objects = objectList.Where(item => item.ObjectId != null);
+            HashSet<LCObject> objectSet = new HashSet<LCObject>(objects);
+            List<Dictionary<string, object>> requestList = objectSet.Select(item => {
+                string path = $"/{LeanCloud.APIVersion}/classes/{item.ClassName}/{item.ObjectId}";
+                return new Dictionary<string, object> {
+                    { "path", path },
+                    { "method", "DELETE" }
+                };
+            }).ToList();
+            Dictionary<string, object> data = new Dictionary<string, object> {
+                { "requests", LCEncoder.Encode(requestList) }
+            };
+            await LeanCloud.HttpClient.Post<List<object>>("batch", data: data);
+        }
+
+        public async Task<LCObject> Fetch(IEnumerable<string> keys = null, IEnumerable<string> includes = null) {
+            Dictionary<string, object> queryParams = new Dictionary<string, object>();
+            if (keys != null) {
+                queryParams["keys"] = string.Join(",", keys);
+            }
+            if (includes != null) {
+                queryParams["include"] = string.Join(",", includes);
+            }
+            string path = $"classes/{ClassName}/{ObjectId}";
+            Dictionary<string, object> response = await LeanCloud.HttpClient.Get<Dictionary<string, object>>(path, queryParams: queryParams);
+            LCObjectData objectData = LCObjectData.Decode(response);
+            Merge(objectData);
             return this;
         }
 
@@ -217,8 +277,11 @@ namespace LeanCloud.Storage {
             if (op is LCDeleteOperation) {
                 estimatedData.Remove(key);
             } else {
-                object oldValue = estimatedData[key];
-                estimatedData[key] = op.Apply(oldValue, key);
+                if (estimatedData.TryGetValue(key, out object oldValue)) {
+                    estimatedData[key] = op.Apply(oldValue, key);
+                } else {
+                    estimatedData[key] = op.Apply(null, key);
+                }
             }
         }
 

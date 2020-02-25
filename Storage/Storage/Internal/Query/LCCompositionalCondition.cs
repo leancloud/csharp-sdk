@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage.Internal.Query {
@@ -189,9 +190,7 @@ namespace LeanCloud.Storage.Internal.Query {
             if (conditionList == null || conditionList.Count == 0) {
                 return null;
             }
-            // TODO
-
-            return null;
+            return JsonConvert.SerializeObject(Encode()); 
         }
     }
 }

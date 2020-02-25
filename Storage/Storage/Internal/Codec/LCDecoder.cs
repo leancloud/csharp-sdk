@@ -56,8 +56,7 @@ namespace LeanCloud.Storage.Internal.Codec {
             string className = dict["className"].ToString();
             LCObject obj = LCObject.Create(className);
             LCObjectData objectData = LCObjectData.Decode(dict as Dictionary<string, object>);
-            // TODO merge
-
+            obj.Merge(objectData);
             return obj;
         }
 

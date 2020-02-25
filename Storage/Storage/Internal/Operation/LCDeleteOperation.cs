@@ -11,7 +11,7 @@ namespace LeanCloud.Storage.Internal.Operation {
             return this;
         }
 
-        public Dictionary<string, object> Encode() {
+        public object Encode() {
             return new Dictionary<string, object> {
                 { "__op", "Delete" }
             };

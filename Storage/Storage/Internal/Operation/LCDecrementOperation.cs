@@ -13,7 +13,7 @@ namespace LeanCloud.Storage.Internal.Operation {
             throw new NotImplementedException();
         }
 
-        public Dictionary<string, object> Encode() {
+        public object Encode() {
             throw new NotImplementedException();
         }
 

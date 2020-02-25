@@ -1,16 +1,15 @@
 using NUnit.Framework;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using LeanCloud.Common;
+using LeanCloud.Storage;
 
 namespace LeanCloud.Test {
-    public class ObjectTests {
+    public class ObjectTest {
         [SetUp]
         public void SetUp() {
             Logger.LogDelegate += Utils.Print;
-            Utils.InitNorthChina();
+            LeanCloud.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
         }
 
         [TearDown]
@@ -19,296 +18,130 @@ namespace LeanCloud.Test {
         }
 
         [Test]
-        public async Task Save() {
-            AVObject obj = AVObject.Create("Foo");
-            obj["content"] = "hello, world";
-            obj["list"] = new List<int> { 1, 1, 2, 3, 5, 8 };
-            obj["dict"] = new Dictionary<string, int> {
-                { "hello", 1 },
-                { "world", 2 }
+        public async Task CreateObject() {
+            LCObject @object = new LCObject("Hello");
+            @object["intValue"] = 123;
+            @object["boolValue"] = true;
+            @object["stringValue"] = "hello, world";
+            @object["time"] = DateTime.Now;
+            @object["intList"] = new List<int> { 1, 1, 2, 3, 5, 8 };
+            @object["stringMap"] = new Dictionary<string, object> {
+                { "k1", 111 },
+                { "k2", true },
+                { "k3", "haha" }
             };
-            await obj.SaveAsync(true);
-            Assert.NotNull(obj.ObjectId);
-            Assert.NotNull(obj.CreatedAt);
-            Assert.NotNull(obj.UpdatedAt);
+            LCObject nestedObj = new LCObject("World");
+            nestedObj["content"] = "7788";
+            @object["objectValue"] = nestedObj;
+            @object["pointerList"] = new List<object> { new LCObject("World"), nestedObj };
+            await @object.Save();
+
+            TestContext.WriteLine(@object.ClassName);
+            TestContext.WriteLine(@object.ObjectId);
+            TestContext.WriteLine(@object.CreatedAt);
+            TestContext.WriteLine(@object.UpdatedAt);
+            TestContext.WriteLine(@object["intValue"]);
+            TestContext.WriteLine(@object["boolValue"]);
+            TestContext.WriteLine(@object["stringValue"]);
+            TestContext.WriteLine(@object["objectValue"]);
+            TestContext.WriteLine(@object["time"]);
+
+            Assert.AreEqual(nestedObj, @object["objectValue"]);
+            TestContext.WriteLine(nestedObj.ClassName);
+            TestContext.WriteLine(nestedObj.ObjectId);
+
+            Assert.NotNull(@object.ObjectId);
+            Assert.NotNull(@object.ClassName);
+            Assert.NotNull(@object.CreatedAt);
+            Assert.NotNull(@object.UpdatedAt);
+            Assert.AreEqual(@object["intValue"], 123);
+            Assert.AreEqual(@object["boolValue"], true);
+            Assert.AreEqual(@object["stringValue"], "hello, world");
+
+            Assert.NotNull(nestedObj);
+            Assert.NotNull(nestedObj.ClassName);
+            Assert.NotNull(nestedObj.ObjectId);
+            Assert.NotNull(nestedObj.CreatedAt);
+            Assert.NotNull(nestedObj.UpdatedAt);
+
+            List<object> pointerList = @object["pointerList"] as List<object>;
+            foreach (object pointerObj in pointerList) {
+                LCObject pointer = pointerObj as LCObject;
+                Assert.NotNull(pointer.ObjectId);
+            }
         }
 
         [Test]
-        public async Task SaveWithOptions() {
-            AVObject account = AVObject.CreateWithoutData("Account", "5d65fa5330863b008065e476");
-            account["balance"] = 100;
-            await account.SaveAsync();
-            AVQuery<AVObject> query = new AVQuery<AVObject>("Account");
-            query.WhereGreaterThan("balance", 80);
-            account["balance"] = 50;
-            await account.SaveAsync(true, query);
-            TestContext.Out.WriteLine($"balance: {account["balance"]}");
-        }
-
-        //[Test]
-        //public async Task SaveWithPointer() {
-        //    AVObject comment = new AVObject("Comment") {
-        //        { "content", "Hello, Comment" }
-        //    };
-
-        //    AVObject post = new AVObject("Post") {
-        //        { "name", "New Post" },
-        //        { "category", new AVObject("Category") {
-        //            { "name", "new post category" }
-        //        } }
-        //    };
-        //    comment["post"] = post;
-
-        //    AVObject testPost = new AVObject("Post") {
-        //        { "name", "Test Post" },
-        //        { "category", new AVObject("Category") {
-        //            { "name", "test post category" }
-        //        } }
-        //    };
-        //    comment["test_post"] = testPost;
-
-        //    await comment.Save();
-        //    TestContext.Out.WriteLine(post);
-        //    TestContext.Out.WriteLine(testPost);
-        //    TestContext.Out.WriteLine(comment);
-        //}
-
-        [Test]
-        public async Task SaveWithPointer() {
-            AVObject parent = new AVObject("Parent");
-            AVObject c1 = new AVObject("C1");
-            AVObject c2 = new AVObject("C2");
-            parent["c1"] = c1;
-            parent["c2"] = c2;
-            await parent.SaveAsync();
-        }
-
-        [Test]
-        public async Task SaveWithPointerArray() {
-            AVObject parent = new AVObject("Parent");
-            AVObject c1 = new AVObject("C1");
-            AVObject c2 = new AVObject("C2");
-            parent["iList"] = new List<int> { 1, 1, 2, 3 };
-            parent["cList"] = new List<AVObject> { c1, c2 };
-            parent["cDict"] = new Dictionary<string, AVObject> {
-                { "c1", c1 },
-                { "c2", c2 }
-            };
-            await parent.SaveAsync();
-
-        }
-
-        [Test]
-        public async Task SaveBatch() {
-            List<AVObject> objList = new List<AVObject>();
+        public async Task SaveAll() {
+            List<LCObject> list = new List<LCObject>();
             for (int i = 0; i < 5; i++) {
-                AVObject obj = AVObject.Create("Foo");
-                obj["content"] = "batch object";
-                objList.Add(obj);
+                LCObject world = new LCObject("World");
+                world["content"] = $"word_{i}";
+                list.Add(world);
             }
-            try {
-                await objList.SaveAllAsync();
-                objList.ForEach(obj => {
-                    Assert.NotNull(obj.ObjectId);
-                });
-            } catch (Exception e) {
-                TestContext.Out.WriteLine(e.Message);
-            }
-        }
-
-        [Test]
-        public async Task Fetch() {
-            AVObject obj = AVObject.CreateWithoutData("Todo", "5d5f6039d5de2b006cf29c8f");
-            await obj.FetchAsync();
-            Assert.NotNull(obj["title"]);
-            Assert.NotNull(obj["content"]);
-            TestContext.Out.WriteLine($"{obj["title"]}, {obj["content"]}");
-        }
-
-        [Test]
-        public async Task FetchWithKeys() {
-            AVObject obj = AVObject.CreateWithoutData("Post", "5d3abfa530863b0068e1b326");
-            await obj.FetchAsync(new List<string> { "pubUser" });
-            TestContext.Out.WriteLine($"{obj["pubUser"]}");
-        }
-
-        [Test]
-        public async Task FetchWithIncludes() {
-            AVObject obj = AVObject.CreateWithoutData("Post", "5d3abfa530863b0068e1b326");
-            await obj.FetchAsync(includes: new List<string> { "tag" });
-            AVObject tag = obj["tag"] as AVObject;
-            TestContext.Out.WriteLine($"{tag["name"]}");
-        }
-
-        [Test]
-        public async Task FetchAll() {
-            List<AVObject> objList = new List<AVObject> {
-                AVObject.CreateWithoutData("Tag", "5d64e5ebc05a8000730340ba"),
-                AVObject.CreateWithoutData("Tag", "5d64e5eb12215f0073db271c"),
-                AVObject.CreateWithoutData("Tag", "5d64e57f43e78c0068a14315")
-            };
-            await objList.FetchAllAsync();
-            objList.ForEach(obj => {
+            await LCObject.SaveAll(list);
+            foreach (LCObject obj in list) {
                 Assert.NotNull(obj.ObjectId);
-                TestContext.Out.WriteLine($"{obj.ObjectId}, {obj["name"]}");
-            });
+            }
         }
 
         [Test]
         public async Task Delete() {
-            AVObject obj = AVObject.Create("Foo");
-            obj["content"] = "hello, world";
-            await obj.SaveAsync();
-            Assert.NotNull(obj);
-            await obj.DeleteAsync();
-        }
-
-        [Test]
-        public async Task DeleteWithCondition() {
-            AVObject account = new AVObject("Account") {
-                { "balance", 100 },
-            };
-            account.ACL = new AVACL {
-                PublicWriteAccess = true,
-                PublicReadAccess = true
-            };
-            await account.SaveAsync();
-            AVQuery<AVObject> condition = new AVQuery<AVObject>();
-            condition.WhereGreaterThan("balance", 10);
-            await account.DeleteAsync(condition);
-
-            account = new AVObject("Account") {
-                { "name", "acl account" },
-                { "balance", 8 },
-            };
-            account.ACL = new AVACL {
-                PublicWriteAccess = true,
-                PublicReadAccess = true
-            };
-            await account.SaveAsync();
-            condition = new AVQuery<AVObject>();
-            condition.WhereGreaterThan("balance", 10);
-            try {
-                await account.DeleteAsync(condition);
-            } catch (AVException e) {
-                Assert.AreEqual(e.Code, AVException.ErrorCode.NoEffectOnUpdatingOrDeleting);
-            }
+            LCObject world = new LCObject("World");
+            await world.Save();
+            await world.Delete();
         }
 
         [Test]
         public async Task DeleteAll() {
-            List<AVObject> objList = new List<AVObject>();
-            for (int i = 0; i < 5; i++) {
-                AVObject obj = AVObject.Create("Foo");
-                obj.ACL = new AVACL {
-                    PublicReadAccess = true,
-                    PublicWriteAccess = i % 2 == 0
-                };
-                obj["content"] = "batch object";
-                objList.Add(obj);
-            }
-            await objList.SaveAllAsync();
+            List<LCObject> list = new List<LCObject> {
+                new LCObject("World"),
+                new LCObject("World"),
+                new LCObject("World"),
+                new LCObject("World")
+            };
+            await LCObject.SaveAll(list);
+            await LCObject.DeleteAll(list);
+        }
+
+        [Test]
+        public async Task Fetch() {
+            LCObject hello = LCObject.CreateWithoutData("Hello", "5e14392743c257006fb769d5");
+            await hello.Fetch(includes: new List<string> { "objectValue" });
+            LCObject world = hello["objectValue"] as LCObject;
+            TestContext.WriteLine(world["content"]);
+            Assert.AreEqual(world["content"], "7788");
+        }
+
+        [Test]
+        public async Task SaveWithOption() {
+            LCObject account = new LCObject("Account");
+            account["balance"] = 10;
+            await account.Save();
+
+            account["balance"] = 1000;
+            LCQuery<LCObject> q = new LCQuery<LCObject>("Account");
+            q.WhereGreaterThan("balance", 100);
             try {
-                await AVObject.DeleteAllAsync(objList);
-            } catch (AggregateException e) {
-                foreach (AVException ie in e.InnerExceptions) {
-                    TestContext.Out.WriteLine($"{ie.Code} : {ie.Message}");
-                }
+                await account.Save(fetchWhenSave: true, query: q);
+            } catch(LCException e) {
+                TestContext.WriteLine($"{e.Code} : {e.Message}");
+                Assert.AreEqual(e.Code, 305);
             }
         }
 
         [Test]
-        public async Task TestMassiveRequest() {
-            ThreadPool.SetMaxThreads(1, 1);
-            await Task.Run(() => {
-                for (int i = 0; i < 10; i++) {
-                    for (int j = 0; j < 50; j++) {
-                        AVObject obj = AVObject.Create("Foo");
-                        obj.SaveAsync().ContinueWith(_ => {
-                            TestContext.Out.WriteLine($"{obj.ObjectId} saved at {Thread.CurrentThread.ManagedThreadId}");
-                        });
-                    }
-                    Thread.Sleep(1000);
-                }
-            });
-        }
+        public async Task Unset() {
+            LCObject hello = new LCObject("Hello");
+            hello["content"] = "hello, world";
+            await hello.Save();
+            TestContext.WriteLine(hello["content"]);
+            Assert.AreEqual(hello["content"], "hello, world");
 
-        [Test]
-        public void SimpleCircleReference() {
-            AVObject a = new AVObject("A");
-            AVObject b = new AVObject("B");
-            a["b"] = b;
-            b["a"] = a;
-
-            Assert.ThrowsAsync<AVException>(async () => await a.SaveAsync());
-        }
-
-        [Test]
-        public void IndirectCircleReference() {
-            AVObject a = new AVObject("A");
-            AVObject b = new AVObject("B");
-            AVObject c = new AVObject("C");
-            a["b"] = b;
-            b["c"] = c;
-            c["a"] = a;
-
-            Assert.ThrowsAsync<AVException>(async () => await a.SaveAsync());
-        }
-
-        [Test]
-        public void SimpleCollectionPointerCircleReference() {
-            AVObject a = new AVObject("A");
-            AVObject b = new AVObject("B");
-            a["children"] = new List<object> { 1, b };
-            b["children"] = new Dictionary<string, object> {
-                { "c", a }
-            };
-
-            Assert.ThrowsAsync<AVException>(async () => await a.SaveAsync());
-        }
-
-        [Test]
-        public void IndirectCollectionPointerCircleReference() {
-            AVObject a = new AVObject("A");
-            AVObject b = new AVObject("B");
-            AVObject c = new AVObject("C");
-
-            a["children"] = new List<object> { 1, b };
-            b["children"] = new List<object> { 2, c };
-            c["children"] = new Dictionary<string, object> {
-                { "c", a }
-            };
-
-            Assert.ThrowsAsync<AVException>(async () => await a.SaveAsync());
-        }
-
-        [Test]
-        public async Task SimpleSavePointerCollection() {
-            AVObject p = new AVObject("P");
-            AVObject c1 = new AVObject("C1");
-            AVObject c2 = new AVObject("C2");
-            p["cList"] = new List<AVObject> { c1, c2 };
-            p["cDict"] = new Dictionary<string, object> {
-                { "c1", c1 },
-                { "c2", c2 }
-            };
-            await p.SaveAsync();
-            Assert.NotNull(p.ObjectId);
-            Assert.NotNull(p.CreatedAt);
-            Assert.NotNull(c1.ObjectId);
-            Assert.NotNull(c2.ObjectId);
-        }
-
-        [Test]
-        public async Task SaveWithExistedObject() {
-            AVObject p = new AVObject("P");
-            AVObject c1 = AVObject.CreateWithoutData("C1", "5dea05578a84ab00680b7ae5");
-            AVObject c2 = new AVObject("C2");
-            p["c"] = c1;
-            c1["c"] = c2;
-            await p.SaveAsync();
-            Assert.NotNull(p.ObjectId);
-            Assert.NotNull(p.CreatedAt);
+            hello.Unset("content");
+            await hello.Save();
+            TestContext.WriteLine(hello["content"]);
+            Assert.IsNull(hello["content"]);
         }
     }
 }

@@ -58,10 +58,10 @@ namespace LeanCloud.Storage.Internal.Codec {
 
         static object EncodeDictionary(IDictionary dict) {
             Dictionary<string, object> d = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> kv in dict) {
-                string key = kv.Key;
-                object value = kv.Value;
-                d[key] = value;
+            foreach (DictionaryEntry entry in dict) {
+                string key = entry.Key.ToString();
+                object value = entry.Value;
+                d[key] = Encode(value);
             }
             return d;
         }
@@ -75,11 +75,11 @@ namespace LeanCloud.Storage.Internal.Codec {
         }
 
         static object EncodeOperation(ILCOperation operation) {
-            return null;
+            return operation.Encode();
         }
 
         static object EncodeQueryCondition(ILCQueryCondition cond) {
-            return null;
+            return cond.Encode();
         }
 
         static object EncodeACL(LCACL acl) {
