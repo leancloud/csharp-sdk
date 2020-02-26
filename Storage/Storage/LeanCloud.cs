@@ -29,9 +29,9 @@ namespace LeanCloud {
                 throw new ArgumentException(nameof(appKey));
             }
             // 注册 LeanCloud 内部子类化类型
-            LCObject.RegisterSubclass(LCUser.CLASS_NAME, typeof(LCUser), () => new LCUser());
-            LCObject.RegisterSubclass(LCRole.CLASS_NAME, typeof(LCRole), () => new LCRole());
-            LCObject.RegisterSubclass(LCFile.CLASS_NAME, typeof(LCFile), () => new LCFile());
+            LCObject.RegisterSubclass<LCUser>(LCUser.CLASS_NAME, () => new LCUser());
+            LCObject.RegisterSubclass<LCRole>(LCRole.CLASS_NAME, () => new LCRole());
+            LCObject.RegisterSubclass<LCFile>(LCFile.CLASS_NAME, () => new LCFile());
 
             HttpClient = new LCHttpClient(appId, appKey, server, SDKVersion, APIVersion);
         }

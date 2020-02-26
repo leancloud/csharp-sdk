@@ -262,10 +262,11 @@ namespace LeanCloud.Storage {
             return this;
         }
 
-        public static void RegisterSubclass(string className, Type type, Func<LCObject> constructor) {
-            LCSubclassInfo subclassInfo = new LCSubclassInfo(className, type, constructor);
+        public static void RegisterSubclass<T>(string className, Func<LCObject> constructor) where T : LCObject {
+            Type classType = typeof(T);
+            LCSubclassInfo subclassInfo = new LCSubclassInfo(className, classType, constructor);
             subclassNameDict[className] = subclassInfo;
-            subclassTypeDict[type] = subclassInfo;
+            subclassTypeDict[classType] = subclassInfo;
         }
 
         void ApplyOperation(string key, ILCOperation op) {

@@ -171,8 +171,7 @@ namespace LeanCloud.Storage.Internal.Query {
                 { "limit", Limit }
             };
             if (conditionList != null && conditionList.Count > 0) {
-                // TODO json
-                dict["where"] = Encode();
+                dict["where"] = JsonConvert.SerializeObject(Encode());
             }
             if (orderByList != null && orderByList.Count > 0) {
                 dict["order"] = string.Join(",", orderByList);
