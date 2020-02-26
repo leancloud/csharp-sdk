@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
+using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
     /// <summary>
@@ -18,9 +19,10 @@ namespace LeanCloud.Storage {
             return response;
         }
 
-        public static Task<object> RPC(string name, Dictionary<string, object> parameters = null) {
+        public static async Task<object> RPC(string name, Dictionary<string, object> parameters = null) {
             string path = $"call/{name}";
-            return null;
+            Dictionary<string, object> response = await LeanCloud.HttpClient.Post<Dictionary<string, object>>(path, data: parameters);
+            return LCDecoder.Decode(response["result"]);
         }
     }
 }

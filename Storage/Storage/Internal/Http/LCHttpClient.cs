@@ -89,13 +89,17 @@ namespace LeanCloud.Storage.Internal.Http {
             Dictionary<string, object> headers = null,
             Dictionary<string, object> data = null,
             Dictionary<string, object> queryParams = null) {
-            string content = (data != null) ? JsonConvert.SerializeObject(data) : null;
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri($"{server}/{apiVersion}/{path}"),
                 Method = HttpMethod.Post,
-                Content = new StringContent(content)
             };
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            string content = null;
+            if (data != null) {
+                content = JsonConvert.SerializeObject(data);
+                StringContent requestContent = new StringContent(content);
+                request.Content = requestContent;
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            }
             HttpUtils.PrintRequest(client, request, content);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();

@@ -36,6 +36,7 @@ namespace LeanCloud.Storage.Internal.Codec {
                     object v = Decode(o);
                     l.Add(v);
                 }
+                return l;
             }
             return obj;
         }
