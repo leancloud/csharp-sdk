@@ -23,6 +23,11 @@ namespace LeanCloud.Storage.Internal {
                 serializer.Populate(reader, arr);
                 return arr;
             }
+            if (reader.TokenType == JsonToken.Integer) {
+                if ((long)reader.Value < int.MaxValue) {
+                    return Convert.ToInt32(reader.Value);
+                }
+            }
 
             return serializer.Deserialize(reader);
         }

@@ -72,7 +72,7 @@ namespace LeanCloud.Storage.Internal.Query {
         }
 
         internal void WhereLessThan(string key, object value) {
-            AddOperation(key, "$lt$lt", value);
+            AddOperation(key, "$lt", value);
         }
 
         internal void WhereLessThanOrEqualTo(string key, object value) {

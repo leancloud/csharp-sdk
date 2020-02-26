@@ -118,7 +118,7 @@ namespace LeanCloud.Storage.Internal.Http {
             try {
                 // 尝试获取 LeanCloud 返回错误信息
                 Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
-                code = (int)(long)error["code"];
+                code = (int)error["code"];
                 message = error["error"].ToString();
             } catch (Exception e) {
                 Logger.Error(e.Message);
@@ -162,7 +162,7 @@ namespace LeanCloud.Storage.Internal.Http {
             try {
                 // 尝试获取 LeanCloud 返回错误信息
                 Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
-                code = (int)(long)error["code"];
+                code = (int)error["code"];
                 message = error["error"].ToString();
             } catch (Exception e) {
                 Logger.Error(e.Message);

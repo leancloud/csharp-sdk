@@ -57,6 +57,8 @@ namespace LeanCloud.Storage {
         public LCACL ACL {
             get {
                 return this["ACL"] as LCACL ;
+            } set {
+                this["ACL"] = value;
             }
         }
 
