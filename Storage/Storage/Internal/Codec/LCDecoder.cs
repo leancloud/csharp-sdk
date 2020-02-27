@@ -63,7 +63,7 @@ namespace LeanCloud.Storage.Internal.Codec {
 
         static LCRelation<LCObject> DecodeRelation(IDictionary dict) {
             LCRelation<LCObject> relation = new LCRelation<LCObject>();
-            relation.targetClass = dict["className"].ToString();
+            relation.TargetClass = dict["className"].ToString();
             return relation;
         }
 

@@ -1,28 +1,49 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using LeanCloud;
+using System.Linq;
+using LeanCloud.Storage;
 
 namespace LeanCloud.Test {
     [TestFixture]
     public class RoleTest {
         [SetUp]
         public void SetUp() {
-            Utils.InitNorthChina(true);
+            Logger.LogDelegate += Utils.Print;
+            LeanCloud.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+        }
+
+        [TearDown]
+        public void TearDown() {
+            Logger.LogDelegate -= Utils.Print;
         }
 
         [Test]
-        public async Task GetUsersFromRole() {
-            AVQuery<AVRole> query = new AVQuery<AVRole>();
-            AVRole role = await query.FirstAsync();
-            AVQuery<AVUser> userQuery = role.Users.Query;
-            IEnumerable<AVUser> users = await userQuery.FindAsync();
-            Assert.Greater(users.Count(), 0);
-            TestContext.Out.WriteLine($"count: {users.Count()}");
-            foreach (AVUser user in users) {
-                TestContext.Out.WriteLine($"{user.ObjectId}, {user.Username}");
-            }
+        public async Task NewRole() {
+            LCUser currentUser = await LCUser.Login("game", "play");
+            LCACL acl = new LCACL();
+            acl.PublicReadAccess = true;
+            acl.SetUserWriteAccess(currentUser, true);
+            string name = $"role_{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+            LCRole role = LCRole.Create(name, acl);
+            role.AddRelation("users", currentUser);
+            await role.Save();
+        }
+
+        [Test]
+        public async Task Query() {
+            LCQuery<LCRole> query = LCRole.GetQuery();
+            List<LCRole> list = await query.Find();
+            list.ForEach(item => {
+                TestContext.WriteLine($"{item.ObjectId} : {item.Name}");
+                Assert.NotNull(item.ObjectId);
+                Assert.NotNull(item.Name);
+                TestContext.WriteLine(item.Roles.GetType());
+                TestContext.WriteLine(item.Users.GetType());
+                Assert.IsTrue(item.Roles is LCRelation<LCRole>);
+                Assert.IsTrue(item.Users is LCRelation<LCUser>);
+            });
         }
     }
 }

@@ -100,7 +100,7 @@ namespace LeanCloud.Storage.Internal.Codec {
         static object EncodeRelation(LCRelation<LCObject> relation) {
             return new Dictionary<string, object> {
                 { "__type", "Relation" },
-                { "className", relation.targetClass }
+                { "className", relation.TargetClass }
             };
         }
 

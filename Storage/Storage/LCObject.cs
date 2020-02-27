@@ -140,6 +140,28 @@ namespace LeanCloud.Storage {
             ApplyOperation(key, deleteOp);
         }
 
+        public void AddRelation(string key, LCObject value) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null) {
+                throw new ArgumentNullException(nameof(value));
+            }
+            LCAddRelationOperation op = new LCAddRelationOperation(new List<LCObject> { value });
+            ApplyOperation(key, op);
+        }
+
+        public void RemoveRelation(string key, LCObject value) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null) {
+                throw new ArgumentNullException(nameof(value));
+            }
+            LCRemoveRelationOperation op = new LCRemoveRelationOperation(value);
+            ApplyOperation(key, op);
+        }
+
         static async Task SaveBatches(Stack<LCBatch> batches) {
             while (batches.Count > 0) {
                 LCBatch batch = batches.Pop();

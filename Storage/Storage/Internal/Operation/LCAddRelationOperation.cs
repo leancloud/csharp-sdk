@@ -32,7 +32,7 @@ namespace LeanCloud.Storage.Internal.Operation {
 
         public object Apply(object oldValue, string key) {
             LCRelation<LCObject> relation = new LCRelation<LCObject>();
-            relation.targetClass = valueList[0].ClassName;
+            relation.TargetClass = valueList[0].ClassName;
             return relation;
         }
 
