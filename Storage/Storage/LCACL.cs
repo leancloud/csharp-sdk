@@ -122,6 +122,16 @@ namespace LeanCloud.Storage {
             writers = new HashSet<string>();
         }
 
+        public static LCACL CreateWithOwner(LCUser owner) {
+            if (owner == null) {
+                throw new ArgumentNullException(nameof(owner));
+            }
+            LCACL acl = new LCACL();
+            acl.SetUserReadAccess(owner, true);
+            acl.SetUserWriteAccess(owner, true);
+            return acl;
+        }
+
         bool GetAccess(HashSet<string> set, string key) {
             return set.Contains(key);
         }
