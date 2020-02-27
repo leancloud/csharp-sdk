@@ -34,7 +34,7 @@ namespace LeanCloud.Storage.Internal.Http {
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(product));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("X-LC-Id", appId);
-            // TODO
+            // TODO 改为 signature
             client.DefaultRequestHeaders.Add("X-LC-Key", appKey);
         }
 
@@ -57,6 +57,10 @@ namespace LeanCloud.Storage.Internal.Http {
                 foreach (KeyValuePair<string, object> kv in headers) {
                     request.Headers.Add(kv.Key, kv.Value.ToString());
                 }
+            }
+            LCUser currentUser = await LCUser.GetCurrent();
+            if (currentUser != null) {
+                request.Headers.Add("X-LC-Session", currentUser.SessionToken);
             }
             HttpUtils.PrintRequest(client, request);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -144,6 +148,10 @@ namespace LeanCloud.Storage.Internal.Http {
                 Content = new StringContent(content)
             };
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            LCUser currentUser = await LCUser.GetCurrent();
+            if (currentUser != null) {
+                request.Headers.Add("X-LC-Session", currentUser.SessionToken);
+            }
             HttpUtils.PrintRequest(client, request, content);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();

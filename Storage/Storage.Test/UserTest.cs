@@ -1,114 +1,186 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
-using System;
-using LeanCloud;
+using LeanCloud.Storage;
 
 namespace LeanCloud.Test {
     public class UserTest {
         [SetUp]
         public void SetUp() {
-            AVClient.Initialize(new AVClient.Configuration {
-                ApplicationId = "BMYV4RKSTwo8WSqt8q9ezcWF-gzGzoHsz",
-                ApplicationKey = "pbf6Nk5seyjilexdpyrPwjSp",
-                ApiServer = "https://avoscloud.com"
-            });
-            AVClient.HttpLog(TestContext.Out.WriteLine);
+            Logger.LogDelegate += Utils.Print;
+            LeanCloud.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+        }
+
+        [TearDown]
+        public void TearDown() {
+            Logger.LogDelegate -= Utils.Print;
         }
 
         [Test]
-        public async Task Register() {
-            AVUser user = new AVUser {
-                Username = $"hello_{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}",
-                Password = "world"
-            };
-            await user.SignUpAsync();
-            TestContext.Out.WriteLine($"{user.ObjectId} registered");
+        public async Task SignUp() {
+            LCUser user = new LCUser();
+            long unixTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            user.Username = $"{unixTime}";
+            user.Password = "world";
+            string email = $"{unixTime}@qq.com";
+            user.Email = email;
+            string mobile = $"{unixTime / 100}";
+            user.Mobile = mobile;
+            await user.SignUp();
+
+            TestContext.WriteLine(user.Username);
+            TestContext.WriteLine(user.Password);
+
+            Assert.NotNull(user.ObjectId);
+            TestContext.WriteLine(user.ObjectId);
+            Assert.NotNull(user.SessionToken);
+            TestContext.WriteLine(user.SessionToken);
+            Assert.AreEqual(user.Email, email);
         }
 
         [Test]
-        public async Task LoginWithUsername() {
-            AVUser user = await AVUser.LogInAsync("hello", "111111");
-            TestContext.Out.WriteLine($"{user.ObjectId}, {user.SessionToken} login");
+        public async Task Login() {
+            await LCUser.Login("hello", "world");
+            LCUser current = await LCUser.GetCurrent();
+            Assert.NotNull(current.ObjectId);
+            Assert.IsFalse(current.EmailVerified);
+            Assert.IsFalse(current.MobileVerified);
+            Assert.AreEqual(current.Mobile, "15101006008");
         }
 
         [Test]
-        public async Task LoginWithEmail() {
-            AVUser user = await AVUser.LogInWithEmailAsync("111111@qq.com", "111111");
-            Assert.AreEqual(user, AVUser.CurrentUser);
-            TestContext.Out.WriteLine($"{AVUser.CurrentUser.SessionToken} login");
+        public async Task LoginByEmail() {
+            await LCUser.LoginByEmail("171253484@qq.com", "world");
+            LCUser current = await LCUser.GetCurrent();
+            Assert.NotNull(current.ObjectId);
         }
 
         [Test]
-        public async Task Become() {
-            AVUser user = await AVUser.BecomeAsync("o8onm9bq8z127lz837mi6qhcg");
-            Assert.AreEqual(user, AVUser.CurrentUser);
-            TestContext.Out.WriteLine($"{AVUser.CurrentUser.SessionToken} login");
+        public async Task LoginBySessionToken() {
+            string sessionToken = "luo2fpl4qij2050e7enqfz173";
+            await LCUser.BecomeWithSessionToken(sessionToken);
+            LCUser current = await LCUser.GetCurrent();
+            Assert.NotNull(current.ObjectId);
         }
 
         [Test]
-        public async Task IsAuthenticated() {
-            AVUser user = await AVUser.LogInWithEmailAsync("111111@qq.com", "111111");
-            Assert.IsTrue(user.IsCurrent);
-            Assert.AreEqual(user, AVUser.CurrentUser);
-            bool authenticated = await user.IsAuthenticatedAsync();
-            Assert.IsTrue(authenticated);
+        public async Task RelateObject() {
+            LCUser user = await LCUser.LoginByMobilePhoneNumber("15101006007", "112358");
+            LCObject account = new LCObject("Account");
+            account["user"] = user;
+            await account.Save();
+            Assert.AreEqual(user.ObjectId, "5e0d5c667d5774006a5c1177");
         }
 
         [Test]
-        public async Task RefreshSessionToken() {
-            AVUser user = await AVUser.LogInWithEmailAsync("111111@qq.com", "111111");
-            Assert.IsTrue(user.IsCurrent);
-            await user.RefreshSessionTokenAsync();
-            TestContext.Out.WriteLine(user.SessionToken);
-        }
-
-        [Test]
-        public async Task UpdatePassword() {
-            AVUser user = await AVUser.LogInAsync("111111", "111111");
-            await user.UpdatePasswordAsync("111111", "222222");
-            await user.UpdatePasswordAsync("222222", "111111");
+        public async Task LoginAnonymous() {
+            LCUser user = await LCUser.LoginAnonymously();
+            Assert.NotNull(user.ObjectId);
         }
 
         [Test]
         public async Task LoginWithAuthData() {
-            AVUser user = await AVUser.LogInWithAuthDataAsync(new Dictionary<string, object> {
-                { "openid", "0395BA18A5CD6255E5BA185E7BEBA242" },
-                { "access_token", "12345678-SaMpLeTuo3m2avZxh5cjJmIrAfx4ZYyamdofM7IjU" },
-                { "expires_in", 1382686496 }
-            }, "qq");
-            Assert.NotNull(user.SessionToken);
-            TestContext.Out.WriteLine(user.SessionToken);
+            string uuid = Guid.NewGuid().ToString();
+            Dictionary<string, object> authData = new Dictionary<string, object> {
+                { "expires_in", 7200 },
+                { "openid", uuid },
+                { "access_token", uuid }
+            };
+            LCUser currentUser = await LCUser.LoginWithAuthData(authData, "weixin");
+            TestContext.WriteLine(currentUser.SessionToken);
+            Assert.NotNull(currentUser.SessionToken);
+            string userId = currentUser.ObjectId;
+            TestContext.WriteLine($"userId: {userId}");
+            TestContext.WriteLine(currentUser.AuthData);
+
+            await LCUser.Logout();
+            currentUser = await LCUser.GetCurrent();
+            Assert.IsNull(currentUser);
+
+            currentUser = await LCUser.LoginWithAuthData(authData, "weixin");
+            TestContext.WriteLine(currentUser.SessionToken);
+            Assert.NotNull(currentUser.SessionToken);
+            Assert.AreEqual(currentUser.ObjectId, userId);
+            TestContext.WriteLine(currentUser.AuthData);
         }
 
         [Test]
         public async Task AssociateAuthData() {
-            AVUser user = await AVUser.LogInAsync("111111", "111111");
-            Assert.NotNull(user.SessionToken);
-            await user.AssociateAuthDataAsync(new Dictionary<string, object> {
-                { "openid", "0395BA18A5CD6255E5BA185E7BEBA243" },
-                { "access_token", "12345678-SaMpLeTuo3m2avZxh5cjJmIrAfx4ZYyamdofM7IjU" },
-                { "expires_in", 1382686496 }
-            }, "qq");
+            string uuid = Guid.NewGuid().ToString();
+            LCUser currentUser = await LCUser.Login("hello", "world");
+            Dictionary<string, object> authData = new Dictionary<string, object> {
+                { "expires_in", 7200 },
+                { "openid", uuid },
+                { "access_token", uuid }
+            };
+            await currentUser.AssociateAuthData(authData, "weixin");
+            TestContext.WriteLine(currentUser.AuthData);
+            TestContext.WriteLine(currentUser.AuthData["weixin"]);
         }
 
         [Test]
-        public async Task Anonymously() {
-            AVUser user = await AVUser.LogInAnonymouslyAsync();
-            Assert.NotNull(user.SessionToken);
-            TestContext.Out.WriteLine(user.SessionToken);
+        public async Task DisassociateAuthData() {
+            LCUser currentUser = await LCUser.Login("hello", "world");
+            await currentUser.DisassociateWithAuthData("weixin");
         }
 
         [Test]
-        public async Task GetRoles() {
-            AVUser user = await AVUser.LogInAsync("111111", "111111");
-            Assert.NotNull(user.SessionToken);
-            IEnumerable<AVRole> roles = await user.GetRolesAsync();
-            Assert.Greater(roles.Count(), 0);
-            foreach (AVRole role in roles) {
-                TestContext.Out.WriteLine(role.Name);
-            }
+        public async Task IsAuthenticated() {
+            LCUser currentUser = await LCUser.Login("hello", "world");
+            bool isAuthenticated = await currentUser.IsAuthenticated();
+            TestContext.WriteLine(isAuthenticated);
+            Assert.IsTrue(isAuthenticated);
+        }
+
+        [Test]
+        public async Task UpdatePassword() {
+            LCUser currentUser = await LCUser.Login("hello", "world");
+            await currentUser.UpdatePassword("world", "newWorld");
+            await currentUser.UpdatePassword("newWorld", "world");
+        }
+
+        [Test]
+        public async Task LoginWithAuthDataWithUnionId() {
+            string uuid = Guid.NewGuid().ToString();
+            Dictionary<string, object> authData = new Dictionary<string, object> {
+                { "expires_in", 7200 },
+                { "openid", uuid },
+                { "access_token", uuid }
+            };
+            string unionId = Guid.NewGuid().ToString();
+
+            LCUserAuthDataLoginOption option = new LCUserAuthDataLoginOption();
+            option.AsMainAccount = true;
+            LCUser currentUser = await LCUser.LoginWithAuthDataAndUnionId(authData, "weixin_app", unionId, option: option);
+            TestContext.WriteLine(currentUser.SessionToken);
+            Assert.NotNull(currentUser.SessionToken);
+            string userId = currentUser.ObjectId;
+            TestContext.WriteLine($"userId: {userId}");
+            TestContext.WriteLine(currentUser.AuthData);
+
+            await LCUser.Logout();
+            currentUser = await LCUser.GetCurrent();
+            Assert.IsNull(currentUser);
+
+            currentUser = await LCUser.LoginWithAuthDataAndUnionId(authData, "weixin_mini_app", unionId, option: option);
+            TestContext.WriteLine(currentUser.SessionToken);
+            Assert.NotNull(currentUser.SessionToken);
+            Assert.AreEqual(currentUser.ObjectId, userId);
+            TestContext.WriteLine(currentUser.AuthData);
+        }
+
+        [Test]
+        public async Task AssociateAuthDataWithUnionId() {
+            LCUser currentUser = await LCUser.Login("hello", "world");
+            string uuid = Guid.NewGuid().ToString();
+            Dictionary<string, object> authData = new Dictionary<string, object> {
+                { "expires_in", 7200 },
+                { "openid", uuid },
+                { "access_token", uuid }
+            };
+            string unionId = Guid.NewGuid().ToString();
+            await currentUser.AssociateAuthDataAndUnionId(authData, "qq", unionId);
         }
     }
 }
