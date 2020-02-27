@@ -72,7 +72,7 @@ namespace LeanCloud.Storage {
             double a = sinDeltaLatDiv2 * sinDeltaLatDiv2 +
                 Math.Cos(lat1rad) * Math.Cos(lat2rad) * sinDeltaLongDiv2 * sinDeltaLongDiv2;
             a = Math.Min(1.0, a);
-            return 2 * Math.Cos(Math.Sqrt(a));
+            return 2 * Math.Sin(Math.Sqrt(a));
         }
     }
 }
