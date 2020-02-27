@@ -36,7 +36,7 @@ namespace LeanCloud.Storage.Internal.Operation {
                 set.UnionWith(oldValue as IEnumerable<object>);
             }
             set.UnionWith(values);
-            return set;
+            return set.ToList();
         }
 
         public IEnumerable GetNewObjectList() {

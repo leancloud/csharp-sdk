@@ -132,6 +132,10 @@ namespace LeanCloud.Storage {
             }
         }
 
+        /// <summary>
+        /// 删除字段
+        /// </summary>
+        /// <param name="key"></param>
         public void Unset(string key) {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
@@ -140,6 +144,11 @@ namespace LeanCloud.Storage {
             ApplyOperation(key, deleteOp);
         }
 
+        /// <summary>
+        /// 增加关联
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void AddRelation(string key, LCObject value) {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
@@ -151,6 +160,11 @@ namespace LeanCloud.Storage {
             ApplyOperation(key, op);
         }
 
+        /// <summary>
+        /// 删除关联
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void RemoveRelation(string key, LCObject value) {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
@@ -159,6 +173,118 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(value));
             }
             LCRemoveRelationOperation op = new LCRemoveRelationOperation(value);
+            ApplyOperation(key, op);
+        }
+
+        /// <summary>
+        /// 增加数字属性值
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void Increment(string key, object value) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null) {
+                throw new ArgumentNullException(nameof(value));
+            }
+            LCNumberOperation op = new LCNumberOperation(value);
+            ApplyOperation(key, op);
+        }
+
+        /// <summary>
+        /// 在数组属性中增加一个元素
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void Add(string key, object value) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null) {
+                throw new ArgumentNullException(nameof(value));
+            }
+            LCAddOperation op = new LCAddOperation(new List<object> { value });
+            ApplyOperation(key, op);
+        }
+
+        /// <summary>
+        /// 在数组属性中增加一组元素
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        public void AddAll(string key, IEnumerable values) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (values == null) {
+                throw new ArgumentNullException(nameof(values));
+            }
+            LCAddOperation op = new LCAddOperation(new List<object>(values.Cast<object>()));
+            ApplyOperation(key, op);
+        }
+
+        /// <summary>
+        /// 在数组属性中增加一个唯一元素
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void AddUnique(string key, object value) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null) {
+                throw new ArgumentNullException(nameof(value));
+            }
+            LCAddUniqueOperation op = new LCAddUniqueOperation(new List<object> { value });
+            ApplyOperation(key, op);
+        }
+
+        /// <summary>
+        /// 在数组属性中增加一组唯一元素
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void AddAllUnique(string key, IEnumerable values) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (values == null) {
+                throw new ArgumentNullException(nameof(values));
+            }
+            LCAddUniqueOperation op = new LCAddUniqueOperation(new List<object>(values.Cast<object>()));
+            ApplyOperation(key, op);
+        }
+
+        /// <summary>
+        /// 移除某个元素
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void Remove(string key, object value) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null) {
+                throw new ArgumentNullException(nameof(value));
+            }
+            LCRemoveOperation op = new LCRemoveOperation(new List<object> { value });
+            ApplyOperation(key, op);
+        }
+
+        /// <summary>
+        /// 移除一组元素
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        public void RemoveAll(string key, IEnumerable values) {
+            if (string.IsNullOrEmpty(key)) {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (values == null) {
+                throw new ArgumentNullException(nameof(values));
+            }
+            LCRemoveOperation op = new LCRemoveOperation(new List<object>(values.Cast<object>()));
             ApplyOperation(key, op);
         }
 

@@ -8,10 +8,8 @@ namespace LeanCloud.Storage.Internal.Operation {
     internal class LCRemoveOperation : ILCOperation {
         List<object> valueList;
 
-        internal LCRemoveOperation(IEnumerable values) {
-            valueList = new List<object> {
-                values.Cast<object>()
-            };
+        internal LCRemoveOperation(IEnumerable<object> values) {
+            valueList = new List<object>(values);
         }
 
         public ILCOperation MergeWithPrevious(ILCOperation previousOp) {
@@ -32,10 +30,8 @@ namespace LeanCloud.Storage.Internal.Operation {
         }
 
         public object Apply(object oldValue, string key) {
-            List<object> list = new List<object>();
-            if (oldValue != null) {
-                list.AddRange(oldValue as IEnumerable<object>);
-            }
+            List<object> list = new List<object>(oldValue as IEnumerable<object>);
+            list.RemoveAll(item => valueList.Contains(item));
             return list;
         }
 

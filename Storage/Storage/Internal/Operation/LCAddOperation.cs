@@ -28,7 +28,7 @@ namespace LeanCloud.Storage.Internal.Operation {
 
         object ILCOperation.Encode() {
             return new Dictionary<string, object> {
-                { "op", "Add" },
+                { "__op", "Add" },
                 { "objects", LCEncoder.Encode(valueList) }
             };
         }
