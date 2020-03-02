@@ -15,7 +15,7 @@ namespace LeanCloud.Storage.Internal {
                     if (installationId == null) {
                         string installationPath = "installation.conf";
                         // 文件读取或从 Native 平台读取
-                        if (File.Exists(installationPath)) {
+                        if (System.IO.File.Exists(installationPath)) {
                             using (StreamReader reader = new StreamReader(installationPath)) {
                                 installationId = reader.ReadToEnd();
                                 if (installationId != null) {
