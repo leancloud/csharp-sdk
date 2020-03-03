@@ -183,5 +183,49 @@ namespace LeanCloud.Test {
             string unionId = Guid.NewGuid().ToString();
             await currentUser.AssociateAuthDataAndUnionId(authData, "qq", unionId);
         }
+
+        // 手动测试
+
+        //[Test]
+        //public async Task LoginByMobile() {
+        //    LCUser user = await LCUser.LoginByMobilePhoneNumber("15101006007", "112358");
+        //    Assert.NotNull(user.ObjectId);
+        //}
+
+        //[Test]
+        //public async Task RequestLoginSMSCode() {
+        //    await LCUser.RequestLoginSMSCode("15101006007");
+        //}
+
+        //[Test]
+        //public async Task LoginBySMSCode() {
+        //    LCUser user = await LCUser.LoginBySMSCode("15101006007", "194998");
+        //    Assert.NotNull(user.ObjectId);
+        //}
+
+        //[Test]
+        //public async Task RequestEmailVerify() {
+        //    await LCUser.RequestEmailVerify("171253484@qq.com");
+        //}
+
+        //[Test]
+        //public async Task RequestMobileVerify() {
+        //    await LCUser.RequestMobilePhoneVerify("15101006007");
+        //}
+
+        //[Test]
+        //public async Task VerifyMobile() {
+        //    await LCUser.VerifyMobilePhone("15101006007", "506993");
+        //}
+
+        //[Test]
+        //public async Task RequestResetPasswordBySMSCode() {
+        //    await LCUser.RequestPasswordRestBySmsCode("15101006007");
+        //}
+
+        //[Test]
+        //public async Task ResetPasswordBySMSCode() {
+        //    await LCUser.ResetPasswordBySmsCode("15101006007", "732552", "112358");
+        //}
     }
 }
