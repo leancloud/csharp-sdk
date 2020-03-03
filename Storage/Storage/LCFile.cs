@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LeanCloud.Storage.Internal.File;
 using LeanCloud.Storage.Internal.Object;
+using LeanCloud.Common;
 
 namespace LeanCloud.Storage {
     public class LCFile : LCObject {
@@ -67,7 +68,7 @@ namespace LeanCloud.Storage {
             MetaData[key] = value;
         }
 
-        public async Task<LCFile> Save() {
+        public async Task<LCFile> Save(Action<long, long> onProgress = null) {
             if (!string.IsNullOrEmpty(Url)) {
                 // 外链方式
                 await base.Save();
@@ -81,11 +82,11 @@ namespace LeanCloud.Storage {
                 if (provider == "s3") {
                     // AWS
                     LCAWSUploader uploader = new LCAWSUploader(uploadUrl, MimeType, data);
-                    await uploader.Upload(null);
+                    await uploader.Upload(onProgress);
                 } else if (provider == "qiniu") {
                     // Qiniu
                     LCQiniuUploader uploader = new LCQiniuUploader(uploadUrl, token, key, data);
-                    await uploader.Upload(null);
+                    await uploader.Upload(onProgress);
                 } else {
                     throw new Exception($"{provider} is not support.");
                 }

@@ -7,6 +7,7 @@ using LeanCloud.Storage;
 namespace LeanCloud.Test {
     public class FileTest {
         static readonly string AvatarFilePath = "../../../assets/hello.png";
+        static readonly string APKFilePath = "../../../assets/test.apk";
 
         [SetUp]
         public void SetUp() {
@@ -31,7 +32,9 @@ namespace LeanCloud.Test {
         [Test]
         public async Task SaveFromPath() {
             LCFile file = new LCFile("avatar", AvatarFilePath);
-            await file.Save();
+            await file.Save((count, total) => {
+                TestContext.WriteLine($"progress: {count}/{total}");
+            });
             TestContext.WriteLine(file.ObjectId);
             Assert.NotNull(file.ObjectId);
         }
@@ -60,7 +63,7 @@ namespace LeanCloud.Test {
 
         [Test]
         public async Task Qiniu() {
-            LCFile file = new LCFile("avatar", AvatarFilePath);
+            LCFile file = new LCFile("avatar", APKFilePath);
             await file.Save();
             TestContext.WriteLine(file.ObjectId);
             Assert.NotNull(file.ObjectId);
@@ -70,7 +73,7 @@ namespace LeanCloud.Test {
         public async Task AWS() {
             Logger.LogDelegate += Utils.Print;
             LeanCloud.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r", "https://ulcpyvlm.api.lncldglobal.com");
-            LCFile file = new LCFile("avatar", "../../../assets/hello.png");
+            LCFile file = new LCFile("avatar", APKFilePath);
             await file.Save();
             TestContext.WriteLine(file.ObjectId);
             Assert.NotNull(file.ObjectId);

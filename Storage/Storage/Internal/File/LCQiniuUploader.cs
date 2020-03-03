@@ -22,11 +22,14 @@ namespace LeanCloud.Storage.Internal.File {
             this.data = data;
         }
 
-        internal async Task Upload(Action<int, int> onProgress) {
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            content.Add(new StringContent(key), "key");
-            content.Add(new StringContent(token), "token");
-            content.Add(new ByteArrayContent(data), "file");
+        internal async Task Upload(Action<long, long> onProgress) {
+            MultipartFormDataContent dataContent = new MultipartFormDataContent();
+            dataContent.Add(new StringContent(key), "key");
+            dataContent.Add(new StringContent(token), "token");
+            dataContent.Add(new ByteArrayContent(data), "file");
+
+            LCProgressableStreamContent content = new LCProgressableStreamContent(dataContent, onProgress);
+
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(uploadUrl),
                 Method = HttpMethod.Post,

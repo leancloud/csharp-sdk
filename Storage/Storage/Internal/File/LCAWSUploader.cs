@@ -19,11 +19,13 @@ namespace LeanCloud.Storage.Internal.File {
             this.data = data;
         }
 
-        internal async Task Upload(Action<int, int> onProgress) {
+        internal async Task Upload(Action<long, long> onProgress) {
+            LCProgressableStreamContent content = new LCProgressableStreamContent(new ByteArrayContent(data), onProgress);
+
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(uploadUrl),
                 Method = HttpMethod.Put,
-                Content = new ByteArrayContent(data)
+                Content = content
             };
             HttpClient client = new HttpClient();
             request.Headers.CacheControl = new CacheControlHeaderValue {
