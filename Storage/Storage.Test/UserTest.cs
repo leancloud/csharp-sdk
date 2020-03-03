@@ -58,6 +58,7 @@ namespace LeanCloud.Test {
 
         [Test]
         public async Task LoginBySessionToken() {
+            await LCUser.Logout();
             string sessionToken = "luo2fpl4qij2050e7enqfz173";
             await LCUser.BecomeWithSessionToken(sessionToken);
             LCUser current = await LCUser.GetCurrent();

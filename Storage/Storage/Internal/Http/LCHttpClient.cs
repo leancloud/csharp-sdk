@@ -5,22 +5,26 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Security.Cryptography;
 using Newtonsoft.Json;
 using LeanCloud.Common;
 
 namespace LeanCloud.Storage.Internal.Http {
     internal class LCHttpClient {
-        string appId;
+        readonly string appId;
 
-        string appKey;
+        readonly string appKey;
 
-        string server;
+        readonly string server;
 
-        string sdkVersion;
+        readonly string sdkVersion;
 
-        string apiVersion;
+        readonly string apiVersion;
 
         HttpClient client;
+
+        MD5 md5;
 
         internal LCHttpClient(string appId, string appKey, string server, string sdkVersion, string apiVersion) {
             this.appId = appId;
@@ -34,34 +38,20 @@ namespace LeanCloud.Storage.Internal.Http {
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(product));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("X-LC-Id", appId);
-            // TODO 改为 signature
-            client.DefaultRequestHeaders.Add("X-LC-Key", appKey);
+
+            md5 = MD5.Create();
         }
 
         internal async Task<T> Get<T>(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> queryParams = null) {
-
-            string url = $"{server}/{apiVersion}/{path}";
-            if (queryParams != null) {
-                IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
-                string queries = string.Join("&", queryPairs);
-                url = $"{url}?{queries}";
-            }
-
+            string url = BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Get
             };
-            if (headers != null) {
-                foreach (KeyValuePair<string, object> kv in headers) {
-                    request.Headers.Add(kv.Key, kv.Value.ToString());
-                }
-            }
-            LCUser currentUser = await LCUser.GetCurrent();
-            if (currentUser != null) {
-                request.Headers.Add("X-LC-Session", currentUser.SessionToken);
-            }
+            await FillHeaders(request.Headers, headers);
+            
             HttpUtils.PrintRequest(client, request);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();
@@ -70,39 +60,30 @@ namespace LeanCloud.Storage.Internal.Http {
             response.Dispose();
             HttpUtils.PrintResponse(response, resultString);
 
-            HttpStatusCode statusCode = response.StatusCode;
             if (response.IsSuccessStatusCode) {
                 T ret = JsonConvert.DeserializeObject<T>(resultString, new LeanCloudJsonConverter());
                 return ret;
             }
-            int code = (int)statusCode;
-            string message = resultString;
-            try {
-                // 尝试获取 LeanCloud 返回错误信息
-                Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
-                code = (int)error["code"];
-                message = error["error"].ToString();
-            } catch (Exception e) {
-                Logger.Error(e.Message);
-            } finally {
-                throw new LCException(code, message);
-            }
+            throw HandleErrorResponse(response.StatusCode, resultString);
         }
 
         internal async Task<T> Post<T>(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> data = null,
             Dictionary<string, object> queryParams = null) {
+            string url = BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
-                RequestUri = new Uri($"{server}/{apiVersion}/{path}"),
+                RequestUri = new Uri(url),
                 Method = HttpMethod.Post,
             };
+            await FillHeaders(request.Headers, headers);
+
             string content = null;
             if (data != null) {
                 content = JsonConvert.SerializeObject(data);
                 StringContent requestContent = new StringContent(content);
+                requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 request.Content = requestContent;
-                request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             }
             HttpUtils.PrintRequest(client, request, content);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -112,45 +93,30 @@ namespace LeanCloud.Storage.Internal.Http {
             response.Dispose();
             HttpUtils.PrintResponse(response, resultString);
 
-            HttpStatusCode statusCode = response.StatusCode;
             if (response.IsSuccessStatusCode) {
                 T ret = JsonConvert.DeserializeObject<T>(resultString, new LeanCloudJsonConverter());
                 return ret;
             }
-            int code = (int)statusCode;
-            string message = resultString;
-            try {
-                // 尝试获取 LeanCloud 返回错误信息
-                Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
-                code = (int)error["code"];
-                message = error["error"].ToString();
-            } catch (Exception e) {
-                Logger.Error(e.Message);
-            } finally {
-                throw new LCException(code, message);
-            }
+            throw HandleErrorResponse(response.StatusCode, resultString);
         }
 
         internal async Task<T> Put<T>(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> data = null,
             Dictionary<string, object> queryParams = null) {
-            string url = $"{server}/{apiVersion}/{path}";
-            if (queryParams != null) {
-                IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
-                string queries = string.Join("&", queryPairs);
-                url = $"{url}?{queries}";
-            }
-            string content = (data != null) ? JsonConvert.SerializeObject(data) : null;
+            string url = BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Put,
-                Content = new StringContent(content)
             };
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            LCUser currentUser = await LCUser.GetCurrent();
-            if (currentUser != null) {
-                request.Headers.Add("X-LC-Session", currentUser.SessionToken);
+            await FillHeaders(request.Headers, headers);
+
+            string content = null;
+            if (data != null) {
+                content = JsonConvert.SerializeObject(data);
+                StringContent requestContent = new StringContent(content);
+                requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                request.Content = requestContent;
             }
             HttpUtils.PrintRequest(client, request, content);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -160,30 +126,21 @@ namespace LeanCloud.Storage.Internal.Http {
             response.Dispose();
             HttpUtils.PrintResponse(response, resultString);
 
-            HttpStatusCode statusCode = response.StatusCode;
             if (response.IsSuccessStatusCode) {
                 T ret = JsonConvert.DeserializeObject<T>(resultString, new LeanCloudJsonConverter());
                 return ret;
             }
-            int code = (int)statusCode;
-            string message = resultString;
-            try {
-                // 尝试获取 LeanCloud 返回错误信息
-                Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
-                code = (int)error["code"];
-                message = error["error"].ToString();
-            } catch (Exception e) {
-                Logger.Error(e.Message);
-            } finally {
-                throw new LCException(code, message);
-            }
+            throw HandleErrorResponse(response.StatusCode, resultString);
         }
 
         internal async Task Delete(string path) {
+            string url = BuildUrl(path);
             HttpRequestMessage request = new HttpRequestMessage {
-                RequestUri = new Uri($"{server}/{apiVersion}/{path}"),
+                RequestUri = new Uri(url),
                 Method = HttpMethod.Delete
             };
+            await FillHeaders(request.Headers);
+
             HttpUtils.PrintRequest(client, request);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();
@@ -192,23 +149,64 @@ namespace LeanCloud.Storage.Internal.Http {
             response.Dispose();
             HttpUtils.PrintResponse(response, resultString);
 
-            HttpStatusCode statusCode = response.StatusCode;
             if (response.IsSuccessStatusCode) {
                 Dictionary<string, object> ret = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
                 return;
             }
+            throw HandleErrorResponse(response.StatusCode, resultString);
+        }
+
+        LCException HandleErrorResponse(HttpStatusCode statusCode, string responseContent) {
             int code = (int)statusCode;
-            string message = resultString;
+            string message = responseContent;
             try {
                 // 尝试获取 LeanCloud 返回错误信息
-                Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
+                Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseContent, new LeanCloudJsonConverter());
                 code = (int)error["code"];
                 message = error["error"].ToString();
             } catch (Exception e) {
                 Logger.Error(e.Message);
-            } finally {
-                throw new LCException(code, message);
             }
+            return new LCException(code, message);
+        }
+
+        string BuildUrl(string path, Dictionary<string, object> queryParams = null) {
+            string url = $"{server}/{apiVersion}/{path}";
+            if (queryParams != null) {
+                IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
+                string queries = string.Join("&", queryPairs);
+                url = $"{url}?{queries}";
+            }
+            return url;
+        }
+
+        async Task FillHeaders(HttpRequestHeaders headers, Dictionary<string, object> additionalHeaders = null) {
+            // 额外 headers
+            if (additionalHeaders != null) {
+                foreach (KeyValuePair<string, object> kv in additionalHeaders) {
+                    headers.Add(kv.Key, kv.Value.ToString());
+                }
+            }
+            // 签名
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            string data = $"{timestamp}{appKey}";
+            string hash = GetMd5Hash(md5, data);
+            string sign = $"{hash},{timestamp}";
+            headers.Add("X-LC-Sign", sign);
+            // 当前用户 Session Token
+            LCUser currentUser = await LCUser.GetCurrent();
+            if (currentUser != null) {
+                headers.Add("X-LC-Session", currentUser.SessionToken);
+            }
+        }
+
+        static string GetMd5Hash(MD5 md5Hash, string input) {
+            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < data.Length; i++) {
+                sb.Append(data[i].ToString("x2"));
+            }
+            return sb.ToString();
         }
     }
 }
