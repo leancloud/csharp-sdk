@@ -1,10 +1,12 @@
 language: csharp
 solution: csharp-sdk.sln
+install:
+  - nuget restore csharp-sdk.sln
 addons:
   apt:
     update: true
 before_deploy:
-- sh ./script/package.sh
+  - sh ./script/package.sh
 deploy:
   provider: releases
   api_key:
@@ -17,6 +19,6 @@ deploy:
     repo: leancloud/csharp-sdk
     tags: true
 after_deploy:
-- sudo apt-get install doxygen
-- doxygen Doxyfile
-- sh ./script/deploy.sh
+  - sudo apt-get install doxygen
+  - doxygen Doxyfile
+  - sh ./script/deploy.sh
