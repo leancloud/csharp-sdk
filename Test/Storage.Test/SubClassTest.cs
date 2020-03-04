@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using LeanCloud.Storage;
+using LeanCloud.Common;
 
 namespace LeanCloud.Test {
     internal class Hello : LCObject {
