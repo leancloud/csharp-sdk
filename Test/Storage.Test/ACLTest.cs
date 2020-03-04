@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
 using LeanCloud.Storage;
+using LeanCloud.Common;
 
 namespace LeanCloud.Test {
     public class ACLTest {

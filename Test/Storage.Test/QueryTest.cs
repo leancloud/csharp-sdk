@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LeanCloud.Storage;
+using LeanCloud.Common;
 
 namespace LeanCloud.Test {
     public class QueryTest {

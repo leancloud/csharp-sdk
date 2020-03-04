@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using LeanCloud.Storage;
+using LeanCloud.Common;
 
 namespace LeanCloud.Test {
     public class ExceptionTest {

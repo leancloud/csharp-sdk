@@ -5,15 +5,15 @@ using LeanCloud.Common;
 
 namespace Common.Test {
     public class AppRouterTest {
-        static void Print(LeanCloud.LogLevel level, string info) {
+        static void Print(LogLevel level, string info) {
             switch (level) {
-                case LeanCloud.LogLevel.Debug:
+                case LogLevel.Debug:
                     TestContext.Out.WriteLine($"[DEBUG] {info}");
                     break;
-                case LeanCloud.LogLevel.Warn:
+                case LogLevel.Warn:
                     TestContext.Out.WriteLine($"[WARNING] {info}");
                     break;
-                case LeanCloud.LogLevel.Error:
+                case LogLevel.Error:
                     TestContext.Out.WriteLine($"[ERROR] {info}");
                     break;
                 default:
@@ -24,12 +24,12 @@ namespace Common.Test {
 
         [SetUp]
         public void SetUp() {
-            LeanCloud.Logger.LogDelegate += Print;
+            Logger.LogDelegate += Print;
         }
 
         [TearDown]
         public void TearDown() {
-            LeanCloud.Logger.LogDelegate -= Print;
+            Logger.LogDelegate -= Print;
         }
 
         [Test]

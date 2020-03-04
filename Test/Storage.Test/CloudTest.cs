@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using LeanCloud.Storage;
+using LeanCloud.Common;
 
 namespace LeanCloud.Test {
     public class CloudTest {
