@@ -1,19 +1,19 @@
 using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using LeanCloud;
+using LeanCloud.Common;
 
 namespace Common.Test {
     public class AppRouterTest {
-        static void Print(LogLevel level, string info) {
+        static void Print(LeanCloud.LogLevel level, string info) {
             switch (level) {
-                case LogLevel.Debug:
+                case LeanCloud.LogLevel.Debug:
                     TestContext.Out.WriteLine($"[DEBUG] {info}");
                     break;
-                case LogLevel.Warn:
+                case LeanCloud.LogLevel.Warn:
                     TestContext.Out.WriteLine($"[WARNING] {info}");
                     break;
-                case LogLevel.Error:
+                case LeanCloud.LogLevel.Error:
                     TestContext.Out.WriteLine($"[ERROR] {info}");
                     break;
                 default:
@@ -24,12 +24,12 @@ namespace Common.Test {
 
         [SetUp]
         public void SetUp() {
-            Logger.LogDelegate += Print;
+            LeanCloud.Logger.LogDelegate += Print;
         }
 
         [TearDown]
         public void TearDown() {
-            Logger.LogDelegate -= Print;
+            LeanCloud.Logger.LogDelegate -= Print;
         }
 
         [Test]

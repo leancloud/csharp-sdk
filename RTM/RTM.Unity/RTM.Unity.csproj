@@ -215,11 +215,5 @@
       <Link>Internal\WebSocket\Unity\websocket-sharp.dll</Link>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Storage\Storage.Unity\Storage.Unity.csproj">
-      <Project>{A0D50BCB-E50E-4AAE-8E7D-24BF5AE33DAC}</Project>
-      <Name>Storage.Unity</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
