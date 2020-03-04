@@ -1,15 +1,15 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Storage.Test", "Test\Storage.Test\Storage.Test.csproj", "{BE05B492-78CD-47CA-9F48-C3E9B4813AFF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Storage", "Storage\Storage.csproj", "{59DA32A0-4CD3-424A-8584-D08B8D1E2B98}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{C827DA2F-6AB4-48D8-AB5B-6DAB925F8933}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Test", "Test\Common.Test\Common.Test.csproj", "{4DF4E0F4-1013-477F-ADA6-BFAFD9312335}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{758DE75D-37D7-4392-B564-9484348B505C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Storage", "Storage\Storage.csproj", "{4DCA6CCF-DBD2-4184-9A7E-8775A024D194}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Storage.Test", "Test\Storage.Test\Storage.Test.csproj", "{531F8181-FFE0-476E-9D0A-93F13CAD1183}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Test", "Test\Common.Test\Common.Test.csproj", "{237B7A92-28F6-4227-BE52-7647139B1820}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,26 +17,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BE05B492-78CD-47CA-9F48-C3E9B4813AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE05B492-78CD-47CA-9F48-C3E9B4813AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE05B492-78CD-47CA-9F48-C3E9B4813AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE05B492-78CD-47CA-9F48-C3E9B4813AFF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{59DA32A0-4CD3-424A-8584-D08B8D1E2B98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{59DA32A0-4CD3-424A-8584-D08B8D1E2B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{59DA32A0-4CD3-424A-8584-D08B8D1E2B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{59DA32A0-4CD3-424A-8584-D08B8D1E2B98}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4DF4E0F4-1013-477F-ADA6-BFAFD9312335}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DF4E0F4-1013-477F-ADA6-BFAFD9312335}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4DF4E0F4-1013-477F-ADA6-BFAFD9312335}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4DF4E0F4-1013-477F-ADA6-BFAFD9312335}.Release|Any CPU.Build.0 = Release|Any CPU
 		{758DE75D-37D7-4392-B564-9484348B505C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{758DE75D-37D7-4392-B564-9484348B505C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{758DE75D-37D7-4392-B564-9484348B505C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{758DE75D-37D7-4392-B564-9484348B505C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DCA6CCF-DBD2-4184-9A7E-8775A024D194}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DCA6CCF-DBD2-4184-9A7E-8775A024D194}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DCA6CCF-DBD2-4184-9A7E-8775A024D194}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DCA6CCF-DBD2-4184-9A7E-8775A024D194}.Release|Any CPU.Build.0 = Release|Any CPU
+		{531F8181-FFE0-476E-9D0A-93F13CAD1183}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{531F8181-FFE0-476E-9D0A-93F13CAD1183}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{531F8181-FFE0-476E-9D0A-93F13CAD1183}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{531F8181-FFE0-476E-9D0A-93F13CAD1183}.Release|Any CPU.Build.0 = Release|Any CPU
+		{237B7A92-28F6-4227-BE52-7647139B1820}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{237B7A92-28F6-4227-BE52-7647139B1820}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{237B7A92-28F6-4227-BE52-7647139B1820}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{237B7A92-28F6-4227-BE52-7647139B1820}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{BE05B492-78CD-47CA-9F48-C3E9B4813AFF} = {C827DA2F-6AB4-48D8-AB5B-6DAB925F8933}
-		{4DF4E0F4-1013-477F-ADA6-BFAFD9312335} = {C827DA2F-6AB4-48D8-AB5B-6DAB925F8933}
+		{531F8181-FFE0-476E-9D0A-93F13CAD1183} = {C827DA2F-6AB4-48D8-AB5B-6DAB925F8933}
+		{237B7A92-28F6-4227-BE52-7647139B1820} = {C827DA2F-6AB4-48D8-AB5B-6DAB925F8933}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		version = 0.1.0
