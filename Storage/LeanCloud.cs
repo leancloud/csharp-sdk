@@ -21,7 +21,7 @@ namespace LeanCloud {
             get; private set;
         }
 
-        public static void Initialize(string appId, string appKey, string server = null) {
+        public static void Initialize(string appId, string appKey, string server) {
             if (string.IsNullOrEmpty(appId)) {
                 throw new ArgumentException(nameof(appId));
             }
