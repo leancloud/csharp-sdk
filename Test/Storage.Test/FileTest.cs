@@ -72,10 +72,11 @@ namespace LeanCloud.Test {
 
         [Test]
         public async Task AWS() {
-            Logger.LogDelegate += Utils.Print;
-            LeanCloud.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r", "https://ulcpyvlm.api.lncldglobal.com");
-            LCFile file = new LCFile("avatar", APKFilePath);
-            await file.Save();
+            LeanCloud.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r");
+            LCFile file = new LCFile("avatar", AvatarFilePath);
+            await file.Save((count, total) => {
+                TestContext.WriteLine($"progress: {count}/{total}");
+            });
             TestContext.WriteLine(file.ObjectId);
             Assert.NotNull(file.ObjectId);
         }

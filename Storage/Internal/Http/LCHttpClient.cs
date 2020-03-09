@@ -12,19 +12,21 @@ using LeanCloud.Common;
 
 namespace LeanCloud.Storage.Internal.Http {
     internal class LCHttpClient {
-        readonly string appId;
+        private readonly string appId;
 
         readonly string appKey;
 
-        readonly string server;
+        private readonly string server;
 
-        readonly string sdkVersion;
+        private readonly string sdkVersion;
 
         readonly string apiVersion;
 
-        HttpClient client;
+        readonly AppRouter appRouter;
 
-        MD5 md5;
+        readonly HttpClient client;
+
+        readonly MD5 md5;
 
         internal LCHttpClient(string appId, string appKey, string server, string sdkVersion, string apiVersion) {
             this.appId = appId;
@@ -32,6 +34,8 @@ namespace LeanCloud.Storage.Internal.Http {
             this.server = server;
             this.sdkVersion = sdkVersion;
             this.apiVersion = apiVersion;
+
+            appRouter = new AppRouter(appId, server);
 
             client = new HttpClient();
             ProductHeaderValue product = new ProductHeaderValue("LeanCloud-CSharp-SDK", LeanCloud.SDKVersion);
@@ -45,7 +49,7 @@ namespace LeanCloud.Storage.Internal.Http {
         internal async Task<T> Get<T>(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> queryParams = null) {
-            string url = BuildUrl(path, queryParams);
+            string url = await BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Get
@@ -71,7 +75,7 @@ namespace LeanCloud.Storage.Internal.Http {
             Dictionary<string, object> headers = null,
             Dictionary<string, object> data = null,
             Dictionary<string, object> queryParams = null) {
-            string url = BuildUrl(path, queryParams);
+            string url = await BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Post,
@@ -104,7 +108,7 @@ namespace LeanCloud.Storage.Internal.Http {
             Dictionary<string, object> headers = null,
             Dictionary<string, object> data = null,
             Dictionary<string, object> queryParams = null) {
-            string url = BuildUrl(path, queryParams);
+            string url = await BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Put,
@@ -134,7 +138,7 @@ namespace LeanCloud.Storage.Internal.Http {
         }
 
         internal async Task Delete(string path) {
-            string url = BuildUrl(path);
+            string url = await BuildUrl(path);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Delete
@@ -170,8 +174,9 @@ namespace LeanCloud.Storage.Internal.Http {
             return new LCException(code, message);
         }
 
-        string BuildUrl(string path, Dictionary<string, object> queryParams = null) {
-            string url = $"{server}/{apiVersion}/{path}";
+        async Task<string> BuildUrl(string path, Dictionary<string, object> queryParams = null) {
+            string apiServer = await appRouter.GetApiServer();
+            string url = $"{apiServer}/{apiVersion}/{path}";
             if (queryParams != null) {
                 IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
                 string queries = string.Join("&", queryPairs);

@@ -1,110 +1,69 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace LeanCloud.Common {
     public class AppRouter {
-        // 华东应用 App Id 后缀
-        const string EAST_CHINA_SUFFIX = "-9Nh9j0Va";
-        // 美国应用 App Id 后缀
-        const string US_SUFFIX = "-MdYXbMMI";
+        private readonly string appId;
 
-        [JsonProperty("ttl")]
-        public long TTL {
-            get; internal set;
+        private readonly string server;
+
+        private AppServer appServer;
+
+        public AppRouter(string appId, string server) {
+            if (!IsInternalApp(appId) && string.IsNullOrEmpty(server)) {
+                // 国内节点必须配置自定义域名
+                throw new Exception("Please init with your server url.");
+            }
+            this.appId = appId;
+            this.server = server;
         }
 
-        [JsonProperty("api_server")]
-        public string ApiServer {
-            get; internal set;
-        }
+        public async Task<string> GetApiServer() {
+            // 优先返回用户自定义域名
+            if (!string.IsNullOrEmpty(server)) {
+                return server;
+            }
+            // 判断节点地区
+            if (!IsInternalApp(appId)) {
+                // 国内节点必须配置自定义域名
+                throw new Exception("Please init with your server url.");
+            }
+            // 向 App Router 请求地址
+            if (appServer == null || appServer.IsExpired) {
+                try {
+                    HttpRequestMessage request = new HttpRequestMessage {
+                        RequestUri = new Uri($"https://app-router.com/2/route?appId={appId}"),
+                        Method = HttpMethod.Get
+                    };
+                    HttpClient client = new HttpClient();
+                    HttpUtils.PrintRequest(client, request);
+                    HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                    request.Dispose();
 
-        [JsonProperty("engine_server")]
-        public string EngineServer {
-            get; internal set;
-        }
+                    string resultString = await response.Content.ReadAsStringAsync();
+                    response.Dispose();
+                    HttpUtils.PrintResponse(response, resultString);
 
-        [JsonProperty("push_server")]
-        public string PushServer {
-            get; internal set;
-        }
-
-        [JsonProperty("rtm_router_server")]
-        public string RTMServer {
-            get; internal set;
-        }
-
-        [JsonProperty("stats_server")]
-        public string StatsServer {
-            get; internal set;
-        }
-
-        [JsonProperty("play_server")]
-        public string PlayServer {
-            get; internal set;
-        }
-
-        public string Source {
-            get; internal set;
-        }
-
-        public DateTimeOffset FetchedAt {
-            get; internal set;
-        }
-
-        public AppRouter() {
-            FetchedAt = DateTimeOffset.Now;
-        }
-
-        public bool IsExpired {
-            get {
-                if (TTL == -1) {
-                    return false;
+                    Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString);
+                    appServer = new AppServer(data);
+                } catch (Exception e) {
+                    Logger.Error(e.Message);
+                    // 拉取服务地址失败后，使用国际节点的默认服务地址
+                    appServer = AppServer.GetInternalFallbackAppServer(appId);
                 }
-                return DateTimeOffset.Now > FetchedAt.AddSeconds(TTL);
             }
+            return appServer.ApiServer;
         }
 
-        public static AppRouter GetFallbackServers(string appId) {
-            var prefix = appId.Substring(0, 8).ToLower();
-            var suffix = appId.Substring(appId.Length - 9);
-            switch (suffix) {
-                case EAST_CHINA_SUFFIX:
-                    // 华东
-                    return new AppRouter {
-                        TTL = -1,
-                        ApiServer = $"{prefix}.api.lncldapi.com",
-                        EngineServer = $"{prefix}.engine.lncldapi.com",
-                        PushServer = $"{prefix}.push.lncldapi.com",
-                        RTMServer = $"{prefix}.rtm.lncldapi.com",
-                        StatsServer = $"{prefix}.stats.lncldapi.com",
-                        PlayServer = $"{prefix}.play.lncldapi.com",
-                        Source = "fallback",
-                    };
-                case US_SUFFIX:
-                    // 美国
-                    return new AppRouter {
-                        TTL = -1,
-                        ApiServer = $"{prefix}.api.lncldglobal.com",
-                        EngineServer = $"{prefix}.engine.lncldglobal.com",
-                        PushServer = $"{prefix}.push.lncldglobal.com",
-                        RTMServer = $"{prefix}.rtm.lncldglobal.com",
-                        StatsServer = $"{prefix}.stats.lncldglobal.com",
-                        PlayServer = $"{prefix}.play.lncldglobal.com",
-                        Source = "fallback",
-                    };
-                default:
-                    // 华北
-                    return new AppRouter {
-                        TTL = -1,
-                        ApiServer = $"{prefix}.api.lncld.net",
-                        EngineServer = $"{prefix}.engine.lncld.net",
-                        PushServer = $"{prefix}.push.lncld.net",
-                        RTMServer = $"{prefix}.rtm.lncld.net",
-                        StatsServer = $"{prefix}.stats.lncld.net",
-                        PlayServer = $"{prefix}.play.lncld.net",
-                        Source = "fallback",
-                    };
+        private static bool IsInternalApp(string appId) {
+            if (appId.Length < 9) {
+                return false;
             }
+            string suffix = appId.Substring(appId.Length - 9);
+            return suffix == "-MdYXbMMI";
         }
     }
 }
