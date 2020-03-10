@@ -13,7 +13,7 @@ namespace LeanCloud.Test {
         [SetUp]
         public void SetUp() {
             Logger.LogDelegate += Utils.Print;
-            LeanCloud.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
         }
 
         [TearDown]
@@ -72,7 +72,7 @@ namespace LeanCloud.Test {
 
         [Test]
         public async Task AWS() {
-            LeanCloud.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r");
+            LCApplication.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r");
             LCFile file = new LCFile("avatar", AvatarFilePath);
             await file.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");
