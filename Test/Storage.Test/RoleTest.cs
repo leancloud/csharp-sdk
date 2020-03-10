@@ -11,13 +11,13 @@ namespace LeanCloud.Test {
     public class RoleTest {
         [SetUp]
         public void SetUp() {
-            Logger.LogDelegate += Utils.Print;
+            LCLogger.LogDelegate += Utils.Print;
             LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
         }
 
         [TearDown]
         public void TearDown() {
-            Logger.LogDelegate -= Utils.Print;
+            LCLogger.LogDelegate -= Utils.Print;
         }
 
         [Test]
