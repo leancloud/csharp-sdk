@@ -5,7 +5,7 @@ namespace LeanCloud.Common {
     /// <summary>
     /// 为 Json 解析提供异步接口
     /// </summary>
-    public static class JsonUtils {
+    public static class LCJsonUtils {
         public static async Task<string> SerializeObjectAsync(object obj) {
             string str = null;
             await Task.Run(() => {

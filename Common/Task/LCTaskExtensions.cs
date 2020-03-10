@@ -10,7 +10,7 @@ namespace LeanCloud.Common {
     /// <summary>
     /// Provides helper methods that allow us to use terser code elsewhere.
     /// </summary>
-    public static class TaskExtensions {
+    public static class LCTaskExtensions {
         /// <summary>
         /// Ensures a task (even null) is awaitable.
         /// </summary>

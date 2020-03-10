@@ -2,7 +2,7 @@
     /// <summary>
     /// 日志级别
     /// </summary>
-    public enum LogLevel {
+    public enum LCLogLevel {
         /// <summary>
         /// 调试级别
         /// </summary>

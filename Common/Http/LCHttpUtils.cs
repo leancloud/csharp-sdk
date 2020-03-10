@@ -3,7 +3,7 @@ using System.Text;
 using System.Net.Http;
 
 namespace LeanCloud.Common {
-    public static class HttpUtils {
+    public static class LCHttpUtils {
         public static void PrintRequest(HttpClient client, HttpRequestMessage request, string content = null) {
             if (client == null) {
                 return;
@@ -31,7 +31,7 @@ namespace LeanCloud.Common {
                 sb.AppendLine($"Content: {content}");
             }
             sb.AppendLine("=== HTTP Request End ===");
-            Logger.Debug(sb.ToString());
+            LCLogger.Debug(sb.ToString());
         }
 
         public static void PrintResponse(HttpResponseMessage response, string content = null) {
@@ -43,7 +43,7 @@ namespace LeanCloud.Common {
                 sb.AppendLine($"Content: {content}");
             }
             sb.AppendLine("=== HTTP Response End ===");
-            Logger.Debug(sb.ToString());
+            LCLogger.Debug(sb.ToString());
         }
     }
 }

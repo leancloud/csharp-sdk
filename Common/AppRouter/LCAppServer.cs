@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace LeanCloud.Common {
-    public class AppServer {
+    public class LCAppServer {
         public string ApiServer {
             get; private set;
         }
@@ -19,9 +19,9 @@ namespace LeanCloud.Common {
             get; private set;
         }
 
-        public bool IsExpired {
+        public bool IsValid {
             get {
-                return ttl != -1 && DateTime.Now > expiredAt;
+                return ttl != -1 || DateTime.Now < expiredAt;
             }
         }
 
@@ -29,7 +29,7 @@ namespace LeanCloud.Common {
 
         private readonly int ttl;
 
-        public AppServer(Dictionary<string, object> data) {
+        public LCAppServer(Dictionary<string, object> data) {
             ApiServer = GetUrlWithScheme(data["api_server"] as string);
             PushServer = GetUrlWithScheme(data["push_server"] as string);
             EngineServer = GetUrlWithScheme(data["engine_server"] as string);
@@ -41,9 +41,9 @@ namespace LeanCloud.Common {
             return url.StartsWith("https://") ? url : $"https://{url}";
         }
 
-        internal static AppServer GetInternalFallbackAppServer(string appId) {
+        internal static LCAppServer GetInternalFallbackAppServer(string appId) {
             string prefix = appId.Substring(0, 8).ToLower();
-            return new AppServer(new Dictionary<string, object> {
+            return new LCAppServer(new Dictionary<string, object> {
                 { "api_server", $"https://{prefix}.api.lncldglobal.com" },
                 { "push_server", $"https://{prefix}.engine.lncldglobal.com" },
                 { "engine_server", $"https://{prefix}.push.lncldglobal.com" },
