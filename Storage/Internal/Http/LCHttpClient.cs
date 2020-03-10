@@ -52,13 +52,13 @@ namespace LeanCloud.Storage.Internal.Http {
             };
             await FillHeaders(request.Headers, headers);
             
-            HttpUtils.PrintRequest(client, request);
+            LCHttpUtils.PrintRequest(client, request);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();
 
             string resultString = await response.Content.ReadAsStringAsync();
             response.Dispose();
-            HttpUtils.PrintResponse(response, resultString);
+            LCHttpUtils.PrintResponse(response, resultString);
 
             if (response.IsSuccessStatusCode) {
                 T ret = JsonConvert.DeserializeObject<T>(resultString, new LeanCloudJsonConverter());
@@ -85,13 +85,13 @@ namespace LeanCloud.Storage.Internal.Http {
                 requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 request.Content = requestContent;
             }
-            HttpUtils.PrintRequest(client, request, content);
+            LCHttpUtils.PrintRequest(client, request, content);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();
 
             string resultString = await response.Content.ReadAsStringAsync();
             response.Dispose();
-            HttpUtils.PrintResponse(response, resultString);
+            LCHttpUtils.PrintResponse(response, resultString);
 
             if (response.IsSuccessStatusCode) {
                 T ret = JsonConvert.DeserializeObject<T>(resultString, new LeanCloudJsonConverter());
@@ -118,13 +118,13 @@ namespace LeanCloud.Storage.Internal.Http {
                 requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 request.Content = requestContent;
             }
-            HttpUtils.PrintRequest(client, request, content);
+            LCHttpUtils.PrintRequest(client, request, content);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();
 
             string resultString = await response.Content.ReadAsStringAsync();
             response.Dispose();
-            HttpUtils.PrintResponse(response, resultString);
+            LCHttpUtils.PrintResponse(response, resultString);
 
             if (response.IsSuccessStatusCode) {
                 T ret = JsonConvert.DeserializeObject<T>(resultString, new LeanCloudJsonConverter());
@@ -141,13 +141,13 @@ namespace LeanCloud.Storage.Internal.Http {
             };
             await FillHeaders(request.Headers);
 
-            HttpUtils.PrintRequest(client, request);
+            LCHttpUtils.PrintRequest(client, request);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();
 
             string resultString = await response.Content.ReadAsStringAsync();
             response.Dispose();
-            HttpUtils.PrintResponse(response, resultString);
+            LCHttpUtils.PrintResponse(response, resultString);
 
             if (response.IsSuccessStatusCode) {
                 Dictionary<string, object> ret = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LeanCloudJsonConverter());
@@ -165,7 +165,7 @@ namespace LeanCloud.Storage.Internal.Http {
                 code = (int)error["code"];
                 message = error["error"].ToString();
             } catch (Exception e) {
-                Logger.Error(e.Message);
+                LCLogger.Error(e.Message);
             }
             return new LCException(code, message);
         }

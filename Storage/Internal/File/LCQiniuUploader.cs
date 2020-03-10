@@ -36,13 +36,13 @@ namespace LeanCloud.Storage.Internal.File {
                 Content = content
             };
             HttpClient client = new HttpClient();
-            HttpUtils.PrintRequest(client, request);
+            LCHttpUtils.PrintRequest(client, request);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();
 
             string resultString = await response.Content.ReadAsStringAsync();
             response.Dispose();
-            HttpUtils.PrintResponse(response, resultString);
+            LCHttpUtils.PrintResponse(response, resultString);
 
             HttpStatusCode statusCode = response.StatusCode;
         }
