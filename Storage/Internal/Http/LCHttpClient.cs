@@ -22,8 +22,6 @@ namespace LeanCloud.Storage.Internal.Http {
 
         readonly string apiVersion;
 
-        readonly AppRouter appRouter;
-
         readonly HttpClient client;
 
         readonly MD5 md5;
@@ -35,10 +33,8 @@ namespace LeanCloud.Storage.Internal.Http {
             this.sdkVersion = sdkVersion;
             this.apiVersion = apiVersion;
 
-            appRouter = new AppRouter(appId, server);
-
             client = new HttpClient();
-            ProductHeaderValue product = new ProductHeaderValue("LeanCloud-CSharp-SDK", LeanCloud.SDKVersion);
+            ProductHeaderValue product = new ProductHeaderValue("LeanCloud-CSharp-SDK", sdkVersion);
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(product));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("X-LC-Id", appId);
@@ -175,7 +171,7 @@ namespace LeanCloud.Storage.Internal.Http {
         }
 
         async Task<string> BuildUrl(string path, Dictionary<string, object> queryParams = null) {
-            string apiServer = await appRouter.GetApiServer();
+            string apiServer = await LCApplication.AppRouter.GetApiServer();
             string url = $"{apiServer}/{apiVersion}/{path}";
             if (queryParams != null) {
                 IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");

@@ -274,7 +274,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> parameters = BuildParams();
             parameters["limit"] = 0;
             parameters["count"] = 1;
-            Dictionary<string, object> ret = await LeanCloud.HttpClient.Get<Dictionary<string, object>>(path, queryParams: parameters);
+            Dictionary<string, object> ret = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path, queryParams: parameters);
             return (int)ret["count"];
         }
 
@@ -297,7 +297,7 @@ namespace LeanCloud.Storage {
         public async Task<List<T>> Find() {
             string path = $"classes/{ClassName}";
             Dictionary<string, object> parameters = BuildParams();
-            Dictionary<string, object> response = await LeanCloud.HttpClient.Get<Dictionary<string, object>>(path, queryParams: parameters);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path, queryParams: parameters);
             List<object> results = response["results"] as List<object>;
             List<T> list = new List<T>();
             foreach (object item in results) {

@@ -15,13 +15,13 @@ namespace LeanCloud.Storage {
         /// <returns></returns>
         public static async Task<Dictionary<string, object>> Run(string name, Dictionary<string, object> parameters = null) {
             string path = $"functions/{name}";
-            Dictionary<string, object> response = await LeanCloud.HttpClient.Post<Dictionary<string, object>>(path, data: parameters);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: parameters);
             return response;
         }
 
         public static async Task<object> RPC(string name, Dictionary<string, object> parameters = null) {
             string path = $"call/{name}";
-            Dictionary<string, object> response = await LeanCloud.HttpClient.Post<Dictionary<string, object>>(path, data: parameters);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: parameters);
             return LCDecoder.Decode(response["result"]);
         }
     }
