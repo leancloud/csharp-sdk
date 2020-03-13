@@ -13,6 +13,8 @@ namespace LeanCloud.Realtime {
 
         private LCWebSocketClient client;
 
+        private Dictionary<string, LCIMConversation> conversationDict;
+
         /// <summary>
         /// 当前用户被加入某个对话的黑名单
         /// </summary>
@@ -68,6 +70,7 @@ namespace LeanCloud.Realtime {
 
         public LCIMClient(string clientId) {
             this.clientId = clientId;
+            conversationDict = new Dictionary<string, LCIMConversation>();
         }
 
         public async Task Open() {
@@ -132,9 +135,9 @@ namespace LeanCloud.Realtime {
             }
             command.ConvMessage = conv;
             GenericCommand response = await client.SendRequest(command);
-            // TODO 实例化对话对象
-
-            LCIMConversation conversation = new LCIMConversation();
+            LCIMConversation conversation = new LCIMConversation(this);
+            conversation.MergeFrom(response.ConvMessage);
+            conversationDict[conversation.Id] = conversation;
             return conversation;
         }
 
@@ -174,11 +177,17 @@ namespace LeanCloud.Realtime {
         }
 
         private void OnConversationJoined(ConvCommand conv) {
-            OnInvited?.Invoke(null, conv.InitBy);
+            if (conversationDict.TryGetValue(conv.Cid, out LCIMConversation conversation)) {
+                conversation.MergeFrom(conv);
+            }
+            OnInvited?.Invoke(conversation, conv.InitBy);
         }
 
         private void OnConversationMembersJoined(ConvCommand conv) {
-            OnMembersJoined?.Invoke(null, conv.M.ToList(), conv.InitBy);
+            if (conversationDict.TryGetValue(conv.Cid, out LCIMConversation conversation)) {
+                conversation.MergeFrom(conv);
+            }
+            OnMembersJoined?.Invoke(conversation, conv.M.ToList(), conv.InitBy);
         }
 
         private GenericCommand NewCommand(CommandType cmd, OpType op) {

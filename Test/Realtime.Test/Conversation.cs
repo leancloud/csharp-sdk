@@ -30,10 +30,14 @@ namespace Realtime.Test {
 
             client.OnInvited = (conv, initBy) => {
                 TestContext.WriteLine($"on invited: {initBy}");
+                TestContext.WriteLine(conv.CreatorId);
             };
 
             client.OnMembersJoined = (conv, memberList, initBy) => {
                 TestContext.WriteLine($"on members joined: {initBy}");
+                foreach (string memberId in conv.MemberIdList) {
+                    TestContext.WriteLine(memberId);
+                }
                 tcs.SetResult(null);
             };
 

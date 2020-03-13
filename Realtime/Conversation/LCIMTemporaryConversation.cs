@@ -2,7 +2,7 @@
 
 namespace LeanCloud.Realtime {
     public class LCIMTemporaryConversation : LCIMConversation {
-        public LCIMTemporaryConversation() {
+        public LCIMTemporaryConversation(LCIMClient client) : base(client) {
         }
     }
 }

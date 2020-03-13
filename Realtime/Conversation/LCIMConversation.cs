@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using LeanCloud.Realtime.Protocol;
 
 namespace LeanCloud.Realtime {
     public class LCIMConversation {
@@ -34,8 +36,10 @@ namespace LeanCloud.Realtime {
 
         public virtual bool IsTransient => false;
 
-        public LCIMConversation() {
+        private readonly LCIMClient client;
 
+        internal LCIMConversation(LCIMClient client) {
+            this.client = client;
         }
 
         public void Set(string key, object value) {
@@ -113,6 +117,24 @@ namespace LeanCloud.Realtime {
 
         public async Task<List<LCIMConversationMemberInfo>> GetAllMemberInfo() {
             return null;
+        }
+
+        internal void MergeFrom(ConvCommand conv) {
+            if (conv.HasCid) {
+                Id = conv.Cid;
+            }
+            if (conv.HasInitBy) {
+                CreatorId = conv.InitBy;
+            }
+            if (conv.HasCdate) {
+                CreatedAt = DateTime.Parse(conv.Cdate);
+            }
+            if (conv.HasUdate) {
+                UpdatedAt = DateTime.Parse(conv.Udate);
+            }
+            if (conv.M.Count > 0) {
+                MemberIdList = conv.M.ToList();
+            }
         }
     }
 }
