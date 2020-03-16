@@ -72,7 +72,19 @@ namespace LeanCloud.Realtime {
         }
 
         public async Task<LCIMMessage> Send(LCIMMessage message) {
-            return null;
+            DirectCommand direct = new DirectCommand {
+                FromPeerId = client.ClientId,
+                Cid = Id,
+                Msg = message.Serialize(),
+            };
+            GenericCommand command = client.NewDirectCommand();
+            command.DirectMessage = direct;
+            GenericCommand response = await client.client.SendRequest(command);
+            // 消息发送应答
+            AckCommand ack = response.AckMessage;
+            message.Id = ack.Uid;
+            message.DeliveredTimestamp = ack.T;
+            return message;
         }
 
         public async Task<LCIMRecalledMessage> Recall(LCIMMessage message) {

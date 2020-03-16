@@ -1,11 +1,11 @@
 ﻿using System;
 
 namespace LeanCloud.Realtime {
-    public class LCIMTypedMessage : LCIMMessage {
-        protected int type;
+    public class LCIMBinaryMessage : LCIMMessage {
+        private byte[] data;
 
-        protected LCIMTypedMessage(int type) {
-            this.type = type;
+        public LCIMBinaryMessage(byte[] data) {
+            this.data = data;
         }
 
         internal override string Serialize() {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace LeanCloud.Realtime {
-    public class LCIMMessage {
+    public abstract class LCIMMessage {
         public string ConversationId {
             get; set;
         }
@@ -15,36 +15,48 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
-        public int SentTimestamp {
-            get; set;
+        public long SentTimestamp {
+            get; internal set;
         }
 
         public DateTime SentAt {
-            get; set;
+            get {
+                return DateTimeOffset.FromUnixTimeMilliseconds(SentTimestamp)
+                    .LocalDateTime;
+            }
         }
 
-        public int DeliveredTimestamp {
-            get; set;
+        public long DeliveredTimestamp {
+            get; internal set;
         }
 
         public DateTime DeliveredAt {
-            get; set;
+            get {
+                return DateTimeOffset.FromUnixTimeMilliseconds(DeliveredTimestamp)
+                    .LocalDateTime;
+            }
         }
 
-        public int ReadTimestamp {
-            get; set;
+        public long ReadTimestamp {
+            get; internal set;
         }
 
         public DateTime ReadAt {
-            get; set;
+            get {
+                return DateTimeOffset.FromUnixTimeMilliseconds(ReadTimestamp)
+                    .LocalDateTime;
+            }
         }
 
-        public int PatchedTimestamp {
-            get; set;
+        public long PatchedTimestamp {
+            get; internal set;
         }
 
         public DateTime PatchedAt {
-            get; set;
+            get {
+                return DateTimeOffset.FromUnixTimeMilliseconds(PatchedTimestamp)
+                    .LocalDateTime;
+            }
         }
 
         public List<string> MentionList {
@@ -55,6 +67,6 @@ namespace LeanCloud.Realtime {
 
         }
 
-        
+        internal abstract string Serialize();
     }
 }

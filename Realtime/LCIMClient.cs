@@ -9,11 +9,13 @@ using Newtonsoft.Json;
 
 namespace LeanCloud.Realtime {
     public class LCIMClient {
-        private string clientId;
-
-        private LCWebSocketClient client;
+        internal LCWebSocketClient client;
 
         private Dictionary<string, LCIMConversation> conversationDict;
+
+        public string ClientId {
+            get; private set;
+        }
 
         /// <summary>
         /// 当前用户被加入某个对话的黑名单
@@ -69,7 +71,7 @@ namespace LeanCloud.Realtime {
         }
 
         public LCIMClient(string clientId) {
-            this.clientId = clientId;
+            ClientId = clientId;
             conversationDict = new Dictionary<string, LCIMConversation>();
         }
 
@@ -135,7 +137,7 @@ namespace LeanCloud.Realtime {
             }
             command.ConvMessage = conv;
             GenericCommand response = await client.SendRequest(command);
-            LCIMConversation conversation = new LCIMConversation(this);
+            LCIMConversation conversation = GetOrCreateConversation(response.ConvMessage.Cid);
             conversation.MergeFrom(response.ConvMessage);
             conversationDict[conversation.Id] = conversation;
             return conversation;
@@ -177,25 +179,39 @@ namespace LeanCloud.Realtime {
         }
 
         private void OnConversationJoined(ConvCommand conv) {
-            if (conversationDict.TryGetValue(conv.Cid, out LCIMConversation conversation)) {
-                conversation.MergeFrom(conv);
-            }
+            LCIMConversation conversation = GetOrCreateConversation(conv.Cid);
+            conversation.MergeFrom(conv);
             OnInvited?.Invoke(conversation, conv.InitBy);
         }
 
         private void OnConversationMembersJoined(ConvCommand conv) {
-            if (conversationDict.TryGetValue(conv.Cid, out LCIMConversation conversation)) {
-                conversation.MergeFrom(conv);
-            }
+            LCIMConversation conversation = GetOrCreateConversation(conv.Cid);
+            conversation.MergeFrom(conv);
             OnMembersJoined?.Invoke(conversation, conv.M.ToList(), conv.InitBy);
         }
 
-        private GenericCommand NewCommand(CommandType cmd, OpType op) {
+        private LCIMConversation GetOrCreateConversation(string convId) {
+            if (!conversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
+                conversation = new LCIMConversation(this);
+                conversationDict.Add(convId, conversation);
+            }
+            return conversation;
+        }
+
+        internal GenericCommand NewCommand(CommandType cmd, OpType op) {
             return new GenericCommand {
                 Cmd = cmd,
                 Op = op,
                 AppId = LCApplication.AppId,
-                PeerId = clientId,
+                PeerId = ClientId,
+            };
+        }
+
+        internal GenericCommand NewDirectCommand() {
+            return new GenericCommand {
+                Cmd = CommandType.Direct,
+                AppId = LCApplication.AppId,
+                PeerId = ClientId,
             };
         }
     }

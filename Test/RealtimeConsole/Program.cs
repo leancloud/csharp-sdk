@@ -54,9 +54,10 @@ namespace RealtimeConsole {
 
             List<string> memberIdList = new List<string> { "world", "code" };
             string name = Guid.NewGuid().ToString();
-            _ = await client.CreateTemporaryConversation(memberIdList);
-            //_ = await client.CreateChatRoom(name);
-            //_ = await client.CreateConversation(memberIdList, name: name, unique: false);
+            LCIMConversation conversation = await client.CreateConversation(memberIdList, name: name, unique: false);
+
+            LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
+            await conversation.Send(textMessage);
         }
     }
 }
