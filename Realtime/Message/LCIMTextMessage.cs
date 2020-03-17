@@ -5,14 +5,20 @@ namespace LeanCloud.Realtime {
     public class LCIMTextMessage : LCIMTypedMessage {
         const int TextMessageType = -1;
 
-        private string text;
+        public string Text {
+            get; set;
+        }
 
         public LCIMTextMessage(string text) : base(TextMessageType) {
-            this.text = text;
+            Text = text;
         }
 
         internal override string Serialize() {
-            return text;
+            return Text;
+        }
+
+        internal override string GetText() {
+            return Text;
         }
     }
 }

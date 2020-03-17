@@ -30,7 +30,7 @@ namespace LeanCloud {
             get; private set;
         }
 
-        internal static LCHttpClient HttpClient {
+        public static LCHttpClient HttpClient {
             get; private set;
         }
 

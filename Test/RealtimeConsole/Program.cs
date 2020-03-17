@@ -54,10 +54,27 @@ namespace RealtimeConsole {
 
             List<string> memberIdList = new List<string> { "world", "code" };
             string name = Guid.NewGuid().ToString();
-            LCIMConversation conversation = await client.CreateConversation(memberIdList, name: name, unique: false);
+            LCIMConversation conversation = await client.CreateConversation(memberIdList, name: name, unique: true);
 
             LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
             await conversation.Send(textMessage);
+
+            await Task.Delay(3000);
+
+            LCIMTextMessage newMessage = new LCIMTextMessage("hello, code");
+            await conversation.Update(textMessage, newMessage);
+
+            //// 设置成员的角色
+            //await conversation.UpdateMemberRole("world", LCIMConversationMemberInfo.Manager);
+
+            //List<LCIMConversationMemberInfo> members = await conversation.GetAllMemberInfo();
+
+            //foreach (LCIMConversationMemberInfo member in members) {
+            //    Console.WriteLine(member.MemberId);
+            //}
+
+            //LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
+            //await conversation.Send(textMessage);
         }
     }
 }

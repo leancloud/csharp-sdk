@@ -17,6 +17,11 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
+        // TODO 判断过期
+        internal string SessionToken {
+            get; private set;
+        }
+
         /// <summary>
         /// 当前用户被加入某个对话的黑名单
         /// </summary>
@@ -85,9 +90,10 @@ namespace LeanCloud.Realtime {
             };
             await client.Connect();
             // Open Session
-            GenericCommand command = NewCommand(CommandType.Session, OpType.Open);
-            command.SessionMessage = new SessionCommand();
-            await client.SendRequest(command);
+            GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
+            request.SessionMessage = new SessionCommand();
+            GenericCommand response = await client.SendRequest(request);
+            SessionToken = response.SessionMessage.St;
         }
 
         /// <summary>

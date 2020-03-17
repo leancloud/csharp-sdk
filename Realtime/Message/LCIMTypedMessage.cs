@@ -11,5 +11,13 @@ namespace LeanCloud.Realtime {
         internal override string Serialize() {
             throw new NotImplementedException();
         }
+
+        internal override string GetText() {
+            return null;
+        }
+
+        internal override byte[] GetBytes() {
+            return null;
+        }
     }
 }

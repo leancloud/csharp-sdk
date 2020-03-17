@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using LeanCloud.Common;
 
 namespace LeanCloud.Storage.Internal.Http {
-    internal class LCHttpClient {
+    public class LCHttpClient {
         private readonly string appId;
 
         readonly string appKey;
@@ -26,7 +26,7 @@ namespace LeanCloud.Storage.Internal.Http {
 
         readonly MD5 md5;
 
-        internal LCHttpClient(string appId, string appKey, string server, string sdkVersion, string apiVersion) {
+        public LCHttpClient(string appId, string appKey, string server, string sdkVersion, string apiVersion) {
             this.appId = appId;
             this.appKey = appKey;
             this.server = server;
@@ -42,7 +42,7 @@ namespace LeanCloud.Storage.Internal.Http {
             md5 = MD5.Create();
         }
 
-        internal async Task<T> Get<T>(string path,
+        public async Task<T> Get<T>(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> queryParams = null) {
             string url = await BuildUrl(path, queryParams);

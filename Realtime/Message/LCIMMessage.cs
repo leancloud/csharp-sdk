@@ -63,10 +63,17 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
+        public bool MentionAll {
+            get; set;
+        }
+
         public LCIMMessage() {
 
         }
 
         internal abstract string Serialize();
+
+        internal abstract string GetText();
+        internal abstract byte[] GetBytes();
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Newtonsoft.Json;
+using Google.Protobuf;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage.Internal.Codec;
 
@@ -191,23 +192,6 @@ namespace LeanCloud.Realtime {
             return message;
         }
 
-        public async Task<LCIMRecalledMessage> Recall(LCIMMessage message) {
-            if (message == null) {
-                throw new ArgumentNullException(nameof(message));
-            }
-            PatchCommand patch = new PatchCommand();
-            PatchItem item = new PatchItem {
-                Cid = Id,
-                Mid = message.Id,
-                Recall = true
-            };
-            patch.Patches.Add(item);
-            GenericCommand request = client.NewCommand(CommandType.Patch, OpType.Modify);
-            request.PatchMessage = patch;
-            GenericCommand response = await client.client.SendRequest(request);
-            return null;
-        }
-
         /// <summary>
         /// 静音
         /// </summary>
@@ -243,7 +227,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="clientIds"></param>
         /// <returns></returns>
-        public async Task MuteMembers(IEnumerable<string> clientIds) {
+        public async Task<LCIMPartiallySuccessResult> MuteMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
             }
@@ -254,7 +238,7 @@ namespace LeanCloud.Realtime {
             GenericCommand request = client.NewCommand(CommandType.Conv, OpType.AddShutup);
             request.ConvMessage = conv;
             GenericCommand response = await client.client.SendRequest(request);
-
+            return NewPartiallySuccessResult(response.ConvMessage.AllowedPids, response.ConvMessage.FailedPids);
         }
 
         /// <summary>
@@ -262,7 +246,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="clientIdList"></param>
         /// <returns></returns>
-        public async Task UnmuteMembers(IEnumerable<string> clientIds) {
+        public async Task<LCIMPartiallySuccessResult> UnmuteMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
             }
@@ -273,6 +257,7 @@ namespace LeanCloud.Realtime {
             GenericCommand request = client.NewCommand(CommandType.Conv, OpType.Remove);
             request.ConvMessage = conv;
             GenericCommand response = await client.client.SendRequest(request);
+            return NewPartiallySuccessResult(response.ConvMessage.AllowedPids, response.ConvMessage.FailedPids);
         }
 
         /// <summary>
@@ -280,28 +265,115 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="clientIds"></param>
         /// <returns></returns>
-        public async Task BlockMembers(IEnumerable<string> clientIds) {
+        public async Task<LCIMPartiallySuccessResult> BlockMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
             }
             BlacklistCommand blacklist = new BlacklistCommand {
                 SrcCid = Id,
-                
             };
+            blacklist.ToPids.AddRange(clientIds);
             GenericCommand request = client.NewCommand(CommandType.Blacklist, OpType.Block);
             request.BlacklistMessage = blacklist;
-            await client.client.SendRequest(request);
+            GenericCommand response = await client.client.SendRequest(request);
+            return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
         }
 
-        public async Task UnblockMembers(IEnumerable<string> clientIds) {
-
+        public async Task<LCIMPartiallySuccessResult> UnblockMembers(IEnumerable<string> clientIds) {
+            if (clientIds == null || clientIds.Count() == 0) {
+                throw new ArgumentNullException(nameof(clientIds));
+            }
+            BlacklistCommand blacklist = new BlacklistCommand {
+                SrcCid = Id,
+            };
+            blacklist.ToPids.AddRange(clientIds);
+            GenericCommand request = client.NewCommand(CommandType.Blacklist, OpType.Unblock);
+            request.BlacklistMessage = blacklist;
+            GenericCommand response = await client.client.SendRequest(request);
+            return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
         }
 
+        /// <summary>
+        /// 撤回消息
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task<LCIMRecalledMessage> Recall(LCIMMessage message) {
+            if (message == null) {
+                throw new ArgumentNullException(nameof(message));
+            }
+            PatchCommand patch = new PatchCommand();
+            PatchItem item = new PatchItem {
+                Cid = Id,
+                Mid = message.Id,
+                Recall = true
+            };
+            patch.Patches.Add(item);
+            GenericCommand request = client.NewCommand(CommandType.Patch, OpType.Modify);
+            request.PatchMessage = patch;
+            GenericCommand response = await client.client.SendRequest(request);
+            return null;
+        }
+
+        /// <summary>
+        /// 修改消息
+        /// </summary>
+        /// <param name="oldMessage"></param>
+        /// <param name="newMessage"></param>
+        /// <returns></returns>
         public async Task<LCIMMessage> Update(LCIMMessage oldMessage, LCIMMessage newMessage) {
+            if (oldMessage == null) {
+                throw new ArgumentNullException(nameof(oldMessage));
+            }
+            if (newMessage == null) {
+                throw new ArgumentNullException(nameof(newMessage));
+            }
+            PatchCommand patch = new PatchCommand();
+            PatchItem item = new PatchItem {
+                Cid = Id,
+                Mid = oldMessage.Id,
+                Timestamp = oldMessage.DeliveredTimestamp,
+                Recall = false,
+            };
+            if (newMessage.GetText() != null) {
+                item.Data = newMessage.GetText();
+            }
+            if (newMessage.GetBytes() != null) {
+                item.BinaryMsg = ByteString.CopyFrom(newMessage.GetBytes());
+            }
+            if (newMessage.MentionList != null) {
+                item.MentionPids.AddRange(newMessage.MentionList);
+            }
+            if (newMessage.MentionAll) {
+                item.MentionAll = newMessage.MentionAll;
+            }
+            patch.Patches.Add(item);
+            GenericCommand request = client.NewCommand(CommandType.Patch, OpType.Modify);
+            request.PatchMessage = patch;
+            GenericCommand response = await client.client.SendRequest(request);
             return null;
         }
 
         public async Task<LCIMConversation> UpdateMemberRole(string memberId, string role) {
+            if (string.IsNullOrEmpty(memberId)) {
+                throw new ArgumentNullException(nameof(memberId));
+            }
+            if (role != LCIMConversationMemberInfo.Manager && role != LCIMConversationMemberInfo.Member) {
+                throw new ArgumentException("role MUST be Manager Or Memebr");
+            }
+            ConvCommand conv = new ConvCommand {
+                Cid = Id,
+                TargetClientId = memberId,
+                Info = new ConvMemberInfo {
+                    Pid = memberId,
+                    Role = role
+                }
+            };
+            GenericCommand request = client.NewCommand(CommandType.Conv, OpType.MemberInfoUpdate);
+            request.ConvMessage = conv;
+            GenericCommand response = await client.client.SendRequest(request);
+            // TODO 同步 members
+
             return this;
         }
 
@@ -309,12 +381,65 @@ namespace LeanCloud.Realtime {
             if (string.IsNullOrEmpty(memberId)) {
                 throw new ArgumentNullException(nameof(memberId));
             }
-
+            List<LCIMConversationMemberInfo> members = await GetAllMemberInfo();
+            foreach (LCIMConversationMemberInfo member in members) {
+                if (member.MemberId == memberId) {
+                    return member;
+                }
+            }
             return null;
         }
 
         public async Task<List<LCIMConversationMemberInfo>> GetAllMemberInfo() {
-            return null;
+            string path = "classes/_ConversationMemberInfo";
+            Dictionary<string, object> headers = new Dictionary<string, object> {
+                { "X-LC-IM-Session-Token", client.SessionToken }
+            };
+            Dictionary<string, object> queryParams = new Dictionary<string, object> {
+                { "client_id", client.ClientId },
+                { "cid", Id }
+            };
+            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path,
+                headers: headers, queryParams: queryParams);
+            List<object> results = response["results"] as List<object>;
+            List<LCIMConversationMemberInfo> memberList = new List<LCIMConversationMemberInfo>();
+            foreach (Dictionary<string, object> item in results) {
+                LCIMConversationMemberInfo member = new LCIMConversationMemberInfo {
+                    ConversationId = item["cid"] as string,
+                    MemberId = item["clientId"] as string,
+                    Role = item["role"] as string
+                };
+                memberList.Add(member);
+            }
+            return memberList;
+        }
+
+        public async Task<LCIMPageResult> QueryMutedMembers(int limit = 50, string next = null) {
+            ConvCommand conv = new ConvCommand {
+                Cid = Id,
+                Limit = limit,
+                Next = next
+            };
+            GenericCommand request = client.NewCommand(CommandType.Conv, OpType.QueryShutup);
+            request.ConvMessage = conv;
+            GenericCommand response = await client.client.SendRequest(request);
+            return new LCIMPageResult {
+                Results = response.ConvMessage.M.ToList(),
+                Next = response.ConvMessage.Next
+            };
+        }
+
+        private LCIMPartiallySuccessResult NewPartiallySuccessResult(IEnumerable<string> succesfulIds, IEnumerable<ErrorCommand> errors) {
+            LCIMPartiallySuccessResult result = new LCIMPartiallySuccessResult {
+                SuccessfulClientIdList = succesfulIds.ToList()
+            };
+            if (errors != null) {
+                result.FailureList = new List<LCIMOperationFailure>();
+                foreach (ErrorCommand error in errors) {
+                    result.FailureList.Add(new LCIMOperationFailure(error));
+                }
+            }
+            return result;
         }
 
         internal void MergeFrom(ConvCommand conv) {
