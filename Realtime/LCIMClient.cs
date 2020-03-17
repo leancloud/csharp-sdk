@@ -25,23 +25,23 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 当前客户端被服务端强行下线
-        /// </summary>
-        public Action OnClosed {
-            get; set;
-        }
-
-        /// <summary>
         /// 客户端连接断开
         /// </summary>
-        public Action OnDisconnected {
+        public Action OnPaused {
             get; set;
         }
 
         /// <summary>
         /// 客户端连接恢复正常
         /// </summary>
-        public Action OnReconnect {
+        public Action OnResume {
+            get; set;
+        }
+
+        /// <summary>
+        /// 当前客户端被服务端强行下线
+        /// </summary>
+        public Action OnOffline {
             get; set;
         }
 
@@ -75,6 +75,10 @@ namespace LeanCloud.Realtime {
             conversationDict = new Dictionary<string, LCIMConversation>();
         }
 
+        /// <summary>
+        /// 连接
+        /// </summary>
+        /// <returns></returns>
         public async Task Open() {
             client = new LCWebSocketClient {
                 OnNotification = OnNotification
@@ -84,6 +88,14 @@ namespace LeanCloud.Realtime {
             GenericCommand command = NewCommand(CommandType.Session, OpType.Open);
             command.SessionMessage = new SessionCommand();
             await client.SendRequest(command);
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        /// <returns></returns>
+        public async Task Close() {
+            await client.Close();
         }
 
         public async Task<LCIMChatRoom> CreateChatRoom(
@@ -143,16 +155,48 @@ namespace LeanCloud.Realtime {
             return conversation;
         }
 
+        /// <summary>
+        /// 获取某个特定的对话
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<LCIMConversation> GetConversation(string id) {
-            return null;
+            if (string.IsNullOrEmpty(id)) {
+                throw new ArgumentNullException(nameof(id));
+            }
+            LCIMConversationQuery query = GetQuery();
+            query.WhereEqualTo("objectId", id)
+                .Limit(1);
+            List<LCIMConversation> results = await query.Find();
+            if (results == null || results.Count < 1) {
+                return null;
+            }
+            return results[0];
         }
 
-        public async Task<List<LCIMConversation>> GetConversationList(List<string> idList) {
-            return null;
+        /// <summary>
+        /// 获取某些特定的对话
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public async Task<List<LCIMConversation>> GetConversationList(IEnumerable<string> ids) {
+            if (ids == null || ids.Count() == 0) {
+                throw new ArgumentNullException(nameof(ids));
+            }
+            List<LCIMConversation> conversationList = new List<LCIMConversation>();
+            foreach (string id in ids) {
+                LCIMConversation conversation = await GetConversation(id);
+                conversationList.Add(conversation);
+            }
+            return conversationList;
         }
 
-        public async Task<LCIMConversationQuery> GetConversationQuery() {
-            return null;
+        /// <summary>
+        /// 获取对话查询对象
+        /// </summary>
+        /// <returns></returns>
+        public LCIMConversationQuery GetQuery() {
+            return new LCIMConversationQuery(this);
         }
 
         private void OnNotification(GenericCommand notification) {
@@ -166,12 +210,22 @@ namespace LeanCloud.Realtime {
         }
 
         private void OnConversationNotification(GenericCommand notification) {
+            ConvCommand conv = notification.ConvMessage;
             switch (notification.Op) {
                 case OpType.Joined:
-                    OnConversationJoined(notification.ConvMessage);
+                    OnConversationJoined(conv);
                     break;
                 case OpType.MembersJoined:
-                    OnConversationMembersJoined(notification.ConvMessage);
+                    OnConversationMembersJoined(conv);
+                    break;
+                case OpType.Left:
+                    OnConversationLeft(conv);
+                    break;
+                case OpType.MembersLeft:
+                    OnConversationMemberLeft(conv);
+                    break;
+                case OpType.Updated:
+                    OnPropertiesUpdated(conv);
                     break;
                 default:
                     break;
@@ -188,6 +242,26 @@ namespace LeanCloud.Realtime {
             LCIMConversation conversation = GetOrCreateConversation(conv.Cid);
             conversation.MergeFrom(conv);
             OnMembersJoined?.Invoke(conversation, conv.M.ToList(), conv.InitBy);
+        }
+
+        private void OnConversationLeft(ConvCommand conv) {
+            if (conversationDict.TryGetValue(conv.Cid, out LCIMConversation conversation)) {
+                OnKicked?.Invoke(conversation, conv.InitBy);
+            }
+        }
+
+        private void OnConversationMemberLeft(ConvCommand conv) {
+            if (conversationDict.TryGetValue(conv.Cid, out LCIMConversation conversation)) {
+                List<string> leftIdList = conv.M.ToList();
+                OnMembersLeft?.Invoke(conversation, leftIdList, conv.InitBy);
+            }
+        }
+
+        private void OnPropertiesUpdated(ConvCommand conv) {
+            if (conversationDict.TryGetValue(conv.Cid, out LCIMConversation conversation)) {
+                // TODO
+
+            }
         }
 
         private LCIMConversation GetOrCreateConversation(string convId) {

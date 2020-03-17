@@ -91,5 +91,34 @@ namespace Realtime.Test {
 
             await tcs.Task;
         }
+
+        [Test]
+        public async Task Query() {
+            LCIMClient client = new LCIMClient("hello123");
+            await client.Open();
+
+            LCIMConversationQuery query = new LCIMConversationQuery(client);
+            await query.Find();
+        }
+
+        [Test]
+        public async Task Save() {
+            string clientId = Guid.NewGuid().ToString();
+            LCIMClient client = new LCIMClient(clientId);
+
+            await client.Open();
+
+            string otherId = Guid.NewGuid().ToString();
+            LCIMConversation conversation = await client.CreateConversation(new List<string> { otherId });
+
+            conversation.Name = "leancloud";
+            conversation["k1"] = "v1";
+            conversation["k2"] = "v2";
+            await conversation.Save();
+
+            Assert.AreEqual(conversation.Name, "leancloud");
+            Assert.AreEqual(conversation["k1"], "v1");
+            Assert.AreEqual(conversation["k2"], "v2");
+        }
     }
 }

@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage.Internal.Query {
-    internal class LCCompositionalCondition : ILCQueryCondition {
-        internal const string And = "$and";
-        internal const string Or = "$or";
+    public class LCCompositionalCondition : ILCQueryCondition {
+        public const string And = "$and";
+        public const string Or = "$or";
 
         readonly string composition;
 
@@ -16,93 +16,93 @@ namespace LeanCloud.Storage.Internal.Query {
         HashSet<string> includes;
         HashSet<string> selectedKeys;
 
-        internal int Skip {
+        public int Skip {
             get; set;
         }
 
-        internal int Limit {
+        public int Limit {
             get; set;
         }
 
-        internal LCCompositionalCondition(string composition = And) {
+        public LCCompositionalCondition(string composition = And) {
             this.composition = composition;
             Skip = 0;
             Limit = 30;
         }
 
         // 查询条件
-        internal void WhereEqualTo(string key, object value) {
+        public void WhereEqualTo(string key, object value) {
             Add(new LCEqualCondition(key, value));
         }
 
-        internal void WhereNotEqualTo(string key, object value) {
+        public void WhereNotEqualTo(string key, object value) {
             AddOperation(key, "$ne", value);
         }
 
-        internal void WhereContainedIn(string key, IEnumerable values) {
+        public void WhereContainedIn(string key, IEnumerable values) {
             AddOperation(key, "$in", values);
         }
 
-        internal void WhereNotContainedIn(string key, IEnumerable values) {
+        public void WhereNotContainedIn(string key, IEnumerable values) {
             AddOperation(key, "nin", values);
         }
 
-        internal void WhereContainsAll(string key, IEnumerable values) {
+        public void WhereContainsAll(string key, IEnumerable values) {
             AddOperation(key, "$all", values);
         }
 
-        internal void WhereExists(string key) {
+        public void WhereExists(string key) {
             AddOperation(key, "$exists", true);
         }
 
-        internal void WhereDoesNotExist(string key) {
+        public void WhereDoesNotExist(string key) {
             AddOperation(key, "$exists", false);
         }
 
-        internal void WhereSizeEqualTo(string key, int size) {
+        public void WhereSizeEqualTo(string key, int size) {
             AddOperation(key, "$size", size);
         }
 
-        internal void WhereGreaterThan(string key, object value) {
+        public void WhereGreaterThan(string key, object value) {
             AddOperation(key, "$gt", value);
         }
 
-        internal void WhereGreaterThanOrEqualTo(string key, object value) {
+        public void WhereGreaterThanOrEqualTo(string key, object value) {
             AddOperation(key, "$gte", value);
         }
 
-        internal void WhereLessThan(string key, object value) {
+        public void WhereLessThan(string key, object value) {
             AddOperation(key, "$lt", value);
         }
 
-        internal void WhereLessThanOrEqualTo(string key, object value) {
+        public void WhereLessThanOrEqualTo(string key, object value) {
             AddOperation(key, "$lte", value);
         }
 
-        internal void WhereNear(string key, LCGeoPoint point) {
+        public void WhereNear(string key, LCGeoPoint point) {
             AddOperation(key, "$nearSphere", point);
         }
 
-        internal void WhereWithinGeoBox(string key, LCGeoPoint southwest, LCGeoPoint northeast) {
+        public void WhereWithinGeoBox(string key, LCGeoPoint southwest, LCGeoPoint northeast) {
             Dictionary<string, object> value = new Dictionary<string, object> {
                 { "$box", new List<object> { southwest, northeast } }
             };
             AddOperation(key, "$within", value);
         }
 
-        internal void WhereRelatedTo(LCObject parent, string key) {
+        public void WhereRelatedTo(LCObject parent, string key) {
             Add(new LCRelatedCondition(parent, key));
         }
 
-        internal void WhereStartsWith(string key, string prefix) {
+        public void WhereStartsWith(string key, string prefix) {
             AddOperation(key, "$regex", $"^{prefix}.*");
         }
 
-        internal void WhereEndsWith(string key, string suffix) {
+        public void WhereEndsWith(string key, string suffix) {
             AddOperation(key, "$regex", $".*{suffix}$");
         }
 
-        internal void WhereContains(string key, string subString) {
+        public void WhereContains(string key, string subString) {
             AddOperation(key, "$regex", $".*{subString}.*");
         }
 
@@ -111,7 +111,7 @@ namespace LeanCloud.Storage.Internal.Query {
             Add(cond);
         }
 
-        internal void Add(ILCQueryCondition cond) {
+        public void Add(ILCQueryCondition cond) {
             if (cond == null) {
                 return;
             }
@@ -123,25 +123,25 @@ namespace LeanCloud.Storage.Internal.Query {
         }
 
         // 筛选条件
-        internal void OrderBy(string key) {
+        public void OrderBy(string key) {
             if (orderByList == null) {
                 orderByList = new List<string>();
             }
             orderByList.Add(key);
         }
 
-        internal void OrderByDescending(string key) {
+        public void OrderByDescending(string key) {
             OrderBy($"-{key}");
         }
 
-        internal void Include(string key) {
+        public void Include(string key) {
             if (includes == null) {
                 includes = new HashSet<string>();
             }
             includes.Add(key);
         }
 
-        internal void Select(string key) {
+        public void Select(string key) {
             if (selectedKeys == null) {
                 selectedKeys = new HashSet<string>();
             }
@@ -165,7 +165,7 @@ namespace LeanCloud.Storage.Internal.Query {
             };
         }
 
-        internal Dictionary<string, object> BuildParams() {
+        public Dictionary<string, object> BuildParams() {
             Dictionary<string, object> dict = new Dictionary<string, object> {
                 { "skip", Skip },
                 { "limit", Limit }
@@ -185,7 +185,7 @@ namespace LeanCloud.Storage.Internal.Query {
             return dict;
         }
 
-        internal string BuildWhere() {
+        public string BuildWhere() {
             if (conditionList == null || conditionList.Count == 0) {
                 return null;
             }

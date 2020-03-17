@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage.Internal.Codec {
-    internal static class LCDecoder {
-        internal static object Decode(object obj) {
+    public static class LCDecoder {
+        public static object Decode(object obj) {
             if (obj is IDictionary dict) {
                 if (dict.Contains("__type")) {
                     string type = dict["__type"].ToString();
