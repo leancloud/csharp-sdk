@@ -89,7 +89,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <returns></returns>
         public async Task Open() {
-            connection = new LCWebSocketConnection {
+            connection = new LCWebSocketConnection(ClientId) {
                 OnNotification = OnNotification
             };
             await connection.Connect();

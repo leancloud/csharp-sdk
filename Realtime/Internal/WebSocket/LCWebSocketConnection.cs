@@ -21,11 +21,14 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
         private Dictionary<int, TaskCompletionSource<GenericCommand>> responses;
 
+        private string id;
+
         internal Action<GenericCommand> OnNotification {
             get; set;
         }
 
-        internal LCWebSocketConnection() {
+        internal LCWebSocketConnection(string id) {
+            this.id = id;
             responses = new Dictionary<int, TaskCompletionSource<GenericCommand>>();
         }
 
@@ -44,11 +47,11 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             TaskCompletionSource<GenericCommand> tcs = new TaskCompletionSource<GenericCommand>();
             request.I = RequestI;
             responses.Add(request.I, tcs);
-            LCLogger.Debug($"=> {request.Cmd}/{request.Op}: {request.ToString()}");
+            LCLogger.Debug($"{id} => {request.Cmd}/{request.Op}: {request.ToString()}");
             ArraySegment<byte> bytes = new ArraySegment<byte>(request.ToByteArray());
             try {
                 ws.SendAsync(bytes, WebSocketMessageType.Binary, true, default);
-            } catch (Exception e) {
+            } catch (Exception) {
                 // TODO 发送消息异常
 
             }
@@ -80,7 +83,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     } while (!result.EndOfMessage);
                     try {
                         GenericCommand command = GenericCommand.Parser.ParseFrom(data);
-                        LCLogger.Debug($"<= {command.Cmd}/{command.Op}: {command.ToString()}");
+                        LCLogger.Debug($"{id} <= {command.Cmd}/{command.Op}: {command.ToString()}");
                         HandleCommand(command);
                     } catch (Exception e) {
                         // 解析消息错误
