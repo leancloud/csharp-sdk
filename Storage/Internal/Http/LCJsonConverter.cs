@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace LeanCloud.Storage.Internal {
-    public class LeanCloudJsonConverter : JsonConverter {
+    public class LCJsonConverter : JsonConverter {
         public override bool CanConvert(Type objectType) {
             return objectType == typeof(object);
         }

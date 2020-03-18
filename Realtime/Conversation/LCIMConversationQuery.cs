@@ -245,7 +245,7 @@ namespace LeanCloud.Realtime {
                 conv.Where = JsonObjectMessage.Parser.ParseJson(where);
             }
             command.ConvMessage = conv;
-            GenericCommand response = await client.client.SendRequest(command);
+            GenericCommand response = await client.connection.SendRequest(command);
             JsonObjectMessage results = response.ConvMessage.Results;
             List<LCIMConversation> convList = null;
             // TODO 反序列化

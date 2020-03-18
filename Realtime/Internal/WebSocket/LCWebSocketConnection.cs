@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
-using Google.Protobuf;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage;
+using LeanCloud.Realtime.Internal.Router;
+using LeanCloud.Common;
+using Google.Protobuf;
 
-namespace LeanCloud.Realtime.Internal {
-    internal class LCConnection {
+namespace LeanCloud.Realtime.Internal.WebSocket {
+    internal class LCWebSocketConnection {
         private const int KEEP_ALIVE_INTERVAL = 10;
         private const int RECV_BUFFER_SIZE = 1024;
 
@@ -17,28 +19,40 @@ namespace LeanCloud.Realtime.Internal {
 
         private readonly object requestILock = new object();
 
-        private readonly Dictionary<int, TaskCompletionSource<GenericCommand>> responses;
+        private Dictionary<int, TaskCompletionSource<GenericCommand>> responses;
 
-        internal LCConnection() {
+        internal Action<GenericCommand> OnNotification {
+            get; set;
+        }
+
+        internal LCWebSocketConnection() {
             responses = new Dictionary<int, TaskCompletionSource<GenericCommand>>();
         }
 
         internal async Task Connect() {
+            LCRTMRouter rtmRouter = new LCRTMRouter();
+            string rtmServer = await rtmRouter.GetServer();
+
             ws = new ClientWebSocket();
             ws.Options.AddSubProtocol("lc.protobuf2.3");
             ws.Options.KeepAliveInterval = TimeSpan.FromSeconds(KEEP_ALIVE_INTERVAL);
-            await ws.ConnectAsync(new Uri(""), default);
+            await ws.ConnectAsync(new Uri(rtmServer), default);
+            _ = StartReceive();
         }
 
-        internal async Task SendRequest(GenericCommand request) {
+        internal Task<GenericCommand> SendRequest(GenericCommand request) {
+            TaskCompletionSource<GenericCommand> tcs = new TaskCompletionSource<GenericCommand>();
             request.I = RequestI;
+            responses.Add(request.I, tcs);
+            LCLogger.Debug($"=> {request.Cmd}/{request.Op}: {request.ToString()}");
             ArraySegment<byte> bytes = new ArraySegment<byte>(request.ToByteArray());
             try {
-                await ws.SendAsync(bytes, WebSocketMessageType.Binary, true, default);
+                ws.SendAsync(bytes, WebSocketMessageType.Binary, true, default);
             } catch (Exception e) {
                 // TODO 发送消息异常
 
             }
+            return tcs.Task;
         }
 
         internal async Task Close() {
@@ -66,15 +80,16 @@ namespace LeanCloud.Realtime.Internal {
                     } while (!result.EndOfMessage);
                     try {
                         GenericCommand command = GenericCommand.Parser.ParseFrom(data);
+                        LCLogger.Debug($"<= {command.Cmd}/{command.Op}: {command.ToString()}");
                         HandleCommand(command);
                     } catch (Exception e) {
                         // 解析消息错误
-
+                        LCLogger.Error(e.Message);
                     }
                 }
             } catch (Exception e) {
                 // TODO 连接断开
-
+                LCLogger.Error(e.Message);
             }
         }
 
@@ -96,7 +111,7 @@ namespace LeanCloud.Realtime.Internal {
                 }
             } else {
                 // 通知
-
+                OnNotification?.Invoke(command);
             }
         }
 

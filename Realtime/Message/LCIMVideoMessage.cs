@@ -1,4 +1,5 @@
-﻿using LeanCloud.Storage;
+﻿using System.Collections.Generic;
+using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
     public class LCIMVideoMessage : LCIMFileMessage {
@@ -11,8 +12,23 @@ namespace LeanCloud.Realtime {
             }
         }
 
+        internal LCIMVideoMessage() {
+        }
+
         public LCIMVideoMessage(LCFile file) : base(file) {
 
         }
+
+        internal override Dictionary<string, object> Encode() {
+            Dictionary<string, object> data = base.Encode();
+            Dictionary<string, object> fileData = data["_lcfile"] as Dictionary<string, object>;
+            Dictionary<string, object> metaData = fileData["metaData"] as Dictionary<string, object>;
+            metaData["width"] = File.MetaData["width"];
+            metaData["height"] = File.MetaData["height"];
+            metaData["duration"] = File.MetaData["duration"];
+            return data;
+        }
+
+        internal override int MessageType => VideoMessageType;
     }
 }

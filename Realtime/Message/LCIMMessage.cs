@@ -1,8 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using LeanCloud.Realtime.Protocol;
 
 namespace LeanCloud.Realtime {
     public abstract class LCIMMessage {
+        internal const int TextMessageType = -1;
+        internal const int ImageMessageType = -2;
+        internal const int AudioMessageType = -3;
+        internal const int VideoMessageType = -4;
+        internal const int LocationMessageType = -5;
+        internal const int FileMessageType = -6;
+            
         public string ConversationId {
             get; set;
         }
@@ -71,9 +79,11 @@ namespace LeanCloud.Realtime {
 
         }
 
-        internal abstract string Serialize();
-
-        internal abstract string GetText();
-        internal abstract byte[] GetBytes();
+        internal virtual void Decode(DirectCommand direct) {
+            ConversationId = direct.Cid;
+            Id = direct.Id;
+            FromClientId = direct.FromPeerId;
+            DeliveredTimestamp = direct.Timestamp;
+        }
     }
 }

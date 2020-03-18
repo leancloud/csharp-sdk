@@ -1,24 +1,33 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 
 namespace LeanCloud.Realtime {
     public class LCIMTextMessage : LCIMTypedMessage {
-        const int TextMessageType = -1;
-
         public string Text {
             get; set;
         }
 
-        public LCIMTextMessage(string text) : base(TextMessageType) {
+        internal LCIMTextMessage() {
+        }
+
+        public LCIMTextMessage(string text) : base() {
             Text = text;
         }
 
-        internal override string Serialize() {
-            return Text;
+        internal override Dictionary<string, object> Encode() {
+            Dictionary<string, object> data = base.Encode();
+            if (!string.IsNullOrEmpty(Text)) {
+                data["_lctext"] = Text;
+            }
+            return data;
         }
 
-        internal override string GetText() {
-            return Text;
+        protected override void DecodeMessageData(Dictionary<string, object> msgData) {
+            base.DecodeMessageData(msgData);
+            if (msgData.TryGetValue("_lctext", out object value)) {
+                Text = value as string;
+            }
         }
+
+        internal override int MessageType => TextMessageType;
     }
 }

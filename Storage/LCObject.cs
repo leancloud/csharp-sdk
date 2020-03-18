@@ -86,7 +86,7 @@ namespace LeanCloud.Storage {
             if (string.IsNullOrEmpty(objectId)) {
                 throw new ArgumentNullException(nameof(objectId));
             }
-            LCObject obj = new LCObject(className);
+            LCObject obj = Create(className);
             obj.data.ObjectId = objectId;
             obj.isNew = false;
             return obj;

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
@@ -21,7 +21,22 @@ namespace LeanCloud.Realtime {
             }
         }
 
-        public LCIMImageMessage(LCFile file) : base(file) {
+        internal LCIMImageMessage() : base() {
         }
+
+        public LCIMImageMessage(LCFile file) : base(file) {
+
+        }
+
+        internal override Dictionary<string, object> Encode() {
+            Dictionary<string, object> data = base.Encode();
+            Dictionary<string, object> fileData = data["_lcfile"] as Dictionary<string, object>;
+            Dictionary<string, object> metaData = fileData["metaData"] as Dictionary<string, object>;
+            metaData["width"] = File.MetaData["width"];
+            metaData["height"] = File.MetaData["height"];
+            return data;
+        }
+
+        internal override int MessageType => ImageMessageType;
     }
 }

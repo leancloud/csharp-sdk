@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
@@ -30,24 +29,48 @@ namespace LeanCloud.Realtime {
             }
         }
 
-        public LCIMFileMessage(LCFile file) : base(null) {
+        internal LCIMFileMessage() : base() {
+
+        }
+
+        public LCIMFileMessage(LCFile file) : base() {
             File = file;
         }
 
-        internal override string Serialize() {
+        internal override Dictionary<string, object> Encode() {
             if (File == null) {
                 throw new Exception("File MUST NOT be null before sent.");
             }
-            File.MetaData["name"] = File.Name;
-            File.MetaData["format"] = File.MimeType;
-            Dictionary<string, object> data = new Dictionary<string, object> {
+            Dictionary<string, object> fileData = new Dictionary<string, object> {
                 { "objId", File.ObjectId },
                 { "url", File.Url },
-                { "metaData", File.MetaData }
+                { "metaData", new Dictionary<string, object> {
+                    { "name", File.Name },
+                    { "format", File.MimeType },
+                    { "size", File.MetaData["size"] }
+                } }
             };
-            return JsonConvert.SerializeObject(new Dictionary<string, object> {
-                { "_lcfile", data }
-            });
+            Dictionary<string, object> data = base.Encode();
+            data["_lcfile"] = fileData;
+            return data;
         }
+
+        protected override void DecodeMessageData(Dictionary<string, object> msgData) {
+            base.DecodeMessageData(msgData);
+            Dictionary<string, object> fileData = msgData["_lcfile"] as Dictionary<string, object>;
+            string objectId = fileData["objId"] as string;
+            File = LCObject.CreateWithoutData(LCFile.CLASS_NAME, objectId) as LCFile;
+            if (fileData.TryGetValue("name", out object name)) {
+                File.Name = name as string;
+            }
+            if (fileData.TryGetValue("url", out object url)) {
+                File.Url = url as string;
+            }
+            if (fileData.TryGetValue("metaData", out object metaData)) {
+                File.MetaData = metaData as Dictionary<string, object>;
+            }
+        }
+
+        internal override int MessageType => FileMessageType;
     }
 }

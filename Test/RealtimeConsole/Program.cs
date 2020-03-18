@@ -36,26 +36,28 @@ namespace RealtimeConsole {
             };
             LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
 
-            LCIMClient client = new LCIMClient("hello123");
+            LCIMClient hello = new LCIMClient("hello");
 
-            try {
-                await client.Open();
-                Console.WriteLine($"End {Thread.CurrentThread.ManagedThreadId}");
-            } catch (Exception e) {
-                Console.WriteLine(e.Message);
-            }
+            await hello.Open();
 
-            client.OnInvited = (conv, initBy) => {
+            hello.OnInvited = (conv, initBy) => {
                 Console.WriteLine($"on invited: {initBy}");
             };
 
-            client.OnMembersJoined = (conv, memberList, initBy) => {
+            hello.OnMembersJoined = (conv, memberList, initBy) => {
                 Console.WriteLine($"on members joined: {initBy}");
             };
 
             List<string> memberIdList = new List<string> { "world", "code" };
             string name = Guid.NewGuid().ToString();
-            LCIMConversation conversation = await client.CreateConversation(memberIdList, name: name, unique: true);
+            LCIMConversation conversation = await hello.CreateConversation(memberIdList, name: name, unique: true);
+
+            LCIMClient world = new LCIMClient("world");
+            await world.Open();
+
+            world.OnMessageReceived = (conv, message) => {
+                Console.WriteLine(message);
+            };
 
             //LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
             //await conversation.Send(textMessage);
@@ -77,10 +79,13 @@ namespace RealtimeConsole {
             //LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
             //await conversation.Send(textMessage);
 
-            LCFile file = new LCFile("avatar", "../../../Storage.Test/assets/hello.png");
-            await file.Save();
-            LCIMImageMessage imageMessage = new LCIMImageMessage(file);
-            await conversation.Send(imageMessage);
+            //LCFile file = new LCFile("avatar", "../../../Storage.Test/assets/hello.png");
+            //file.MetaData["width"] = 225;
+            //file.MetaData["height"] = 225;
+            //file.MetaData["size"] = 1186;
+            //await file.Save();
+            //LCIMImageMessage imageMessage = new LCIMImageMessage(file);
+            //await conversation.Send(imageMessage);
 
             LCGeoPoint location = new LCGeoPoint(11, 12);
             LCIMLocationMessage locationMessage = new LCIMLocationMessage(location);

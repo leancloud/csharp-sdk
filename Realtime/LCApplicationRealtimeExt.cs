@@ -5,7 +5,6 @@ using LeanCloud.Realtime.Internal;
 
 namespace LeanCloud {
     public static class LCApplicationRealtimeExt {
-        static LCConnection connection;
 
         public static async Task<LCIMClient> CreateIMClient(this LCApplication application, string clientId) {
             if (string.IsNullOrEmpty(clientId)) {

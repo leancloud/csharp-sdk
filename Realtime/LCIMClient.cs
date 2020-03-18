@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace LeanCloud.Realtime {
     public class LCIMClient {
-        internal LCWebSocketClient client;
+        internal LCWebSocketConnection connection;
 
         private Dictionary<string, LCIMConversation> conversationDict;
 
@@ -75,6 +75,10 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
+        public Action<LCIMConversation, LCIMMessage> OnMessageReceived {
+            get; set;
+        }
+
         public LCIMClient(string clientId) {
             ClientId = clientId;
             conversationDict = new Dictionary<string, LCIMConversation>();
@@ -85,14 +89,14 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <returns></returns>
         public async Task Open() {
-            client = new LCWebSocketClient {
+            connection = new LCWebSocketConnection {
                 OnNotification = OnNotification
             };
-            await client.Connect();
+            await connection.Connect();
             // Open Session
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = new SessionCommand();
-            GenericCommand response = await client.SendRequest(request);
+            GenericCommand response = await connection.SendRequest(request);
             SessionToken = response.SessionMessage.St;
         }
 
@@ -101,7 +105,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <returns></returns>
         public async Task Close() {
-            await client.Close();
+            await connection.Close();
         }
 
         public async Task<LCIMChatRoom> CreateChatRoom(
@@ -154,7 +158,7 @@ namespace LeanCloud.Realtime {
                 };
             }
             command.ConvMessage = conv;
-            GenericCommand response = await client.SendRequest(command);
+            GenericCommand response = await connection.SendRequest(command);
             LCIMConversation conversation = GetOrCreateConversation(response.ConvMessage.Cid);
             conversation.MergeFrom(response.ConvMessage);
             conversationDict[conversation.Id] = conversation;
@@ -209,6 +213,9 @@ namespace LeanCloud.Realtime {
             switch (notification.Cmd) {
                 case CommandType.Conv:
                     OnConversationNotification(notification);
+                    break;
+                case CommandType.Direct:
+                    OnDirectNotification(notification.DirectMessage);
                     break;
                 default:
                     break;
@@ -268,6 +275,46 @@ namespace LeanCloud.Realtime {
                 // TODO
 
             }
+        }
+
+        private void OnDirectNotification(DirectCommand direct) {
+            LCIMMessage message = null;
+            if (direct.HasBinaryMsg) {
+                // 二进制消息
+                byte[] bytes = direct.BinaryMsg.ToByteArray();
+                message = new LCIMBinaryMessage(bytes);
+            } else {
+                // 文本消息
+                string messageData = direct.Msg;
+                Dictionary<string, object> msg = JsonConvert.DeserializeObject<Dictionary<string, object>>(messageData);
+                int msgType = (int)(long)msg["_lctype"];
+                switch (msgType) {
+                    case -1:
+                        message = new LCIMTextMessage();
+                        break;
+                    case -2:
+                        message = new LCIMImageMessage();
+                        break;
+                    case -3:
+                        message = new LCIMAudioMessage();
+                        break;
+                    case -4:
+                        message = new LCIMVideoMessage();
+                        break;
+                    case -5:
+                        message = new LCIMLocationMessage();
+                        break;
+                    case -6:
+                        message = new LCIMFileMessage();
+                        break;
+                    default:
+                        break;
+                }
+                message.Decode(direct);
+            }
+            // TODO 获取对话
+
+            OnMessageReceived?.Invoke(null, message);
         }
 
         private LCIMConversation GetOrCreateConversation(string convId) {
