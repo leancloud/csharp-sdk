@@ -12,7 +12,7 @@ namespace RealtimeConsole {
         public static void Main(string[] args) {
             Console.WriteLine("Hello World!");
 
-            Start();
+            _ = Start();
 
             Console.ReadKey(true);
         }
