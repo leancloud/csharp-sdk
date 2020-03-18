@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud;
 using LeanCloud.Common;
+using LeanCloud.Storage;
 using LeanCloud.Realtime;
 
 namespace RealtimeConsole {
@@ -56,13 +57,13 @@ namespace RealtimeConsole {
             string name = Guid.NewGuid().ToString();
             LCIMConversation conversation = await client.CreateConversation(memberIdList, name: name, unique: true);
 
-            LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
-            await conversation.Send(textMessage);
+            //LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
+            //await conversation.Send(textMessage);
 
-            await Task.Delay(3000);
+            //await Task.Delay(3000);
 
-            LCIMTextMessage newMessage = new LCIMTextMessage("hello, code");
-            await conversation.Update(textMessage, newMessage);
+            //LCIMTextMessage newMessage = new LCIMTextMessage("hello, code");
+            //await conversation.Update(textMessage, newMessage);
 
             //// 设置成员的角色
             //await conversation.UpdateMemberRole("world", LCIMConversationMemberInfo.Manager);
@@ -75,6 +76,15 @@ namespace RealtimeConsole {
 
             //LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
             //await conversation.Send(textMessage);
+
+            LCFile file = new LCFile("avatar", "../../../Storage.Test/assets/hello.png");
+            await file.Save();
+            LCIMImageMessage imageMessage = new LCIMImageMessage(file);
+            await conversation.Send(imageMessage);
+
+            LCGeoPoint location = new LCGeoPoint(11, 12);
+            LCIMLocationMessage locationMessage = new LCIMLocationMessage(location);
+            await conversation.Send(locationMessage);
         }
     }
 }
