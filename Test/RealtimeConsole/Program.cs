@@ -57,6 +57,11 @@ namespace RealtimeConsole {
 
             world.OnMessageReceived = (conv, message) => {
                 Console.WriteLine(message);
+                if (message is LCIMTypedMessage typedMessage) {
+                    Console.WriteLine(typedMessage["k1"]);
+                    Console.WriteLine(typedMessage["k2"]);
+                    Console.WriteLine(typedMessage["k3"]);
+                }
             };
 
             //LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
@@ -76,8 +81,11 @@ namespace RealtimeConsole {
             //    Console.WriteLine(member.MemberId);
             //}
 
-            //LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
-            //await conversation.Send(textMessage);
+            LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
+            textMessage["k1"] = 123;
+            textMessage["k2"] = "abc";
+            textMessage["k3"] = true;
+            await conversation.Send(textMessage);
 
             //LCFile file = new LCFile("avatar", "../../../Storage.Test/assets/hello.png");
             //file.MetaData["width"] = 225;
@@ -87,9 +95,9 @@ namespace RealtimeConsole {
             //LCIMImageMessage imageMessage = new LCIMImageMessage(file);
             //await conversation.Send(imageMessage);
 
-            LCGeoPoint location = new LCGeoPoint(11, 12);
-            LCIMLocationMessage locationMessage = new LCIMLocationMessage(location);
-            await conversation.Send(locationMessage);
+            //LCGeoPoint location = new LCGeoPoint(11, 12);
+            //LCIMLocationMessage locationMessage = new LCIMLocationMessage(location);
+            //await conversation.Send(locationMessage);
         }
     }
 }

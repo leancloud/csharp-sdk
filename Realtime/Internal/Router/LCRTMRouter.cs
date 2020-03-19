@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Net.Http;
-using LeanCloud;
+using LeanCloud.Storage.Internal;
 using LeanCloud.Common;
 using Newtonsoft.Json;
 
@@ -36,7 +36,7 @@ namespace LeanCloud.Realtime.Internal.Router {
             response.Dispose();
             LCHttpUtils.PrintResponse(response, resultString);
 
-            rtmServer = JsonConvert.DeserializeObject<LCRTMServer>(resultString);
+            rtmServer = JsonConvert.DeserializeObject<LCRTMServer>(resultString, new LCJsonConverter());
 
             return rtmServer;
         }

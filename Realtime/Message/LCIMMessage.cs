@@ -75,8 +75,7 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
-        public LCIMMessage() {
-
+        internal LCIMMessage() {
         }
 
         internal virtual void Decode(DirectCommand direct) {
