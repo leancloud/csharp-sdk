@@ -14,5 +14,7 @@ namespace LeanCloud.Realtime {
 
         public LCIMPartiallySuccessResult() {
         }
+
+        public bool IsSuccess => FailureList == null || FailureList.Count == 0;
     }
 }

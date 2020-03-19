@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using LeanCloud.Realtime.Internal.WebSocket;
 using LeanCloud.Realtime.Protocol;
-using Google.Protobuf;
+using LeanCloud.Storage.Internal.Codec;
 using Newtonsoft.Json;
 
 namespace LeanCloud.Realtime {
@@ -143,8 +143,6 @@ namespace LeanCloud.Realtime {
             ConvCommand conv = new ConvCommand {
                 Transient = transient,
                 Unique = unique,
-                TempConv = temporary,
-                TempConvTTL = temporaryTtl
             };
             if (members != null) {
                 conv.M.AddRange(members);
@@ -152,16 +150,35 @@ namespace LeanCloud.Realtime {
             if (!string.IsNullOrEmpty(name)) {
                 conv.N = name;
             }
+            if (temporary) {
+                conv.TempConv = temporary;
+                conv.TempConvTTL = temporaryTtl;
+            }
             if (properties != null) {
                 conv.Attr = new JsonObjectMessage {
-                    Data = JsonConvert.SerializeObject(properties)
+                    Data = JsonConvert.SerializeObject(LCEncoder.Encode(properties))
                 };
             }
             command.ConvMessage = conv;
             GenericCommand response = await connection.SendRequest(command);
-            LCIMConversation conversation = GetOrCreateConversation(response.ConvMessage.Cid);
+            string convId = response.ConvMessage.Cid;
+            if (!conversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
+                if (transient) {
+                    conversation = new LCIMChatRoom(this);
+                } else if (temporary) {
+                    conversation = new LCIMTemporaryConversation(this);
+                } else if (properties != null && properties.ContainsKey("system")) {
+                    conversation = new LCIMServiceConversation(this);
+                } else {
+                    conversation = new LCIMConversation(this);
+                }
+                conversationDict[convId] = conversation;
+            }
+            // 合并请求数据
+            conversation.Name = name;
+            conversation.MemberIdList = members?.ToList();
+            // 合并服务端推送的数据
             conversation.MergeFrom(response.ConvMessage);
-            conversationDict[conversation.Id] = conversation;
             return conversation;
         }
 

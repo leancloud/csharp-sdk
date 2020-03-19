@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Google.Protobuf;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage.Internal.Codec;
+using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
     public class LCIMConversation {
@@ -26,15 +27,15 @@ namespace LeanCloud.Realtime {
         }
 
         public List<string> MemberIdList {
-            get; set;
+            get; internal set;
         }
 
         public DateTime CreatedAt {
-            get; set;
+            get; internal set;
         }
 
         public DateTime UpdatedAt {
-            get; set;
+            get; internal set;
         }
 
         public DateTime LastMessageAt {
@@ -54,11 +55,7 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
-        public virtual bool IsSystem => false;
-
-        public virtual bool IsTransient => false;
-
-        private readonly LCIMClient client;
+        protected readonly LCIMClient client;
 
         private Dictionary<string, object> customProperties;
 
@@ -71,7 +68,7 @@ namespace LeanCloud.Realtime {
         /// 获取对话人数，或暂态对话的在线人数
         /// </summary>
         /// <returns></returns>
-        public async Task<int> Count() {
+        public async Task<int> GetMembersCount() {
             ConvCommand conv = new ConvCommand {
                 Cid = Id,
             };
@@ -110,7 +107,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="clientIds">用户 Id</param>
         /// <returns></returns>
-        public async Task<LCIMConversation> Add(IEnumerable<string> clientIds) {
+        public async Task<LCIMPartiallySuccessResult> Add(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
             }
@@ -124,10 +121,8 @@ namespace LeanCloud.Realtime {
             request.ConvMessage = conv;
             GenericCommand response = await client.connection.SendRequest(request);
             List<string> allowedIds = response.ConvMessage.AllowedPids.ToList();
-            List<ErrorCommand> failedIds = response.ConvMessage.FailedPids.ToList();
-            // TODO 转化为返回
-
-            return this;
+            List<ErrorCommand> errors = response.ConvMessage.FailedPids.ToList();
+            return NewPartiallySuccessResult(allowedIds, errors);
         }
 
         /// <summary>
@@ -135,7 +130,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="removeIds">用户 Id</param>
         /// <returns></returns>
-        public async Task<LCIMConversation> Remove(IEnumerable<string> removeIds) {
+        public async Task<LCIMPartiallySuccessResult> Remove(IEnumerable<string> removeIds) {
             if (removeIds == null || removeIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(removeIds));
             }
@@ -149,10 +144,8 @@ namespace LeanCloud.Realtime {
             request.ConvMessage = conv;
             GenericCommand response = await client.connection.SendRequest(request);
             List<string> allowedIds = response.ConvMessage.AllowedPids.ToList();
-            List<ErrorCommand> failedIds = response.ConvMessage.FailedPids.ToList();
-            // TODO 转化为返回
-
-            return this;
+            List<ErrorCommand> errors = response.ConvMessage.FailedPids.ToList();
+            return NewPartiallySuccessResult(allowedIds, errors);
         }
 
         /// <summary>
@@ -160,7 +153,12 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <returns></returns>
         public async Task<LCIMConversation> Join() {
-            return await Add(new string[] { client.ClientId });
+            LCIMPartiallySuccessResult result = await Add(new string[] { client.ClientId });
+            if (!result.IsSuccess) {
+                LCIMOperationFailure error = result.FailureList[0];
+                throw new LCException(error.Code, error.Reason);
+            }
+            return this;
         }
 
         /// <summary>
@@ -168,7 +166,12 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <returns></returns>
         public async Task<LCIMConversation> Quit() {
-            return await Remove(new string[] { client.ClientId });
+            LCIMPartiallySuccessResult result = await Remove(new string[] { client.ClientId });
+            if (!result.IsSuccess) {
+                LCIMOperationFailure error = result.FailureList[0];
+                throw new LCException(error.Code, error.Reason);
+            }
+            return this;
         }
 
         /// <summary>
@@ -208,7 +211,7 @@ namespace LeanCloud.Realtime {
             };
             GenericCommand request = client.NewCommand(CommandType.Conv, OpType.Mute);
             request.ConvMessage = conv;
-            GenericCommand response = await client.connection.SendRequest(request);
+            await client.connection.SendRequest(request);
             IsMute = true;
             return this;
         }
@@ -223,7 +226,7 @@ namespace LeanCloud.Realtime {
             };
             GenericCommand request = client.NewCommand(CommandType.Conv, OpType.Unmute);
             request.ConvMessage = conv;
-            GenericCommand response = await client.connection.SendRequest(request);
+            await client.connection.SendRequest(request);
             IsMute = false;
             return this;
         }

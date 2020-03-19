@@ -12,12 +12,6 @@ namespace RealtimeConsole {
         public static void Main(string[] args) {
             Console.WriteLine("Hello World!");
 
-            _ = Start();
-
-            Console.ReadKey(true);
-        }
-
-        static async Task Start() {
             LCLogger.LogDelegate += (level, info) => {
                 switch (level) {
                     case LCLogLevel.Debug:
@@ -36,6 +30,38 @@ namespace RealtimeConsole {
             };
             LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
 
+            //_ = Start();
+
+            //_ = ChatRoom();
+
+            _ = TemporaryConversation();
+
+            Console.ReadKey(true);
+        }
+
+        static async Task ChatRoom() {
+            LCIMClient hello = new LCIMClient("hello");
+            await hello.Open();
+
+            string name = Guid.NewGuid().ToString();
+            LCIMChatRoom chatRoom = await hello.CreateChatRoom(name);
+            Console.WriteLine(chatRoom.Name);
+        }
+
+        static async Task TemporaryConversation() {
+            string c1Id = Guid.NewGuid().ToString();
+            LCIMClient c1 = new LCIMClient(c1Id);
+            await c1.Open();
+
+            string c2Id = Guid.NewGuid().ToString();
+            LCIMClient c2 = new LCIMClient(c2Id);
+            await c2.Open();
+
+            LCIMTemporaryConversation temporaryConversation = await c1.CreateTemporaryConversation(new string[] { c2Id });
+            Console.WriteLine(temporaryConversation.Id);
+        }
+
+        static async Task Start() {
             LCIMClient hello = new LCIMClient("hello");
 
             await hello.Open();
