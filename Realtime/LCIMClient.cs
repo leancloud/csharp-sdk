@@ -79,8 +79,13 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
-        public LCIMClient(string clientId) {
+        internal ILCIMSignatureFactory SignatureFactory {
+            get; private set;
+        }
+
+        public LCIMClient(string clientId, ILCIMSignatureFactory signatureFactory = null) {
             ClientId = clientId;
+            SignatureFactory = signatureFactory;
             conversationDict = new Dictionary<string, LCIMConversation>();
         }
 
@@ -95,7 +100,14 @@ namespace LeanCloud.Realtime {
             await connection.Connect();
             // Open Session
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
-            request.SessionMessage = new SessionCommand();
+            SessionCommand session = new SessionCommand();
+            if (SignatureFactory != null) {
+                LCIMSignature signature = SignatureFactory.CreateConnectSignature(ClientId);
+                session.S = signature.Signature;
+                session.T = signature.Timestamp;
+                session.N = signature.Nonce;
+            }
+            request.SessionMessage = session;
             GenericCommand response = await connection.SendRequest(request);
             SessionToken = response.SessionMessage.St;
         }
@@ -139,7 +151,7 @@ namespace LeanCloud.Realtime {
             bool temporary = false,
             int temporaryTtl = 86400,
             Dictionary<string, object> properties = null) {
-            GenericCommand command = NewCommand(CommandType.Conv, OpType.Start);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Start);
             ConvCommand conv = new ConvCommand {
                 Transient = transient,
                 Unique = unique,
@@ -159,8 +171,14 @@ namespace LeanCloud.Realtime {
                     Data = JsonConvert.SerializeObject(LCEncoder.Encode(properties))
                 };
             }
-            command.ConvMessage = conv;
-            GenericCommand response = await connection.SendRequest(command);
+            if (SignatureFactory != null) {
+                LCIMSignature signature = SignatureFactory.CreateStartConversationSignature(ClientId, members);
+                conv.S = signature.Signature;
+                conv.T = signature.Timestamp;
+                conv.N = signature.Nonce;
+            }
+            request.ConvMessage = conv;
+            GenericCommand response = await connection.SendRequest(request);
             string convId = response.ConvMessage.Cid;
             if (!conversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
                 if (transient) {
@@ -334,7 +352,7 @@ namespace LeanCloud.Realtime {
             OnMessageReceived?.Invoke(null, message);
         }
 
-        private LCIMConversation GetOrCreateConversation(string convId) {
+        internal LCIMConversation GetOrCreateConversation(string convId) {
             if (!conversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
                 conversation = new LCIMConversation(this);
                 conversationDict.Add(convId, conversation);

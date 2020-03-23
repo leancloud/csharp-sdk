@@ -19,5 +19,6 @@
     <Folder Include="Conversation\" />
     <Folder Include="Message\" />
     <Folder Include="Internal\WebSocket\" />
+    <Folder Include="Signature\" />
   </ItemGroup>
 </Project>

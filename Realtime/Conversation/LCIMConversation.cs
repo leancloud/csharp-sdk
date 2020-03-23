@@ -115,8 +115,16 @@ namespace LeanCloud.Realtime {
                 Cid = Id,
             };
             conv.M.AddRange(clientIds);
-            // TODO 签名参数
-
+            // 签名参数
+            if (client.SignatureFactory != null) {
+                LCIMSignature signature = client.SignatureFactory.CreateConversationSignature(Id,
+                    client.ClientId,
+                    clientIds,
+                    LCIMSignatureAction.Invite);
+                conv.S = signature.Signature;
+                conv.T = signature.Timestamp;
+                conv.N = signature.Nonce;
+            }
             GenericCommand request = client.NewCommand(CommandType.Conv, OpType.Add);
             request.ConvMessage = conv;
             GenericCommand response = await client.connection.SendRequest(request);
@@ -138,8 +146,16 @@ namespace LeanCloud.Realtime {
                 Cid = Id,
             };
             conv.M.AddRange(removeIds);
-            // TODO 签名参数
-
+            // 签名参数
+            if (client.SignatureFactory != null) {
+                LCIMSignature signature = client.SignatureFactory.CreateConversationSignature(Id,
+                    client.ClientId,
+                    removeIds,
+                    LCIMSignatureAction.Kick);
+                conv.S = signature.Signature;
+                conv.T = signature.Timestamp;
+                conv.N = signature.Nonce;
+            }
             GenericCommand request = client.NewCommand(CommandType.Conv, OpType.Remove);
             request.ConvMessage = conv;
             GenericCommand response = await client.connection.SendRequest(request);
@@ -282,6 +298,15 @@ namespace LeanCloud.Realtime {
                 SrcCid = Id,
             };
             blacklist.ToPids.AddRange(clientIds);
+            if (client.SignatureFactory != null) {
+                LCIMSignature signature = client.SignatureFactory.CreateBlacklistSignature(Id,
+                    client.ClientId,
+                    clientIds,
+                    LCIMSignatureAction.ConversationBlockClients);
+                blacklist.S = signature.Signature;
+                blacklist.T = signature.Timestamp;
+                blacklist.N = signature.Nonce;
+            }
             GenericCommand request = client.NewCommand(CommandType.Blacklist, OpType.Block);
             request.BlacklistMessage = blacklist;
             GenericCommand response = await client.connection.SendRequest(request);
@@ -296,6 +321,15 @@ namespace LeanCloud.Realtime {
                 SrcCid = Id,
             };
             blacklist.ToPids.AddRange(clientIds);
+            if (client.SignatureFactory != null) {
+                LCIMSignature signature = client.SignatureFactory.CreateBlacklistSignature(Id,
+                    client.ClientId,
+                    clientIds,
+                    LCIMSignatureAction.ConversationUnblockClients);
+                blacklist.S = signature.Signature;
+                blacklist.T = signature.Timestamp;
+                blacklist.N = signature.Nonce;
+            }
             GenericCommand request = client.NewCommand(CommandType.Blacklist, OpType.Unblock);
             request.BlacklistMessage = blacklist;
             GenericCommand response = await client.connection.SendRequest(request);
@@ -466,6 +500,17 @@ namespace LeanCloud.Realtime {
             if (conv.M.Count > 0) {
                 MemberIdList = conv.M.ToList();
             }
+        }
+
+        internal void MergeFrom(Dictionary<string, object> conv) {
+            if (conv.TryGetValue("objectId", out object idObj)) {
+                Id = idObj as string;
+            }
+
+            if (conv.TryGetValue("unique", out object uniqueObj)) {
+                
+            }
+            
         }
     }
 }
