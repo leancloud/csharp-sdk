@@ -1,9 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using LeanCloud.Storage.Internal.Query;
 using LeanCloud.Realtime.Protocol;
+using LeanCloud.Storage.Internal;
+using LeanCloud.Storage.Internal.Codec;
+using Newtonsoft.Json;
 
 namespace LeanCloud.Realtime {
     public class LCIMConversationQuery {
@@ -242,14 +244,22 @@ namespace LeanCloud.Realtime {
             ConvCommand conv = new ConvCommand();
             string where = condition.BuildWhere();
             if (!string.IsNullOrEmpty(where)) {
-                conv.Where = JsonObjectMessage.Parser.ParseJson(where);
+                conv.Where = new JsonObjectMessage {
+                    Data = where
+                };
             }
             command.ConvMessage = conv;
             GenericCommand response = await client.connection.SendRequest(command);
             JsonObjectMessage results = response.ConvMessage.Results;
-            List<LCIMConversation> convList = null;
-            // TODO 反序列化
-
+            List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data, new LCJsonConverter());
+            List<LCIMConversation> convList = new List<LCIMConversation>(convs.Count);
+            foreach (object c in convs) {
+                Dictionary<string, object> cd = c as Dictionary<string, object>;
+                string convId = cd["objectId"] as string;
+                LCIMConversation conversation = client.GetOrCreateConversation(convId);
+                conversation.MergeFrom(cd);
+                convList.Add(conversation);
+            }
             return convList;
         }
     }

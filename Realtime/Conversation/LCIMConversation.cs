@@ -14,6 +14,10 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
+        public string UniqueId {
+            get; internal set;
+        }
+
         public string Name {
             get {
                 return this["name"] as string;
@@ -27,6 +31,10 @@ namespace LeanCloud.Realtime {
         }
 
         public List<string> MemberIdList {
+            get; internal set;
+        }
+
+        public List<string> MutedMemberIdList {
             get; internal set;
         }
 
@@ -506,11 +514,24 @@ namespace LeanCloud.Realtime {
             if (conv.TryGetValue("objectId", out object idObj)) {
                 Id = idObj as string;
             }
-
-            if (conv.TryGetValue("unique", out object uniqueObj)) {
-                
+            if (conv.TryGetValue("uniqueId", out object uniqueIdObj)) {
+                UniqueId = uniqueIdObj as string;
             }
-            
+            if (conv.TryGetValue("createdAt", out object createdAtObj)) {
+                CreatedAt = DateTime.Parse(createdAtObj.ToString());
+            }
+            if (conv.TryGetValue("updatedAt", out object updatedAtObj)) {
+                UpdatedAt = DateTime.Parse(updatedAtObj.ToString());
+            }
+            if (conv.TryGetValue("c", out object co)) {
+                CreatorId = co as string;
+            }
+            if (conv.TryGetValue("m", out object mo)) {
+                MemberIdList = mo as List<string>;
+            }
+            if (conv.TryGetValue("mu", out object muo)) {
+                MutedMemberIdList = muo as List<string>;
+            }
         }
     }
 }
