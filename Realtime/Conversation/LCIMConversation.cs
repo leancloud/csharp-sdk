@@ -38,6 +38,14 @@ namespace LeanCloud.Realtime {
             get; internal set;
         }
 
+        public int Unread {
+            get; internal set;
+        }
+
+        public LCIMMessage LastMessage {
+            get; internal set;
+        }
+
         public DateTime CreatedAt {
             get; internal set;
         }
@@ -84,6 +92,28 @@ namespace LeanCloud.Realtime {
             command.ConvMessage = conv;
             GenericCommand response = await client.connection.SendRequest(command);
             return response.ConvMessage.Count;
+        }
+
+        /// <summary>
+        /// 将该会话标记为已读
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task<LCIMConversation> Read() {
+            if (LastMessage == null) {
+                return this;
+            }
+            ReadCommand read = new ReadCommand();
+            ReadTuple tuple = new ReadTuple {
+                Cid = Id,
+                Mid = LastMessage.Id,
+                Timestamp = LastMessage.SentTimestamp
+            };
+            read.Convs.Add(tuple);
+            GenericCommand request = client.NewCommand(CommandType.Read, OpType.Open);
+            request.ReadMessage = read;
+            await client.connection.SendRequest(request);
+            return this;
         }
 
         public async Task<LCIMConversation> Save() {
@@ -477,6 +507,38 @@ namespace LeanCloud.Realtime {
                 Results = response.ConvMessage.M.ToList(),
                 Next = response.ConvMessage.Next
             };
+        }
+
+        public async Task<List<LCIMMessage>> QueryMessage(LCIMMessageQueryEndpoint start = null,
+            LCIMMessageQueryEndpoint end = null,
+            LCIMMessageQueryDirection direction = LCIMMessageQueryDirection.NewToOld,
+            int limit = 20,
+            int messageType = 0) {
+            LogsCommand logs = new LogsCommand {
+                Cid = Id
+            };
+            if (start != null) {
+                logs.T = start.SentTimestamp;
+                logs.Mid = start.MessageId;
+                logs.TIncluded = start.IsClosed;
+            }
+            if (end != null) {
+                logs.Tt = end.SentTimestamp;
+                logs.Tmid = end.MessageId;
+                logs.TtIncluded = end.IsClosed;
+            }
+            logs.Direction = direction == LCIMMessageQueryDirection.NewToOld ?
+                LogsCommand.Types.QueryDirection.Old : LogsCommand.Types.QueryDirection.New;
+            logs.Limit = limit;
+            if (messageType != 0) {
+                logs.Lctype = messageType;
+            }
+            GenericCommand request = client.NewCommand(CommandType.Logs, OpType.Open);
+            request.LogsMessage = logs;
+            GenericCommand response = await client.connection.SendRequest(request);
+            // TODO 反序列化聊天记录
+
+            return null;
         }
 
         private LCIMPartiallySuccessResult NewPartiallySuccessResult(IEnumerable<string> succesfulIds, IEnumerable<ErrorCommand> errors) {

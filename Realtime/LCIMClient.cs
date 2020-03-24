@@ -5,13 +5,14 @@ using System.Linq;
 using LeanCloud.Realtime.Internal.WebSocket;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage.Internal.Codec;
+using LeanCloud.Storage.Internal;
 using Newtonsoft.Json;
 
 namespace LeanCloud.Realtime {
     public class LCIMClient {
         internal LCWebSocketConnection connection;
 
-        private Dictionary<string, LCIMConversation> conversationDict;
+        internal Dictionary<string, LCIMConversation> conversationDict;
 
         public string ClientId {
             get; private set;
@@ -28,6 +29,11 @@ namespace LeanCloud.Realtime {
         public Action OnBlocked {
             get; set;
         }
+
+        /// <summary>
+        /// 当前客户端在某个对话中被禁言
+        /// </summary>
+        public Action<LCIMConversation, string> OnMuted;
 
         /// <summary>
         /// 客户端连接断开
@@ -51,6 +57,25 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
+        /// 客户端连接断开
+        /// </summary>
+        public Action OnDisconnect {
+            get; set;
+        }
+
+        /// <summary>
+        /// 用户在其他客户端登录，当前客户端被服务端强行下线
+        /// </summary>
+        public Action<string> OnConflict {
+            get; set;
+        }
+
+        /// <summary>
+        /// 该对话信息被更新
+        /// </summary>
+        public Action<LCIMConversation, Dictionary<string, object>, string> OnConversationInfoUpdated;
+
+        /// <summary>
         /// 当前用户被添加至某个对话
         /// </summary>
         public Action<LCIMConversation, string> OnInvited {
@@ -71,11 +96,71 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
+        /// <summary>
+        /// 有成员被从某个对话中移除
+        /// </summary>
         public Action<LCIMConversation, List<string>, string> OnMembersLeft {
             get; set;
         }
 
+        /// <summary>
+        /// 有成员被加入某个对话的黑名单
+        /// </summary>
+        public Action<LCIMConversation, List<string>, string> OnMembersBlocked {
+            get; set;
+        }
+
+        /// <summary>
+        /// 有成员被移出某个对话的黑名单
+        /// </summary>
+        public Action<LCIMConversation, List<string>, string> OnMembersUnblocked {
+            get; set;
+        }
+
+        /// <summary>
+        /// 有成员在某个对话中被禁言
+        /// </summary>
+        public Action<LCIMConversation, List<string>, string> OnMembersMuted {
+            get; set;
+        }
+
+        /// <summary>
+        /// 有成员被移出某个对话的黑名单
+        /// </summary>
+        public Action<LCIMConversation, List<string>, string> OnMembersUnmuted {
+            get; set;
+        }
+
+        /// <summary>
+        /// 有成员的对话信息被更新
+        /// </summary>
+        public Action<LCIMConversation, string, Dictionary<string, object>, string> OnMemberInfoUpdated;
+
+        /// <summary>
+        /// 当前用户收到消息
+        /// </summary>
         public Action<LCIMConversation, LCIMMessage> OnMessageReceived {
+            get; set;
+        }
+
+        /// <summary>
+        /// 消息被撤回
+        /// </summary>
+        public Action<LCIMConversation, LCIMMessage> OnMessageRecall {
+            get; set;
+        }
+
+        /// <summary>
+        /// 消息被修改
+        /// </summary>
+        public Action<LCIMConversation, LCIMMessage> OnMessageUpdate {
+            get; set;
+        }
+
+        /// <summary>
+        /// 未读消息数目更新
+        /// </summary>
+        public Action<List<LCIMConversation>> OnUnreadMessagesCountUpdated {
             get; set;
         }
 
@@ -117,6 +202,8 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <returns></returns>
         public async Task Close() {
+            GenericCommand request = NewCommand(CommandType.Session, OpType.Close);
+            await connection.SendRequest(request);
             await connection.Close();
         }
 
@@ -209,8 +296,8 @@ namespace LeanCloud.Realtime {
             if (string.IsNullOrEmpty(id)) {
                 throw new ArgumentNullException(nameof(id));
             }
-            LCIMConversationQuery query = GetQuery();
-            query.WhereEqualTo("objectId", id)
+            LCIMConversationQuery query = GetQuery()
+                .WhereEqualTo("objectId", id)
                 .Limit(1);
             List<LCIMConversation> results = await query.Find();
             if (results == null || results.Count < 1) {
@@ -244,17 +331,42 @@ namespace LeanCloud.Realtime {
             return new LCIMConversationQuery(this);
         }
 
-        private void OnNotification(GenericCommand notification) {
+        private async Task OnNotification(GenericCommand notification) {
             switch (notification.Cmd) {
+                case CommandType.Session:
+                    await OnSessionNotification(notification);
+                    break;
                 case CommandType.Conv:
                     OnConversationNotification(notification);
                     break;
                 case CommandType.Direct:
-                    OnDirectNotification(notification.DirectMessage);
+                    await OnDirectNotification(notification.DirectMessage);
+                    break;
+                case CommandType.Unread:
+                    await OnUnreadNotification(notification.UnreadMessage);
                     break;
                 default:
                     break;
             }
+        }
+
+        private async Task OnSessionNotification(GenericCommand notification) {
+            switch (notification.Op) {
+                case OpType.Closed:
+                    await OnSessionClosed(notification.SessionMessage);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private async Task OnSessionClosed(SessionCommand session) {
+            int code = session.Code;
+            string reason = session.Reason;
+            string detail = session.Detail;
+            await connection.Close();
+            // TODO 关闭连接后回调给开发者
+
         }
 
         private void OnConversationNotification(GenericCommand notification) {
@@ -273,21 +385,24 @@ namespace LeanCloud.Realtime {
                     OnConversationMemberLeft(conv);
                     break;
                 case OpType.Updated:
-                    OnPropertiesUpdated(conv);
+                    OnConversationPropertiesUpdated(conv);
+                    break;
+                case OpType.MemberInfoChanged:
+                    OnConversationMemberInfoChanged(conv);
                     break;
                 default:
                     break;
             }
         }
 
-        private void OnConversationJoined(ConvCommand conv) {
-            LCIMConversation conversation = GetOrCreateConversation(conv.Cid);
+        private async void OnConversationJoined(ConvCommand conv) {
+            LCIMConversation conversation = await GetOrQueryConversation(conv.Cid);
             conversation.MergeFrom(conv);
             OnInvited?.Invoke(conversation, conv.InitBy);
         }
 
-        private void OnConversationMembersJoined(ConvCommand conv) {
-            LCIMConversation conversation = GetOrCreateConversation(conv.Cid);
+        private async void OnConversationMembersJoined(ConvCommand conv) {
+            LCIMConversation conversation = await GetOrQueryConversation(conv.Cid);
             conversation.MergeFrom(conv);
             OnMembersJoined?.Invoke(conversation, conv.M.ToList(), conv.InitBy);
         }
@@ -305,14 +420,19 @@ namespace LeanCloud.Realtime {
             }
         }
 
-        private void OnPropertiesUpdated(ConvCommand conv) {
+        private void OnConversationPropertiesUpdated(ConvCommand conv) {
             if (conversationDict.TryGetValue(conv.Cid, out LCIMConversation conversation)) {
-                // TODO
+                // TODO 修改对话属性，并回调给开发者
 
+                OnConversationInfoUpdated?.Invoke(conversation, null, conv.InitBy);
             }
         }
 
-        private void OnDirectNotification(DirectCommand direct) {
+        private void OnConversationMemberInfoChanged(ConvCommand conv) {
+
+        }
+
+        private async Task OnDirectNotification(DirectCommand direct) {
             LCIMMessage message = null;
             if (direct.HasBinaryMsg) {
                 // 二进制消息
@@ -321,7 +441,8 @@ namespace LeanCloud.Realtime {
             } else {
                 // 文本消息
                 string messageData = direct.Msg;
-                Dictionary<string, object> msg = JsonConvert.DeserializeObject<Dictionary<string, object>>(messageData);
+                Dictionary<string, object> msg = JsonConvert.DeserializeObject<Dictionary<string, object>>(messageData,
+                    new LCJsonConverter());
                 int msgType = (int)(long)msg["_lctype"];
                 switch (msgType) {
                     case -1:
@@ -347,16 +468,30 @@ namespace LeanCloud.Realtime {
                 }
                 message.Decode(direct);
             }
-            // TODO 获取对话
-
-            OnMessageReceived?.Invoke(null, message);
+            // 获取对话
+            LCIMConversation conversation = await GetOrQueryConversation(direct.Cid);
+            OnMessageReceived?.Invoke(conversation, message);
         }
 
-        internal LCIMConversation GetOrCreateConversation(string convId) {
-            if (!conversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
-                conversation = new LCIMConversation(this);
-                conversationDict.Add(convId, conversation);
+        private async Task OnUnreadNotification(UnreadCommand unread) {
+            List<LCIMConversation> conversationList = new List<LCIMConversation>();
+            foreach (UnreadTuple conv in unread.Convs) {
+                // 查询对话
+                LCIMConversation conversation = await GetOrQueryConversation(conv.Cid);
+                conversation.Unread = conv.Unread;
+                // TODO 反序列化对话
+                // 最后一条消息
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(conv.Data);
+                conversationList.Add(conversation);
             }
+            OnUnreadMessagesCountUpdated?.Invoke(conversationList);
+        }
+
+        internal async Task<LCIMConversation> GetOrQueryConversation(string convId) {
+            if (conversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
+                return conversation;
+            }
+            conversation = await GetConversation(convId);
             return conversation;
         }
 

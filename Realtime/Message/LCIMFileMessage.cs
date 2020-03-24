@@ -46,10 +46,13 @@ namespace LeanCloud.Realtime {
                 { "url", File.Url },
                 { "metaData", new Dictionary<string, object> {
                     { "name", File.Name },
-                    { "format", File.MimeType },
-                    { "size", File.MetaData["size"] }
+                    { "format", File.MimeType }
                 } }
             };
+            if (File.MetaData.TryGetValue("size", out object size)) {
+                Dictionary<string, object> metaData = fileData["metaData"] as Dictionary<string, object>;
+                metaData["size"] = size;
+            }
             Dictionary<string, object> data = base.Encode();
             data["_lcfile"] = fileData;
             return data;

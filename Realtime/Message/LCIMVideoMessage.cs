@@ -23,9 +23,15 @@ namespace LeanCloud.Realtime {
             Dictionary<string, object> data = base.Encode();
             Dictionary<string, object> fileData = data["_lcfile"] as Dictionary<string, object>;
             Dictionary<string, object> metaData = fileData["metaData"] as Dictionary<string, object>;
-            metaData["width"] = File.MetaData["width"];
-            metaData["height"] = File.MetaData["height"];
-            metaData["duration"] = File.MetaData["duration"];
+            if (File.MetaData.TryGetValue("width", out object width)) {
+                metaData["width"] = width;
+            }
+            if (File.MetaData.TryGetValue("height", out object height)) {
+                metaData["height"] = height;
+            }
+            if (File.MetaData.TryGetValue("duration", out object duration)) {
+                metaData["duration"] = duration;
+            }
             return data;
         }
 

@@ -256,7 +256,10 @@ namespace LeanCloud.Realtime {
             foreach (object c in convs) {
                 Dictionary<string, object> cd = c as Dictionary<string, object>;
                 string convId = cd["objectId"] as string;
-                LCIMConversation conversation = client.GetOrCreateConversation(convId);
+                if (!client.conversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
+                    conversation = new LCIMConversation(client);
+                    client.conversationDict[convId] = conversation;
+                }
                 conversation.MergeFrom(cd);
                 convList.Add(conversation);
             }

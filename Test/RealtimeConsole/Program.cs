@@ -15,13 +15,13 @@ namespace RealtimeConsole {
             LCLogger.LogDelegate += (level, info) => {
                 switch (level) {
                     case LCLogLevel.Debug:
-                        Console.WriteLine($"[DEBUG] {info}");
+                        Console.WriteLine($"[DEBUG]\n{info}");
                         break;
                     case LCLogLevel.Warn:
-                        Console.WriteLine($"[WARNING] {info}");
+                        Console.WriteLine($"[WARNING]\n{info}");
                         break;
                     case LCLogLevel.Error:
-                        Console.WriteLine($"[ERROR] {info}");
+                        Console.WriteLine($"[ERROR]\n{info}");
                         break;
                     default:
                         Console.WriteLine(info);
@@ -30,22 +30,131 @@ namespace RealtimeConsole {
             };
             LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
 
-            //_ = Start();
+            //Conversation().Wait();
 
             //_ = ChatRoom();
 
-            _ = TemporaryConversation();
+            //_ = TemporaryConversation();
+
+            //_ = Signature();
+
+            //_ = Block();
+
+            //_ = Mute();
+
+            //QueryConversation().Wait();
+
+            //_ = OpenAndClose();
+
+            //SendMessage().Wait();
+
+            _ = Unread();
 
             Console.ReadKey(true);
         }
 
+        static async Task Run(int s) {
+            for (int i = 0; i < s; i++) {
+                Console.WriteLine($"run {i}");
+                await Task.Delay(1000);
+                Console.WriteLine($"run {i} done");
+            }
+        }
+
+        static async Task Unread() {
+            LCIMClient u2 = new LCIMClient("u2");
+            await u2.Open();
+            u2.OnUnreadMessagesCountUpdated = conversationList => {
+                foreach (LCIMConversation conv in conversationList) {
+                    Console.WriteLine($"unread: {conv.Unread}");
+                }
+            };
+        }
+
+        static async Task SendMessage() {
+            try {
+                LCIMClient u1 = new LCIMClient("u1");
+                await u1.Open();
+                LCIMConversation conversation = await u1.CreateConversation(new string[] { "u2" });
+
+                LCIMTextMessage textMessage = new LCIMTextMessage("hello, text message");
+                await conversation.Send(textMessage);
+
+                //LCFile file = new LCFile("avatar", "../../../Storage.Test/assets/hello.png");
+                //await file.Save();
+                //LCIMImageMessage imageMessage = new LCIMImageMessage(file);
+                //await conversation.Send(imageMessage);
+            } catch (Exception e) {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
+        static async Task OpenAndClose() {
+            LCIMClient o1 = new LCIMClient("o1");
+            await o1.Open();
+            await o1.Close();
+        }
+
+        static async Task QueryConversation() {
+            LCIMClient m2 = new LCIMClient("m2");
+            await m2.Open();
+
+            LCIMConversation conv = (await m2.GetQuery()
+                .WhereEqualTo("objectId", "5e7863bf90aef5aa849be75a")
+                .Find())[0];
+            LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
+            await conv.Send(textMessage);
+        }
+
+        static async Task Mute() {
+            LCIMClient m1 = new LCIMClient("m0");
+            await m1.Open();
+
+            LCIMClient m2 = new LCIMClient("m2");
+            await m2.Open();
+
+            LCIMConversation conversation = await m1.CreateConversation(new string[] { "m2", "m3" });
+            await conversation.MuteMembers(new string[] { "m2" });
+
+            LCIMConversation conv = (await m2.GetQuery()
+                .WhereEqualTo("objectId", conversation.Id)
+                .Find())[0];
+            LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
+            await conv.Send(textMessage);
+        }
+
+        static async Task Block() {
+            LocalSignatureFactory signatureFactory = new LocalSignatureFactory();
+            LCIMClient c1 = new LCIMClient("c0");
+            await c1.Open();
+            LCIMConversation conversation = await c1.CreateConversation(new string[] { "c2", "c3", "c4", "c5" });
+            LCIMTextMessage textMessage = new LCIMTextMessage("hello");
+            await conversation.Send(textMessage);
+            await conversation.BlockMembers(new string[] { "c5" });
+
+            LCIMClient c5 = new LCIMClient("c5");
+            await c5.Open();
+            await conversation.Add(new string[] { "c5" });
+        }
+
+        static async Task Signature() {
+            LocalSignatureFactory signatureFactory = new LocalSignatureFactory();
+            LCIMClient hello = new LCIMClient("hello111", signatureFactory);
+            await hello.Open();
+        }
+
         static async Task ChatRoom() {
-            LCIMClient hello = new LCIMClient("hello");
+            LocalSignatureFactory signatureFactory = new LocalSignatureFactory();
+            LCIMClient hello = new LCIMClient("hello", signatureFactory);
             await hello.Open();
 
             string name = Guid.NewGuid().ToString();
             LCIMChatRoom chatRoom = await hello.CreateChatRoom(name);
             Console.WriteLine(chatRoom.Name);
+
+            await chatRoom.Add(new string[] { "world" });
+
+            await chatRoom.Remove(new string[] { "world" });
         }
 
         static async Task TemporaryConversation() {
@@ -61,7 +170,7 @@ namespace RealtimeConsole {
             Console.WriteLine(temporaryConversation.Id);
         }
 
-        static async Task Start() {
+        static async Task Conversation() {
             LCIMClient hello = new LCIMClient("hello");
 
             await hello.Open();

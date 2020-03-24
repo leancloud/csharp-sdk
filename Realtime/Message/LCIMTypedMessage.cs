@@ -52,5 +52,34 @@ namespace LeanCloud.Realtime {
                 customProperties = LCDecoder.Decode(attrObj) as Dictionary<string, object>;
             }
         }
+
+        internal static LCIMTypedMessage Deserialize(Dictionary<string, object> messageData) {
+            LCIMTypedMessage message = null;
+            int msgType = (int)(long)messageData["_lctype"];
+            switch (msgType) {
+                case -1:
+                    message = new LCIMTextMessage();
+                    break;
+                case -2:
+                    message = new LCIMImageMessage();
+                    break;
+                case -3:
+                    message = new LCIMAudioMessage();
+                    break;
+                case -4:
+                    message = new LCIMVideoMessage();
+                    break;
+                case -5:
+                    message = new LCIMLocationMessage();
+                    break;
+                case -6:
+                    message = new LCIMFileMessage();
+                    break;
+                default:
+                    break;
+            }
+            //message.Decode(direct);
+            return message;
+        }
     }
 }
