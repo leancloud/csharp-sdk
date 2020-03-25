@@ -114,7 +114,7 @@ namespace Realtime.Test {
             conversation.Name = "leancloud";
             conversation["k1"] = "v1";
             conversation["k2"] = "v2";
-            await conversation.Save();
+            await conversation.UpdateInfo();
 
             Assert.AreEqual(conversation.Name, "leancloud");
             Assert.AreEqual(conversation["k1"], "v1");

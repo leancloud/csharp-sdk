@@ -11,7 +11,8 @@ using Google.Protobuf;
 namespace LeanCloud.Realtime.Internal.WebSocket {
     internal class LCWebSocketConnection {
         private const int KEEP_ALIVE_INTERVAL = 10;
-        private const int RECV_BUFFER_SIZE = 1024;
+        // .net standard 2.0 好像在拼合 Frame 时有 bug，所以将这个值调整大一些
+        private const int RECV_BUFFER_SIZE = 1024 * 5;
 
         private ClientWebSocket ws;
 
@@ -19,22 +20,31 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
         private readonly object requestILock = new object();
 
-        private Dictionary<int, TaskCompletionSource<GenericCommand>> responses;
+        private readonly Dictionary<int, TaskCompletionSource<GenericCommand>> responses;
 
-        private string id;
+        private readonly string id;
+
+        internal LCRTMRouter Router {
+            get; private set;
+        }
 
         internal Func<GenericCommand, Task> OnNotification {
             get; set;
         }
 
+        internal Action<int, string> OnClose {
+            get; set;
+        }
+
         internal LCWebSocketConnection(string id) {
+            Router = new LCRTMRouter();
+
             this.id = id;
             responses = new Dictionary<int, TaskCompletionSource<GenericCommand>>();
         }
 
         internal async Task Connect() {
-            LCRTMRouter rtmRouter = new LCRTMRouter();
-            string rtmServer = await rtmRouter.GetServer();
+            string rtmServer = await Router.GetServer();
 
             ws = new ClientWebSocket();
             ws.Options.AddSubProtocol("lc.protobuf2.3");
@@ -71,8 +81,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     do {
                         result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), default);
                         if (result.MessageType == WebSocketMessageType.Close) {
-                            // TODO 区分主动断开和被动断开
-
+                            OnClose?.Invoke(-1, null);
                             return;
                         }
                         // 拼合 WebSocket Frame
@@ -91,8 +100,9 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     }
                 }
             } catch (Exception e) {
-                // TODO 连接断开
+                // 连接断开
                 LCLogger.Error(e.Message);
+                await ws.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "read error", default);
             }
         }
 

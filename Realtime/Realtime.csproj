@@ -20,5 +20,6 @@
     <Folder Include="Message\" />
     <Folder Include="Internal\WebSocket\" />
     <Folder Include="Signature\" />
+    <Folder Include="Internal\Controller\" />
   </ItemGroup>
 </Project>

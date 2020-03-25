@@ -19,6 +19,10 @@ namespace LeanCloud.Realtime.Internal.Router {
             return rtmServer.Server;
         }
 
+        internal void Reset() {
+            rtmServer = null;
+        }
+
         async Task<LCRTMServer> Fetch() {
             string server = await LCApplication.AppRouter.GetRealtimeServer();
             string url = $"{server}/v1/route?appId={LCApplication.AppId}&secure=1";

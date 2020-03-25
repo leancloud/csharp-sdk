@@ -234,12 +234,16 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
+        /// <summary>
+        /// 查找
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<LCIMConversation>> Find() {
             GenericCommand command = new GenericCommand {
                 Cmd = CommandType.Conv,
                 Op = OpType.Query,
                 AppId = LCApplication.AppId,
-                PeerId = client.ClientId,
+                PeerId = client.Id,
             };
             ConvCommand conv = new ConvCommand();
             string where = condition.BuildWhere();
@@ -249,16 +253,16 @@ namespace LeanCloud.Realtime {
                 };
             }
             command.ConvMessage = conv;
-            GenericCommand response = await client.connection.SendRequest(command);
+            GenericCommand response = await client.Connection.SendRequest(command);
             JsonObjectMessage results = response.ConvMessage.Results;
             List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data, new LCJsonConverter());
             List<LCIMConversation> convList = new List<LCIMConversation>(convs.Count);
             foreach (object c in convs) {
                 Dictionary<string, object> cd = c as Dictionary<string, object>;
                 string convId = cd["objectId"] as string;
-                if (!client.conversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
+                if (!client.ConversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
                     conversation = new LCIMConversation(client);
-                    client.conversationDict[convId] = conversation;
+                    client.ConversationDict[convId] = conversation;
                 }
                 conversation.MergeFrom(cd);
                 convList.Add(conversation);

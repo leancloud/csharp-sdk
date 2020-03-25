@@ -46,9 +46,9 @@ namespace RealtimeConsole {
 
             //_ = OpenAndClose();
 
-            //SendMessage().Wait();
+            SendMessage().Wait();
 
-            _ = Unread();
+            //Unread().Wait();
 
             Console.ReadKey(true);
         }
@@ -134,7 +134,7 @@ namespace RealtimeConsole {
 
             LCIMClient c5 = new LCIMClient("c5");
             await c5.Open();
-            await conversation.Add(new string[] { "c5" });
+            await conversation.AddMembers(new string[] { "c5" });
         }
 
         static async Task Signature() {
@@ -152,9 +152,9 @@ namespace RealtimeConsole {
             LCIMChatRoom chatRoom = await hello.CreateChatRoom(name);
             Console.WriteLine(chatRoom.Name);
 
-            await chatRoom.Add(new string[] { "world" });
+            await chatRoom.AddMembers(new string[] { "world" });
 
-            await chatRoom.Remove(new string[] { "world" });
+            await chatRoom.RemoveMembers(new string[] { "world" });
         }
 
         static async Task TemporaryConversation() {
@@ -190,7 +190,7 @@ namespace RealtimeConsole {
             LCIMClient world = new LCIMClient("world");
             await world.Open();
 
-            world.OnMessageReceived = (conv, message) => {
+            world.OnMessage = (conv, message) => {
                 Console.WriteLine(message);
                 if (message is LCIMTypedMessage typedMessage) {
                     Console.WriteLine(typedMessage["k1"]);

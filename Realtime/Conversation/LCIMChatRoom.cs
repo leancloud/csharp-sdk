@@ -17,9 +17,9 @@ namespace LeanCloud.Realtime {
                 Cid = Id,
                 Limit = limit
             };
-            GenericCommand request = client.NewCommand(CommandType.Conv, OpType.Members);
+            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Members);
             request.ConvMessage = conv;
-            GenericCommand response = await client.connection.SendRequest(request);
+            GenericCommand response = await Client.Connection.SendRequest(request);
             List<string> memberList = response.ConvMessage.M.ToList();
             return memberList;
         }
