@@ -82,7 +82,7 @@ namespace LeanCloud.Realtime {
             ConversationId = direct.Cid;
             Id = direct.Id;
             FromClientId = direct.FromPeerId;
-            DeliveredTimestamp = direct.Timestamp;
+            SentTimestamp = direct.Timestamp;
         }
     }
 }

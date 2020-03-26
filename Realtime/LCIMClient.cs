@@ -300,7 +300,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 获取某个特定的对话
+        /// 根据 id 获取对话
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -308,10 +308,17 @@ namespace LeanCloud.Realtime {
             if (string.IsNullOrEmpty(id)) {
                 throw new ArgumentNullException(nameof(id));
             }
+            if (LCIMConversation.IsTemporayConversation(id)) {
+                List<LCIMTemporaryConversation> temporaryConversationList = await ConversationController.GetTemporaryConversations(new string[] { id });
+                if (temporaryConversationList == null || temporaryConversationList.Count < 1) {
+                    return null;
+                }
+                return temporaryConversationList[0];
+            }
             LCIMConversationQuery query = GetQuery()
                 .WhereEqualTo("objectId", id)
                 .Limit(1);
-            List<LCIMConversation> results = await query.Find();
+            List<LCIMConversation> results = await ConversationController.Find(query);
             if (results == null || results.Count < 1) {
                 return null;
             }
@@ -327,12 +334,20 @@ namespace LeanCloud.Realtime {
             if (ids == null || ids.Count() == 0) {
                 throw new ArgumentNullException(nameof(ids));
             }
-            List<LCIMConversation> conversationList = new List<LCIMConversation>();
-            foreach (string id in ids) {
-                LCIMConversation conversation = await GetConversation(id);
-                conversationList.Add(conversation);
-            }
-            return conversationList;
+            // 区分临时对话
+            IEnumerable<string> tempConvIds = ids.Where(item => {
+                return LCIMConversation.IsTemporayConversation(item);
+            });
+            IEnumerable<string> convIds = ids.Where(item => {
+                return !tempConvIds.Contains(item);
+            });
+            List<LCIMTemporaryConversation> temporaryConversations = await ConversationController.GetTemporaryConversations(tempConvIds);
+            LCIMConversationQuery query = GetQuery()
+                .WhereContainedIn("objectId", convIds)
+                .Limit(999);
+            List<LCIMConversation> conversations = await ConversationController.Find(query);
+            conversations.AddRange(temporaryConversations);
+            return conversations;
         }
 
         /// <summary>
@@ -342,8 +357,6 @@ namespace LeanCloud.Realtime {
         public LCIMConversationQuery GetQuery() {
             return new LCIMConversationQuery(this);
         }
-
-        #region 通知处理
 
         private async Task OnNotification(GenericCommand notification) {
             switch (notification.Cmd) {
@@ -366,8 +379,6 @@ namespace LeanCloud.Realtime {
                     break;
             }
         }
-
-        #endregion
 
         internal async Task<LCIMConversation> GetOrQueryConversation(string convId) {
             if (ConversationDict.TryGetValue(convId, out LCIMConversation conversation)) {

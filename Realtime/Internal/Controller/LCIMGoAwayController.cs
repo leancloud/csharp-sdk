@@ -8,7 +8,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         }
 
         internal override async Task OnNotification(GenericCommand notification) {
-            // TODO 清空缓存，断开连接，等待重新连接
+            // 清空缓存，断开连接，等待重新连接
             Connection.Router.Reset();
             await Connection.Close();
         }

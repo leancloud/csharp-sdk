@@ -12,7 +12,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         }
 
-        internal async Task<LCIMMessage> Send(string convId, LCIMMessage message) {
+        internal async Task<LCIMMessage> Send(string convId,
+            LCIMMessage message) {
             DirectCommand direct = new DirectCommand {
                 FromPeerId = Client.Id,
                 Cid = convId,
@@ -34,7 +35,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return message;
         }
 
-        internal async Task RecallMessage(string convId, LCIMMessage message) {
+        internal async Task RecallMessage(string convId,
+            LCIMMessage message) {
             PatchCommand patch = new PatchCommand();
             PatchItem item = new PatchItem {
                 Cid = convId,
@@ -47,7 +49,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Client.Connection.SendRequest(request);
         }
 
-        internal async Task UpdateMessage(string convId, LCIMMessage oldMessage, LCIMMessage newMessage) {
+        internal async Task UpdateMessage(string convId,
+            LCIMMessage oldMessage,
+            LCIMMessage newMessage) {
             PatchCommand patch = new PatchCommand();
             PatchItem item = new PatchItem {
                 Cid = convId,
@@ -115,9 +119,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
             } else {
                 // 文本消息
                 string messageData = direct.Msg;
-                Dictionary<string, object> msg = JsonConvert.DeserializeObject<Dictionary<string, object>>(messageData,
+                Dictionary<string, object> msgData = JsonConvert.DeserializeObject<Dictionary<string, object>>(messageData,
                     new LCJsonConverter());
-                int msgType = (int)(long)msg["_lctype"];
+                int msgType = (int)msgData["_lctype"];
                 switch (msgType) {
                     case -1:
                         message = new LCIMTextMessage();

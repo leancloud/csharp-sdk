@@ -55,7 +55,7 @@ namespace LeanCloud.Realtime {
 
         internal static LCIMTypedMessage Deserialize(Dictionary<string, object> messageData) {
             LCIMTypedMessage message = null;
-            int msgType = (int)(long)messageData["_lctype"];
+            int msgType = (int)messageData["_lctype"];
             switch (msgType) {
                 case -1:
                     message = new LCIMTextMessage();

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage.Internal;
 using LeanCloud.Storage.Internal.Codec;
+using LeanCloud.Common;
 using Google.Protobuf;
 
 namespace LeanCloud.Realtime.Internal.Controller {
@@ -14,17 +15,6 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         }
 
-        /// <summary>
-        /// 创建对话
-        /// </summary>
-        /// <param name="members"></param>
-        /// <param name="name"></param>
-        /// <param name="transient"></param>
-        /// <param name="unique"></param>
-        /// <param name="temporary"></param>
-        /// <param name="temporaryTtl"></param>
-        /// <param name="properties"></param>
-        /// <returns></returns>
         internal async Task<LCIMConversation> CreateConv(
             IEnumerable<string> members = null,
             string name = null,
@@ -92,7 +82,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return response.ConvMessage.Count;
         }
 
-        internal async Task Read(string convId, LCIMMessage message) {
+        internal async Task Read(string convId,
+            LCIMMessage message) {
             ReadCommand read = new ReadCommand();
             ReadTuple tuple = new ReadTuple {
                 Cid = convId,
@@ -105,7 +96,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Client.Connection.SendRequest(request);
         }
 
-        internal async Task<Dictionary<string, object>> UpdateInfo(string convId, Dictionary<string, object> attributes) {
+        internal async Task<Dictionary<string, object>> UpdateInfo(string convId,
+            Dictionary<string, object> attributes) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId,
             };
@@ -124,7 +116,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return null;
         }
 
-        internal async Task<LCIMPartiallySuccessResult> AddMembers(string convId, IEnumerable<string> clientIds) {
+        internal async Task<LCIMPartiallySuccessResult> AddMembers(string convId,
+            IEnumerable<string> clientIds) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId,
             };
@@ -147,7 +140,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(allowedIds, errors);
         }
 
-        internal async Task<LCIMPartiallySuccessResult> RemoveMembers(string convId, IEnumerable<string> removeIds) {
+        internal async Task<LCIMPartiallySuccessResult> RemoveMembers(string convId,
+            IEnumerable<string> removeIds) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId,
             };
@@ -188,7 +182,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Client.Connection.SendRequest(request);
         }
 
-        internal async Task<LCIMPartiallySuccessResult> MuteMembers(string convId, IEnumerable<string> clientIds) {
+        internal async Task<LCIMPartiallySuccessResult> MuteMembers(string convId,
+            IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
             }
@@ -202,7 +197,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.ConvMessage.AllowedPids, response.ConvMessage.FailedPids);
         }
 
-        internal async Task<LCIMPartiallySuccessResult> UnmuteMembers(string convId, IEnumerable<string> clientIds) {
+        internal async Task<LCIMPartiallySuccessResult> UnmuteMembers(string convId,
+            IEnumerable<string> clientIds) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId
             };
@@ -213,7 +209,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.ConvMessage.AllowedPids, response.ConvMessage.FailedPids);
         }
 
-        internal async Task<LCIMPartiallySuccessResult> BlockMembers(string convId, IEnumerable<string> clientIds) {
+        internal async Task<LCIMPartiallySuccessResult> BlockMembers(string convId,
+            IEnumerable<string> clientIds) {
             BlacklistCommand blacklist = new BlacklistCommand {
                 SrcCid = convId,
             };
@@ -233,7 +230,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
         }
 
-        internal async Task<LCIMPartiallySuccessResult> UnblockMembers(string convId, IEnumerable<string> clientIds) {
+        internal async Task<LCIMPartiallySuccessResult> UnblockMembers(string convId,
+            IEnumerable<string> clientIds) {
             BlacklistCommand blacklist = new BlacklistCommand {
                 SrcCid = convId,
             };
@@ -253,7 +251,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
         }
 
-        internal async Task UpdateMemberRole(string convId, string memberId, string role) {
+        internal async Task UpdateMemberRole(string convId,
+            string memberId,
+            string role) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId,
                 TargetClientId = memberId,
@@ -292,7 +292,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return memberList;
         }
 
-        internal async Task<LCIMPageResult> QueryMutedMembers(string convId, int limit = 10, string next = null) {
+        internal async Task<LCIMPageResult> QueryMutedMembers(string convId,
+            int limit = 10,
+            string next = null) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId,
                 Limit = limit,
@@ -307,7 +309,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
             };
         }
 
-        internal async Task<LCIMPageResult> QueryBlockedMembers(string convId, int limit = 10, string next = null) {
+        internal async Task<LCIMPageResult> QueryBlockedMembers(string convId,
+            int limit = 10,
+            string next = null) {
             BlacklistCommand black = new BlacklistCommand {
                 SrcCid = convId,
                 Limit = limit,
@@ -322,7 +326,61 @@ namespace LeanCloud.Realtime.Internal.Controller {
             };
         }
 
-        private LCIMPartiallySuccessResult NewPartiallySuccessResult(IEnumerable<string> succesfulIds, IEnumerable<ErrorCommand> errors) {
+        internal async Task<List<LCIMConversation>> Find(LCIMConversationQuery query) {
+            GenericCommand command = new GenericCommand {
+                Cmd = CommandType.Conv,
+                Op = OpType.Query,
+                AppId = LCApplication.AppId,
+                PeerId = Client.Id,
+            };
+            ConvCommand convMessage = new ConvCommand();
+            string where = query.Condition.BuildWhere();
+            if (!string.IsNullOrEmpty(where)) {
+                try {
+                    convMessage.Where = new JsonObjectMessage {
+                        Data = where
+                    };
+                } catch (Exception e) {
+                    LCLogger.Error(e.Message);
+                }
+            }
+            command.ConvMessage = convMessage;
+            GenericCommand response = await Connection.SendRequest(command);
+            JsonObjectMessage results = response.ConvMessage.Results;
+            List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data, new LCJsonConverter());
+            List<LCIMConversation> convList = convs.Select(item => {
+                Dictionary<string, object> conv = item as Dictionary<string, object>;
+                string convId = conv["objectId"] as string;
+                if (!Client.ConversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
+                    // TODO 解析是哪种类型的对话
+
+                    conversation = new LCIMConversation(Client);
+                    Client.ConversationDict[convId] = conversation;
+                }
+                conversation.MergeFrom(conv);
+                return conversation;
+            }).ToList();
+            return convList;
+        }
+
+        internal async Task<List<LCIMTemporaryConversation>> GetTemporaryConversations(IEnumerable<string> convIds) {
+            ConvCommand convMessage = new ConvCommand();
+            convMessage.TempConvIds.AddRange(convIds);
+            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Query);
+            request.ConvMessage = convMessage;
+            GenericCommand response = await Connection.SendRequest(request);
+            JsonObjectMessage results = response.ConvMessage.Results;
+            List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data, new LCJsonConverter());
+            List<LCIMTemporaryConversation> convList = convs.Select(item => {
+                LCIMTemporaryConversation temporaryConversation = new LCIMTemporaryConversation(Client);
+                temporaryConversation.MergeFrom(item as Dictionary<string, object>);
+                return temporaryConversation;
+            }).ToList();
+            return convList;
+        }
+
+        private LCIMPartiallySuccessResult NewPartiallySuccessResult(IEnumerable<string> succesfulIds,
+            IEnumerable<ErrorCommand> errors) {
             LCIMPartiallySuccessResult result = new LCIMPartiallySuccessResult {
                 SuccessfulClientIdList = succesfulIds.ToList()
             };

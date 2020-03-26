@@ -2,19 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using LeanCloud.Storage.Internal.Query;
-using LeanCloud.Realtime.Protocol;
-using LeanCloud.Storage.Internal;
-using LeanCloud.Storage.Internal.Codec;
-using Newtonsoft.Json;
 
 namespace LeanCloud.Realtime {
     public class LCIMConversationQuery {
-        private LCCompositionalCondition condition;
+        internal LCCompositionalCondition Condition {
+            get; private set;
+        }
 
         private LCIMClient client;
 
         public LCIMConversationQuery(LCIMClient client) {
-            condition = new LCCompositionalCondition();
+            Condition = new LCCompositionalCondition();
             this.client = client;
         }
 
@@ -25,7 +23,7 @@ namespace LeanCloud.Realtime {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereEqualTo(string key, object value) {
-            condition.WhereEqualTo(key, value);
+            Condition.WhereEqualTo(key, value);
             return this;
         }
 
@@ -36,7 +34,7 @@ namespace LeanCloud.Realtime {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereNotEqualTo(string key, object value) {
-            condition.WhereNotEqualTo(key, value);
+            Condition.WhereNotEqualTo(key, value);
             return this;
         }
 
@@ -47,7 +45,7 @@ namespace LeanCloud.Realtime {
         /// <param name="values"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereContainedIn(string key, IEnumerable values) {
-            condition.WhereContainedIn(key, values);
+            Condition.WhereContainedIn(key, values);
             return this;
         }
 
@@ -58,7 +56,7 @@ namespace LeanCloud.Realtime {
         /// <param name="values"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereContainsAll(string key, IEnumerable values) {
-            condition.WhereContainsAll(key, values);
+            Condition.WhereContainsAll(key, values);
             return this;
         }
 
@@ -68,7 +66,7 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereExists(string key) {
-            condition.WhereExists(key);
+            Condition.WhereExists(key);
             return this;
         }
 
@@ -78,7 +76,7 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereDoesNotExist(string key) {
-            condition.WhereDoesNotExist(key);
+            Condition.WhereDoesNotExist(key);
             return this;
         }
 
@@ -89,7 +87,7 @@ namespace LeanCloud.Realtime {
         /// <param name="size"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereSizeEqualTo(string key, int size) {
-            condition.WhereSizeEqualTo(key, size);
+            Condition.WhereSizeEqualTo(key, size);
             return this;
         }
 
@@ -100,7 +98,7 @@ namespace LeanCloud.Realtime {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereGreaterThan(string key, object value) {
-            condition.WhereGreaterThan(key, value);
+            Condition.WhereGreaterThan(key, value);
             return this;
         }
 
@@ -111,7 +109,7 @@ namespace LeanCloud.Realtime {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereGreaterThanOrEqualTo(string key, object value) {
-            condition.WhereGreaterThanOrEqualTo(key, value);
+            Condition.WhereGreaterThanOrEqualTo(key, value);
             return this;
         }
 
@@ -122,7 +120,7 @@ namespace LeanCloud.Realtime {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereLessThan(string key, object value) {
-            condition.WhereLessThan(key, value);
+            Condition.WhereLessThan(key, value);
             return this;
         }
 
@@ -133,7 +131,7 @@ namespace LeanCloud.Realtime {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereLessThanOrEqualTo(string key, object value) {
-            condition.WhereLessThanOrEqualTo(key, value);
+            Condition.WhereLessThanOrEqualTo(key, value);
             return this;
         }
 
@@ -144,7 +142,7 @@ namespace LeanCloud.Realtime {
         /// <param name="prefix"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereStartsWith(string key, string prefix) {
-            condition.WhereStartsWith(key, prefix);
+            Condition.WhereStartsWith(key, prefix);
             return this;
         }
 
@@ -155,7 +153,7 @@ namespace LeanCloud.Realtime {
         /// <param name="suffix"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereEndsWith(string key, string suffix) {
-            condition.WhereEndsWith(key, suffix);
+            Condition.WhereEndsWith(key, suffix);
             return this;
         }
 
@@ -166,7 +164,7 @@ namespace LeanCloud.Realtime {
         /// <param name="subString"></param>
         /// <returns></returns>
         public LCIMConversationQuery WhereContains(string key, string subString) {
-            condition.WhereContains(key, subString);
+            Condition.WhereContains(key, subString);
             return this;
         }
 
@@ -176,7 +174,7 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCIMConversationQuery OrderBy(string key) {
-            condition.OrderBy(key);
+            Condition.OrderBy(key);
             return this;
         }
 
@@ -186,7 +184,7 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCIMConversationQuery OrderByDescending(string key) {
-            condition.OrderByDescending(key);
+            Condition.OrderByDescending(key);
             return this;
         }
 
@@ -196,7 +194,7 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCIMConversationQuery Include(string key) {
-            condition.Include(key);
+            Condition.Include(key);
             return this;
         }
 
@@ -206,7 +204,7 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCIMConversationQuery Select(string key) {
-            condition.Select(key);
+            Condition.Select(key);
             return this;
         }
 
@@ -216,7 +214,7 @@ namespace LeanCloud.Realtime {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCIMConversationQuery Skip(int value) {
-            condition.Skip = value;
+            Condition.Skip = value;
             return this;
         }
 
@@ -226,7 +224,7 @@ namespace LeanCloud.Realtime {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCIMConversationQuery Limit(int value) {
-            condition.Limit = value;
+            Condition.Limit = value;
             return this;
         }
 
@@ -239,35 +237,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <returns></returns>
         public async Task<List<LCIMConversation>> Find() {
-            GenericCommand command = new GenericCommand {
-                Cmd = CommandType.Conv,
-                Op = OpType.Query,
-                AppId = LCApplication.AppId,
-                PeerId = client.Id,
-            };
-            ConvCommand conv = new ConvCommand();
-            string where = condition.BuildWhere();
-            if (!string.IsNullOrEmpty(where)) {
-                conv.Where = new JsonObjectMessage {
-                    Data = where
-                };
-            }
-            command.ConvMessage = conv;
-            GenericCommand response = await client.Connection.SendRequest(command);
-            JsonObjectMessage results = response.ConvMessage.Results;
-            List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data, new LCJsonConverter());
-            List<LCIMConversation> convList = new List<LCIMConversation>(convs.Count);
-            foreach (object c in convs) {
-                Dictionary<string, object> cd = c as Dictionary<string, object>;
-                string convId = cd["objectId"] as string;
-                if (!client.ConversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
-                    conversation = new LCIMConversation(client);
-                    client.ConversationDict[convId] = conversation;
-                }
-                conversation.MergeFrom(cd);
-                convList.Add(conversation);
-            }
-            return convList;
+            return await client.ConversationController.Find(this);
         }
     }
 }

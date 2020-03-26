@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using LeanCloud.Realtime.Protocol;
+using LeanCloud.Storage.Internal;
 
 namespace LeanCloud.Realtime.Internal.Controller {
     internal class LCIMUnreadController : LCIMController {
@@ -10,16 +12,48 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         internal override async Task OnNotification(GenericCommand notification) {
             UnreadCommand unread = notification.UnreadMessage;
-            List<LCIMConversation> conversationList = new List<LCIMConversation>();
-            foreach (UnreadTuple conv in unread.Convs) {
-                // 查询对话
-                LCIMConversation conversation = await Client.GetOrQueryConversation(conv.Cid);
+
+            IEnumerable<string> convIds = unread.Convs
+                .Select(conv => conv.Cid);
+            Dictionary<string, LCIMConversation> conversations = (await Client.GetConversationList(convIds))
+                .ToDictionary(item => item.Id);
+            List<LCIMConversation> conversationList = unread.Convs.Select(conv => {
+                LCIMConversation conversation = conversations[conv.Cid];
                 conversation.Unread = conv.Unread;
-                // TODO 反序列化对话
-                // 最后一条消息
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(conv.Data);
-                conversationList.Add(conversation);
-            }
+                // 解析最后一条消息
+                Dictionary<string, object> msgData = JsonConvert.DeserializeObject<Dictionary<string, object>>(conv.Data,
+                    new LCJsonConverter());
+                int msgType = (int)msgData["_lctype"];
+                LCIMMessage message = null;
+                switch (msgType) {
+                    case -1:
+                        message = new LCIMTextMessage();
+                        break;
+                    case -2:
+                        message = new LCIMImageMessage();
+                        break;
+                    case -3:
+                        message = new LCIMAudioMessage();
+                        break;
+                    case -4:
+                        message = new LCIMVideoMessage();
+                        break;
+                    case -5:
+                        message = new LCIMLocationMessage();
+                        break;
+                    case -6:
+                        message = new LCIMFileMessage();
+                        break;
+                    default:
+                        break;
+                }
+                message.ConversationId = conv.Cid;
+                message.Id = conv.Mid;
+                message.FromClientId = conv.From;
+                message.SentTimestamp = conv.Timestamp;
+                conversation.LastMessage = message;
+                return conversation;
+            }).ToList();
             Client.OnUnreadMessagesCountUpdated?.Invoke(conversationList);
         }
     }

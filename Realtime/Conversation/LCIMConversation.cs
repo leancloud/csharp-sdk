@@ -324,6 +324,10 @@ namespace LeanCloud.Realtime {
             return await Client.MessageController.QueryMessages(Id, start, end, direction, limit, messageType);
         }
 
+        internal static bool IsTemporayConversation(string convId) {
+            return convId.StartsWith("_tmp:");
+        }
+
         internal void MergeFrom(ConvCommand conv) {
             if (conv.HasCid) {
                 Id = conv.Cid;

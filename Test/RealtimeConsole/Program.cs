@@ -4,13 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud;
 using LeanCloud.Common;
-using LeanCloud.Storage;
 using LeanCloud.Realtime;
 
 namespace RealtimeConsole {
     class MainClass {
         public static void Main(string[] args) {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine($"Hello World at {Thread.CurrentThread.ManagedThreadId}");
 
             LCLogger.LogDelegate += (level, info) => {
                 switch (level) {
@@ -30,11 +29,17 @@ namespace RealtimeConsole {
             };
             LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
 
+            SingleThreadSynchronizationContext.Run(async () => {
+                Console.WriteLine($"start at {Thread.CurrentThread.ManagedThreadId}");
+                await Run("cc2");
+                //await ChatRoom();
+                //await TemporaryConversation();
+                //await CreateConversation();
+                //await QueryMyConversation();
+                Console.WriteLine($"done at {Thread.CurrentThread.ManagedThreadId}");
+            });
+
             //Conversation().Wait();
-
-            //_ = ChatRoom();
-
-            //_ = TemporaryConversation();
 
             //_ = Signature();
 
@@ -46,19 +51,38 @@ namespace RealtimeConsole {
 
             //_ = OpenAndClose();
 
-            SendMessage().Wait();
+            //SendMessage().Wait();
 
             //Unread().Wait();
 
             Console.ReadKey(true);
         }
 
-        static async Task Run(int s) {
-            for (int i = 0; i < s; i++) {
-                Console.WriteLine($"run {i}");
-                await Task.Delay(1000);
-                Console.WriteLine($"run {i} done");
-            }
+        static async Task Run(string id) {
+            LCIMClient client = new LCIMClient(id);
+            await client.Open();
+            client.OnMessage = (conversation, message) => {
+                Console.WriteLine($"recv: {conversation.Id}, {message.Id} at {Thread.CurrentThread.ManagedThreadId}");
+            };
+        }
+
+        static async Task CreateConversation() {
+            LCIMClient cc1 = new LCIMClient("cc1");
+            await cc1.Open();
+            //await cc1.CreateChatRoom("leancloud chat");
+            await cc1.CreateTemporaryConversation(new string[] { "cc2", "cc3" });
+            //await cc1.CreateConversation(new string[] { "cc4" });
+        }
+
+        static async Task QueryMyConversation() {
+            LCIMClient cc1 = new LCIMClient("cc1");
+            await cc1.Open();
+            List<LCIMConversation> conversationList = await cc1.GetQuery()
+                .WhereEqualTo("objectId", "5e7c283790aef5aa846b5683")
+                .Find();
+            conversationList.ForEach(conv => {
+                Console.WriteLine($"convId: {conv.Id}");
+            });
         }
 
         static async Task Unread() {
@@ -72,13 +96,18 @@ namespace RealtimeConsole {
         }
 
         static async Task SendMessage() {
+            Console.WriteLine($"start at {Thread.CurrentThread.ManagedThreadId}");
             try {
                 LCIMClient u1 = new LCIMClient("u1");
                 await u1.Open();
                 LCIMConversation conversation = await u1.CreateConversation(new string[] { "u2" });
 
+                Console.WriteLine($"open at {Thread.CurrentThread.ManagedThreadId}");
+
                 LCIMTextMessage textMessage = new LCIMTextMessage("hello, text message");
                 await conversation.Send(textMessage);
+
+                Console.WriteLine($"send at {Thread.CurrentThread.ManagedThreadId}");
 
                 //LCFile file = new LCFile("avatar", "../../../Storage.Test/assets/hello.png");
                 //await file.Save();
