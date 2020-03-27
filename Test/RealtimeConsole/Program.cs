@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud;
@@ -31,7 +32,7 @@ namespace RealtimeConsole {
 
             SingleThreadSynchronizationContext.Run(async () => {
                 Console.WriteLine($"start at {Thread.CurrentThread.ManagedThreadId}");
-                await Run("cc2");
+                await Run("cc4");
                 //await ChatRoom();
                 //await TemporaryConversation();
                 //await CreateConversation();
@@ -55,12 +56,36 @@ namespace RealtimeConsole {
 
             //Unread().Wait();
 
+            //DemoAsync().Wait();
+
+            //SingleThreadSynchronizationContext.Run(async () => {
+            //    await DemoAsync();
+            //});
+
             Console.ReadKey(true);
+        }
+
+        static async Task DemoAsync() {
+            Dictionary<int, int> d = new Dictionary<int, int>();
+            for (int i = 0; i < 10000; i++) {
+                int id = Thread.CurrentThread.ManagedThreadId;
+                int count;
+                d[id] = d.TryGetValue(id, out count) ? count + 1 : 1;
+                await Task.Yield();
+            }
+            foreach (KeyValuePair<int, int> kv in d) {
+                Console.WriteLine(kv);
+            }
         }
 
         static async Task Run(string id) {
             LCIMClient client = new LCIMClient(id);
             await client.Open();
+            client.OnUnreadMessagesCountUpdated = (conversations) => {
+                foreach (LCIMConversation conv in conversations) {
+                    Console.WriteLine($"unread: {conv.Id}");
+                }
+            };
             client.OnMessage = (conversation, message) => {
                 Console.WriteLine($"recv: {conversation.Id}, {message.Id} at {Thread.CurrentThread.ManagedThreadId}");
             };
@@ -77,12 +102,12 @@ namespace RealtimeConsole {
         static async Task QueryMyConversation() {
             LCIMClient cc1 = new LCIMClient("cc1");
             await cc1.Open();
-            List<LCIMConversation> conversationList = await cc1.GetQuery()
+            ReadOnlyCollection<LCIMConversation> conversationList = await cc1.GetQuery()
                 .WhereEqualTo("objectId", "5e7c283790aef5aa846b5683")
                 .Find();
-            conversationList.ForEach(conv => {
+            foreach (LCIMConversation conv in conversationList) {
                 Console.WriteLine($"convId: {conv.Id}");
-            });
+            }
         }
 
         static async Task Unread() {

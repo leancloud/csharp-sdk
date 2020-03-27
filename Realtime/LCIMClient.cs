@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.ObjectModel;
 using LeanCloud.Realtime.Internal.WebSocket;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
@@ -78,7 +79,7 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// 该对话信息被更新
         /// </summary>
-        public Action<LCIMConversation, Dictionary<string, object>, string> OnConversationInfoUpdated;
+        public Action<LCIMConversation, ReadOnlyDictionary<string, object>, string> OnConversationInfoUpdated;
 
         /// <summary>
         /// 当前用户被添加至某个对话
@@ -97,42 +98,42 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// 有用户被添加至某个对话
         /// </summary>
-        public Action<LCIMConversation, List<string>, string> OnMembersJoined {
+        public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersJoined {
             get; set;
         }
 
         /// <summary>
         /// 有成员被从某个对话中移除
         /// </summary>
-        public Action<LCIMConversation, List<string>, string> OnMembersLeft {
+        public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersLeft {
             get; set;
         }
 
         /// <summary>
         /// 有成员被加入某个对话的黑名单
         /// </summary>
-        public Action<LCIMConversation, List<string>, string> OnMembersBlocked {
+        public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersBlocked {
             get; set;
         }
 
         /// <summary>
         /// 有成员被移出某个对话的黑名单
         /// </summary>
-        public Action<LCIMConversation, List<string>, string> OnMembersUnblocked {
+        public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersUnblocked {
             get; set;
         }
 
         /// <summary>
         /// 有成员在某个对话中被禁言
         /// </summary>
-        public Action<LCIMConversation, List<string>, string> OnMembersMuted {
+        public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersMuted {
             get; set;
         }
 
         /// <summary>
         /// 有成员被移出某个对话的黑名单
         /// </summary>
-        public Action<LCIMConversation, List<string>, string> OnMembersUnmuted {
+        public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersUnmuted {
             get; set;
         }
 
@@ -165,7 +166,7 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// 未读消息数目更新
         /// </summary>
-        public Action<List<LCIMConversation>> OnUnreadMessagesCountUpdated {
+        public Action<ReadOnlyCollection<LCIMConversation>> OnUnreadMessagesCountUpdated {
             get; set;
         }
 
@@ -318,7 +319,7 @@ namespace LeanCloud.Realtime {
             LCIMConversationQuery query = GetQuery()
                 .WhereEqualTo("objectId", id)
                 .Limit(1);
-            List<LCIMConversation> results = await ConversationController.Find(query);
+            ReadOnlyCollection<LCIMConversation> results = await ConversationController.Find(query);
             if (results == null || results.Count < 1) {
                 return null;
             }
@@ -330,7 +331,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public async Task<List<LCIMConversation>> GetConversationList(IEnumerable<string> ids) {
+        public async Task<ReadOnlyCollection<LCIMConversation>> GetConversationList(IEnumerable<string> ids) {
             if (ids == null || ids.Count() == 0) {
                 throw new ArgumentNullException(nameof(ids));
             }
@@ -341,13 +342,19 @@ namespace LeanCloud.Realtime {
             IEnumerable<string> convIds = ids.Where(item => {
                 return !tempConvIds.Contains(item);
             });
-            List<LCIMTemporaryConversation> temporaryConversations = await ConversationController.GetTemporaryConversations(tempConvIds);
-            LCIMConversationQuery query = GetQuery()
-                .WhereContainedIn("objectId", convIds)
-                .Limit(999);
-            List<LCIMConversation> conversations = await ConversationController.Find(query);
-            conversations.AddRange(temporaryConversations);
-            return conversations;
+            List<LCIMConversation> conversationList = new List<LCIMConversation>();
+            if (tempConvIds.Count() > 0) {
+                List<LCIMTemporaryConversation> temporaryConversations = await ConversationController.GetTemporaryConversations(tempConvIds);
+                conversationList.AddRange(temporaryConversations);
+            }
+            if (convIds.Count() > 0) {
+                LCIMConversationQuery query = GetQuery()
+                    .WhereContainedIn("objectId", convIds)
+                    .Limit(convIds.Count());
+                ReadOnlyCollection<LCIMConversation> conversations = await ConversationController.Find(query);
+                conversationList.AddRange(conversations);
+            }
+            return conversationList.AsReadOnly();
         }
 
         /// <summary>

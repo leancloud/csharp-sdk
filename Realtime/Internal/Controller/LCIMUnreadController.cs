@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage.Internal;
@@ -8,17 +9,20 @@ using LeanCloud.Storage.Internal;
 namespace LeanCloud.Realtime.Internal.Controller {
     internal class LCIMUnreadController : LCIMController {
         internal LCIMUnreadController(LCIMClient client) : base(client) {
+
         }
+
+        #region 消息处理
 
         internal override async Task OnNotification(GenericCommand notification) {
             UnreadCommand unread = notification.UnreadMessage;
 
             IEnumerable<string> convIds = unread.Convs
                 .Select(conv => conv.Cid);
-            Dictionary<string, LCIMConversation> conversations = (await Client.GetConversationList(convIds))
+            Dictionary<string, LCIMConversation> conversationDict = (await Client.GetConversationList(convIds))
                 .ToDictionary(item => item.Id);
-            List<LCIMConversation> conversationList = unread.Convs.Select(conv => {
-                LCIMConversation conversation = conversations[conv.Cid];
+            ReadOnlyCollection<LCIMConversation> conversations = unread.Convs.Select(conv => {
+                LCIMConversation conversation = conversationDict[conv.Cid];
                 conversation.Unread = conv.Unread;
                 // 解析最后一条消息
                 Dictionary<string, object> msgData = JsonConvert.DeserializeObject<Dictionary<string, object>>(conv.Data,
@@ -53,8 +57,10 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 message.SentTimestamp = conv.Timestamp;
                 conversation.LastMessage = message;
                 return conversation;
-            }).ToList();
-            Client.OnUnreadMessagesCountUpdated?.Invoke(conversationList);
+            }).ToList().AsReadOnly();
+            Client.OnUnreadMessagesCountUpdated?.Invoke(conversations);
         }
+
+        #endregion
     }
 }

@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 
 namespace LeanCloud.Realtime {
     public class LCIMPageResult {
-        public List<string> Results {
+        public ReadOnlyCollection<string> Results {
             get; internal set;
         }
 

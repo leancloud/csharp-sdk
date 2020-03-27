@@ -7,10 +7,17 @@ namespace LeanCloud.Realtime.Internal.Controller {
         private string token;
         private DateTimeOffset expiredAt;
 
-        internal LCIMSessionController(LCIMClient client) : base(client) {
+        internal LCIMSessionController(LCIMClient client)
+            : base(client) {
 
         }
 
+        #region 内部接口
+
+        /// <summary>
+        /// 打开会话
+        /// </summary>
+        /// <returns></returns>
         internal async Task Open() {
             SessionCommand session = NewSessionCommand();
             GenericCommand request = Client.NewCommand(CommandType.Session, OpType.Open);
@@ -19,17 +26,27 @@ namespace LeanCloud.Realtime.Internal.Controller {
             UpdateSession(response.SessionMessage);
         }
 
+        /// <summary>
+        /// 关闭会话
+        /// </summary>
+        /// <returns></returns>
         internal async Task Close() {
             GenericCommand request = Client.NewCommand(CommandType.Session, OpType.Close);
             await Client.Connection.SendRequest(request);
         }
 
+        /// <summary>
+        /// 获取可用 token
+        /// </summary>
+        /// <returns></returns>
         internal async Task<string> GetToken() {
             if (IsExpired) {
                 await Refresh();
             }
             return token;
         }
+
+        #endregion
 
         private async Task Refresh() {
             SessionCommand session = NewSessionCommand();
@@ -56,6 +73,14 @@ namespace LeanCloud.Realtime.Internal.Controller {
             expiredAt = DateTimeOffset.Now + TimeSpan.FromSeconds(ttl);
         }
 
+        private bool IsExpired {
+            get {
+                return DateTimeOffset.Now > expiredAt;
+            }
+        }
+
+        #region 消息处理
+
         internal override async Task OnNotification(GenericCommand notification) {
             switch (notification.Op) {
                 case OpType.Closed:
@@ -66,12 +91,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }
         }
 
-        private bool IsExpired {
-            get {
-                return DateTimeOffset.Now > expiredAt;
-            }
-        }
-
+        /// <summary>
+        /// 被关闭
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
         private async Task OnClosed(SessionCommand session) {
             int code = session.Code;
             string reason = session.Reason;
@@ -79,5 +103,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Connection.Close();
             Client.OnClose?.Invoke(code, reason, detail);
         }
+
+        #endregion
     }
 }

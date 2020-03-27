@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using LeanCloud.Storage.Internal.Query;
 
 namespace LeanCloud.Realtime {
@@ -22,7 +23,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereEqualTo(string key, object value) {
+        public LCIMConversationQuery WhereEqualTo(string key,
+            object value) {
             Condition.WhereEqualTo(key, value);
             return this;
         }
@@ -33,7 +35,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereNotEqualTo(string key, object value) {
+        public LCIMConversationQuery WhereNotEqualTo(string key,
+            object value) {
             Condition.WhereNotEqualTo(key, value);
             return this;
         }
@@ -44,7 +47,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereContainedIn(string key, IEnumerable values) {
+        public LCIMConversationQuery WhereContainedIn(string key,
+            IEnumerable values) {
             Condition.WhereContainedIn(key, values);
             return this;
         }
@@ -55,7 +59,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereContainsAll(string key, IEnumerable values) {
+        public LCIMConversationQuery WhereContainsAll(string key,
+            IEnumerable values) {
             Condition.WhereContainsAll(key, values);
             return this;
         }
@@ -86,7 +91,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereSizeEqualTo(string key, int size) {
+        public LCIMConversationQuery WhereSizeEqualTo(string key,
+            int size) {
             Condition.WhereSizeEqualTo(key, size);
             return this;
         }
@@ -97,7 +103,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereGreaterThan(string key, object value) {
+        public LCIMConversationQuery WhereGreaterThan(string key,
+            object value) {
             Condition.WhereGreaterThan(key, value);
             return this;
         }
@@ -108,7 +115,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereGreaterThanOrEqualTo(string key, object value) {
+        public LCIMConversationQuery WhereGreaterThanOrEqualTo(string key,
+            object value) {
             Condition.WhereGreaterThanOrEqualTo(key, value);
             return this;
         }
@@ -119,7 +127,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereLessThan(string key, object value) {
+        public LCIMConversationQuery WhereLessThan(string key,
+            object value) {
             Condition.WhereLessThan(key, value);
             return this;
         }
@@ -130,7 +139,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereLessThanOrEqualTo(string key, object value) {
+        public LCIMConversationQuery WhereLessThanOrEqualTo(string key,
+            object value) {
             Condition.WhereLessThanOrEqualTo(key, value);
             return this;
         }
@@ -141,7 +151,8 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        public LCIMConversationQuery WhereStartsWith(string key, string prefix) {
+        public LCIMConversationQuery WhereStartsWith(string key,
+            string prefix) {
             Condition.WhereStartsWith(key, prefix);
             return this;
         }
@@ -236,7 +247,7 @@ namespace LeanCloud.Realtime {
         /// 查找
         /// </summary>
         /// <returns></returns>
-        public async Task<List<LCIMConversation>> Find() {
+        public async Task<ReadOnlyCollection<LCIMConversation>> Find() {
             return await client.ConversationController.Find(this);
         }
     }

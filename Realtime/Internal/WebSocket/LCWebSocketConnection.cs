@@ -116,7 +116,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                             ErrorCommand error = command.ErrorMessage;
                             int code = error.Code;
                             string detail = error.Detail;
-                            // TODO 包装成异常抛出
+                            // 包装成异常抛出
                             LCException exception = new LCException(code, detail);
                             tcs.SetException(exception);
                         } else {

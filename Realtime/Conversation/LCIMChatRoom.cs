@@ -5,7 +5,8 @@ using LeanCloud.Realtime.Protocol;
 
 namespace LeanCloud.Realtime {
     public class LCIMChatRoom : LCIMConversation {
-        public LCIMChatRoom(LCIMClient client) : base(client) {
+        public LCIMChatRoom(LCIMClient client) :
+            base(client) {
         }
 
         public async Task<int> GetOnlineMembersCount() {

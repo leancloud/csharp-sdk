@@ -12,6 +12,14 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         }
 
+        #region 内部接口
+
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         internal async Task<LCIMMessage> Send(string convId,
             LCIMMessage message) {
             DirectCommand direct = new DirectCommand {
@@ -35,6 +43,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return message;
         }
 
+        /// <summary>
+        /// 撤回消息
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         internal async Task RecallMessage(string convId,
             LCIMMessage message) {
             PatchCommand patch = new PatchCommand();
@@ -49,6 +63,13 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Client.Connection.SendRequest(request);
         }
 
+        /// <summary>
+        /// 修改消息
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="oldMessage"></param>
+        /// <param name="newMessage"></param>
+        /// <returns></returns>
         internal async Task UpdateMessage(string convId,
             LCIMMessage oldMessage,
             LCIMMessage newMessage) {
@@ -76,6 +97,16 @@ namespace LeanCloud.Realtime.Internal.Controller {
             GenericCommand response = await Client.Connection.SendRequest(request);
         }
 
+        /// <summary>
+        /// 查询消息
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="direction"></param>
+        /// <param name="limit"></param>
+        /// <param name="messageType"></param>
+        /// <returns></returns>
         internal async Task<List<LCIMMessage>> QueryMessages(string convId,
             LCIMMessageQueryEndpoint start = null,
             LCIMMessageQueryEndpoint end = null,
@@ -108,6 +139,10 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
             return null;
         }
+
+        #endregion
+
+        #region 消息处理
 
         internal override async Task OnNotification(GenericCommand notification) {
             DirectCommand direct = notification.DirectMessage;
@@ -150,5 +185,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             LCIMConversation conversation = await Client.GetOrQueryConversation(direct.Cid);
             Client.OnMessage?.Invoke(conversation, message);
         }
+
+        #endregion
     }
 }

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json;
-using Google.Protobuf;
+using System.Collections.ObjectModel;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage;
 
@@ -29,12 +28,16 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
-        public List<string> MemberIdList {
-            get; internal set;
+        public ReadOnlyCollection<string> MemberIdList {
+            get {
+                return new ReadOnlyCollection<string>(ids.ToList());
+            }
         }
 
-        public List<string> MutedMemberIdList {
-            get; internal set;
+        public ReadOnlyCollection<string> MutedMemberIds {
+            get {
+                return new ReadOnlyCollection<string>(mutedIds.ToList());
+            }
         }
 
         public int Unread {
@@ -75,6 +78,10 @@ namespace LeanCloud.Realtime {
         }
 
         private Dictionary<string, object> customProperties;
+
+        internal HashSet<string> ids;
+
+        internal HashSet<string> mutedIds;
 
         internal LCIMConversation(LCIMClient client) {
             Client = client;
@@ -286,7 +293,7 @@ namespace LeanCloud.Realtime {
         /// 获取对话中成员的角色（只返回管理员）
         /// </summary>
         /// <returns></returns>
-        public async Task<List<LCIMConversationMemberInfo>> GetAllMemberInfo() {
+        public async Task<ReadOnlyCollection<LCIMConversationMemberInfo>> GetAllMemberInfo() {
             return await Client.ConversationController.GetAllMemberInfo(Id);
         }
 
@@ -299,7 +306,7 @@ namespace LeanCloud.Realtime {
             if (string.IsNullOrEmpty(memberId)) {
                 throw new ArgumentNullException(nameof(memberId));
             }
-            List<LCIMConversationMemberInfo> members = await GetAllMemberInfo();
+            ReadOnlyCollection<LCIMConversationMemberInfo> members = await GetAllMemberInfo();
             foreach (LCIMConversationMemberInfo member in members) {
                 if (member.MemberId == memberId) {
                     return member;
@@ -308,11 +315,25 @@ namespace LeanCloud.Realtime {
             return null;
         }
 
-        public async Task<LCIMPageResult> QueryMutedMembers(int limit = 10, string next = null) {
+        /// <summary>
+        /// 查询禁言用户
+        /// </summary>
+        /// <param name="limit"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        public async Task<LCIMPageResult> QueryMutedMembers(int limit = 10,
+            string next = null) {
             return await Client.ConversationController.QueryMutedMembers(Id, limit, next);
         }
 
-        public async Task<LCIMPageResult> QueryBlockedMembers(int limit = 10, string next = null) {
+        /// <summary>
+        /// 查询黑名单用户
+        /// </summary>
+        /// <param name="limit"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        public async Task<LCIMPageResult> QueryBlockedMembers(int limit = 10,
+            string next = null) {
             return await Client.ConversationController.QueryBlockedMembers(Id, limit, next);
         }
 
@@ -342,7 +363,7 @@ namespace LeanCloud.Realtime {
                 UpdatedAt = DateTime.Parse(conv.Udate);
             }
             if (conv.M.Count > 0) {
-                MemberIdList = conv.M.ToList();
+                ids = new HashSet<string>(conv.M.ToList());
             }
         }
 
@@ -363,10 +384,10 @@ namespace LeanCloud.Realtime {
                 CreatorId = co as string;
             }
             if (conv.TryGetValue("m", out object mo)) {
-                MemberIdList = mo as List<string>;
+                ids = new HashSet<string>(mo as List<string>);
             }
             if (conv.TryGetValue("mu", out object muo)) {
-                MutedMemberIdList = muo as List<string>;
+                mutedIds = new HashSet<string>(muo as List<string>);
             }
         }
 

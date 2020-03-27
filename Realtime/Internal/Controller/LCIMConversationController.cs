@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage.Internal;
 using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Common;
-using Google.Protobuf;
 
 namespace LeanCloud.Realtime.Internal.Controller {
     internal class LCIMConversationController : LCIMController {
@@ -15,6 +15,19 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         }
 
+        #region 内部接口
+
+        /// <summary>
+        /// 创建对话
+        /// </summary>
+        /// <param name="members"></param>
+        /// <param name="name"></param>
+        /// <param name="transient"></param>
+        /// <param name="unique"></param>
+        /// <param name="temporary"></param>
+        /// <param name="temporaryTtl"></param>
+        /// <param name="properties"></param>
+        /// <returns></returns>
         internal async Task<LCIMConversation> CreateConv(
             IEnumerable<string> members = null,
             string name = null,
@@ -66,12 +79,17 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }
             // 合并请求数据
             conversation.Name = name;
-            conversation.MemberIdList = members?.ToList();
+            conversation.ids = members != null ? new HashSet<string>(members) : null;
             // 合并服务端推送的数据
             conversation.MergeFrom(response.ConvMessage);
             return conversation;
         }
 
+        /// <summary>
+        /// 查询成员数量
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <returns></returns>
         internal async Task<int> GetMembersCount(string convId) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId,
@@ -82,6 +100,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return response.ConvMessage.Count;
         }
 
+        /// <summary>
+        /// 标记对话的消息已读
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         internal async Task Read(string convId,
             LCIMMessage message) {
             ReadCommand read = new ReadCommand();
@@ -96,6 +120,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Client.Connection.SendRequest(request);
         }
 
+        /// <summary>
+        /// 更新对话属性
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="attributes"></param>
+        /// <returns></returns>
         internal async Task<Dictionary<string, object>> UpdateInfo(string convId,
             Dictionary<string, object> attributes) {
             ConvCommand conv = new ConvCommand {
@@ -116,6 +146,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return null;
         }
 
+        /// <summary>
+        /// 增加成员
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="clientIds"></param>
+        /// <returns></returns>
         internal async Task<LCIMPartiallySuccessResult> AddMembers(string convId,
             IEnumerable<string> clientIds) {
             ConvCommand conv = new ConvCommand {
@@ -140,6 +176,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(allowedIds, errors);
         }
 
+        /// <summary>
+        /// 移除成员
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="removeIds"></param>
+        /// <returns></returns>
         internal async Task<LCIMPartiallySuccessResult> RemoveMembers(string convId,
             IEnumerable<string> removeIds) {
             ConvCommand conv = new ConvCommand {
@@ -164,6 +206,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(allowedIds, errors);
         }
 
+        /// <summary>
+        /// 静音
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <returns></returns>
         internal async Task Mute(string convId) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId
@@ -173,6 +220,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Client.Connection.SendRequest(request);
         }
 
+        /// <summary>
+        /// 解除静音
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <returns></returns>
         internal async Task Unmute(string convId) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId
@@ -182,6 +234,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Client.Connection.SendRequest(request);
         }
 
+        /// <summary>
+        /// 禁言用户
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="clientIds"></param>
+        /// <returns></returns>
         internal async Task<LCIMPartiallySuccessResult> MuteMembers(string convId,
             IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
@@ -197,6 +255,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.ConvMessage.AllowedPids, response.ConvMessage.FailedPids);
         }
 
+        /// <summary>
+        /// 解除用户禁言
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="clientIds"></param>
+        /// <returns></returns>
         internal async Task<LCIMPartiallySuccessResult> UnmuteMembers(string convId,
             IEnumerable<string> clientIds) {
             ConvCommand conv = new ConvCommand {
@@ -209,6 +273,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.ConvMessage.AllowedPids, response.ConvMessage.FailedPids);
         }
 
+        /// <summary>
+        /// 拉黑成员
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="clientIds"></param>
+        /// <returns></returns>
         internal async Task<LCIMPartiallySuccessResult> BlockMembers(string convId,
             IEnumerable<string> clientIds) {
             BlacklistCommand blacklist = new BlacklistCommand {
@@ -230,6 +300,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
         }
 
+        /// <summary>
+        /// 移除成员黑名单
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="clientIds"></param>
+        /// <returns></returns>
         internal async Task<LCIMPartiallySuccessResult> UnblockMembers(string convId,
             IEnumerable<string> clientIds) {
             BlacklistCommand blacklist = new BlacklistCommand {
@@ -251,6 +327,13 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
         }
 
+        /// <summary>
+        /// 修改成员角色
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="memberId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
         internal async Task UpdateMemberRole(string convId,
             string memberId,
             string role) {
@@ -267,7 +350,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             GenericCommand response = await Client.Connection.SendRequest(request);
         }
 
-        internal async Task<List<LCIMConversationMemberInfo>> GetAllMemberInfo(string convId) {
+        /// <summary>
+        /// 获取所有成员角色
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <returns></returns>
+        internal async Task<ReadOnlyCollection<LCIMConversationMemberInfo>> GetAllMemberInfo(string convId) {
             string path = "classes/_ConversationMemberInfo";
             string token = await Client.SessionController.GetToken();
             Dictionary<string, object> headers = new Dictionary<string, object> {
@@ -280,18 +368,23 @@ namespace LeanCloud.Realtime.Internal.Controller {
             Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path,
                 headers: headers, queryParams: queryParams);
             List<object> results = response["results"] as List<object>;
-            List<LCIMConversationMemberInfo> memberList = new List<LCIMConversationMemberInfo>();
-            foreach (Dictionary<string, object> item in results) {
-                LCIMConversationMemberInfo member = new LCIMConversationMemberInfo {
-                    ConversationId = item["cid"] as string,
-                    MemberId = item["clientId"] as string,
-                    Role = item["role"] as string
+            return results.Select(item => {
+                Dictionary<string, object> memberInfo = item as Dictionary<string, object>;
+                return new LCIMConversationMemberInfo {
+                    ConversationId = memberInfo["cid"] as string,
+                    MemberId = memberInfo["clientId"] as string,
+                    Role = memberInfo["role"] as string
                 };
-                memberList.Add(member);
-            }
-            return memberList;
+            }).ToList().AsReadOnly();
         }
 
+        /// <summary>
+        /// 查询禁言成员
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="limit"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
         internal async Task<LCIMPageResult> QueryMutedMembers(string convId,
             int limit = 10,
             string next = null) {
@@ -304,11 +397,18 @@ namespace LeanCloud.Realtime.Internal.Controller {
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
             return new LCIMPageResult {
-                Results = response.ConvMessage.M.ToList(),
+                Results = new ReadOnlyCollection<string>(response.ConvMessage.M),
                 Next = response.ConvMessage.Next
             };
         }
 
+        /// <summary>
+        /// 查询黑名单用户
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="limit"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
         internal async Task<LCIMPageResult> QueryBlockedMembers(string convId,
             int limit = 10,
             string next = null) {
@@ -321,12 +421,17 @@ namespace LeanCloud.Realtime.Internal.Controller {
             request.BlacklistMessage = black;
             GenericCommand response = await Client.Connection.SendRequest(request);
             return new LCIMPageResult {
-                Results = response.BlacklistMessage.BlockedPids.ToList(),
+                Results = new ReadOnlyCollection<string>(response.BlacklistMessage.BlockedPids),
                 Next = response.BlacklistMessage.Next
             };
         }
 
-        internal async Task<List<LCIMConversation>> Find(LCIMConversationQuery query) {
+        /// <summary>
+        /// 查找
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        internal async Task<ReadOnlyCollection<LCIMConversation>> Find(LCIMConversationQuery query) {
             GenericCommand command = new GenericCommand {
                 Cmd = CommandType.Conv,
                 Op = OpType.Query,
@@ -348,7 +453,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             GenericCommand response = await Connection.SendRequest(command);
             JsonObjectMessage results = response.ConvMessage.Results;
             List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data, new LCJsonConverter());
-            List<LCIMConversation> convList = convs.Select(item => {
+            return convs.Select(item => {
                 Dictionary<string, object> conv = item as Dictionary<string, object>;
                 string convId = conv["objectId"] as string;
                 if (!Client.ConversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
@@ -359,11 +464,13 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 }
                 conversation.MergeFrom(conv);
                 return conversation;
-            }).ToList();
-            return convList;
+            }).ToList().AsReadOnly();
         }
 
         internal async Task<List<LCIMTemporaryConversation>> GetTemporaryConversations(IEnumerable<string> convIds) {
+            if (convIds == null || convIds.Count() == 0) {
+                return null;
+            }
             ConvCommand convMessage = new ConvCommand();
             convMessage.TempConvIds.AddRange(convIds);
             GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Query);
@@ -393,68 +500,194 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return result;
         }
 
+        #endregion
+
+        #region 消息处理
+
         internal override async Task OnNotification(GenericCommand notification) {
-            ConvCommand conv = notification.ConvMessage;
+            ConvCommand convMessage = notification.ConvMessage;
             switch (notification.Op) {
                 case OpType.Joined:
-                    await OnConversationJoined(conv);
+                    await OnJoined(convMessage);
                     break;
                 case OpType.MembersJoined:
-                    await OnConversationMembersJoined(conv);
+                    await OnMembersJoined(convMessage);
                     break;
                 case OpType.Left:
-                    await OnConversationLeft(conv);
+                    await OnLeft(convMessage);
                     break;
                 case OpType.MembersLeft:
-                    await OnConversationMemberLeft(conv);
+                    await OnMemberLeft(convMessage);
+                    break;
+                case OpType.Blocked:
+                    await OnBlocked(convMessage);
+                    break;
+                case OpType.MembersBlocked:
+                    await OnMembersBlocked(convMessage);
+                    break;
+                case OpType.MembersUnblocked:
+                    await OnMembersUnblocked(convMessage);
+                    break;
+                case OpType.Shutuped:
+                    await OnMuted(convMessage);
+                    break;
+                case OpType.MembersShutuped:
+                    await OnMembersMuted(convMessage);
+                    break;
+                case OpType.MembersUnshutuped:
+                    await OnMembersUnmuted(convMessage);
                     break;
                 case OpType.Updated:
-                    await OnConversationPropertiesUpdated(conv);
+                    await OnPropertiesUpdated(convMessage);
                     break;
                 case OpType.MemberInfoChanged:
-                    await OnConversationMemberInfoChanged(conv);
+                    await OnMemberInfoChanged(convMessage);
                     break;
                 default:
                     break;
             }
         }
 
-        private async Task OnConversationJoined(ConvCommand conv) {
-            LCIMConversation conversation = await Client.GetOrQueryConversation(conv.Cid);
-            conversation.MergeFrom(conv);
-            Client.OnInvited?.Invoke(conversation, conv.InitBy);
+        /// <summary>
+        /// 当前用户加入会话
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnJoined(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            conversation.MergeFrom(convMessage);
+            Client.OnInvited?.Invoke(conversation, convMessage.InitBy);
         }
 
-        private async Task OnConversationMembersJoined(ConvCommand conv) {
-            LCIMConversation conversation = await Client.GetOrQueryConversation(conv.Cid);
-            conversation.MergeFrom(conv);
-            Client.OnMembersJoined?.Invoke(conversation, conv.M.ToList(), conv.InitBy);
+        /// <summary>
+        /// 有用户加入会话
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnMembersJoined(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            ReadOnlyCollection<string> joinedIds = new ReadOnlyCollection<string>(convMessage.M);
+            conversation.ids.Union(joinedIds);
+            Client.OnMembersJoined?.Invoke(conversation, joinedIds, convMessage.InitBy);
         }
 
-        private async Task OnConversationLeft(ConvCommand conv) {
-            LCIMConversation conversation = await Client.GetOrQueryConversation(conv.Cid);
-            Client.OnKicked?.Invoke(conversation, conv.InitBy);
+        /// <summary>
+        /// 当前用户离开会话
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnLeft(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            Client.OnKicked?.Invoke(conversation, convMessage.InitBy);
+            // TODO 从内存中清除对话
+
         }
 
-        private async Task OnConversationMemberLeft(ConvCommand conv) {
-            LCIMConversation conversation = await Client.GetOrQueryConversation(conv.Cid);
-            List<string> leftIdList = conv.M.ToList();
-            Client.OnMembersLeft?.Invoke(conversation, leftIdList, conv.InitBy);
+        /// <summary>
+        /// 有成员离开会话
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnMemberLeft(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            ReadOnlyCollection<string> leftIdList = new ReadOnlyCollection<string>(convMessage.M);
+            conversation.ids.RemoveWhere(item => leftIdList.Contains(item));
+            Client.OnMembersLeft?.Invoke(conversation, leftIdList, convMessage.InitBy);
         }
 
-        private async Task OnConversationPropertiesUpdated(ConvCommand conv) {
+        /// <summary>
+        /// 当前用户被禁言
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnMuted(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            Client.OnMuted?.Invoke(conversation, convMessage.InitBy);
+        }
+
+        /// <summary>
+        /// 有成员被禁言
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnMembersMuted(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            ReadOnlyCollection<string> mutedMemberIds = new ReadOnlyCollection<string>(convMessage.M);
+            conversation.mutedIds.Union(mutedMemberIds);
+            Client.OnMembersMuted?.Invoke(conversation, mutedMemberIds, convMessage.InitBy);
+        }
+
+        /// <summary>
+        /// 有成员被解除禁言
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnMembersUnmuted(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            ReadOnlyCollection<string> unmutedMemberIds = new ReadOnlyCollection<string>(convMessage.M);
+            conversation.mutedIds.RemoveWhere(id => unmutedMemberIds.Contains(id));
+            Client.OnMembersUnmuted?.Invoke(conversation, unmutedMemberIds, convMessage.InitBy);
+        }
+
+        /// <summary>
+        /// 当前用户被拉黑
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnBlocked(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            Client.OnBlocked?.Invoke(conversation, convMessage.InitBy);
+        }
+
+        /// <summary>
+        /// 有用户被拉黑
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnMembersBlocked(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            ReadOnlyCollection<string> blockedMemberIds = convMessage.M.ToList().AsReadOnly();
+            Client.OnMembersBlocked?.Invoke(conversation, blockedMemberIds, convMessage.InitBy);
+        }
+
+        /// <summary>
+        /// 有用户被移除黑名单
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnMembersUnblocked(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            ReadOnlyCollection<string> unblockedMemberIds = convMessage.M.ToList().AsReadOnly();
+            Client.OnMembersUnblocked?.Invoke(conversation, unblockedMemberIds, convMessage.InitBy);
+        }
+
+        /// <summary>
+        /// 对话属性被修改
+        /// </summary>
+        /// <param name="conv"></param>
+        /// <returns></returns>
+        private async Task OnPropertiesUpdated(ConvCommand conv) {
             LCIMConversation conversation = await Client.GetOrQueryConversation(conv.Cid);
             Dictionary<string, object> updatedAttr = JsonConvert.DeserializeObject<Dictionary<string, object>>(conv.AttrModified.Data,
                 new LCJsonConverter());
             // 更新内存数据
             conversation.MergeInfo(updatedAttr);
-            Client.OnConversationInfoUpdated?.Invoke(conversation, updatedAttr, conv.InitBy);
+            Client.OnConversationInfoUpdated?.Invoke(conversation,
+                new ReadOnlyDictionary<string, object>(updatedAttr),
+                conv.InitBy);
         }
 
-        private async Task OnConversationMemberInfoChanged(ConvCommand conv) {
+        /// <summary>
+        /// 用户角色被修改
+        /// </summary>
+        /// <param name="conv"></param>
+        /// <returns></returns>
+        private async Task OnMemberInfoChanged(ConvCommand conv) {
             LCIMConversation conversation = await Client.GetOrQueryConversation(conv.Cid);
             ConvMemberInfo memberInfo = conv.Info;
             Client.OnMemberInfoUpdated?.Invoke(conversation, memberInfo.Pid, memberInfo.Role, conv.InitBy);
         }
+
+        #endregion
     }
 }
