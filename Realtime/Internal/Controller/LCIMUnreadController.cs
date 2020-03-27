@@ -2,9 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Newtonsoft.Json;
 using LeanCloud.Realtime.Protocol;
-using LeanCloud.Storage.Internal;
 
 namespace LeanCloud.Realtime.Internal.Controller {
     internal class LCIMUnreadController : LCIMController {
@@ -22,35 +20,20 @@ namespace LeanCloud.Realtime.Internal.Controller {
             Dictionary<string, LCIMConversation> conversationDict = (await Client.GetConversationList(convIds))
                 .ToDictionary(item => item.Id);
             ReadOnlyCollection<LCIMConversation> conversations = unread.Convs.Select(conv => {
+                // 设置对话中的未读数据
                 LCIMConversation conversation = conversationDict[conv.Cid];
                 conversation.Unread = conv.Unread;
-                // 解析最后一条消息
-                Dictionary<string, object> msgData = JsonConvert.DeserializeObject<Dictionary<string, object>>(conv.Data,
-                    new LCJsonConverter());
-                int msgType = (int)msgData["_lctype"];
+
                 LCIMMessage message = null;
-                switch (msgType) {
-                    case -1:
-                        message = new LCIMTextMessage();
-                        break;
-                    case -2:
-                        message = new LCIMImageMessage();
-                        break;
-                    case -3:
-                        message = new LCIMAudioMessage();
-                        break;
-                    case -4:
-                        message = new LCIMVideoMessage();
-                        break;
-                    case -5:
-                        message = new LCIMLocationMessage();
-                        break;
-                    case -6:
-                        message = new LCIMFileMessage();
-                        break;
-                    default:
-                        break;
+                if (conv.HasBinaryMsg) {
+                    // 二进制消息
+                    byte[] bytes = conv.BinaryMsg.ToByteArray();
+                    message = LCIMBinaryMessage.Deserialize(bytes);
+                } else {
+                    // 类型消息
+                    message = LCIMTypedMessage.Deserialize(conv.Data);
                 }
+                // 填充消息数据
                 message.ConversationId = conv.Cid;
                 message.Id = conv.Mid;
                 message.FromClientId = conv.From;

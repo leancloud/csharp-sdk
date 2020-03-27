@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using LeanCloud.Realtime.Protocol;
 
@@ -67,7 +68,7 @@ namespace LeanCloud.Realtime {
             }
         }
 
-        public List<string> MentionList {
+        public List<string> MentionIdList {
             get; set;
         }
 
@@ -75,14 +76,11 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
-        internal LCIMMessage() {
+        public bool Mentioned {
+            get; internal set;
         }
 
-        internal virtual void Decode(DirectCommand direct) {
-            ConversationId = direct.Cid;
-            Id = direct.Id;
-            FromClientId = direct.FromPeerId;
-            SentTimestamp = direct.Timestamp;
+        internal LCIMMessage() {
         }
     }
 }

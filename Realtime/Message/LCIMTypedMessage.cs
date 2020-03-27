@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using LeanCloud.Realtime.Protocol;
-using LeanCloud.Storage.Internal;
 using LeanCloud.Storage.Internal.Codec;
+using LeanCloud.Storage.Internal;
 
 namespace LeanCloud.Realtime {
     public abstract class LCIMTypedMessage : LCIMMessage {
@@ -40,12 +39,6 @@ namespace LeanCloud.Realtime {
             return msgData;
         }
 
-        internal override void Decode(DirectCommand direct) {
-            base.Decode(direct);
-            Dictionary<string, object> msgData = JsonConvert.DeserializeObject<Dictionary<string, object>>(direct.Msg, new LCJsonConverter());
-            DecodeMessageData(msgData);
-        }
-
         protected virtual void DecodeMessageData(Dictionary<string, object> msgData) {
             MessageType = (int)msgData["_lctype"];
             if (msgData.TryGetValue("_lcattrs", out object attrObj)) {
@@ -53,9 +46,11 @@ namespace LeanCloud.Realtime {
             }
         }
 
-        internal static LCIMTypedMessage Deserialize(Dictionary<string, object> messageData) {
+        internal static LCIMTypedMessage Deserialize(string json) {
+            Dictionary<string, object> msgData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json,
+                new LCJsonConverter());
             LCIMTypedMessage message = null;
-            int msgType = (int)messageData["_lctype"];
+            int msgType = (int)msgData["_lctype"];
             switch (msgType) {
                 case -1:
                     message = new LCIMTextMessage();
@@ -76,9 +71,11 @@ namespace LeanCloud.Realtime {
                     message = new LCIMFileMessage();
                     break;
                 default:
+                    // TODO 用户自定义类型消息
+
                     break;
             }
-            //message.Decode(direct);
+            message.DecodeMessageData(msgData);
             return message;
         }
     }

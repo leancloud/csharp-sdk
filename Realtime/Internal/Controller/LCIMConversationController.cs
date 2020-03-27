@@ -462,6 +462,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     conversation = new LCIMConversation(Client);
                     Client.ConversationDict[convId] = conversation;
                 }
+
                 conversation.MergeFrom(conv);
                 return conversation;
             }).ToList().AsReadOnly();

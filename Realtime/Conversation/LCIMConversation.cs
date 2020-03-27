@@ -384,10 +384,10 @@ namespace LeanCloud.Realtime {
                 CreatorId = co as string;
             }
             if (conv.TryGetValue("m", out object mo)) {
-                ids = new HashSet<string>(mo as List<string>);
+                ids = new HashSet<string>((mo as IList<object>).Cast<string>());
             }
             if (conv.TryGetValue("mu", out object muo)) {
-                mutedIds = new HashSet<string>(muo as List<string>);
+                mutedIds = new HashSet<string>((muo as IList<object>).Cast<string>());
             }
         }
 

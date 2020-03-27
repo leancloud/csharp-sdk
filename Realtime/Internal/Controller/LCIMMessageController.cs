@@ -85,8 +85,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             } else if (newMessage is LCIMBinaryMessage binaryMessage) {
                 item.BinaryMsg = ByteString.CopyFrom(binaryMessage.Data);
             }
-            if (newMessage.MentionList != null) {
-                item.MentionPids.AddRange(newMessage.MentionList);
+            if (newMessage.MentionIdList != null) {
+                item.MentionPids.AddRange(newMessage.MentionIdList);
             }
             if (newMessage.MentionAll) {
                 item.MentionAll = newMessage.MentionAll;
@@ -146,43 +146,23 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         internal override async Task OnNotification(GenericCommand notification) {
             DirectCommand direct = notification.DirectMessage;
-            LCIMMessage message = null;
+            LCIMMessage message;
             if (direct.HasBinaryMsg) {
                 // 二进制消息
                 byte[] bytes = direct.BinaryMsg.ToByteArray();
-                message = new LCIMBinaryMessage(bytes);
+                message = LCIMBinaryMessage.Deserialize(bytes);
             } else {
-                // 文本消息
-                string messageData = direct.Msg;
-                Dictionary<string, object> msgData = JsonConvert.DeserializeObject<Dictionary<string, object>>(messageData,
-                    new LCJsonConverter());
-                int msgType = (int)msgData["_lctype"];
-                switch (msgType) {
-                    case -1:
-                        message = new LCIMTextMessage();
-                        break;
-                    case -2:
-                        message = new LCIMImageMessage();
-                        break;
-                    case -3:
-                        message = new LCIMAudioMessage();
-                        break;
-                    case -4:
-                        message = new LCIMVideoMessage();
-                        break;
-                    case -5:
-                        message = new LCIMLocationMessage();
-                        break;
-                    case -6:
-                        message = new LCIMFileMessage();
-                        break;
-                    default:
-                        break;
-                }
-                message.Decode(direct);
+                // 类型消息
+                message = LCIMTypedMessage.Deserialize(direct.Msg);
             }
+            // 填充消息数据
+            message.ConversationId = direct.Cid;
+            message.Id = direct.Id;
+            message.FromClientId = direct.FromPeerId;
+            message.SentTimestamp = direct.Timestamp;
             // 获取对话
             LCIMConversation conversation = await Client.GetOrQueryConversation(direct.Cid);
+            conversation.LastMessage = message;
             Client.OnMessage?.Invoke(conversation, message);
         }
 

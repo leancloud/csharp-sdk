@@ -111,10 +111,11 @@ namespace Realtime.Test {
             string otherId = Guid.NewGuid().ToString();
             LCIMConversation conversation = await client.CreateConversation(new List<string> { otherId });
 
-            conversation.Name = "leancloud";
-            conversation["k1"] = "v1";
-            conversation["k2"] = "v2";
-            await conversation.UpdateInfo();
+            await conversation.UpdateInfo(new Dictionary<string, object> {
+                { "name", "leancloud" },
+                { "k1", "v1" },
+                { "k2", "v2" }
+            });
 
             Assert.AreEqual(conversation.Name, "leancloud");
             Assert.AreEqual(conversation["k1"], "v1");

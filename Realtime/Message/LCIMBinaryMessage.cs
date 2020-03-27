@@ -10,5 +10,9 @@ namespace LeanCloud.Realtime {
         public LCIMBinaryMessage(byte[] data) {
             Data = data;
         }
+
+        internal static LCIMBinaryMessage Deserialize(byte[] bytes) {
+            return new LCIMBinaryMessage(bytes);
+        }
     }
 }
