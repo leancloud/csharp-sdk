@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using LeanCloud.Realtime.Protocol;
 
 namespace LeanCloud.Realtime {
     public abstract class LCIMMessage {

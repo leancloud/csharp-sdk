@@ -21,13 +21,13 @@ namespace LeanCloud.Realtime {
             return data;
         }
 
+        internal override int MessageType => TextMessageType;
+
         protected override void DecodeMessageData(Dictionary<string, object> msgData) {
             base.DecodeMessageData(msgData);
             if (msgData.TryGetValue("_lctext", out object value)) {
                 Text = value as string;
             }
         }
-
-        internal override int MessageType => TextMessageType;
     }
 }

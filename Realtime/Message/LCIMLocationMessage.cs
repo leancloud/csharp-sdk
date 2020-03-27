@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {

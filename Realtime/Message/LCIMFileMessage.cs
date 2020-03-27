@@ -37,6 +37,8 @@ namespace LeanCloud.Realtime {
             File = file;
         }
 
+        internal override int MessageType => FileMessageType;
+
         internal override Dictionary<string, object> Encode() {
             if (File == null) {
                 throw new Exception("File MUST NOT be null before sent.");
@@ -73,7 +75,5 @@ namespace LeanCloud.Realtime {
                 File.MetaData = metaData as Dictionary<string, object>;
             }
         }
-
-        internal override int MessageType => FileMessageType;
     }
 }
