@@ -78,10 +78,15 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Client.ConversationDict[convId] = conversation;
             }
             // 合并请求数据
+            conversation.Id = convId;
+            conversation.Unique = unique;
+            conversation.UniqueId = response.ConvMessage.UniqueId;
             conversation.Name = name;
-            conversation.ids = members != null ? new HashSet<string>(members) : null;
-            // 合并服务端推送的数据
-            conversation.MergeFrom(response.ConvMessage);
+            conversation.CreatorId = Client.Id;
+            conversation.ids = members != null ?
+                new HashSet<string>(members) : new HashSet<string>();
+            conversation.CreatedAt = DateTime.Parse(response.ConvMessage.Cdate);
+            conversation.UpdatedAt = conversation.CreatedAt;
             return conversation;
         }
 
@@ -457,12 +462,18 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Dictionary<string, object> conv = item as Dictionary<string, object>;
                 string convId = conv["objectId"] as string;
                 if (!Client.ConversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
-                    // TODO 解析是哪种类型的对话
-
-                    conversation = new LCIMConversation(Client);
+                    // 解析是哪种类型的对话
+                    if (conv.TryGetValue("tr", out object transient) && (bool)transient == true) {
+                        conversation = new LCIMChatRoom(Client);
+                    } else if (conv.ContainsKey("tempConv") && conv.ContainsKey("tempConvTTL")) {
+                        conversation = new LCIMTemporaryConversation(Client);
+                    } else if (conv.TryGetValue("sys", out object sys) && (bool)sys == true) {
+                        conversation = new LCIMServiceConversation(Client);
+                    } else {
+                        conversation = new LCIMConversation(Client);
+                    }
                     Client.ConversationDict[convId] = conversation;
                 }
-
                 conversation.MergeFrom(conv);
                 return conversation;
             }).ToList().AsReadOnly();
@@ -556,7 +567,6 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// <returns></returns>
         private async Task OnJoined(ConvCommand convMessage) {
             LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
-            conversation.MergeFrom(convMessage);
             Client.OnInvited?.Invoke(conversation, convMessage.InitBy);
         }
 

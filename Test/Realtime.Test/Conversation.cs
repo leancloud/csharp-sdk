@@ -35,7 +35,7 @@ namespace Realtime.Test {
 
             client.OnMembersJoined = (conv, memberList, initBy) => {
                 TestContext.WriteLine($"on members joined: {initBy}");
-                foreach (string memberId in conv.MemberIdList) {
+                foreach (string memberId in conv.MemberIds) {
                     TestContext.WriteLine(memberId);
                 }
                 tcs.SetResult(null);

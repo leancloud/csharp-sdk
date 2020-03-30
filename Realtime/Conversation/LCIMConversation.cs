@@ -5,11 +5,16 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage;
+using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Realtime {
     public class LCIMConversation {
         public string Id {
-            get; set;
+            get; internal set;
+        }
+
+        public bool Unique {
+            get; internal set;
         }
 
         public string UniqueId {
@@ -19,7 +24,8 @@ namespace LeanCloud.Realtime {
         public string Name {
             get {
                 return this["name"] as string;
-            } set {
+            }
+            internal set {
                 this["name"] = value;
             }
         }
@@ -28,7 +34,7 @@ namespace LeanCloud.Realtime {
             get; set;
         }
 
-        public ReadOnlyCollection<string> MemberIdList {
+        public ReadOnlyCollection<string> MemberIds {
             get {
                 return new ReadOnlyCollection<string>(ids.ToList());
             }
@@ -349,27 +355,12 @@ namespace LeanCloud.Realtime {
             return convId.StartsWith("_tmp:");
         }
 
-        internal void MergeFrom(ConvCommand conv) {
-            if (conv.HasCid) {
-                Id = conv.Cid;
-            }
-            if (conv.HasInitBy) {
-                CreatorId = conv.InitBy;
-            }
-            if (conv.HasCdate) {
-                CreatedAt = DateTime.Parse(conv.Cdate);
-            }
-            if (conv.HasUdate) {
-                UpdatedAt = DateTime.Parse(conv.Udate);
-            }
-            if (conv.M.Count > 0) {
-                ids = new HashSet<string>(conv.M.ToList());
-            }
-        }
-
         internal void MergeFrom(Dictionary<string, object> conv) {
             if (conv.TryGetValue("objectId", out object idObj)) {
                 Id = idObj as string;
+            }
+            if (conv.TryGetValue("unique", out object uniqueObj)) {
+                Unique = (bool)uniqueObj;
             }
             if (conv.TryGetValue("uniqueId", out object uniqueIdObj)) {
                 UniqueId = uniqueIdObj as string;
@@ -384,10 +375,15 @@ namespace LeanCloud.Realtime {
                 CreatorId = co as string;
             }
             if (conv.TryGetValue("m", out object mo)) {
-                ids = new HashSet<string>((mo as IList<object>).Cast<string>());
+                IEnumerable<string> ids = (mo as IList<object>).Cast<string>();
+                this.ids = new HashSet<string>(ids);
             }
             if (conv.TryGetValue("mu", out object muo)) {
-                mutedIds = new HashSet<string>((muo as IList<object>).Cast<string>());
+                IEnumerable<string> ids = (muo as IList<object>).Cast<string>();
+                mutedIds = new HashSet<string>(ids);
+            }
+            if (conv.TryGetValue("lm", out object lmo)) {
+                LastMessageAt = (DateTime)LCDecoder.Decode(lmo);
             }
         }
 
