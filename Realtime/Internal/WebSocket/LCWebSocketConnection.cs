@@ -57,7 +57,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             TaskCompletionSource<GenericCommand> tcs = new TaskCompletionSource<GenericCommand>();
             request.I = RequestI;
             responses.Add(request.I, tcs);
-            LCLogger.Debug($"{id} => {request.Cmd}/{request.Op}: {request.ToString()}");
+            LCLogger.Debug($"{id} => {request.Cmd}/{request.Op}: {request}");
             ArraySegment<byte> bytes = new ArraySegment<byte>(request.ToByteArray());
             try {
                 ws.SendAsync(bytes, WebSocketMessageType.Binary, true, default);
@@ -92,7 +92,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     } while (!result.EndOfMessage);
                     try {
                         GenericCommand command = GenericCommand.Parser.ParseFrom(data);
-                        LCLogger.Debug($"{id} <= {command.Cmd}/{command.Op}: {command.ToString()}");
+                        LCLogger.Debug($"{id} <= {command.Cmd}/{command.Op}: {command}");
                         _ = HandleCommand(command);
                     } catch (Exception e) {
                         // 解析消息错误
