@@ -14,7 +14,7 @@ namespace LeanCloud.Realtime.Internal.Router {
         }
 
         [JsonProperty("server")]
-        internal string Server {
+        internal string Primary {
             get; set;
         }
 

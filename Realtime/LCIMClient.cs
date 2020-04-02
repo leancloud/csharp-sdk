@@ -224,7 +224,9 @@ namespace LeanCloud.Realtime {
             GoAwayController = new LCIMGoAwayController(this);
 
             Connection = new LCWebSocketConnection(Id) {
-                OnNotification = OnNotification
+                OnNotification = OnNotification,
+                OnDisconnect = OnDisconnect,
+                OnReconnect = OnReconnect
             };
         }
 
@@ -385,6 +387,11 @@ namespace LeanCloud.Realtime {
                 default:
                     break;
             }
+        }
+
+        private async Task OnReconnect() {
+            // 打开 Session
+            await SessionController.Open();
         }
 
         internal async Task<LCIMConversation> GetOrQueryConversation(string convId) {

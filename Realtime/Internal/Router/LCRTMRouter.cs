@@ -12,11 +12,11 @@ namespace LeanCloud.Realtime.Internal.Router {
         internal LCRTMRouter() {
         }
 
-        internal async Task<string> GetServer() {
+        internal async Task<LCRTMServer> GetServer() {
             if (rtmServer == null || !rtmServer.IsValid) {
                 await Fetch();
             }
-            return rtmServer.Server;
+            return rtmServer;
         }
 
         internal void Reset() {
