@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.ObjectModel;
-using LeanCloud.Realtime.Protocol;
 using LeanCloud.Storage;
 using LeanCloud.Storage.Internal.Codec;
 

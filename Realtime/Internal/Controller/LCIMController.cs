@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using LeanCloud.Realtime.Protocol;
-using LeanCloud.Realtime.Internal.WebSocket;
+using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime.Internal.Controller {
     internal abstract class LCIMController {
@@ -14,7 +14,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         internal abstract Task OnNotification(GenericCommand notification);
 
-        protected LCWebSocketConnection Connection {
+        protected LCConnection Connection {
             get {
                 return Client.Connection;
             }

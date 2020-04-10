@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.ObjectModel;
-using LeanCloud.Realtime.Internal.WebSocket;
+using LeanCloud.Common;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
+using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime {
     public class LCIMClient {
@@ -66,6 +67,27 @@ namespace LeanCloud.Realtime {
         /// 客户端连接断开
         /// </summary>
         public Action OnDisconnect {
+            get; set;
+        }
+
+        /// <summary>
+        /// 客户端正在重连
+        /// </summary>
+        public Action OnReconnecting {
+            get; set;
+        }
+
+        /// <summary>
+        /// 客户端重连成功
+        /// </summary>
+        public Action OnReconnected {
+            get; set;
+        }
+
+        /// <summary>
+        /// 客户端重连失败，连接成功，登录失败
+        /// </summary>
+        public Action OnReconnectError {
             get; set;
         }
 
@@ -187,7 +209,7 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
-        internal LCWebSocketConnection Connection {
+        internal LCConnection Connection {
             get; set;
         }
 
@@ -211,6 +233,8 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
+        #region 接口
+
         public LCIMClient(string clientId,
             ILCIMSignatureFactory signatureFactory = null) {
             Id = clientId;
@@ -223,10 +247,10 @@ namespace LeanCloud.Realtime {
             UnreadController = new LCIMUnreadController(this);
             GoAwayController = new LCIMGoAwayController(this);
 
-            Connection = new LCWebSocketConnection(Id) {
-                OnNotification = OnNotification,
-                OnDisconnect = OnDisconnect,
-                OnReconnect = OnReconnect
+            Connection = new LCConnection(Id) {
+                OnNotification = OnConnectionNotification,
+                OnDisconnect = OnConnectionDisconnect,
+                OnReconnected = OnConnectionReconnect
             };
         }
 
@@ -367,31 +391,49 @@ namespace LeanCloud.Realtime {
             return new LCIMConversationQuery(this);
         }
 
-        private async Task OnNotification(GenericCommand notification) {
+        #endregion
+
+        private void OnConnectionNotification(GenericCommand notification) {
             switch (notification.Cmd) {
                 case CommandType.Session:
-                    await SessionController.OnNotification(notification);
+                    _ = SessionController.OnNotification(notification);
                     break;
                 case CommandType.Conv:
-                    await ConversationController.OnNotification(notification);
+                    _ = ConversationController.OnNotification(notification);
                     break;
                 case CommandType.Direct:
-                    await MessageController.OnNotification(notification);
+                    _ = MessageController.OnNotification(notification);
                     break;
                 case CommandType.Unread:
-                    await UnreadController.OnNotification(notification);
+                    _ = UnreadController.OnNotification(notification);
                     break;
                 case CommandType.Goaway:
-                    await GoAwayController.OnNotification(notification);
+                    _ = GoAwayController.OnNotification(notification);
                     break;
                 default:
                     break;
             }
         }
 
-        private async Task OnReconnect() {
-            // 打开 Session
-            await SessionController.Open();
+        private void OnConnectionDisconnect() {
+            OnDisconnect?.Invoke();
+        }
+
+        private void OnConnectionReconnect() {
+            _ = HandleReconnected();
+        }
+
+        private async Task HandleReconnected() {
+            try {
+                // 打开 Session
+                await SessionController.Open();
+                // 回调用户
+                OnReconnected?.Invoke();
+            } catch (Exception e) {
+                LCLogger.Error(e.Message);
+                await Connection.Close();
+                OnReconnectError?.Invoke();
+            }
         }
 
         internal async Task<LCIMConversation> GetOrQueryConversation(string convId) {
