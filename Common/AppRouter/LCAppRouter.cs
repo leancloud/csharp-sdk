@@ -63,7 +63,7 @@ namespace LeanCloud.Common {
                     Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString);
                     appServer = new LCAppServer(data);
                 } catch (Exception e) {
-                    LCLogger.Error(e.Message);
+                    LCLogger.Error(e);
                     // 拉取服务地址失败后，使用国际节点的默认服务地址
                     appServer = LCAppServer.GetInternalFallbackAppServer(appId);
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace LeanCloud.Common {
     /// <summary>
@@ -35,6 +36,16 @@ namespace LeanCloud.Common {
 
         public static void Error(string format, params object[] args) {
             LogDelegate?.Invoke(LCLogLevel.Error, string.Format(format, args));
+        }
+
+        public static void Error(Exception e) {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(e.GetType());
+            sb.Append("\n");
+            sb.Append(e.Message);
+            sb.Append("\n");
+            sb.Append(e.StackTrace);
+            Error(sb.ToString());
         }
     }
 }

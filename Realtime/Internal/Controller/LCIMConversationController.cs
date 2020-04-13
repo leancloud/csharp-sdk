@@ -451,7 +451,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                         Data = where
                     };
                 } catch (Exception e) {
-                    LCLogger.Error(e.Message);
+                    LCLogger.Error(e);
                 }
             }
             command.ConvMessage = convMessage;

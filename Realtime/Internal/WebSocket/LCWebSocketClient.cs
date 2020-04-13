@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Net.WebSockets;
 using LeanCloud.Common;
 using LeanCloud.Realtime.Internal.Router;
+using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime.Internal.WebSocket {
     /// <summary>
@@ -14,6 +15,8 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
         private const int CLOSE_TIMEOUT = 5000;
 
+        private const int CONNECT_TIMEOUT = 10000;
+
         internal Action<byte[]> OnMessage;
 
         internal Action OnDisconnect;
@@ -24,28 +27,35 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
         private readonly LCRTMRouter router;
 
-        internal LCWebSocketClient() {
-            router = new LCRTMRouter();
+        private readonly LCHeartBeat heartBeat;
+
+        internal LCWebSocketClient(LCRTMRouter router, LCHeartBeat heartBeat) {
+            this.router = router;
+            this.heartBeat = heartBeat;
         }
 
         internal async Task Connect() {
-            LCRTMServer rtmServer = await router.GetServer();
             try {
-                LCLogger.Debug($"Primary Server");
-                await Connect(rtmServer.Primary);
+                LCRTMServer rtmServer = await router.GetServer();
+                try {
+                    LCLogger.Debug($"Primary Server");
+                    await Connect(rtmServer.Primary);
+                } catch (Exception e) {
+                    LCLogger.Error(e);
+                    LCLogger.Debug($"Secondary Server");
+                    await Connect(rtmServer.Secondary);
+                }
             } catch (Exception e) {
-                LCLogger.Error(e.Message);
-                LCLogger.Debug($"Secondary Server");
-                await Connect(rtmServer.Secondary);
+                throw e;
             }
-
+            
             // 接收
             _ = StartReceive();
         }
 
         private async Task Connect(string server) {
             LCLogger.Debug($"Connecting WebSocket: {server}");
-            Task timeoutTask = Task.Delay(5000);
+            Task timeoutTask = Task.Delay(CONNECT_TIMEOUT);
             ws = new ClientWebSocket();
             ws.Options.AddSubProtocol("lc.protobuf2.3");
             Task connectTask = ws.ConnectAsync(new Uri(server), default);
@@ -61,14 +71,15 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             OnMessage = null;
             OnDisconnect = null;
             OnReconnect = null;
+            heartBeat.Stop();
             try {
                 // 发送关闭帧可能会很久，所以增加超时
                 // 主动挥手关闭，不会再收到 Close Frame
-                Task closeTask = ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "", default);
+                Task closeTask = ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, default);
                 Task delayTask = Task.Delay(CLOSE_TIMEOUT);
                 await Task.WhenAny(closeTask, delayTask);
             } catch (Exception e) {
-                LCLogger.Error(e.Message);
+                LCLogger.Error(e);
             } finally {
                 ws.Abort();
                 ws.Dispose();
@@ -82,7 +93,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                 try {
                     await ws.SendAsync(bytes, WebSocketMessageType.Binary, true, default);
                 } catch (Exception e) {
-                    LCLogger.Error(e.Message);
+                    LCLogger.Error(e);
                     throw e;
                 }
             } else {
@@ -99,16 +110,22 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     WebSocketReceiveResult result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), default);
                     if (result.MessageType == WebSocketMessageType.Close) {
                         // 由服务端发起关闭
-                        LCLogger.Debug($"Receive Closed: {result.CloseStatusDescription}");
-                        try {
-                            // 挥手关闭
-                            await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, default);
-                        } catch (Exception ex) {
-                            LCLogger.Error(ex.Message);
-                        } finally {
-                            HandleClose();
+                        LCLogger.Debug($"Receive Closed: {result.CloseStatus}");
+                        LCLogger.Debug($"ws state: {ws.State}");
+                        // 这里有可能是客户端主动关闭，也有可能是服务端主动关闭
+                        if (ws.State == WebSocketState.CloseReceived) {
+                            // 如果是服务端主动关闭，则挥手关闭，并认为是断线
+                            try {
+                                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, default);
+                            } catch (Exception e) {
+                                LCLogger.Error(e);
+                            } finally {
+                                // TODO 正常关闭不知道能否完成？？？
+                                OnDisconnect?.Invoke();
+                            }
                         }
                     } else if (result.MessageType == WebSocketMessageType.Binary) {
+                        _ = heartBeat.Update(HandleClose);
                         // 拼合 WebSocket Message
                         int length = result.Count;
                         byte[] data = new byte[length];
@@ -120,20 +137,18 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                 }
             } catch (Exception e) {
                 // 客户端网络异常
-                LCLogger.Error(e.Message);
-                LCLogger.Debug($"WebSocket State: {ws.State}");
-                HandleClose();
+                LCLogger.Error(e);
+                OnDisconnect?.Invoke();
             }
         }
 
         private void HandleClose() {
             try {
+                heartBeat.Stop();
                 ws.Abort();
                 ws.Dispose();
             } catch (Exception e) {
-                LCLogger.Error(e.Message);
-            } finally {
-                OnDisconnect?.Invoke();
+                LCLogger.Error(e);
             }
         }
     }

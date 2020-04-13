@@ -24,26 +24,22 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// </summary>
         private readonly int pongInterval;
 
-        private Action onTimeout;
-
         private CancellationTokenSource pingCTS;
         private CancellationTokenSource pongCTS;
 
         internal LCHeartBeat(LCConnection connection,
             int pingInterval,
-            int pongInterval,
-            Action onTimeout) {
+            int pongInterval) {
             this.connection = connection;
             this.pingInterval = pingInterval;
             this.pongInterval = pongInterval;
-            this.onTimeout = onTimeout;
         }
 
         /// <summary>
         /// 更新心跳监听
         /// </summary>
         /// <returns></returns>
-        internal async Task Update() {
+        internal async Task Update(Action onTimeout) {
             LCLogger.Debug("HeartBeat update");
             pingCTS?.Cancel();
             pongCTS?.Cancel();
@@ -78,7 +74,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// 停止心跳监听
         /// </summary>
         internal void Stop() {
-            onTimeout = null;
             pingCTS?.Cancel();
             pongCTS?.Cancel();
         }

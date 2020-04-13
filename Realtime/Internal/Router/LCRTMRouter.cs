@@ -6,12 +6,21 @@ using LeanCloud.Common;
 using Newtonsoft.Json;
 
 namespace LeanCloud.Realtime.Internal.Router {
+    /// <summary>
+    /// RTM Router
+    /// </summary>
     internal class LCRTMRouter {
+        private const int REQUEST_TIMEOUT = 10000;
+
         private LCRTMServer rtmServer;
 
         internal LCRTMRouter() {
         }
 
+        /// <summary>
+        /// 获取服务器地址
+        /// </summary>
+        /// <returns></returns>
         internal async Task<LCRTMServer> GetServer() {
             if (rtmServer == null || !rtmServer.IsValid) {
                 await Fetch();
@@ -19,6 +28,9 @@ namespace LeanCloud.Realtime.Internal.Router {
             return rtmServer;
         }
 
+        /// <summary>
+        /// 重置服务器地址缓存
+        /// </summary>
         internal void Reset() {
             rtmServer = null;
         }
@@ -33,9 +45,14 @@ namespace LeanCloud.Realtime.Internal.Router {
             };
             HttpClient client = new HttpClient();
             LCHttpUtils.PrintRequest(client, request);
-            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            request.Dispose();
 
+            Task<HttpResponseMessage> requestTask = client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            if (await Task.WhenAny(requestTask, Task.Delay(REQUEST_TIMEOUT)) != requestTask) {
+                throw new TimeoutException("Request timeout.");
+            }
+
+            HttpResponseMessage response = await requestTask;
+            request.Dispose();
             string resultString = await response.Content.ReadAsStringAsync();
             response.Dispose();
             LCHttpUtils.PrintResponse(response, resultString);

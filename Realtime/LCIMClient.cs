@@ -455,7 +455,7 @@ namespace LeanCloud.Realtime {
                 // 回调用户
                 OnReconnected?.Invoke();
             } catch (Exception e) {
-                LCLogger.Error(e.Message);
+                LCLogger.Error(e);
                 await Connection.Close();
                 OnReconnectError?.Invoke();
             }

@@ -165,7 +165,7 @@ namespace LeanCloud.Storage.Internal.Http {
                 code = (int)error["code"];
                 message = error["error"].ToString();
             } catch (Exception e) {
-                LCLogger.Error(e.Message);
+                LCLogger.Error(e);
             }
             return new LCException(code, message);
         }
