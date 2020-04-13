@@ -14,14 +14,23 @@ namespace RealtimeConsole {
 
             LCLogger.LogDelegate += (level, info) => {
                 switch (level) {
-                    case LCLogLevel.Debug:
-                        Console.WriteLine($"[DEBUG]\n{info}");
+                    case LCLogLevel.Debug: {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine($"{DateTime.Now} [DEBUG]\n{info}");
+                            Console.ResetColor();
+                        }
                         break;
-                    case LCLogLevel.Warn:
-                        Console.WriteLine($"[WARNING]\n{info}");
+                    case LCLogLevel.Warn: {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine($"{DateTime.Now} [WARNING]\n{info}");
+                            Console.ResetColor();
+                        }
                         break;
-                    case LCLogLevel.Error:
-                        Console.WriteLine($"[ERROR]\n{info}");
+                    case LCLogLevel.Error: {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"{DateTime.Now} [ERROR]\n{info}");
+                            Console.ResetColor();
+                        }
                         break;
                     default:
                         Console.WriteLine(info);
@@ -32,13 +41,21 @@ namespace RealtimeConsole {
 
             SingleThreadSynchronizationContext.Run(async () => {
                 Console.WriteLine($"start at {Thread.CurrentThread.ManagedThreadId}");
-                await Run("cc4");
+                //await Run("cc1");
                 //await ChatRoom();
                 //await TemporaryConversation();
                 //await CreateConversation();
                 //await QueryMyConversation();
+                //await AutoSendMessage();
+
+                //await KeepAlive();
+
+                await OpenAndClose();
+
                 Console.WriteLine($"done at {Thread.CurrentThread.ManagedThreadId}");
             });
+
+            //AutoSendMessage().Wait();
 
             //Conversation().Wait();
 
@@ -65,6 +82,24 @@ namespace RealtimeConsole {
             Console.ReadKey(true);
         }
 
+        static async Task KeepAlive() {
+            LCIMClient client = new LCIMClient("cc1");
+            await client.Open();
+        }
+
+        static async Task AutoSendMessage() {
+            LCIMClient client = new LCIMClient("cc1");
+            await client.Open();
+            LCIMConversation conversation = await client.CreateConversation(new string[] { "cc2", "cc3", "cc5" });
+            int count = 0;
+            while (count < 10) {
+                LCIMTextMessage textMessage = new LCIMTextMessage($"hello, {count}");
+                await conversation.Send(textMessage);
+                await Task.Delay(5000);
+                count++;
+            }
+        }
+
         static async Task DemoAsync() {
             Dictionary<int, int> d = new Dictionary<int, int>();
             for (int i = 0; i < 10000; i++) {
@@ -86,17 +121,16 @@ namespace RealtimeConsole {
                     Console.WriteLine($"unread: {conv.Id}");
                 }
             };
-            client.OnMessage = (conversation, message) => {
+            client.OnMessage = async (conversation, message) => {
                 Console.WriteLine($"recv: {conversation.Id}, {message.Id} at {Thread.CurrentThread.ManagedThreadId}");
+                await conversation.Read();
             };
         }
 
         static async Task CreateConversation() {
             LCIMClient cc1 = new LCIMClient("cc1");
             await cc1.Open();
-            //await cc1.CreateChatRoom("leancloud chat");
-            await cc1.CreateTemporaryConversation(new string[] { "cc2", "cc3" });
-            //await cc1.CreateConversation(new string[] { "cc4" });
+            await cc1.CreateConversation(new string[] { "cc2", "cc3", "cc5" });
         }
 
         static async Task QueryMyConversation() {
@@ -146,6 +180,7 @@ namespace RealtimeConsole {
         static async Task OpenAndClose() {
             LCIMClient o1 = new LCIMClient("o1");
             await o1.Open();
+            await Task.Delay(30000);
             await o1.Close();
         }
 

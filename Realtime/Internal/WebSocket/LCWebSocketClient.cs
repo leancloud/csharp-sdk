@@ -5,6 +5,9 @@ using LeanCloud.Common;
 using LeanCloud.Realtime.Internal.Router;
 
 namespace LeanCloud.Realtime.Internal.WebSocket {
+    /// <summary>
+    /// WebSocket 客户端，只与通信协议相关
+    /// </summary>
     internal class LCWebSocketClient {
         // .net standard 2.0 好像在拼合 Frame 时有 bug，所以将这个值调整大一些
         private const int RECV_BUFFER_SIZE = 1024 * 5;
@@ -28,11 +31,11 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         internal async Task Connect() {
             LCRTMServer rtmServer = await router.GetServer();
             try {
-                LCLogger.Debug($"Connect Primary Server");
+                LCLogger.Debug($"Primary Server");
                 await Connect(rtmServer.Primary);
             } catch (Exception e) {
                 LCLogger.Error(e.Message);
-                LCLogger.Debug($"Connect Secondary");
+                LCLogger.Debug($"Secondary Server");
                 await Connect(rtmServer.Secondary);
             }
 
@@ -41,7 +44,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         }
 
         private async Task Connect(string server) {
-            LCLogger.Debug($"Connect WebSocket: {server}");
+            LCLogger.Debug($"Connecting WebSocket: {server}");
             Task timeoutTask = Task.Delay(5000);
             ws = new ClientWebSocket();
             ws.Options.AddSubProtocol("lc.protobuf2.3");
@@ -54,6 +57,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         }
 
         internal async Task Close() {
+            LCLogger.Debug("Closing WebSocket");
             OnMessage = null;
             OnDisconnect = null;
             OnReconnect = null;
@@ -68,7 +72,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             } finally {
                 ws.Abort();
                 ws.Dispose();
-                LCLogger.Debug("Closed WebSocket.");
+                LCLogger.Debug("Closed WebSocket");
             }
         }
 
@@ -82,7 +86,9 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     throw e;
                 }
             } else {
-                throw new Exception($"Error Websocket state: {ws.State}");
+                string message = $"Error Websocket state: {ws.State}";
+                LCLogger.Error(message);
+                throw new Exception(message);
             }
         }
 

@@ -9,6 +9,9 @@ using LeanCloud.Common;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime.Internal.Connection {
+    /// <summary>
+    /// 连接层，只与数据协议相关
+    /// </summary>
     internal class LCConnection {
         private const int SEND_TIMEOUT = 10000;
 

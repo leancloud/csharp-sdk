@@ -9,6 +9,9 @@ using LeanCloud.Realtime.Internal.Controller;
 using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// 通信客户端
+    /// </summary>
     public class LCIMClient {
         internal Dictionary<string, LCIMConversation> ConversationDict;
 
@@ -186,6 +189,20 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
+        /// 消息已送达
+        /// </summary>
+        public Action<LCIMConversation, string> OnMessageDelivered {
+            get; set;
+        }
+
+        /// <summary>
+        /// 消息已读
+        /// </summary>
+        public Action<LCIMConversation, string> OnMessageRead {
+            get; set;
+        }
+
+        /// <summary>
         /// 未读消息数目更新
         /// </summary>
         public Action<ReadOnlyCollection<LCIMConversation>> OnUnreadMessagesCountUpdated {
@@ -233,6 +250,10 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
+        internal LCIMRcpController RcpController {
+            get; private set;
+        }
+
         #region 接口
 
         public LCIMClient(string clientId,
@@ -246,6 +267,7 @@ namespace LeanCloud.Realtime {
             MessageController = new LCIMMessageController(this);
             UnreadController = new LCIMUnreadController(this);
             GoAwayController = new LCIMGoAwayController(this);
+            RcpController = new LCIMRcpController(this);
 
             Connection = new LCConnection(Id) {
                 OnNotification = OnConnectionNotification,
@@ -409,6 +431,9 @@ namespace LeanCloud.Realtime {
                     break;
                 case CommandType.Goaway:
                     _ = GoAwayController.OnNotification(notification);
+                    break;
+                case CommandType.Rcp:
+                    _ = RcpController.OnNotification(notification);
                     break;
                 default:
                     break;
