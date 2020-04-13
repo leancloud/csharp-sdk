@@ -498,6 +498,19 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return convList;
         }
 
+        internal async Task FetchReciptTimestamp(string convId) {
+            ConvCommand convCommand = new ConvCommand {
+                Cid = convId
+            };
+            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.MaxRead);
+            request.ConvMessage = convCommand;
+            GenericCommand response = await Connection.SendRequest(request);
+            convCommand = response.ConvMessage;
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convCommand.Cid);
+            conversation.LastDeliveredTimestamp = convCommand.MaxAckTimestamp;
+            conversation.LastReadTimestamp = convCommand.MaxReadTimestamp;
+        }
+
         private LCIMPartiallySuccessResult NewPartiallySuccessResult(IEnumerable<string> succesfulIds,
             IEnumerable<ErrorCommand> errors) {
             LCIMPartiallySuccessResult result = new LCIMPartiallySuccessResult {

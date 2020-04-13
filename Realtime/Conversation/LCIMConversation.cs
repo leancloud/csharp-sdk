@@ -61,8 +61,26 @@ namespace LeanCloud.Realtime {
             get; internal set;
         }
 
-        public DateTime LastMessageAt {
+        public long LastDeliveredTimestamp {
             get; internal set;
+        }
+
+        public DateTime LastDeliveredAt {
+            get {
+                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(LastDeliveredTimestamp);
+                return dateTimeOffset.DateTime;
+            }
+        }
+
+        public long LastReadTimestamp {
+            get; internal set;
+        }
+
+        public DateTime LastReadAt {
+            get {
+                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(LastReadTimestamp);
+                return dateTimeOffset.DateTime;
+            }
         }
 
         public object this[string key] {
@@ -243,6 +261,11 @@ namespace LeanCloud.Realtime {
             return await Client.ConversationController.BlockMembers(Id, clientIds);
         }
 
+        /// <summary>
+        /// 将用户移除黑名单
+        /// </summary>
+        /// <param name="clientIds"></param>
+        /// <returns></returns>
         public async Task<LCIMPartiallySuccessResult> UnblockMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
@@ -334,20 +357,37 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// 查询黑名单用户
         /// </summary>
-        /// <param name="limit"></param>
-        /// <param name="next"></param>
+        /// <param name="limit">限制</param>
+        /// <param name="next">其实用户 Id</param>
         /// <returns></returns>
         public async Task<LCIMPageResult> QueryBlockedMembers(int limit = 10,
             string next = null) {
             return await Client.ConversationController.QueryBlockedMembers(Id, limit, next);
         }
 
+        /// <summary>
+        /// 查询聊天记录
+        /// </summary>
+        /// <param name="start">起点</param>
+        /// <param name="end">终点</param>
+        /// <param name="direction">查找方向</param>
+        /// <param name="limit">限制</param>
+        /// <param name="messageType">消息类型</param>
+        /// <returns></returns>
         public async Task<List<LCIMMessage>> QueryMessages(LCIMMessageQueryEndpoint start = null,
             LCIMMessageQueryEndpoint end = null,
             LCIMMessageQueryDirection direction = LCIMMessageQueryDirection.NewToOld,
             int limit = 20,
             int messageType = 0) {
             return await Client.MessageController.QueryMessages(Id, start, end, direction, limit, messageType);
+        }
+
+        /// <summary>
+        /// 获取会话已收/已读时间戳
+        /// </summary>
+        /// <returns></returns>
+        public async Task FetchReciptTimestamps() {
+            await Client.ConversationController.FetchReciptTimestamp(Id);
         }
 
         internal static bool IsTemporayConversation(string convId) {
@@ -381,9 +421,9 @@ namespace LeanCloud.Realtime {
                 IEnumerable<string> ids = (muo as IList<object>).Cast<string>();
                 mutedIds = new HashSet<string>(ids);
             }
-            if (conv.TryGetValue("lm", out object lmo)) {
-                LastMessageAt = (DateTime)LCDecoder.Decode(lmo);
-            }
+            //if (conv.TryGetValue("lm", out object lmo)) {
+            //    LastMessageAt = (DateTime)LCDecoder.Decode(lmo);
+            //}
         }
 
         internal void MergeInfo(Dictionary<string, object> attr) {
