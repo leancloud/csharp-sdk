@@ -37,7 +37,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
             GenericCommand response = await Client.Connection.SendRequest(request);
-            UpdateSession(response.SessionMessage);
+            if (response.Op == OpType.Opened) {
+                UpdateSession(response.SessionMessage);
+            } else if (response.Op == OpType.Closed) {
+                await OnClosed(response.SessionMessage);
+            }
         }
 
         /// <summary>
@@ -119,7 +123,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             string reason = session.Reason;
             string detail = session.Detail;
             await Connection.Close();
-            Client.OnClose?.Invoke(code, reason, detail);
+            Client.OnClose?.Invoke(code, reason);
         }
 
         #endregion

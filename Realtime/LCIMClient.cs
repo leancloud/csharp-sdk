@@ -66,7 +66,7 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// 当前客户端被服务端强行下线
         /// </summary>
-        public Action<int, string, string> OnClose {
+        public Action<int, string> OnClose {
             get; set;
         }
 
@@ -459,7 +459,7 @@ namespace LeanCloud.Realtime {
                 LCLogger.Error(e);
                 await Connection.Close();
                 // TODO 告知
-                //OnClose?.Invoke();
+                OnClose?.Invoke(0, string.Empty);
             }
         }
 

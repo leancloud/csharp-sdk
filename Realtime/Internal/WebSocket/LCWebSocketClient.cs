@@ -120,7 +120,6 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                             } catch (Exception e) {
                                 LCLogger.Error(e);
                             } finally {
-                                // TODO 正常关闭不知道能否完成？？？
                                 OnDisconnect?.Invoke();
                             }
                         }

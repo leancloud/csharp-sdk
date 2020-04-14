@@ -27,7 +27,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// <summary>
         /// 重连间隔
         /// </summary>
-        private const int RECONNECT_INTERVAL = 5000;
+        private const int RECONNECT_INTERVAL = 10000;
 
         /// <summary>
         /// 心跳间隔

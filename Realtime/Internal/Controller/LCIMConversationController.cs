@@ -632,9 +632,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// <returns></returns>
         private async Task OnLeft(ConvCommand convMessage) {
             LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
-            Client.OnKicked?.Invoke(conversation, convMessage.InitBy);
             // TODO 从内存中清除对话
 
+            Client.OnKicked?.Invoke(conversation, convMessage.InitBy);
         }
 
         /// <summary>
