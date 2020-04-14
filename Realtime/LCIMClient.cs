@@ -19,6 +19,10 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
+        public string Tag {
+            get; private set;
+        }
+
         #region 事件
 
         /// <summary>
@@ -84,13 +88,6 @@ namespace LeanCloud.Realtime {
         /// 客户端重连成功
         /// </summary>
         public Action OnReconnected {
-            get; set;
-        }
-
-        /// <summary>
-        /// 客户端重连失败，连接成功，登录失败
-        /// </summary>
-        public Action OnReconnectError {
             get; set;
         }
 
@@ -257,11 +254,15 @@ namespace LeanCloud.Realtime {
         #region 接口
 
         public LCIMClient(string clientId,
+            string tag = null,
             ILCIMSignatureFactory signatureFactory = null) {
             Id = clientId;
+            Tag = tag;
             SignatureFactory = signatureFactory;
+
             ConversationDict = new Dictionary<string, LCIMConversation>();
 
+            // 模块
             SessionController = new LCIMSessionController(this);
             ConversationController = new LCIMConversationController(this);
             MessageController = new LCIMMessageController(this);
@@ -280,10 +281,10 @@ namespace LeanCloud.Realtime {
         /// 连接
         /// </summary>
         /// <returns></returns>
-        public async Task Open() {
+        public async Task Open(bool reconnect = false) {
             await Connection.Connect();
             // 打开 Session
-            await SessionController.Open();
+            await SessionController.Open(reconnect);
         }
 
         /// <summary>
@@ -451,13 +452,14 @@ namespace LeanCloud.Realtime {
         private async Task HandleReconnected() {
             try {
                 // 打开 Session
-                await SessionController.Open();
+                await SessionController.Reopen();
                 // 回调用户
                 OnReconnected?.Invoke();
             } catch (Exception e) {
                 LCLogger.Error(e);
                 await Connection.Close();
-                OnReconnectError?.Invoke();
+                // TODO 告知
+                //OnClose?.Invoke();
             }
         }
 
@@ -467,28 +469,6 @@ namespace LeanCloud.Realtime {
             }
             conversation = await GetConversation(convId);
             return conversation;
-        }
-
-        internal GenericCommand NewCommand(CommandType cmd, OpType op) {
-            GenericCommand command = NewCommand(cmd);
-            command.Op = op;
-            return command;
-        }
-
-        internal GenericCommand NewCommand(CommandType cmd) {
-            return new GenericCommand {
-                Cmd = cmd,
-                AppId = LCApplication.AppId,
-                PeerId = Id,
-            };
-        }
-
-        internal GenericCommand NewDirectCommand() {
-            return new GenericCommand {
-                Cmd = CommandType.Direct,
-                AppId = LCApplication.AppId,
-                PeerId = Id,
-            };
         }
     }
 }

@@ -14,12 +14,24 @@ namespace LeanCloud.Realtime.Internal.Connection {
     /// 连接层，只与数据协议相关
     /// </summary>
     internal class LCConnection {
+        /// <summary>
+        /// 发送超时
+        /// </summary>
         private const int SEND_TIMEOUT = 10000;
 
+        /// <summary>
+        /// 最大重连次数，超过后重置 Router 缓存后再次尝试重连
+        /// </summary>
         private const int MAX_RECONNECT_TIMES = 3;
 
+        /// <summary>
+        /// 重连间隔
+        /// </summary>
         private const int RECONNECT_INTERVAL = 5000;
 
+        /// <summary>
+        /// 心跳间隔
+        /// </summary>
         private const int HEART_BEAT_INTERVAL = 5000;
 
         internal Action<GenericCommand> OnNotification;

@@ -19,5 +19,19 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 return Client.Connection;
             }
         }
+
+        protected GenericCommand NewCommand(CommandType cmd, OpType op) {
+            GenericCommand command = NewCommand(cmd);
+            command.Op = op;
+            return command;
+        }
+
+        protected GenericCommand NewCommand(CommandType cmd) {
+            return new GenericCommand {
+                Cmd = cmd,
+                AppId = LCApplication.AppId,
+                PeerId = Client.Id,
+            };
+        }
     }
 }

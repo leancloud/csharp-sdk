@@ -18,9 +18,23 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// 打开会话
         /// </summary>
         /// <returns></returns>
-        internal async Task Open() {
+        internal async Task Open(bool reconnect) {
             SessionCommand session = NewSessionCommand();
-            GenericCommand request = Client.NewCommand(CommandType.Session, OpType.Open);
+            session.R = reconnect;
+            GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
+            request.SessionMessage = session;
+            GenericCommand response = await Client.Connection.SendRequest(request);
+            UpdateSession(response.SessionMessage);
+        }
+
+        /// <summary>
+        /// 重新打开会话，重连时调用
+        /// </summary>
+        /// <returns></returns>
+        internal async Task Reopen() {
+            SessionCommand session = NewSessionCommand();
+            session.R = true;
+            GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
             GenericCommand response = await Client.Connection.SendRequest(request);
             UpdateSession(response.SessionMessage);
@@ -31,7 +45,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// </summary>
         /// <returns></returns>
         internal async Task Close() {
-            GenericCommand request = Client.NewCommand(CommandType.Session, OpType.Close);
+            GenericCommand request = NewCommand(CommandType.Session, OpType.Close);
             await Client.Connection.SendRequest(request);
         }
 
@@ -50,7 +64,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         private async Task Refresh() {
             SessionCommand session = NewSessionCommand();
-            GenericCommand request = Client.NewCommand(CommandType.Session, OpType.Refresh);
+            GenericCommand request = NewCommand(CommandType.Session, OpType.Refresh);
             request.SessionMessage = session;
             GenericCommand response = await Client.Connection.SendRequest(request);
             UpdateSession(response.SessionMessage);
@@ -58,6 +72,10 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         private SessionCommand NewSessionCommand() {
             SessionCommand session = new SessionCommand();
+            if (Client.Tag != null) {
+                session.Tag = Client.Tag;
+                session.DeviceId = Guid.NewGuid().ToString();
+            }
             if (Client.SignatureFactory != null) {
                 LCIMSignature signature = Client.SignatureFactory.CreateConnectSignature(Client.Id);
                 session.S = signature.Signature;

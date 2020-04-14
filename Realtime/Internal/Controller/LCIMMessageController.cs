@@ -32,7 +32,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             } else {
                 throw new ArgumentException("Message MUST BE LCIMTypedMessage or LCIMBinaryMessage.");
             }
-            GenericCommand command = Client.NewDirectCommand();
+            GenericCommand command = NewCommand(CommandType.Direct);
             command.DirectMessage = direct;
             GenericCommand response = await Client.Connection.SendRequest(command);
             // 消息发送应答
@@ -57,7 +57,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Recall = true
             };
             patch.Patches.Add(item);
-            GenericCommand request = Client.NewCommand(CommandType.Patch, OpType.Modify);
+            GenericCommand request = NewCommand(CommandType.Patch, OpType.Modify);
             request.PatchMessage = patch;
             await Client.Connection.SendRequest(request);
         }
@@ -91,7 +91,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 item.MentionAll = newMessage.MentionAll;
             }
             patch.Patches.Add(item);
-            GenericCommand request = Client.NewCommand(CommandType.Patch, OpType.Modify);
+            GenericCommand request = NewCommand(CommandType.Patch, OpType.Modify);
             request.PatchMessage = patch;
             GenericCommand response = await Client.Connection.SendRequest(request);
         }
@@ -131,7 +131,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             if (messageType != 0) {
                 logs.Lctype = messageType;
             }
-            GenericCommand request = Client.NewCommand(CommandType.Logs, OpType.Open);
+            GenericCommand request = NewCommand(CommandType.Logs, OpType.Open);
             request.LogsMessage = logs;
             GenericCommand response = await Client.Connection.SendRequest(request);
             // TODO 反序列化聊天记录

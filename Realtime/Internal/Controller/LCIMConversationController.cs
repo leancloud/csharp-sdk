@@ -36,7 +36,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             bool temporary = false,
             int temporaryTtl = 86400,
             Dictionary<string, object> properties = null) {
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Start);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Start);
             ConvCommand conv = new ConvCommand {
                 Transient = transient,
                 Unique = unique,
@@ -99,7 +99,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             ConvCommand conv = new ConvCommand {
                 Cid = convId,
             };
-            GenericCommand command = Client.NewCommand(CommandType.Conv, OpType.Count);
+            GenericCommand command = NewCommand(CommandType.Conv, OpType.Count);
             command.ConvMessage = conv;
             GenericCommand response = await Connection.SendRequest(command);
             return response.ConvMessage.Count;
@@ -120,7 +120,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Timestamp = message.SentTimestamp
             };
             read.Convs.Add(tuple);
-            GenericCommand request = Client.NewCommand(CommandType.Read, OpType.Open);
+            GenericCommand request = NewCommand(CommandType.Read, OpType.Open);
             request.ReadMessage = read;
             await Client.Connection.SendRequest(request);
         }
@@ -139,7 +139,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             conv.Attr = new JsonObjectMessage {
                 Data = JsonConvert.SerializeObject(attributes)
             };
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Update);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Update);
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
             JsonObjectMessage attr = response.ConvMessage.AttrModified;
@@ -173,7 +173,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 conv.T = signature.Timestamp;
                 conv.N = signature.Nonce;
             }
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Add);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Add);
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
             List<string> allowedIds = response.ConvMessage.AllowedPids.ToList();
@@ -203,7 +203,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 conv.T = signature.Timestamp;
                 conv.N = signature.Nonce;
             }
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Remove);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Remove);
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
             List<string> allowedIds = response.ConvMessage.AllowedPids.ToList();
@@ -220,7 +220,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             ConvCommand conv = new ConvCommand {
                 Cid = convId
             };
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Mute);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Mute);
             request.ConvMessage = conv;
             await Client.Connection.SendRequest(request);
         }
@@ -234,7 +234,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             ConvCommand conv = new ConvCommand {
                 Cid = convId
             };
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Unmute);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Unmute);
             request.ConvMessage = conv;
             await Client.Connection.SendRequest(request);
         }
@@ -254,7 +254,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Cid = convId
             };
             conv.M.AddRange(clientIds);
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.AddShutup);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.AddShutup);
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
             return NewPartiallySuccessResult(response.ConvMessage.AllowedPids, response.ConvMessage.FailedPids);
@@ -272,7 +272,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Cid = convId
             };
             conv.M.AddRange(clientIds);
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Remove);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Remove);
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
             return NewPartiallySuccessResult(response.ConvMessage.AllowedPids, response.ConvMessage.FailedPids);
@@ -299,7 +299,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 blacklist.T = signature.Timestamp;
                 blacklist.N = signature.Nonce;
             }
-            GenericCommand request = Client.NewCommand(CommandType.Blacklist, OpType.Block);
+            GenericCommand request = NewCommand(CommandType.Blacklist, OpType.Block);
             request.BlacklistMessage = blacklist;
             GenericCommand response = await Client.Connection.SendRequest(request);
             return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
@@ -326,7 +326,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 blacklist.T = signature.Timestamp;
                 blacklist.N = signature.Nonce;
             }
-            GenericCommand request = Client.NewCommand(CommandType.Blacklist, OpType.Unblock);
+            GenericCommand request = NewCommand(CommandType.Blacklist, OpType.Unblock);
             request.BlacklistMessage = blacklist;
             GenericCommand response = await Client.Connection.SendRequest(request);
             return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
@@ -350,7 +350,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     Role = role
                 }
             };
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.MemberInfoUpdate);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.MemberInfoUpdate);
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
         }
@@ -398,7 +398,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Limit = limit,
                 Next = next
             };
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.QueryShutup);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.QueryShutup);
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
             return new LCIMPageResult {
@@ -422,7 +422,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Limit = limit,
                 Next = next
             };
-            GenericCommand request = Client.NewCommand(CommandType.Blacklist, OpType.Query);
+            GenericCommand request = NewCommand(CommandType.Blacklist, OpType.Query);
             request.BlacklistMessage = black;
             GenericCommand response = await Client.Connection.SendRequest(request);
             return new LCIMPageResult {
@@ -479,13 +479,18 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }).ToList().AsReadOnly();
         }
 
+        /// <summary>
+        /// 获取临时对话
+        /// </summary>
+        /// <param name="convIds"></param>
+        /// <returns></returns>
         internal async Task<List<LCIMTemporaryConversation>> GetTemporaryConversations(IEnumerable<string> convIds) {
             if (convIds == null || convIds.Count() == 0) {
                 return null;
             }
             ConvCommand convMessage = new ConvCommand();
             convMessage.TempConvIds.AddRange(convIds);
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.Query);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Query);
             request.ConvMessage = convMessage;
             GenericCommand response = await Connection.SendRequest(request);
             JsonObjectMessage results = response.ConvMessage.Results;
@@ -498,17 +503,42 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return convList;
         }
 
+        /// <summary>
+        /// 拉取对话接收/已读情况
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <returns></returns>
         internal async Task FetchReciptTimestamp(string convId) {
             ConvCommand convCommand = new ConvCommand {
                 Cid = convId
             };
-            GenericCommand request = Client.NewCommand(CommandType.Conv, OpType.MaxRead);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.MaxRead);
             request.ConvMessage = convCommand;
             GenericCommand response = await Connection.SendRequest(request);
             convCommand = response.ConvMessage;
             LCIMConversation conversation = await Client.GetOrQueryConversation(convCommand.Cid);
             conversation.LastDeliveredTimestamp = convCommand.MaxAckTimestamp;
             conversation.LastReadTimestamp = convCommand.MaxReadTimestamp;
+        }
+
+        /// <summary>
+        /// 获取在线成员
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        internal async Task<ReadOnlyCollection<string>> GetOnlineMembers(string convId,
+            int limit) {
+            ConvCommand conv = new ConvCommand {
+                Cid = convId,
+                Limit = limit
+            };
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.Members);
+            request.ConvMessage = conv;
+            GenericCommand response = await Client.Connection.SendRequest(request);
+            ReadOnlyCollection<string> members = response.ConvMessage.M
+                .ToList().AsReadOnly();
+            return members;
         }
 
         private LCIMPartiallySuccessResult NewPartiallySuccessResult(IEnumerable<string> succesfulIds,
