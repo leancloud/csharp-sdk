@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using Google.Protobuf;
 using LeanCloud.Realtime.Protocol;
@@ -106,7 +107,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// <param name="limit"></param>
         /// <param name="messageType"></param>
         /// <returns></returns>
-        internal async Task<List<LCIMMessage>> QueryMessages(string convId,
+        internal async Task<ReadOnlyCollection<LCIMMessage>> QueryMessages(string convId,
             LCIMMessageQueryEndpoint start = null,
             LCIMMessageQueryEndpoint end = null,
             LCIMMessageQueryDirection direction = LCIMMessageQueryDirection.NewToOld,
@@ -134,9 +135,28 @@ namespace LeanCloud.Realtime.Internal.Controller {
             GenericCommand request = NewCommand(CommandType.Logs, OpType.Open);
             request.LogsMessage = logs;
             GenericCommand response = await Client.Connection.SendRequest(request);
-            // TODO 反序列化聊天记录
-
-            return null;
+            // 反序列化聊天记录
+            return response.LogsMessage.Logs.Select(item => {
+                LCIMMessage message;
+                if (item.Bin) {
+                    // 二进制消息
+                    byte[] bytes = Convert.FromBase64String(item.Data);
+                    message = LCIMBinaryMessage.Deserialize(bytes);
+                } else {
+                    // 类型消息
+                    message = LCIMTypedMessage.Deserialize(item.Data);
+                }
+                message.ConversationId = convId;
+                message.Id = item.MsgId;
+                message.FromClientId = item.From;
+                message.SentTimestamp = item.Timestamp;
+                message.DeliveredTimestamp = item.AckAt;
+                message.ReadTimestamp = item.ReadAt;
+                message.PatchedTimestamp = item.PatchTimestamp;
+                message.MentionAll = item.MentionAll;
+                message.MentionIdList = item.MentionPids.ToList();
+                return message;
+            }).ToList().AsReadOnly();
         }
 
         /// <summary>
@@ -182,8 +202,6 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         internal override async Task OnNotification(GenericCommand notification) {
             DirectCommand direct = notification.DirectMessage;
-            // 通知服务端已接收
-            _ = Ack(direct.Cid, direct.Id);
             // 反序列化消息
             LCIMMessage message;
             if (direct.HasBinaryMsg) {
@@ -199,6 +217,14 @@ namespace LeanCloud.Realtime.Internal.Controller {
             message.Id = direct.Id;
             message.FromClientId = direct.FromPeerId;
             message.SentTimestamp = direct.Timestamp;
+            message.MentionAll = direct.MentionAll;
+            message.MentionIdList = direct.MentionPids.ToList();
+            message.PatchedTimestamp = direct.PatchTimestamp;
+            message.IsTransient = direct.Transient;
+            // 通知服务端已接收
+            if (!message.IsTransient) {
+                _ = Ack(message.ConversationId, message.Id);
+            }
             // 获取对话
             LCIMConversation conversation = await Client.GetOrQueryConversation(direct.Cid);
             conversation.LastMessage = message;
