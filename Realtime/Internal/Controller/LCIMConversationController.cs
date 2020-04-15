@@ -106,26 +106,6 @@ namespace LeanCloud.Realtime.Internal.Controller {
         }
 
         /// <summary>
-        /// 标记对话的消息已读
-        /// </summary>
-        /// <param name="convId"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        internal async Task Read(string convId,
-            LCIMMessage message) {
-            ReadCommand read = new ReadCommand();
-            ReadTuple tuple = new ReadTuple {
-                Cid = convId,
-                Mid = message.Id,
-                Timestamp = message.SentTimestamp
-            };
-            read.Convs.Add(tuple);
-            GenericCommand request = NewCommand(CommandType.Read, OpType.Open);
-            request.ReadMessage = read;
-            await Client.Connection.SendRequest(request);
-        }
-
-        /// <summary>
         /// 更新对话属性
         /// </summary>
         /// <param name="convId"></param>

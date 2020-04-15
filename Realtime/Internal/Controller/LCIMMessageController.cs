@@ -139,6 +139,43 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return null;
         }
 
+        /// <summary>
+        /// 确认收到消息
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="msgId"></param>
+        /// <returns></returns>
+        internal async Task Ack(string convId,
+            string msgId) {
+            AckCommand ack = new AckCommand {
+                Cid = convId,
+                Mid = msgId
+            };
+            GenericCommand request = NewCommand(CommandType.Ack);
+            request.AckMessage = ack;
+            await Client.Connection.SendRequest(request);
+        }
+
+        /// <summary>
+        /// 确认已读消息
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        internal async Task Read(string convId,
+            LCIMMessage msg) {
+            ReadCommand read = new ReadCommand();
+            ReadTuple tuple = new ReadTuple {
+                Cid = convId,
+                Mid = msg.Id,
+                Timestamp = msg.SentTimestamp
+            };
+            read.Convs.Add(tuple);
+            GenericCommand request = NewCommand(CommandType.Read, OpType.Open);
+            request.ReadMessage = read;
+            await Client.Connection.SendRequest(request);
+        }
+
         #endregion
 
         #region 消息处理
