@@ -151,9 +151,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Cid = convId,
                 Mid = msgId
             };
-            GenericCommand request = NewCommand(CommandType.Ack);
-            request.AckMessage = ack;
-            await Client.Connection.SendRequest(request);
+            GenericCommand command = NewCommand(CommandType.Ack);
+            command.AckMessage = ack;
+            await Client.Connection.SendCommand(command);
         }
 
         /// <summary>
@@ -171,9 +171,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Timestamp = msg.SentTimestamp
             };
             read.Convs.Add(tuple);
-            GenericCommand request = NewCommand(CommandType.Read, OpType.Open);
-            request.ReadMessage = read;
-            await Client.Connection.SendRequest(request);
+            GenericCommand command = NewCommand(CommandType.Read);
+            command.ReadMessage = read;
+            await Client.Connection.SendCommand(command);
         }
 
         #endregion
@@ -182,6 +182,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         internal override async Task OnNotification(GenericCommand notification) {
             DirectCommand direct = notification.DirectMessage;
+            // 通知服务端已接收
+            _ = Ack(direct.Cid, direct.Id);
+            // 反序列化消息
             LCIMMessage message;
             if (direct.HasBinaryMsg) {
                 // 二进制消息
