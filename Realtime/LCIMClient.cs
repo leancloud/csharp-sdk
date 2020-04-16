@@ -23,7 +23,38 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
+        public string DeviceId {
+            get; private set;
+        }
+
         #region 事件
+
+        #region 连接状态事件
+
+        /// <summary>
+        /// 客户端连接断开
+        /// </summary>
+        public Action OnPaused {
+            get; set;
+        }
+
+        /// <summary>
+        /// 客户端连接恢复正常
+        /// </summary>
+        public Action OnResume {
+            get; set;
+        }
+
+        /// <summary>
+        /// 当前客户端被服务端强行下线
+        /// </summary>
+        public Action<int, string> OnClose {
+            get; set;
+        }
+
+        #endregion
+
+        #region 对话事件
 
         /// <summary>
         /// 当前用户被加入某个对话的黑名单
@@ -48,55 +79,6 @@ namespace LeanCloud.Realtime {
         /// 当前用户在某个对话中被解除禁言
         /// </summary>
         public Action<LCIMConversation, string> OnUnmuted;
-
-        /// <summary>
-        /// 客户端连接断开
-        /// </summary>
-        public Action OnPaused {
-            get; set;
-        }
-
-        /// <summary>
-        /// 客户端连接恢复正常
-        /// </summary>
-        public Action OnResume {
-            get; set;
-        }
-
-        /// <summary>
-        /// 当前客户端被服务端强行下线
-        /// </summary>
-        public Action<int, string> OnClose {
-            get; set;
-        }
-
-        /// <summary>
-        /// 客户端连接断开
-        /// </summary>
-        public Action OnDisconnect {
-            get; set;
-        }
-
-        /// <summary>
-        /// 客户端正在重连
-        /// </summary>
-        public Action OnReconnecting {
-            get; set;
-        }
-
-        /// <summary>
-        /// 客户端重连成功
-        /// </summary>
-        public Action OnReconnected {
-            get; set;
-        }
-
-        /// <summary>
-        /// 用户在其他客户端登录，当前客户端被服务端强行下线
-        /// </summary>
-        public Action<string> OnConflict {
-            get; set;
-        }
 
         /// <summary>
         /// 该对话信息被更新
@@ -164,6 +146,10 @@ namespace LeanCloud.Realtime {
         /// </summary>
         public Action<LCIMConversation, string, string, string> OnMemberInfoUpdated;
 
+        #endregion
+
+        #region 消息事件
+
         /// <summary>
         /// 当前用户收到消息
         /// </summary>
@@ -207,15 +193,20 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 
+        /// 最近分发消息更新
         /// </summary>
         public Action OnLastDeliveredAtUpdated {
             get; set;
         }
 
+        /// <summary>
+        /// 最近已读消息更新
+        /// </summary>
         public Action OnLastReadAtUpdated {
             get; set;
         }
+
+        #endregion
 
         #endregion
 
@@ -255,9 +246,11 @@ namespace LeanCloud.Realtime {
 
         public LCIMClient(string clientId,
             string tag = null,
+            string deviceId = null,
             ILCIMSignatureFactory signatureFactory = null) {
             Id = clientId;
             Tag = tag;
+            DeviceId = deviceId;
             SignatureFactory = signatureFactory;
 
             ConversationDict = new Dictionary<string, LCIMConversation>();
@@ -278,13 +271,14 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 连接
+        /// 登录
         /// </summary>
+        /// <param name="force">是否强制登录</param>
         /// <returns></returns>
-        public async Task Open(bool reconnect = false) {
+        public async Task Open(bool force = true) {
             await Connection.Connect();
             // 打开 Session
-            await SessionController.Open(reconnect);
+            await SessionController.Open(force);
         }
 
         /// <summary>
@@ -442,7 +436,7 @@ namespace LeanCloud.Realtime {
         }
 
         private void OnConnectionDisconnect() {
-            OnDisconnect?.Invoke();
+            OnPaused?.Invoke();
         }
 
         private void OnConnectionReconnect() {
@@ -454,7 +448,7 @@ namespace LeanCloud.Realtime {
                 // 打开 Session
                 await SessionController.Reopen();
                 // 回调用户
-                OnReconnected?.Invoke();
+                OnResume?.Invoke();
             } catch (Exception e) {
                 LCLogger.Error(e);
                 await Connection.Close();

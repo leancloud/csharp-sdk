@@ -6,7 +6,7 @@ using LeanCloud.Realtime.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Connection {
     /// <summary>
-    /// 心跳控制器
+    /// 心跳控制器，由于 .Net Standard 2.0 不支持发送 ping frame，所以需要发送逻辑心跳
     /// 1. 每次接收到消息后开始监听，如果在 pingInterval 时间内没有再次接收到消息，则发送 ping 请求；
     /// 2. 发送后等待 pongInterval 时间，如果在此时间内接收到了任何消息，则取消并重新开始监听 1；
     /// 3. 如果没收到消息，则认为超时并回调，连接层接收回调后放弃当前连接，以断线逻辑处理

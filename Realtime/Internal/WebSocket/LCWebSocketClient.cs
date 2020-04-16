@@ -7,21 +7,31 @@ using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime.Internal.WebSocket {
     /// <summary>
-    /// WebSocket 客户端，只与通信协议相关
+    /// WebSocket 客户端，负责底层连接和事件，只与通信协议相关
     /// </summary>
     internal class LCWebSocketClient {
         // .net standard 2.0 好像在拼合 Frame 时有 bug，所以将这个值调整大一些
         private const int RECV_BUFFER_SIZE = 1024 * 5;
 
+        /// <summary>
+        /// 关闭超时
+        /// </summary>
         private const int CLOSE_TIMEOUT = 5000;
 
+        /// <summary>
+        /// 连接超时
+        /// </summary>
         private const int CONNECT_TIMEOUT = 10000;
 
+        /// <summary>
+        /// 消息事件
+        /// </summary>
         internal Action<byte[]> OnMessage;
 
-        internal Action OnDisconnect;
-
-        internal Action OnReconnect;
+        /// <summary>
+        /// 连接关闭
+        /// </summary>
+        internal Action OnClose;
 
         private ClientWebSocket ws;
 
@@ -34,6 +44,10 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             this.heartBeat = heartBeat;
         }
 
+        /// <summary>
+        /// 连接
+        /// </summary>
+        /// <returns></returns>
         internal async Task Connect() {
             try {
                 LCRTMServer rtmServer = await router.GetServer();
@@ -53,6 +67,11 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             _ = StartReceive();
         }
 
+        /// <summary>
+        /// 连接指定 ws 服务器
+        /// </summary>
+        /// <param name="server"></param>
+        /// <returns></returns>
         private async Task Connect(string server) {
             LCLogger.Debug($"Connecting WebSocket: {server}");
             Task timeoutTask = Task.Delay(CONNECT_TIMEOUT);
@@ -66,11 +85,14 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             }
         }
 
+        /// <summary>
+        /// 主动关闭连接
+        /// </summary>
+        /// <returns></returns>
         internal async Task Close() {
             LCLogger.Debug("Closing WebSocket");
             OnMessage = null;
-            OnDisconnect = null;
-            OnReconnect = null;
+            OnClose = null;
             heartBeat.Stop();
             try {
                 // 发送关闭帧可能会很久，所以增加超时
@@ -87,6 +109,11 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             }
         }
 
+        /// <summary>
+        /// 发送数据
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         internal async Task Send(byte[] data) {
             ArraySegment<byte> bytes = new ArraySegment<byte>(data);
             if (ws.State == WebSocketState.Open) {
@@ -103,28 +130,30 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             }
         }
 
+        /// <summary>
+        /// 接收数据
+        /// </summary>
+        /// <returns></returns>
         private async Task StartReceive() {
             byte[] buffer = new byte[RECV_BUFFER_SIZE];
             try {
                 while (ws.State == WebSocketState.Open) {
                     WebSocketReceiveResult result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), default);
                     if (result.MessageType == WebSocketMessageType.Close) {
-                        // 由服务端发起关闭
                         LCLogger.Debug($"Receive Closed: {result.CloseStatus}");
-                        LCLogger.Debug($"ws state: {ws.State}");
-                        // 这里有可能是客户端主动关闭，也有可能是服务端主动关闭
                         if (ws.State == WebSocketState.CloseReceived) {
                             // 如果是服务端主动关闭，则挥手关闭，并认为是断线
                             try {
-                                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, default);
+                                Task closeTask = ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, default);
+                                await Task.WhenAny(closeTask, Task.Delay(CLOSE_TIMEOUT));
                             } catch (Exception e) {
                                 LCLogger.Error(e);
                             } finally {
-                                OnDisconnect?.Invoke();
+                                HandleExceptionClose();
                             }
                         }
                     } else if (result.MessageType == WebSocketMessageType.Binary) {
-                        _ = heartBeat.Update(HandleClose);
+                        _ = heartBeat.Update(HandleExceptionClose);
                         // 拼合 WebSocket Message
                         int length = result.Count;
                         byte[] data = new byte[length];
@@ -137,17 +166,19 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             } catch (Exception e) {
                 // 客户端网络异常
                 LCLogger.Error(e);
-                OnDisconnect?.Invoke();
+                OnClose?.Invoke();
             }
         }
 
-        private void HandleClose() {
+        private void HandleExceptionClose() {
             try {
                 heartBeat.Stop();
                 ws.Abort();
                 ws.Dispose();
             } catch (Exception e) {
                 LCLogger.Error(e);
+            } finally {
+                OnClose?.Invoke();
             }
         }
     }

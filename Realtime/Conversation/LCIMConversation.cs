@@ -4,22 +4,36 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.ObjectModel;
 using LeanCloud.Storage;
-using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// 普通对话
+    /// </summary>
     public class LCIMConversation {
+        /// <summary>
+        /// 对话 Id
+        /// </summary>
         public string Id {
             get; internal set;
         }
 
+        /// <summary>
+        /// 是否唯一
+        /// </summary>
         public bool Unique {
             get; internal set;
         }
 
+        /// <summary>
+        /// 唯一 Id
+        /// </summary>
         public string UniqueId {
             get; internal set;
         }
 
+        /// <summary>
+        /// 对话名称
+        /// </summary>
         public string Name {
             get {
                 return this["name"] as string;
@@ -29,42 +43,69 @@ namespace LeanCloud.Realtime {
             }
         }
 
+        /// <summary>
+        /// 创建者 Id
+        /// </summary>
         public string CreatorId {
             get; set;
         }
 
+        /// <summary>
+        /// 成员 Id
+        /// </summary>
         public ReadOnlyCollection<string> MemberIds {
             get {
                 return new ReadOnlyCollection<string>(ids.ToList());
             }
         }
 
+        /// <summary>
+        /// 静音成员 Id
+        /// </summary>
         public ReadOnlyCollection<string> MutedMemberIds {
             get {
                 return new ReadOnlyCollection<string>(mutedIds.ToList());
             }
         }
 
+        /// <summary>
+        /// 未读消息数量
+        /// </summary>
         public int Unread {
             get; internal set;
         }
 
+        /// <summary>
+        /// 最新的一条消息
+        /// </summary>
         public LCIMMessage LastMessage {
             get; internal set;
         }
 
+        /// <summary>
+        /// 创建时间
+        /// </summary>
         public DateTime CreatedAt {
             get; internal set;
         }
 
+        /// <summary>
+        /// 更新时间
+        /// </summary>
         public DateTime UpdatedAt {
             get; internal set;
         }
 
+        /// <summary>
+        /// 最新送达消息时间戳
+        /// </summary>
         public long LastDeliveredTimestamp {
             get; internal set;
         }
 
+        /// <summary>
+        /// 最新送达消息时间
+        /// </summary>
         public DateTime LastDeliveredAt {
             get {
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(LastDeliveredTimestamp);
@@ -72,10 +113,16 @@ namespace LeanCloud.Realtime {
             }
         }
 
+        /// <summary>
+        /// 最新已读消息时间戳
+        /// </summary>
         public long LastReadTimestamp {
             get; internal set;
         }
 
+        /// <summary>
+        /// 最新已读消息时间
+        /// </summary>
         public DateTime LastReadAt {
             get {
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(LastReadTimestamp);
@@ -83,6 +130,11 @@ namespace LeanCloud.Realtime {
             }
         }
 
+        /// <summary>
+        /// 设置/获取对话属性
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public object this[string key] {
             get {
                 return customProperties[key];
@@ -92,6 +144,9 @@ namespace LeanCloud.Realtime {
             }
         }
 
+        /// <summary>
+        /// 是否已静音
+        /// </summary>
         public bool IsMute {
             get; private set;
         }
@@ -100,7 +155,7 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
-        private Dictionary<string, object> customProperties;
+        private readonly Dictionary<string, object> customProperties;
 
         internal HashSet<string> ids;
 
@@ -128,7 +183,7 @@ namespace LeanCloud.Realtime {
             if (LastMessage == null) {
                 return;
             }
-            await Client.ConversationController.Read(Id, LastMessage);
+            await Client.MessageController.Read(Id, LastMessage);
         }
 
         /// <summary>
@@ -374,7 +429,7 @@ namespace LeanCloud.Realtime {
         /// <param name="limit">限制</param>
         /// <param name="messageType">消息类型</param>
         /// <returns></returns>
-        public async Task<List<LCIMMessage>> QueryMessages(LCIMMessageQueryEndpoint start = null,
+        public async Task<ReadOnlyCollection<LCIMMessage>> QueryMessages(LCIMMessageQueryEndpoint start = null,
             LCIMMessageQueryEndpoint end = null,
             LCIMMessageQueryDirection direction = LCIMMessageQueryDirection.NewToOld,
             int limit = 20,

@@ -78,6 +78,10 @@ namespace LeanCloud.Realtime {
             get; internal set;
         }
 
+        public bool IsTransient {
+            get; internal set;
+        }
+
         internal LCIMMessage() {
         }
     }

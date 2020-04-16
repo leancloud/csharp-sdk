@@ -223,6 +223,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             message.IsTransient = direct.Transient;
             // 通知服务端已接收
             if (!message.IsTransient) {
+                // 只有非暂态消息才需要发送 ack
                 _ = Ack(message.ConversationId, message.Id);
             }
             // 获取对话

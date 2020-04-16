@@ -18,9 +18,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// 打开会话
         /// </summary>
         /// <returns></returns>
-        internal async Task Open(bool reconnect) {
+        internal async Task Open(bool force) {
             SessionCommand session = NewSessionCommand();
-            session.R = reconnect;
+            session.R = !force;
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
             GenericCommand response = await Client.Connection.SendRequest(request);
@@ -78,7 +78,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
             SessionCommand session = new SessionCommand();
             if (Client.Tag != null) {
                 session.Tag = Client.Tag;
-                session.DeviceId = Guid.NewGuid().ToString();
+            }
+            if (Client.DeviceId != null) {
+                session.DeviceId = Client.DeviceId;
             }
             if (Client.SignatureFactory != null) {
                 LCIMSignature signature = Client.SignatureFactory.CreateConnectSignature(Client.Id);

@@ -28,13 +28,6 @@ namespace LeanCloud.Realtime.Internal.Router {
             return rtmServer;
         }
 
-        /// <summary>
-        /// 重置服务器地址缓存
-        /// </summary>
-        internal void Reset() {
-            rtmServer = null;
-        }
-
         async Task<LCRTMServer> Fetch() {
             string server = await LCApplication.AppRouter.GetRealtimeServer();
             string url = $"{server}/v1/route?appId={LCApplication.AppId}&secure=1";
