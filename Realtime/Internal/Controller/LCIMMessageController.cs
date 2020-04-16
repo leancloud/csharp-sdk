@@ -21,7 +21,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// <param name="message"></param>
         /// <returns></returns>
         internal async Task<LCIMMessage> Send(string convId,
-            LCIMMessage message) {
+            LCIMMessage message,
+            LCIMMessageSendOptions options) {
             DirectCommand direct = new DirectCommand {
                 FromPeerId = Client.Id,
                 Cid = convId,
@@ -33,8 +34,24 @@ namespace LeanCloud.Realtime.Internal.Controller {
             } else {
                 throw new ArgumentException("Message MUST BE LCIMTypedMessage or LCIMBinaryMessage.");
             }
+            // 暂态消息
+            if (options.Transient) {
+                direct.Transient = options.Transient;
+            }
+            // 消息接收回执
+            if (options.Receipt) {
+                direct.R = options.Receipt;
+            }
+            // 遗愿消息
+            if (options.Will) {
+                direct.Will = options.Will;
+            }
             GenericCommand command = NewCommand(CommandType.Direct);
             command.DirectMessage = direct;
+            // 优先级
+            if (command.Priority > 0) {
+                command.Priority = (int)options.Priority;
+            }
             GenericCommand response = await Client.Connection.SendRequest(command);
             // 消息发送应答
             AckCommand ack = response.AckMessage;

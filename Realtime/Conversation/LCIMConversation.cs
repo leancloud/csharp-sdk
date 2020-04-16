@@ -254,11 +254,15 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task<LCIMMessage> Send(LCIMMessage message) {
+        public async Task<LCIMMessage> Send(LCIMMessage message,
+            LCIMMessageSendOptions options = null) {
             if (message == null) {
                 throw new ArgumentNullException(nameof(message));
             }
-            await Client.MessageController.Send(Id, message);
+            if (options == null) {
+                options = LCIMMessageSendOptions.Default;
+            }
+            await Client.MessageController.Send(Id, message, options);
             return message;
         }
 
