@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using LeanCloud.Storage;
 using LeanCloud.Realtime.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Controller {
@@ -19,7 +21,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// </summary>
         /// <returns></returns>
         internal async Task Open(bool force) {
-            SessionCommand session = NewSessionCommand();
+            SessionCommand session = await NewSessionCommand();
             session.R = !force;
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
@@ -32,7 +34,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// </summary>
         /// <returns></returns>
         internal async Task Reopen() {
-            SessionCommand session = NewSessionCommand();
+            SessionCommand session = await NewSessionCommand();
             session.R = true;
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
@@ -67,14 +69,14 @@ namespace LeanCloud.Realtime.Internal.Controller {
         #endregion
 
         private async Task Refresh() {
-            SessionCommand session = NewSessionCommand();
+            SessionCommand session = await NewSessionCommand();
             GenericCommand request = NewCommand(CommandType.Session, OpType.Refresh);
             request.SessionMessage = session;
             GenericCommand response = await Client.Connection.SendRequest(request);
             UpdateSession(response.SessionMessage);
         }
 
-        private SessionCommand NewSessionCommand() {
+        private async Task<SessionCommand> NewSessionCommand() {
             SessionCommand session = new SessionCommand();
             if (Client.Tag != null) {
                 session.Tag = Client.Tag;
@@ -82,8 +84,21 @@ namespace LeanCloud.Realtime.Internal.Controller {
             if (Client.DeviceId != null) {
                 session.DeviceId = Client.DeviceId;
             }
+            LCIMSignature signature = null;
             if (Client.SignatureFactory != null) {
-                LCIMSignature signature = Client.SignatureFactory.CreateConnectSignature(Client.Id);
+                signature = await Client.SignatureFactory.CreateConnectSignature(Client.Id);
+            }
+            if (signature == null && !string.IsNullOrEmpty(Client.SessionToken)) {
+                Dictionary<string, object> ret = await LCApplication.HttpClient.Post<Dictionary<string, object>>("rtm/sign", data: new Dictionary<string, object> {
+                    { "session_token", Client.SessionToken }
+                });
+                signature = new LCIMSignature {
+                    Signature = ret["signature"] as string,
+                    Timestamp = (long)ret["timestamp"],
+                    Nonce = ret["nonce"] as string
+                };
+            }
+            if (signature != null) {
                 session.S = signature.Signature;
                 session.T = signature.Timestamp;
                 session.N = signature.Nonce;

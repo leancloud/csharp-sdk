@@ -57,7 +57,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 };
             }
             if (Client.SignatureFactory != null) {
-                LCIMSignature signature = Client.SignatureFactory.CreateStartConversationSignature(Client.Id, members);
+                LCIMSignature signature = await Client.SignatureFactory.CreateStartConversationSignature(Client.Id, members);
                 conv.S = signature.Signature;
                 conv.T = signature.Timestamp;
                 conv.N = signature.Nonce;
@@ -145,7 +145,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             conv.M.AddRange(clientIds);
             // 签名参数
             if (Client.SignatureFactory != null) {
-                LCIMSignature signature = Client.SignatureFactory.CreateConversationSignature(convId,
+                LCIMSignature signature = await Client.SignatureFactory.CreateConversationSignature(convId,
                     Client.Id,
                     clientIds,
                     LCIMSignatureAction.Invite);
@@ -175,7 +175,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             conv.M.AddRange(removeIds);
             // 签名参数
             if (Client.SignatureFactory != null) {
-                LCIMSignature signature = Client.SignatureFactory.CreateConversationSignature(convId,
+                LCIMSignature signature = await Client.SignatureFactory.CreateConversationSignature(convId,
                     Client.Id,
                     removeIds,
                     LCIMSignatureAction.Kick);
@@ -271,7 +271,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             };
             blacklist.ToPids.AddRange(clientIds);
             if (Client.SignatureFactory != null) {
-                LCIMSignature signature = Client.SignatureFactory.CreateBlacklistSignature(convId,
+                LCIMSignature signature = await Client.SignatureFactory.CreateBlacklistSignature(convId,
                     Client.Id,
                     clientIds,
                     LCIMSignatureAction.ConversationBlockClients);
@@ -298,7 +298,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             };
             blacklist.ToPids.AddRange(clientIds);
             if (Client.SignatureFactory != null) {
-                LCIMSignature signature = Client.SignatureFactory.CreateBlacklistSignature(convId,
+                LCIMSignature signature = await Client.SignatureFactory.CreateBlacklistSignature(convId,
                     Client.Id,
                     clientIds,
                     LCIMSignatureAction.ConversationUnblockClients);

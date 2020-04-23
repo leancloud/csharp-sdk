@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime {
     public interface ILCIMSignatureFactory {
@@ -7,13 +8,13 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        LCIMSignature CreateConnectSignature(string clientId);
+        Task<LCIMSignature> CreateConnectSignature(string clientId);
 
         /// <summary>
         /// 创建开启对话签名
         /// </summary>
         /// <returns></returns>
-        LCIMSignature CreateStartConversationSignature(string clientId, IEnumerable<string> memberIds);
+        Task<LCIMSignature> CreateStartConversationSignature(string clientId, IEnumerable<string> memberIds);
 
         /// <summary>
         /// 创建会话相关签名
@@ -23,7 +24,7 @@ namespace LeanCloud.Realtime {
         /// <param name="memberIds"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        LCIMSignature CreateConversationSignature(string conversationId, string clientId, IEnumerable<string> memberIds, string action);
+        Task<LCIMSignature> CreateConversationSignature(string conversationId, string clientId, IEnumerable<string> memberIds, string action);
 
         /// <summary>
         /// 创建黑名单相关签名
@@ -33,6 +34,6 @@ namespace LeanCloud.Realtime {
         /// <param name="memberIds"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        LCIMSignature CreateBlacklistSignature(string conversationId, string clientId, IEnumerable<string> memberIds, string action);
+        Task<LCIMSignature> CreateBlacklistSignature(string conversationId, string clientId, IEnumerable<string> memberIds, string action);
     }
 }

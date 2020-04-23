@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.ObjectModel;
 using LeanCloud.Common;
+using LeanCloud.Storage;
 using LeanCloud.Realtime.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
 using LeanCloud.Realtime.Internal.Connection;
@@ -24,6 +25,10 @@ namespace LeanCloud.Realtime {
         }
 
         public string DeviceId {
+            get; private set;
+        }
+
+        internal string SessionToken {
             get; private set;
         }
 
@@ -248,6 +253,31 @@ namespace LeanCloud.Realtime {
             string tag = null,
             string deviceId = null,
             ILCIMSignatureFactory signatureFactory = null) {
+            if (string.IsNullOrEmpty(clientId)) {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+            SetUpClient(clientId, tag, deviceId, signatureFactory);
+        }
+
+        public LCIMClient(LCUser user,
+            string tag = null,
+            string deviceId = null,
+            ILCIMSignatureFactory signatureFactory = null) {
+            if (user == null) {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (string.IsNullOrEmpty(user.ObjectId) ||
+                string.IsNullOrEmpty(user.SessionToken)) {
+                throw new ArgumentException("User must be authenticacted.");
+            }
+            SetUpClient(user.ObjectId, tag, deviceId, signatureFactory);
+            SessionToken = user.SessionToken;
+        }
+
+        private void SetUpClient(string clientId,
+            string tag,
+            string deviceId,
+            ILCIMSignatureFactory signatureFactory) {
             Id = clientId;
             Tag = tag;
             DeviceId = deviceId;
