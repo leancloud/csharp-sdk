@@ -19,7 +19,10 @@ namespace LeanCloud.Realtime {
 
         public string Format {
             get {
-                return File.MimeType;
+                if (File.MetaData.TryGetValue("format", out object format)) {
+                    return format as string;
+                }
+                return "unknown/unknown";
             }
         }
 
@@ -65,14 +68,14 @@ namespace LeanCloud.Realtime {
             Dictionary<string, object> fileData = msgData["_lcfile"] as Dictionary<string, object>;
             string objectId = fileData["objId"] as string;
             File = LCObject.CreateWithoutData(LCFile.CLASS_NAME, objectId) as LCFile;
-            if (fileData.TryGetValue("name", out object name)) {
-                File.Name = name as string;
-            }
             if (fileData.TryGetValue("url", out object url)) {
                 File.Url = url as string;
             }
             if (fileData.TryGetValue("metaData", out object metaData)) {
                 File.MetaData = metaData as Dictionary<string, object>;
+                if (File.MetaData.TryGetValue("name", out object name)) {
+                    File.Name = name as string;
+                }
             }
         }
     }
