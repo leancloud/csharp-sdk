@@ -184,6 +184,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         private async Task Reconnect() {
+            OnReconnecting?.Invoke();
             while (true) {
                 int reconnectCount = 0;
                 // 重连策略

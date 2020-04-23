@@ -263,6 +263,7 @@ namespace LeanCloud.Realtime {
                 options = LCIMMessageSendOptions.Default;
             }
             await Client.MessageController.Send(Id, message, options);
+            LastMessage = message;
             return message;
         }
 

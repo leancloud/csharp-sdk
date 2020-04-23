@@ -10,6 +10,9 @@ namespace LeanCloud.Realtime.Internal.Router {
     /// RTM Router
     /// </summary>
     internal class LCRTMRouter {
+        /// <summary>
+        /// 请求超时
+        /// </summary>
         private const int REQUEST_TIMEOUT = 10000;
 
         private LCRTMServer rtmServer;
