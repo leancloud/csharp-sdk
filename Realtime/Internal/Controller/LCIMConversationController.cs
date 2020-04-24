@@ -375,9 +375,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
             string next = null) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId,
-                Limit = limit,
-                Next = next
+                Limit = limit
             };
+            if (next != null) {
+                conv.Next = next;
+            }
             GenericCommand request = NewCommand(CommandType.Conv, OpType.QueryShutup);
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
@@ -399,9 +401,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
             string next = null) {
             BlacklistCommand black = new BlacklistCommand {
                 SrcCid = convId,
-                Limit = limit,
-                Next = next
+                Limit = limit
             };
+            if (next != null) {
+                black.Next = next;
+            }
             GenericCommand request = NewCommand(CommandType.Blacklist, OpType.Query);
             request.BlacklistMessage = black;
             GenericCommand response = await Client.Connection.SendRequest(request);
@@ -620,7 +624,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         private async Task OnMembersJoined(ConvCommand convMessage) {
             LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
             ReadOnlyCollection<string> joinedIds = new ReadOnlyCollection<string>(convMessage.M);
-            conversation.ids.Union(joinedIds);
+            conversation.ids.UnionWith(joinedIds);
             Client.OnMembersJoined?.Invoke(conversation, joinedIds, convMessage.InitBy);
         }
 
@@ -666,7 +670,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         private async Task OnMembersMuted(ConvCommand convMessage) {
             LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
             ReadOnlyCollection<string> mutedMemberIds = new ReadOnlyCollection<string>(convMessage.M);
-            conversation.mutedIds.Union(mutedMemberIds);
+            conversation.mutedIds.UnionWith(mutedMemberIds);
             Client.OnMembersMuted?.Invoke(conversation, mutedMemberIds, convMessage.InitBy);
         }
 

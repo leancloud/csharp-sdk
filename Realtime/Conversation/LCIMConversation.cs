@@ -164,6 +164,9 @@ namespace LeanCloud.Realtime {
         internal LCIMConversation(LCIMClient client) {
             Client = client;
             customProperties = new Dictionary<string, object>();
+            ids = new HashSet<string>();
+            mutedIds = new HashSet<string>();
+            customProperties = new Dictionary<string, object>();
         }
 
         /// <summary>
@@ -210,7 +213,9 @@ namespace LeanCloud.Realtime {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
             }
-            return await Client.ConversationController.AddMembers(Id, clientIds);
+            LCIMPartiallySuccessResult result = await Client.ConversationController.AddMembers(Id, clientIds);
+            ids.UnionWith(result.SuccessfulClientIdList);
+            return result;
         }
 
         /// <summary>
@@ -222,7 +227,9 @@ namespace LeanCloud.Realtime {
             if (removeIds == null || removeIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(removeIds));
             }
-            return await Client.ConversationController.RemoveMembers(Id, removeIds);
+            LCIMPartiallySuccessResult result = await Client.ConversationController.RemoveMembers(Id, removeIds);
+            ids.RemoveWhere(id => result.SuccessfulClientIdList.Contains(id));
+            return result;
         }
 
         /// <summary>
@@ -294,7 +301,11 @@ namespace LeanCloud.Realtime {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
             }
-            return await Client.ConversationController.MuteMembers(Id, clientIds);
+            LCIMPartiallySuccessResult result = await Client.ConversationController.MuteMembers(Id, clientIds);
+            if (result.SuccessfulClientIdList != null) {
+                mutedIds.UnionWith(result.SuccessfulClientIdList);
+            }
+            return result;
         }
 
         /// <summary>
@@ -306,7 +317,11 @@ namespace LeanCloud.Realtime {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
             }
-            return await Client.ConversationController.UnmuteMembers(Id, clientIds);
+            LCIMPartiallySuccessResult result = await Client.ConversationController.UnmuteMembers(Id, clientIds);
+            if (result.SuccessfulClientIdList != null) {
+                mutedIds.RemoveWhere(id => result.SuccessfulClientIdList.Contains(id));
+            }
+            return result;
         }
 
         /// <summary>
