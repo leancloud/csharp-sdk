@@ -521,6 +521,25 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return members;
         }
 
+        /// <summary>
+        /// 查询是否订阅
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <returns></returns>
+        internal async Task<bool> CheckSubscription(string convId) {
+            ConvCommand conv = new ConvCommand();
+            conv.Cids.Add(convId);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.IsMember);
+            request.ConvMessage = conv;
+            GenericCommand response = await Client.Connection.SendRequest(request);
+            JsonObjectMessage jsonObj = response.ConvMessage.Results;
+            Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonObj.Data);
+            if (result.TryGetValue(convId, out object obj)) {
+                return (bool)obj;
+            }
+            return false;
+        }
+
         private LCIMPartiallySuccessResult NewPartiallySuccessResult(IEnumerable<string> succesfulIds,
             IEnumerable<ErrorCommand> errors) {
             LCIMPartiallySuccessResult result = new LCIMPartiallySuccessResult {

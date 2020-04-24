@@ -9,7 +9,7 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
-        private LCIMClient client;
+        private readonly LCIMClient client;
 
         public LCIMConversationQuery(LCIMClient client) {
             Condition = new LCCompositionalCondition();

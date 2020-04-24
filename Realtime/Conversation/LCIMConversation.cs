@@ -206,7 +206,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="clientIds">用户 Id</param>
         /// <returns></returns>
-        public async Task<LCIMPartiallySuccessResult> AddMembers(IEnumerable<string> clientIds) {
+        public virtual async Task<LCIMPartiallySuccessResult> AddMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
                 throw new ArgumentNullException(nameof(clientIds));
             }
