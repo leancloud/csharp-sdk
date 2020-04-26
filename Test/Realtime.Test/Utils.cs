@@ -8,13 +8,13 @@ namespace Realtime.Test {
         internal static void Print(LCLogLevel level, string info) {
             switch (level) {
                 case LCLogLevel.Debug:
-                    TestContext.Out.WriteLine($"[DEBUG] {info}");
+                    TestContext.Out.WriteLine($"[DEBUG] {info}\n");
                     break;
                 case LCLogLevel.Warn:
-                    TestContext.Out.WriteLine($"[WARNING] {info}");
+                    TestContext.Out.WriteLine($"[WARNING] {info}\n");
                     break;
                 case LCLogLevel.Error:
-                    TestContext.Out.WriteLine($"[ERROR] {info}");
+                    TestContext.Out.WriteLine($"[ERROR] {info}\n");
                     break;
                 default:
                     TestContext.Out.WriteLine(info);
