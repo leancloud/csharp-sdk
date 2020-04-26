@@ -252,7 +252,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Cid = convId
             };
             conv.M.AddRange(clientIds);
-            GenericCommand request = NewCommand(CommandType.Conv, OpType.Remove);
+            GenericCommand request = NewCommand(CommandType.Conv, OpType.RemoveShutup);
             request.ConvMessage = conv;
             GenericCommand response = await Client.Connection.SendRequest(request);
             return NewPartiallySuccessResult(response.ConvMessage.AllowedPids, response.ConvMessage.FailedPids);
@@ -580,6 +580,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 case OpType.Blocked:
                     await OnBlocked(convMessage);
                     break;
+                case OpType.Unblocked:
+                    await OnUnblocked(convMessage);
+                    break;
                 case OpType.MembersBlocked:
                     await OnMembersBlocked(convMessage);
                     break;
@@ -588,6 +591,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     break;
                 case OpType.Shutuped:
                     await OnMuted(convMessage);
+                    break;
+                case OpType.Unshutuped:
+                    await OnUnmuted(convMessage);
                     break;
                 case OpType.MembersShutuped:
                     await OnMembersMuted(convMessage);
@@ -663,6 +669,16 @@ namespace LeanCloud.Realtime.Internal.Controller {
         }
 
         /// <summary>
+        /// 当前用户被解除禁言
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnUnmuted(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            Client.OnUnmuted?.Invoke(conversation, convMessage.InitBy);
+        }
+
+        /// <summary>
         /// 有成员被禁言
         /// </summary>
         /// <param name="convMessage"></param>
@@ -694,6 +710,16 @@ namespace LeanCloud.Realtime.Internal.Controller {
         private async Task OnBlocked(ConvCommand convMessage) {
             LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
             Client.OnBlocked?.Invoke(conversation, convMessage.InitBy);
+        }
+
+        /// <summary>
+        /// 当前用户被解除黑名单
+        /// </summary>
+        /// <param name="convMessage"></param>
+        /// <returns></returns>
+        private async Task OnUnblocked(ConvCommand convMessage) {
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convMessage.Cid);
+            Client.OnUnblocked?.Invoke(conversation, convMessage.InitBy);
         }
 
         /// <summary>
