@@ -38,7 +38,7 @@ namespace Realtime.Test {
         public async Task QueryMemberConversation() {
             string memberId = "cc1";
             LCIMConversationQuery query = new LCIMConversationQuery(client);
-            query.WhereContains("m", memberId);
+            query.WhereEqualTo("m", memberId);
             ReadOnlyCollection<LCIMConversation> conversations = await query.Find();
             Assert.Greater(conversations.Count, 0);
             foreach (LCIMConversation conversation in conversations) {
