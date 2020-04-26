@@ -158,7 +158,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             request.LogsMessage = logs;
             GenericCommand response = await Client.Connection.SendRequest(request);
             // 反序列化聊天记录
-            return response.LogsMessage.Logs.Select(item => {
+            ReadOnlyCollection<LCIMMessage> messages = response.LogsMessage.Logs.Select(item => {
                 LCIMMessage message;
                 if (item.Bin) {
                     // 二进制消息
@@ -179,6 +179,14 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 message.MentionIdList = item.MentionPids.ToList();
                 return message;
             }).ToList().AsReadOnly();
+            // 查询之后更新对话中的最后一条消息
+            LCIMMessage lastMessage = messages.Last();
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convId);
+            if (conversation.LastMessage == null ||
+                conversation.LastMessage.SentTimestamp < lastMessage.SentTimestamp) {
+                conversation.LastMessage = lastMessage;
+            }
+            return messages;
         }
 
         /// <summary>
