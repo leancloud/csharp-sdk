@@ -231,19 +231,11 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
-        internal LCIMUnreadController UnreadController {
-            get; private set;
-        }
-
         internal LCIMGoAwayController GoAwayController {
             get; private set;
         }
 
         internal LCIMConversationController ConversationController {
-            get; private set;
-        }
-
-        internal LCIMRcpController RcpController {
             get; private set;
         }
 
@@ -289,9 +281,7 @@ namespace LeanCloud.Realtime {
             SessionController = new LCIMSessionController(this);
             ConversationController = new LCIMConversationController(this);
             MessageController = new LCIMMessageController(this);
-            UnreadController = new LCIMUnreadController(this);
             GoAwayController = new LCIMGoAwayController(this);
-            RcpController = new LCIMRcpController(this);
 
             Connection = new LCConnection(Id) {
                 OnNotification = OnConnectionNotification,
@@ -446,20 +436,16 @@ namespace LeanCloud.Realtime {
                     _ = SessionController.OnNotification(notification);
                     break;
                 case CommandType.Conv:
+                case CommandType.Unread:
                     _ = ConversationController.OnNotification(notification);
                     break;
                 case CommandType.Direct:
                 case CommandType.Patch:
+                case CommandType.Rcp:
                     _ = MessageController.OnNotification(notification);
-                    break;
-                case CommandType.Unread:
-                    _ = UnreadController.OnNotification(notification);
                     break;
                 case CommandType.Goaway:
                     _ = GoAwayController.OnNotification(notification);
-                    break;
-                case CommandType.Rcp:
-                    _ = RcpController.OnNotification(notification);
                     break;
                 default:
                     break;

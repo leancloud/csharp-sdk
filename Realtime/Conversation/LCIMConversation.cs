@@ -237,8 +237,11 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <returns></returns>
         public async Task Join() {
-            LCIMPartiallySuccessResult result = await AddMembers(new string[] { Client.Id });
-            if (!result.IsSuccess) {
+            LCIMPartiallySuccessResult result = await Client.ConversationController.AddMembers(Id,
+                new string[] { Client.Id });
+            if (result.IsSuccess) {
+                ids.UnionWith(result.SuccessfulClientIdList);
+            } else {
                 LCIMOperationFailure error = result.FailureList[0];
                 throw new LCException(error.Code, error.Reason);
             }

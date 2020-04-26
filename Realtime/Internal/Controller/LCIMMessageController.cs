@@ -223,40 +223,20 @@ namespace LeanCloud.Realtime.Internal.Controller {
         #region 消息处理
 
         internal override async Task OnNotification(GenericCommand notification) {
-            if (notification.Cmd == CommandType.Patch) {
-                await OnMessagePatched(notification);
-            } else if (notification.Cmd == CommandType.Direct) {
+            if (notification.Cmd == CommandType.Direct) {
                 await OnMessaage(notification);
+            } else if (notification.Cmd == CommandType.Patch) {
+                await OnMessagePatched(notification);
+            } else if (notification.Cmd == CommandType.Rcp) {
+                await OnMessageReceipt(notification);
             }
         }
 
-        private async Task OnMessagePatched(GenericCommand notification) {
-            PatchCommand patchMessage = notification.PatchMessage;
-            foreach (PatchItem patch in patchMessage.Patches) {
-                // 获取对话
-                LCIMConversation conversation = await Client.GetOrQueryConversation(patch.Cid);
-                LCIMMessage message;
-                if (patch.HasBinaryMsg) {
-                    byte[] bytes = patch.BinaryMsg.ToByteArray();
-                    message = LCIMBinaryMessage.Deserialize(bytes);
-                } else {
-                    message = LCIMTypedMessage.Deserialize(patch.Data);
-                }
-                message.ConversationId = patch.Cid;
-                message.Id = patch.Mid;
-                message.FromClientId = patch.From;
-                message.SentTimestamp = patch.Timestamp;
-                message.PatchedTimestamp = patch.PatchTimestamp;
-                if (message is LCIMRecalledMessage recalledMessage) {
-                    // 消息撤回
-                    Client.OnMessageRecalled?.Invoke(conversation, recalledMessage);
-                } else {
-                    // 消息修改
-                    Client.OnMessageUpdated?.Invoke(conversation, message);
-                }
-            }
-        }
-
+        /// <summary>
+        /// 接收消息事件
+        /// </summary>
+        /// <param name="notification"></param>
+        /// <returns></returns>
         private async Task OnMessaage(GenericCommand notification) {
             DirectCommand direct = notification.DirectMessage;
             // 反序列化消息
@@ -287,6 +267,58 @@ namespace LeanCloud.Realtime.Internal.Controller {
             LCIMConversation conversation = await Client.GetOrQueryConversation(direct.Cid);
             conversation.LastMessage = message;
             Client.OnMessage?.Invoke(conversation, message);
+        }
+
+        /// <summary>
+        /// 消息被修改事件
+        /// </summary>
+        /// <param name="notification"></param>
+        /// <returns></returns>
+        private async Task OnMessagePatched(GenericCommand notification) {
+            PatchCommand patchMessage = notification.PatchMessage;
+            foreach (PatchItem patch in patchMessage.Patches) {
+                // 获取对话
+                LCIMConversation conversation = await Client.GetOrQueryConversation(patch.Cid);
+                LCIMMessage message;
+                if (patch.HasBinaryMsg) {
+                    byte[] bytes = patch.BinaryMsg.ToByteArray();
+                    message = LCIMBinaryMessage.Deserialize(bytes);
+                } else {
+                    message = LCIMTypedMessage.Deserialize(patch.Data);
+                }
+                message.ConversationId = patch.Cid;
+                message.Id = patch.Mid;
+                message.FromClientId = patch.From;
+                message.SentTimestamp = patch.Timestamp;
+                message.PatchedTimestamp = patch.PatchTimestamp;
+                if (message is LCIMRecalledMessage recalledMessage) {
+                    // 消息撤回
+                    Client.OnMessageRecalled?.Invoke(conversation, recalledMessage);
+                } else {
+                    // 消息修改
+                    Client.OnMessageUpdated?.Invoke(conversation, message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 消息回执事件
+        /// </summary>
+        /// <param name="notification"></param>
+        /// <returns></returns>
+        private async Task OnMessageReceipt(GenericCommand notification) {
+            RcpCommand rcp = notification.RcpMessage;
+            string convId = rcp.Cid;
+            string msgId = rcp.Id;
+            long timestamp = rcp.T;
+            bool isRead = rcp.Read;
+            string fromId = rcp.From;
+            LCIMConversation conversation = await Client.GetOrQueryConversation(convId);
+            if (isRead) {
+                Client.OnMessageRead?.Invoke(conversation, msgId);
+            } else {
+                Client.OnMessageDelivered?.Invoke(conversation, msgId);
+            }
         }
 
         #endregion

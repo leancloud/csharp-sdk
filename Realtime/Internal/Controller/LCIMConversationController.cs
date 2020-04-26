@@ -563,6 +563,48 @@ namespace LeanCloud.Realtime.Internal.Controller {
         #region 消息处理
 
         internal override async Task OnNotification(GenericCommand notification) {
+            if (notification.Cmd == CommandType.Conv) {
+                await OnConversation(notification);
+            } else if (notification.Cmd == CommandType.Unread) {
+                await OnUnread(notification);
+            }
+        }
+
+        private async Task OnUnread(GenericCommand notification) {
+            UnreadCommand unread = notification.UnreadMessage;
+
+            IEnumerable<string> convIds = unread.Convs
+                .Select(conv => conv.Cid);
+            Dictionary<string, LCIMConversation> conversationDict = (await Client.GetConversationList(convIds))
+                .ToDictionary(item => item.Id);
+            ReadOnlyCollection<LCIMConversation> conversations = unread.Convs.Select(conv => {
+                // 设置对话中的未读数据
+                LCIMConversation conversation = conversationDict[conv.Cid];
+                conversation.Unread = conv.Unread;
+                if (conv.HasData || conv.HasBinaryMsg) {
+                    // 如果有消息，则反序列化
+                    LCIMMessage message = null;
+                    if (conv.HasBinaryMsg) {
+                        // 二进制消息
+                        byte[] bytes = conv.BinaryMsg.ToByteArray();
+                        message = LCIMBinaryMessage.Deserialize(bytes);
+                    } else {
+                        // 类型消息
+                        message = LCIMTypedMessage.Deserialize(conv.Data);
+                    }
+                    // 填充消息数据
+                    message.ConversationId = conv.Cid;
+                    message.Id = conv.Mid;
+                    message.FromClientId = conv.From;
+                    message.SentTimestamp = conv.Timestamp;
+                    conversation.LastMessage = message;
+                }
+                return conversation;
+            }).ToList().AsReadOnly();
+            Client.OnUnreadMessagesCountUpdated?.Invoke(conversations);
+        }
+
+        private async Task OnConversation(GenericCommand notification) {
             ConvCommand convMessage = notification.ConvMessage;
             switch (notification.Op) {
                 case OpType.Joined:
