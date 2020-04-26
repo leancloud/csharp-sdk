@@ -13,7 +13,6 @@ namespace Realtime.Test {
         private LCIMClient c1;
         private LCIMClient c2;
         private LCIMClient lean;
-        private LCIMClient cloud;
         private LCIMConversation conversation;
 
         [SetUp]
