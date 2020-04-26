@@ -22,7 +22,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         internal async Task Open(bool force) {
             SessionCommand session = await NewSessionCommand();
             session.R = !force;
-            session.ConfigBitmap = 0x7B;
+            session.ConfigBitmap = 0x2B;
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
             GenericCommand response = await Client.Connection.SendRequest(request);
