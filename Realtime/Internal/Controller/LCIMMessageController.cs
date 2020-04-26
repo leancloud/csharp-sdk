@@ -56,7 +56,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             // 消息发送应答
             AckCommand ack = response.AckMessage;
             message.Id = ack.Uid;
-            message.DeliveredTimestamp = ack.T;
+            message.SentTimestamp = ack.T;
             return message;
         }
 
@@ -72,7 +72,10 @@ namespace LeanCloud.Realtime.Internal.Controller {
             PatchItem item = new PatchItem {
                 Cid = convId,
                 Mid = message.Id,
-                Recall = true
+                From = Client.Id,
+                Recall = true,
+                Timestamp = message.SentTimestamp,
+                PatchTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
             };
             patch.Patches.Add(item);
             GenericCommand request = NewCommand(CommandType.Patch, OpType.Modify);
@@ -94,8 +97,10 @@ namespace LeanCloud.Realtime.Internal.Controller {
             PatchItem item = new PatchItem {
                 Cid = convId,
                 Mid = oldMessage.Id,
-                Timestamp = oldMessage.DeliveredTimestamp,
+                From = Client.Id,
                 Recall = false,
+                Timestamp = oldMessage.SentTimestamp,
+                PatchTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
             };
             if (newMessage is LCIMTypedMessage typedMessage) {
                 item.Data = JsonConvert.SerializeObject(typedMessage.Encode());
@@ -218,6 +223,41 @@ namespace LeanCloud.Realtime.Internal.Controller {
         #region 消息处理
 
         internal override async Task OnNotification(GenericCommand notification) {
+            if (notification.Cmd == CommandType.Patch) {
+                await OnMessagePatched(notification);
+            } else if (notification.Cmd == CommandType.Direct) {
+                await OnMessaage(notification);
+            }
+        }
+
+        private async Task OnMessagePatched(GenericCommand notification) {
+            PatchCommand patchMessage = notification.PatchMessage;
+            foreach (PatchItem patch in patchMessage.Patches) {
+                // 获取对话
+                LCIMConversation conversation = await Client.GetOrQueryConversation(patch.Cid);
+                LCIMMessage message;
+                if (patch.HasBinaryMsg) {
+                    byte[] bytes = patch.BinaryMsg.ToByteArray();
+                    message = LCIMBinaryMessage.Deserialize(bytes);
+                } else {
+                    message = LCIMTypedMessage.Deserialize(patch.Data);
+                }
+                message.ConversationId = patch.Cid;
+                message.Id = patch.Mid;
+                message.FromClientId = patch.From;
+                message.SentTimestamp = patch.Timestamp;
+                message.PatchedTimestamp = patch.PatchTimestamp;
+                if (message is LCIMRecalledMessage recalledMessage) {
+                    // 消息撤回
+                    Client.OnMessageRecalled?.Invoke(conversation, recalledMessage);
+                } else {
+                    // 消息修改
+                    Client.OnMessageUpdated?.Invoke(conversation, message);
+                }
+            }
+        }
+
+        private async Task OnMessaage(GenericCommand notification) {
             DirectCommand direct = notification.DirectMessage;
             // 反序列化消息
             LCIMMessage message;

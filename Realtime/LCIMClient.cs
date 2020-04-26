@@ -165,7 +165,7 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// 消息被撤回
         /// </summary>
-        public Action<LCIMConversation, LCIMMessage> OnMessageRecalled {
+        public Action<LCIMConversation, LCIMRecalledMessage> OnMessageRecalled {
             get; set;
         }
 
@@ -449,6 +449,7 @@ namespace LeanCloud.Realtime {
                     _ = ConversationController.OnNotification(notification);
                     break;
                 case CommandType.Direct:
+                case CommandType.Patch:
                     _ = MessageController.OnNotification(notification);
                     break;
                 case CommandType.Unread:

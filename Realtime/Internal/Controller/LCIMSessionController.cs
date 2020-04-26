@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LeanCloud.Storage;
 using LeanCloud.Realtime.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Controller {
@@ -23,6 +22,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         internal async Task Open(bool force) {
             SessionCommand session = await NewSessionCommand();
             session.R = !force;
+            session.ConfigBitmap = 0x7B;
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
             GenericCommand response = await Client.Connection.SendRequest(request);

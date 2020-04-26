@@ -52,23 +52,26 @@ namespace LeanCloud.Realtime {
             LCIMTypedMessage message = null;
             int msgType = (int)msgData["_lctype"];
             switch (msgType) {
-                case -1:
+                case TextMessageType:
                     message = new LCIMTextMessage();
                     break;
-                case -2:
+                case ImageMessageType:
                     message = new LCIMImageMessage();
                     break;
-                case -3:
+                case AudioMessageType:
                     message = new LCIMAudioMessage();
                     break;
-                case -4:
+                case VideoMessageType:
                     message = new LCIMVideoMessage();
                     break;
-                case -5:
+                case LocationMessageType:
                     message = new LCIMLocationMessage();
                     break;
-                case -6:
+                case FileMessageType:
                     message = new LCIMFileMessage();
+                    break;
+                case RecalledMessageType:
+                    message = new LCIMRecalledMessage();
                     break;
                 default:
                     // TODO 用户自定义类型消息

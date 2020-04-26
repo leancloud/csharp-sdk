@@ -9,6 +9,7 @@ namespace LeanCloud.Realtime {
         internal const int VideoMessageType = -4;
         internal const int LocationMessageType = -5;
         internal const int FileMessageType = -6;
+        internal const int RecalledMessageType = -127;
             
         public string ConversationId {
             get; set;
