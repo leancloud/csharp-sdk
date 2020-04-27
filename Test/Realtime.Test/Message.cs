@@ -9,6 +9,23 @@ using LeanCloud.Realtime;
 
 using static NUnit.Framework.TestContext;
 
+/// <summary>
+/// 自定义消息
+/// </summary>
+class CustomMessage : LCIMTypedMessage {
+    public const int CustomMessageType = 1;
+
+    public override int MessageType => CustomMessageType;
+
+    public string Ecode {
+        get {
+            return data["ecode"] as string;
+        } set {
+            data["ecode"] = value;
+        }
+    }
+}
+
 namespace Realtime.Test {
     public class Message {
         private LCIMClient m1;
@@ -189,6 +206,27 @@ namespace Realtime.Test {
             textMsg["k2"] = true;
             textMsg["k3"] = "code";
             await conversation.Send(textMsg);
+
+            await tcs.Task;
+        }
+
+        [Test]
+        [Order(7)]
+        public async Task Custom() {
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            // 注册自定义类型消息
+            LCIMTypedMessage.Register(CustomMessage.CustomMessageType,
+                () => new CustomMessage());
+            m2.OnMessage = (conv, msg) => {
+                Assert.True(msg is CustomMessage);
+                CustomMessage customMsg = msg as CustomMessage;
+                Assert.AreEqual(customMsg.Ecode, "#0123");
+                tcs.SetResult(null);
+            };
+            CustomMessage customMessage = new CustomMessage {
+                Ecode = "#0123"
+            };
+            await conversation.Send(customMessage);
 
             await tcs.Task;
         }
