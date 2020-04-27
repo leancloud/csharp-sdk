@@ -297,8 +297,15 @@ namespace LeanCloud.Realtime {
         /// <returns></returns>
         public async Task Open(bool force = true) {
             await Connection.Connect();
-            // 打开 Session
-            await SessionController.Open(force);
+            try {
+                // 打开 Session
+                await SessionController.Open(force);
+            } catch (Exception e) {
+                LCLogger.Error(e);
+                // 如果 session 阶段异常，则关闭连接
+                await Connection.Close();
+                throw e;
+            }
         }
 
         /// <summary>
