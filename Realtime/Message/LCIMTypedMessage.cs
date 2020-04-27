@@ -109,11 +109,8 @@ namespace LeanCloud.Realtime {
         }
 
         internal virtual void Decode(Dictionary<string, object> msgData) {
+            // 直接保存
             data = msgData;
-            MessageType = (int)msgData[MessageTypeKey];
-            if (msgData.TryGetValue(MessageAttributesKey, out object attrObj)) {
-                customProperties = LCDecoder.Decode(attrObj) as Dictionary<string, object>;
-            }
         }
 
         internal static LCIMTypedMessage Deserialize(string json) {
@@ -127,6 +124,10 @@ namespace LeanCloud.Realtime {
             } else {
                 // 未注册的类型消息
                 message = new LCIMTypedMessage();
+            }
+            message.MessageType = msgType;
+            if (msgData.TryGetValue(MessageAttributesKey, out object attrObj)) {
+                message.customProperties = LCDecoder.Decode(attrObj) as Dictionary<string, object>;
             }
             message.Decode(msgData);
             return message;

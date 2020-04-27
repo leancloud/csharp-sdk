@@ -30,7 +30,6 @@ namespace LeanCloud.Realtime {
         public override int MessageType => TextMessageType;
 
         internal override void Decode(Dictionary<string, object> msgData) {
-            base.Decode(msgData);
             if (msgData.TryGetValue(MessageTextKey, out object value)) {
                 Text = value as string;
             }
