@@ -171,5 +171,26 @@ namespace Realtime.Test {
 
             await tcs.Task;
         }
+
+        [Test]
+        [Order(6)]
+        public async Task Attributes() {
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            m2.OnMessage = (conv, msg) => {
+                Assert.True(msg is LCIMTypedMessage);
+                LCIMTypedMessage typedMsg = msg as LCIMTypedMessage;
+                Assert.AreEqual(typedMsg["k1"], 123);
+                Assert.True((bool)typedMsg["k2"]);
+                Assert.AreEqual(typedMsg["k3"], "code");
+                tcs.SetResult(null);
+            };
+            LCIMTextMessage textMsg = new LCIMTextMessage("hi");
+            textMsg["k1"] = 123;
+            textMsg["k2"] = true;
+            textMsg["k3"] = "code";
+            await conversation.Send(textMsg);
+
+            await tcs.Task;
+        }
     }
 }
