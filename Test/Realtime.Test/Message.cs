@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using LeanCloud;
@@ -144,6 +145,31 @@ namespace Realtime.Test {
                 Assert.NotNull(message.Id);
                 WriteLine(message.Id);
             }
+        }
+
+        [Test]
+        [Order(5)]
+        public async Task Unread() {
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            string clientId = Guid.NewGuid().ToString();
+            LCIMClient client = new LCIMClient(clientId);
+            LCIMConversation conversation = await m1.CreateConversation(new string[] { clientId });
+            await client.Open();
+            LCIMTextMessage textMessage = new LCIMTextMessage("hello");
+            await conversation.Send(textMessage);
+            client.OnUnreadMessagesCountUpdated = (convs) => {
+                foreach (LCIMConversation conv in convs) {
+                    WriteLine($"unread count: {conv.Unread}");
+                    Assert.AreEqual(conv.Unread, 1);
+                    Assert.True(conv.LastMessage is LCIMTextMessage);
+                    LCIMTextMessage textMsg = conv.LastMessage as LCIMTextMessage;
+                    Assert.AreEqual(textMsg.Text, "hello");
+                    tcs.SetResult(true);
+                }
+            };
+            await client.Open();
+
+            await tcs.Task;
         }
     }
 }
