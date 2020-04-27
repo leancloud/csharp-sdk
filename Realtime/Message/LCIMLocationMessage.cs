@@ -2,7 +2,13 @@
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// 位置消息
+    /// </summary>
     public class LCIMLocationMessage : LCIMTextMessage {
+        /// <summary>
+        /// 位置
+        /// </summary>
         public LCGeoPoint Location {
             get; set;
         }
@@ -17,19 +23,30 @@ namespace LeanCloud.Realtime {
         internal override Dictionary<string, object> Encode() {
             Dictionary<string, object> data = base.Encode();
             Dictionary<string, object> locationData = new Dictionary<string, object> {
-                { "longitude", Location.Longitude },
-                { "latitude", Location.Latitude }
+                { MessageDataLongitudeKey, Location.Longitude },
+                { MessageDataLatitudeKey, Location.Latitude }
             };
-            data["_lcloc"] = locationData;
+            data[MessageLocationKey] = locationData;
             return data;
         }
 
-        protected override void DecodeMessageData(Dictionary<string, object> msgData) {
-            base.DecodeMessageData(msgData);
-            Dictionary<string, object> locationData = msgData["_lcloc"] as Dictionary<string, object>;
-            Location = new LCGeoPoint((double)locationData["latitude"], (double)locationData["longitude"]);
+        internal override void Decode(Dictionary<string, object> msgData) {
+            base.Decode(msgData);
+            if (msgData.TryGetValue(MessageLocationKey, out object val)) {
+                Dictionary<string, object> locationData = val as Dictionary<string, object>;
+                double latitude = 0, longitude = 0;
+                if (locationData.TryGetValue(MessageDataLatitudeKey, out object lat) &&
+                    double.TryParse(lat as string, out double la)) {
+                    latitude = la;
+                }
+                if (locationData.TryGetValue(MessageDataLongitudeKey, out object lon) &&
+                    double.TryParse(lon as string, out double lo)) {
+                    longitude = lo;
+                }
+                Location = new LCGeoPoint(latitude, longitude);
+            }
         }
 
-        internal override int MessageType => LocationMessageType;
+        public override int MessageType => LocationMessageType;
     }
 }

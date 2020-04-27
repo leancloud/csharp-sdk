@@ -1,7 +1,13 @@
 ﻿using System.Collections.Generic;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// 文本消息
+    /// </summary>
     public class LCIMTextMessage : LCIMTypedMessage {
+        /// <summary>
+        /// 文本
+        /// </summary>
         public string Text {
             get; set;
         }
@@ -16,16 +22,16 @@ namespace LeanCloud.Realtime {
         internal override Dictionary<string, object> Encode() {
             Dictionary<string, object> data = base.Encode();
             if (!string.IsNullOrEmpty(Text)) {
-                data["_lctext"] = Text;
+                data[MessageTextKey] = Text;
             }
             return data;
         }
 
-        internal override int MessageType => TextMessageType;
+        public override int MessageType => TextMessageType;
 
-        protected override void DecodeMessageData(Dictionary<string, object> msgData) {
-            base.DecodeMessageData(msgData);
-            if (msgData.TryGetValue("_lctext", out object value)) {
+        internal override void Decode(Dictionary<string, object> msgData) {
+            base.Decode(msgData);
+            if (msgData.TryGetValue(MessageTextKey, out object value)) {
                 Text = value as string;
             }
         }

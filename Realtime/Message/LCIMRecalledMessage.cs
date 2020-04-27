@@ -7,6 +7,6 @@ namespace LeanCloud.Realtime {
         public LCIMRecalledMessage() {
         }
 
-        internal override int MessageType => RecalledMessageType;
+        public override int MessageType => RecalledMessageType;
     }
 }

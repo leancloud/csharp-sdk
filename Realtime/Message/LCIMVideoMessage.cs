@@ -2,14 +2,29 @@
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// 视频消息
+    /// </summary>
     public class LCIMVideoMessage : LCIMFileMessage {
+        /// <summary>
+        /// 宽度
+        /// </summary>
+        public int Width {
+            get; private set;
+        }
+
+        /// <summary>
+        /// 高度
+        /// </summary>
+        public int Height {
+            get; private set;
+        }
+
+        /// <summary>
+        /// 时长
+        /// </summary>
         public double Duration {
-            get {
-                if (double.TryParse(File.MetaData["duration"] as string, out double duration)) {
-                    return duration;
-                }
-                return 0;
-            }
+            get; private set;
         }
 
         internal LCIMVideoMessage() {
@@ -21,20 +36,36 @@ namespace LeanCloud.Realtime {
 
         internal override Dictionary<string, object> Encode() {
             Dictionary<string, object> data = base.Encode();
-            Dictionary<string, object> fileData = data["_lcfile"] as Dictionary<string, object>;
-            Dictionary<string, object> metaData = fileData["metaData"] as Dictionary<string, object>;
-            if (File.MetaData.TryGetValue("width", out object width)) {
-                metaData["width"] = width;
+            Dictionary<string, object> fileData = data[MessageFileKey] as Dictionary<string, object>;
+            Dictionary<string, object> metaData = fileData[MessageDataMetaDataKey] as Dictionary<string, object>;
+            if (File.MetaData.TryGetValue(MessageDataMetaWidthKey, out object width)) {
+                metaData[MessageDataMetaWidthKey] = width;
             }
-            if (File.MetaData.TryGetValue("height", out object height)) {
-                metaData["height"] = height;
+            if (File.MetaData.TryGetValue(MessageDataMetaHeightKey, out object height)) {
+                metaData[MessageDataMetaHeightKey] = height;
             }
-            if (File.MetaData.TryGetValue("duration", out object duration)) {
-                metaData["duration"] = duration;
+            if (File.MetaData.TryGetValue(MessageDataMetaDurationKey, out object duration)) {
+                metaData[MessageDataMetaDurationKey] = duration;
             }
             return data;
         }
 
-        internal override int MessageType => VideoMessageType;
+        internal override void Decode(Dictionary<string, object> msgData) {
+            base.Decode(msgData);
+            if (File.MetaData.TryGetValue(MessageDataMetaWidthKey, out object width) &&
+                int.TryParse(width as string, out int w)) {
+                Width = w;
+            }
+            if (File.MetaData.TryGetValue(MessageDataMetaHeightKey, out object height) &&
+                int.TryParse(height as string, out int h)) {
+                Height = h;
+            }
+            if (File.MetaData.TryGetValue(MessageDataMetaDurationKey, out object duration) &&
+                double.TryParse(duration as string, out double d)) {
+                Duration = d;
+            }
+        }
+
+        public override int MessageType => VideoMessageType;
     }
 }

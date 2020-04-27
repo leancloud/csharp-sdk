@@ -32,7 +32,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             } else if (message is LCIMBinaryMessage binaryMessage) {
                 direct.BinaryMsg = ByteString.CopyFrom(binaryMessage.Data);
             } else {
-                throw new ArgumentException("Message MUST BE LCIMTypedMessage or LCIMBinaryMessage.");
+                throw new ArgumentException("Message MUST be LCIMTypedMessage or LCIMBinaryMessage.");
             }
             // 暂态消息
             if (options.Transient) {

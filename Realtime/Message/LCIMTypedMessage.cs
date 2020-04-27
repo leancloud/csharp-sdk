@@ -1,16 +1,85 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Storage.Internal;
 
 namespace LeanCloud.Realtime {
-    public abstract class LCIMTypedMessage : LCIMMessage {
+    /// <summary>
+    /// 已知类型消息
+    /// </summary>
+    public class LCIMTypedMessage : LCIMMessage {
+        /// <summary>
+        /// 文本消息
+        /// </summary>
+        public const int TextMessageType = -1;
+        /// <summary>
+        /// 图像消息
+        /// </summary>
+        public const int ImageMessageType = -2;
+        /// <summary>
+        /// 音频消息
+        /// </summary>
+        public const int AudioMessageType = -3;
+        /// <summary>
+        /// 视频消息
+        /// </summary>
+        public const int VideoMessageType = -4;
+        /// <summary>
+        /// 位置消息
+        /// </summary>
+        public const int LocationMessageType = -5;
+        /// <summary>
+        /// 文件消息
+        /// </summary>
+        public const int FileMessageType = -6;
+        /// <summary>
+        /// 撤回消息
+        /// </summary>
+        public const int RecalledMessageType = -127;
+
+        /// <summary>
+        /// 保留字段
+        /// </summary>
+        protected const string MessageTypeKey = "_lctype";
+        protected const string MessageAttributesKey = "_lcattrs";
+        protected const string MessageTextKey = "_lctext";
+        protected const string MessageLocationKey = "_lcloc";
+        protected const string MessageFileKey = "_lcfile";
+
+        protected const string MessageDataLongitudeKey = "longitude";
+        protected const string MessageDataLatitudeKey = "latitude";
+        
+        protected const string MessageDataObjectIdKey = "objId";
+        protected const string MessageDataUrlKey = "url";
+        protected const string MessageDataMetaDataKey = "metaData";
+        protected const string MessageDataMetaNameKey = "name";
+        protected const string MessageDataMetaFormatKey = "format";
+        protected const string MessageDataMetaSizeKey = "size";
+        protected const string MessageDataMetaWidthKey = "width";
+        protected const string MessageDataMetaHeightKey = "height";
+        protected const string MessageDataMetaDurationKey = "duration";
+
+
         private Dictionary<string, object> customProperties;
 
-        internal virtual int MessageType {
+        /// <summary>
+        /// 完整的消息数据
+        /// </summary>
+        protected Dictionary<string, object> data = new Dictionary<string, object>();
+
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        public virtual int MessageType {
             get; private set;
         }
 
+        /// <summary>
+        /// 消息属性访问
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public object this[string key] {
             get {
                 if (customProperties == null) {
@@ -30,18 +99,19 @@ namespace LeanCloud.Realtime {
         }
 
         internal virtual Dictionary<string, object> Encode() {
-            Dictionary<string, object> msgData = new Dictionary<string, object> {
-                { "_lctype", MessageType }
-            };
+            Dictionary<string, object> msgData = data != null ?
+                new Dictionary<string, object>(data) : new Dictionary<string, object>();
+            msgData[MessageTypeKey] = MessageType;
             if (customProperties != null && customProperties.Count > 0) {
-                msgData["_lcattrs"] = LCEncoder.Encode(customProperties);
+                msgData[MessageAttributesKey] = LCEncoder.Encode(customProperties);
             }
             return msgData;
         }
 
-        protected virtual void DecodeMessageData(Dictionary<string, object> msgData) {
-            MessageType = (int)msgData["_lctype"];
-            if (msgData.TryGetValue("_lcattrs", out object attrObj)) {
+        internal virtual void Decode(Dictionary<string, object> msgData) {
+            data = msgData;
+            MessageType = (int)msgData[MessageTypeKey];
+            if (msgData.TryGetValue(MessageAttributesKey, out object attrObj)) {
                 customProperties = LCDecoder.Decode(attrObj) as Dictionary<string, object>;
             }
         }
@@ -50,36 +120,38 @@ namespace LeanCloud.Realtime {
             Dictionary<string, object> msgData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json,
                 new LCJsonConverter());
             LCIMTypedMessage message = null;
-            int msgType = (int)msgData["_lctype"];
-            switch (msgType) {
-                case TextMessageType:
-                    message = new LCIMTextMessage();
-                    break;
-                case ImageMessageType:
-                    message = new LCIMImageMessage();
-                    break;
-                case AudioMessageType:
-                    message = new LCIMAudioMessage();
-                    break;
-                case VideoMessageType:
-                    message = new LCIMVideoMessage();
-                    break;
-                case LocationMessageType:
-                    message = new LCIMLocationMessage();
-                    break;
-                case FileMessageType:
-                    message = new LCIMFileMessage();
-                    break;
-                case RecalledMessageType:
-                    message = new LCIMRecalledMessage();
-                    break;
-                default:
-                    // TODO 用户自定义类型消息
-
-                    break;
+            int msgType = (int)msgData[MessageTypeKey];
+            if (customMessageDict.TryGetValue(msgType, out Func<LCIMTypedMessage> msgConstructor)) {
+                // 已注册的类型消息
+                message = msgConstructor.Invoke();
+            } else {
+                // 未注册的类型消息
+                message = new LCIMTypedMessage();
             }
-            message.DecodeMessageData(msgData);
+            message.Decode(msgData);
             return message;
+        }
+
+        // 内置已知类型消息
+        static readonly Dictionary<int, Func<LCIMTypedMessage>> customMessageDict = new Dictionary<int, Func<LCIMTypedMessage>> {
+            { TextMessageType, () => new LCIMTextMessage() },
+            { ImageMessageType, () => new LCIMImageMessage() },
+            { AudioMessageType, () => new LCIMAudioMessage() },
+            { VideoMessageType, () => new LCIMVideoMessage() },
+            { LocationMessageType, () => new LCIMLocationMessage() },
+            { FileMessageType, () => new LCIMFileMessage() },
+            { RecalledMessageType, () => new LCIMRecalledMessage() }
+        };
+
+        /// <summary>
+        /// 注册自定义类型消息
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="msgType"></param>
+        /// <param name="msgConstructor"></param>
+        public static void Register<T>(int msgType, Func<T> msgConstructor)
+            where T : LCIMTypedMessage {
+            customMessageDict[msgType] = msgConstructor;
         }
     }
 }
