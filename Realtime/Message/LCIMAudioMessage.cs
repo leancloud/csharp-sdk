@@ -24,7 +24,8 @@ namespace LeanCloud.Realtime {
             Dictionary<string, object> data = base.Encode();
             Dictionary<string, object> fileData = data[MessageFileKey] as Dictionary<string, object>;
             Dictionary<string, object> metaData = fileData[MessageDataMetaDataKey] as Dictionary<string, object>;
-            if (File.MetaData.TryGetValue(MessageDataMetaDurationKey, out object duration)) {
+            if (File.MetaData != null &&
+                File.MetaData.TryGetValue(MessageDataMetaDurationKey, out object duration)) {
                 metaData[MessageDataMetaDurationKey] = duration;
             }
             return data;
@@ -32,6 +33,10 @@ namespace LeanCloud.Realtime {
 
         internal override void Decode(Dictionary<string, object> msgData) {
             base.Decode(msgData);
+
+            if (File.MetaData == null) {
+                return;
+            }
             if (File.MetaData.TryGetValue(MessageDataMetaDurationKey, out object duration) &&
                 double.TryParse(duration as string, out double d)) {
                 Duration = d;
