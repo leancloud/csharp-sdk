@@ -2,6 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using LeanCloud;
 using LeanCloud.Common;
 using LeanCloud.Storage;
@@ -227,6 +228,42 @@ namespace Realtime.Test {
                 Ecode = "#0123"
             };
             await conversation.Send(emojiMessage);
+
+            await tcs.Task;
+        }
+
+        [Test]
+        [Order(8)]
+        public async Task MentionList() {
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            m2.OnMessage = (conv, msg) => {
+                Assert.True(msg.Mentioned);
+                Assert.True(msg.MentionIdList.Contains(m2.Id));
+                tcs.SetResult(null);
+            };
+
+            LCIMTextMessage textMessage = new LCIMTextMessage("hello") {
+                MentionIdList = new List<string> { m2.Id }
+            };
+            await conversation.Send(textMessage);
+
+            await tcs.Task;
+        }
+
+        [Test]
+        [Order(9)]
+        public async Task MentionAll() {
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            m2.OnMessage = (conv, msg) => {
+                Assert.True(msg.Mentioned);
+                Assert.True(msg.MentionAll);
+                tcs.SetResult(null);
+            };
+
+            LCIMTextMessage textMessage = new LCIMTextMessage("world") {
+                MentionAll = true
+            };
+            await conversation.Send(textMessage);
 
             await tcs.Task;
         }
