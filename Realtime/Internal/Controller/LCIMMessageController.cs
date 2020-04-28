@@ -46,6 +46,10 @@ namespace LeanCloud.Realtime.Internal.Controller {
             if (options.Will) {
                 direct.Will = options.Will;
             }
+            // 推送数据
+            if (options.PushData != null) {
+                direct.PushData = JsonConvert.SerializeObject(options.PushData);
+            }
             // 提醒所有人
             if (message.MentionAll) {
                 direct.MentionAll = message.MentionAll;
