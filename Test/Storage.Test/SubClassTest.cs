@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using LeanCloud;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     internal class Hello : LCObject {
         internal World World => this["objectValue"] as World;
 

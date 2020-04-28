@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
+using LeanCloud;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public class ACLTest {
         [SetUp]
         public void SetUp() {

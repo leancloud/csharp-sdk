@@ -2,13 +2,13 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using LeanCloud;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public class FileTest {
-        static readonly string AvatarFilePath = "../../../assets/hello.png";
-        static readonly string APKFilePath = "../../../assets/test.apk";
+        static readonly string AvatarFilePath = "../../../../assets/hello.png";
+        static readonly string APKFilePath = "../../../../assets/test.apk";
 
         [SetUp]
         public void SetUp() {

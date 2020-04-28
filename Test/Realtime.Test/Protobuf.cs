@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using LeanCloud.Realtime.Protocol;
+using LeanCloud.Realtime.Internal.Protocol;
 using Google.Protobuf;
 
 namespace Realtime.Test {

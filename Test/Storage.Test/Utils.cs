@@ -1,9 +1,7 @@
-﻿using System;
+﻿using NUnit.Framework;
 using LeanCloud;
-using LeanCloud.Common;
-using NUnit.Framework;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public static class Utils {
         internal static void Print(LCLogLevel level, string info) {
             switch (level) {

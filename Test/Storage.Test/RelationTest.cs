@@ -1,11 +1,10 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
+using LeanCloud;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public class RelationTest {
         [SetUp]
         public void SetUp() {

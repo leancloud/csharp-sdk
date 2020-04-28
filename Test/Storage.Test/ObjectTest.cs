@@ -2,10 +2,10 @@ using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using LeanCloud;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public class ObjectTest {
         [SetUp]
         public void SetUp() {

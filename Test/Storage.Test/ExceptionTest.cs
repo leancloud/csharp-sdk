@@ -1,8 +1,7 @@
 ﻿using NUnit.Framework;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public class ExceptionTest {
         [Test]
         public void LeanCloudException() {
