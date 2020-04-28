@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace LeanCloud.Common {
+namespace LeanCloud {
     /// <summary>
     /// 日志类
     /// </summary>

@@ -1,4 +1,4 @@
-﻿namespace LeanCloud.Common {
+﻿namespace LeanCloud {
     /// <summary>
     /// 日志级别
     /// </summary>
