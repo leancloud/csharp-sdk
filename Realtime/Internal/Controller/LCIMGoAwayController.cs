@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using LeanCloud.Realtime.Internal.Protocol;
+using LeanCloud.Realtime.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Controller {
     internal class LCIMGoAwayController : LCIMController {

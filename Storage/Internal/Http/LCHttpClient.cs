@@ -67,7 +67,7 @@ namespace LeanCloud.Storage.Internal.Http {
             throw HandleErrorResponse(response.StatusCode, resultString);
         }
 
-        internal async Task<T> Post<T>(string path,
+        public async Task<T> Post<T>(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> data = null,
             Dictionary<string, object> queryParams = null) {
@@ -100,7 +100,7 @@ namespace LeanCloud.Storage.Internal.Http {
             throw HandleErrorResponse(response.StatusCode, resultString);
         }
 
-        internal async Task<T> Put<T>(string path,
+        public async Task<T> Put<T>(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> data = null,
             Dictionary<string, object> queryParams = null) {
@@ -133,7 +133,7 @@ namespace LeanCloud.Storage.Internal.Http {
             throw HandleErrorResponse(response.StatusCode, resultString);
         }
 
-        internal async Task Delete(string path) {
+        public async Task Delete(string path) {
             string url = await BuildUrl(path);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),

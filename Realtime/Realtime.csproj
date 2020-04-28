@@ -23,7 +23,5 @@
     <Folder Include="Signature\" />
     <Folder Include="Internal\Controller\" />
     <Folder Include="Internal\Connection\" />
-    <Folder Include="Internal\Protocol\" />
-    <Folder Include="Result\" />
   </ItemGroup>
 </Project>

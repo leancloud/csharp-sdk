@@ -187,7 +187,6 @@ namespace LeanCloud.Realtime {
                 return;
             }
             await Client.MessageController.Read(Id, LastMessage);
-            Unread = 0;
         }
 
         /// <summary>

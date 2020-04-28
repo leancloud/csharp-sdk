@@ -5,7 +5,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using LeanCloud.Common;
 using LeanCloud.Storage;
-using LeanCloud.Realtime.Internal.Protocol;
+using LeanCloud.Realtime.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
 using LeanCloud.Realtime.Internal.Connection;
 

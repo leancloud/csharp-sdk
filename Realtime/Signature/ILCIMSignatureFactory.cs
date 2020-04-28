@@ -2,9 +2,6 @@
 using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime {
-    /// <summary>
-    /// 签名工程接口
-    /// </summary>
     public interface ILCIMSignatureFactory {
         /// <summary>
         /// 登录签名

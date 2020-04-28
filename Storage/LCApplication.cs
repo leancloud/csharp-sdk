@@ -46,9 +46,9 @@ namespace LeanCloud {
             AppKey = appKey;
 
             // 注册 LeanCloud 内部子类化类型
-            LCObject.RegisterSubclass<LCUser>(LCUser.CLASS_NAME, () => new LCUser());
-            LCObject.RegisterSubclass<LCRole>(LCRole.CLASS_NAME, () => new LCRole());
-            LCObject.RegisterSubclass<LCFile>(LCFile.CLASS_NAME, () => new LCFile());
+            LCObject.RegisterSubclass(LCUser.CLASS_NAME, () => new LCUser());
+            LCObject.RegisterSubclass(LCRole.CLASS_NAME, () => new LCRole());
+            LCObject.RegisterSubclass(LCFile.CLASS_NAME, () => new LCFile());
 
             AppRouter = new LCAppRouter(appId, server);
 

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace LeanCloud.Realtime {
+﻿namespace LeanCloud.Realtime {
     /// <summary>
     /// 消息优先级
     /// </summary>
@@ -39,10 +37,6 @@ namespace LeanCloud.Realtime {
         /// 消息优先级，仅在暂态对话中有效
         /// </summary>
         public LCIMMessagePriority Priority {
-            get; set;
-        }
-
-        public Dictionary<string, object> PushData {
             get; set;
         }
 

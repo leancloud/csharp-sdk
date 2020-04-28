@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Common;
-using LeanCloud.Realtime.Internal.Protocol;
+using LeanCloud.Realtime.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Connection {
     /// <summary>
