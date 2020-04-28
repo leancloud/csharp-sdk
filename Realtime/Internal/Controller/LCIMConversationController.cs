@@ -597,6 +597,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     message.Id = conv.Mid;
                     message.FromClientId = conv.From;
                     message.SentTimestamp = conv.Timestamp;
+                    message.Mentioned = conv.Mentioned;
                     conversation.LastMessage = message;
                 }
                 return conversation;
