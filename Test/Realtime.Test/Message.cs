@@ -172,9 +172,10 @@ namespace Realtime.Test {
             string clientId = Guid.NewGuid().ToString();
             LCIMClient client = new LCIMClient(clientId);
             LCIMConversation conversation = await m1.CreateConversation(new string[] { clientId });
-            await client.Open();
+
             LCIMTextMessage textMessage = new LCIMTextMessage("hello");
             await conversation.Send(textMessage);
+
             client.OnUnreadMessagesCountUpdated = (convs) => {
                 foreach (LCIMConversation conv in convs) {
                     WriteLine($"unread count: {conv.Unread}");
@@ -182,10 +183,20 @@ namespace Realtime.Test {
                     Assert.True(conv.LastMessage is LCIMTextMessage);
                     LCIMTextMessage textMsg = conv.LastMessage as LCIMTextMessage;
                     Assert.AreEqual(textMsg.Text, "hello");
-                    tcs.SetResult(true);
                 }
             };
             await client.Open();
+
+            client.OnMessage = (conv, msg) => {
+                WriteLine($"unread count: {conv.Unread}");
+                Assert.AreEqual(conv.Unread, 2);
+                Assert.True(conv.LastMessage is LCIMTextMessage);
+                LCIMTextMessage textMsg = conv.LastMessage as LCIMTextMessage;
+                Assert.AreEqual(textMsg.Text, "world");
+                tcs.SetResult(true);
+            };
+            textMessage = new LCIMTextMessage("world");
+            await conversation.Send(textMessage);
 
             await tcs.Task;
         }
