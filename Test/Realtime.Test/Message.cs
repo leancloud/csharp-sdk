@@ -10,12 +10,12 @@ using LeanCloud.Realtime;
 using static NUnit.Framework.TestContext;
 
 /// <summary>
-/// 自定义消息
+/// Emoji 消息
 /// </summary>
-class CustomMessage : LCIMTypedMessage {
-    public const int CustomMessageType = 1;
+class EmojiMessage : LCIMTypedMessage {
+    public const int EmojiMessageType = 1;
 
-    public override int MessageType => CustomMessageType;
+    public override int MessageType => EmojiMessageType;
 
     public string Ecode {
         get {
@@ -215,18 +215,18 @@ namespace Realtime.Test {
         public async Task Custom() {
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
             // 注册自定义类型消息
-            LCIMTypedMessage.Register(CustomMessage.CustomMessageType,
-                () => new CustomMessage());
+            LCIMTypedMessage.Register(EmojiMessage.EmojiMessageType,
+                () => new EmojiMessage());
             m2.OnMessage = (conv, msg) => {
-                Assert.True(msg is CustomMessage);
-                CustomMessage customMsg = msg as CustomMessage;
-                Assert.AreEqual(customMsg.Ecode, "#0123");
+                Assert.True(msg is EmojiMessage);
+                EmojiMessage emojiMsg = msg as EmojiMessage;
+                Assert.AreEqual(emojiMsg.Ecode, "#0123");
                 tcs.SetResult(null);
             };
-            CustomMessage customMessage = new CustomMessage {
+            EmojiMessage emojiMessage = new EmojiMessage {
                 Ecode = "#0123"
             };
-            await conversation.Send(customMessage);
+            await conversation.Send(emojiMessage);
 
             await tcs.Task;
         }
