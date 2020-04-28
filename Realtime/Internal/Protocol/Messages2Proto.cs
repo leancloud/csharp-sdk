@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace LeanCloud.Realtime.Protocol {
+namespace LeanCloud.Realtime.Internal.Protocol {
 
   /// <summary>Holder for reflection information generated from messages2.proto.orig</summary>
   public static partial class Messages2ProtoReflection {
@@ -192,40 +192,40 @@ namespace LeanCloud.Realtime.Protocol {
             "dHVwZWQQugESDwoKdW5zaHV0dXBlZBC7ARIVChBtZW1iZXJzX3NodXR1cGVk",
             "ELwBEhcKEm1lbWJlcnNfdW5zaHV0dXBlZBC9ARIRCgxjaGVja19zaHV0dXAQ",
             "vgEqHQoKU3RhdHVzVHlwZRIGCgJvbhABEgcKA29mZhACKi8KCkRldmljZVR5",
-            "cGUSCwoHdW5rbm93bhAAEgsKB2FuZHJvaWQQARIHCgNpb3MQAkIlogIEQVZJ",
-            "TaoCG0xlYW5DbG91ZC5SZWFsdGltZS5Qcm90b2NvbA=="));
+            "cGUSCwoHdW5rbm93bhAAEgsKB2FuZHJvaWQQARIHCgNpb3MQAkIuogIEQVZJ",
+            "TaoCJExlYW5DbG91ZC5SZWFsdGltZS5JbnRlcm5hbC5Qcm90b2NvbA=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::LeanCloud.Realtime.Protocol.CommandType), typeof(global::LeanCloud.Realtime.Protocol.OpType), typeof(global::LeanCloud.Realtime.Protocol.StatusType), typeof(global::LeanCloud.Realtime.Protocol.DeviceType), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.SemanticVersion), global::LeanCloud.Realtime.Protocol.SemanticVersion.Parser, new[]{ "Major", "Minor", "Patch", "PreRelease", "Build" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.AndroidVersion), global::LeanCloud.Realtime.Protocol.AndroidVersion.Parser, new[]{ "Codename", "ApiLevel" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.SystemInfo), global::LeanCloud.Realtime.Protocol.SystemInfo.Parser, new[]{ "DeviceType", "OsVersion", "AndroidVersion", "IsEmulator" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.JsonObjectMessage), global::LeanCloud.Realtime.Protocol.JsonObjectMessage.Parser, new[]{ "Data" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.UnreadTuple), global::LeanCloud.Realtime.Protocol.UnreadTuple.Parser, new[]{ "Cid", "Unread", "Mid", "Timestamp", "From", "Data", "PatchTimestamp", "Mentioned", "BinaryMsg", "ConvType" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.LogItem), global::LeanCloud.Realtime.Protocol.LogItem.Parser, new[]{ "From", "Data", "Timestamp", "MsgId", "AckAt", "ReadAt", "PatchTimestamp", "MentionAll", "MentionPids", "Bin", "ConvType" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.ConvMemberInfo), global::LeanCloud.Realtime.Protocol.ConvMemberInfo.Parser, new[]{ "Pid", "Role", "InfoId" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.LoginCommand), global::LeanCloud.Realtime.Protocol.LoginCommand.Parser, new[]{ "SystemInfo" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.LoggedinCommand), global::LeanCloud.Realtime.Protocol.LoggedinCommand.Parser, new[]{ "PushDisabled" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.DataCommand), global::LeanCloud.Realtime.Protocol.DataCommand.Parser, new[]{ "Ids", "Msg", "Offline" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.SessionCommand), global::LeanCloud.Realtime.Protocol.SessionCommand.Parser, new[]{ "T", "N", "S", "Ua", "R", "Tag", "DeviceId", "SessionPeerIds", "OnlineSessionPeerIds", "St", "StTtl", "Code", "Reason", "DeviceToken", "Sp", "Detail", "LastUnreadNotifTime", "LastPatchTime", "ConfigBitmap", "SystemInfo" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.ErrorCommand), global::LeanCloud.Realtime.Protocol.ErrorCommand.Parser, new[]{ "Code", "Reason", "AppCode", "Detail", "Pids", "AppMsg" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.DirectCommand), global::LeanCloud.Realtime.Protocol.DirectCommand.Parser, new[]{ "Msg", "Uid", "FromPeerId", "Timestamp", "Offline", "HasMore", "ToPeerIds", "R", "Cid", "Id", "Transient", "Dt", "RoomId", "PushData", "Will", "PatchTimestamp", "BinaryMsg", "MentionPids", "MentionAll", "ConvType" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.AckCommand), global::LeanCloud.Realtime.Protocol.AckCommand.Parser, new[]{ "Code", "Reason", "Mid", "Cid", "T", "Uid", "Fromts", "Tots", "Type", "Ids", "AppCode", "AppMsg" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.UnreadCommand), global::LeanCloud.Realtime.Protocol.UnreadCommand.Parser, new[]{ "Convs", "NotifTime" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.ConvCommand), global::LeanCloud.Realtime.Protocol.ConvCommand.Parser, new[]{ "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Info", "TempConv", "TempConvTTL", "TempConvIds", "AllowedPids", "FailedPids", "Next", "Results", "Where", "Attr", "AttrModified" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.RoomCommand), global::LeanCloud.Realtime.Protocol.RoomCommand.Parser, new[]{ "RoomId", "S", "T", "N", "Transient", "RoomPeerIds", "ByPeerId" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.LogsCommand), global::LeanCloud.Realtime.Protocol.LogsCommand.Parser, new[]{ "Cid", "L", "Limit", "T", "Tt", "Tmid", "Mid", "Checksum", "Stored", "Direction", "TIncluded", "TtIncluded", "Lctype", "Logs" }, null, new[]{ typeof(global::LeanCloud.Realtime.Protocol.LogsCommand.Types.QueryDirection) }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.RcpCommand), global::LeanCloud.Realtime.Protocol.RcpCommand.Parser, new[]{ "Id", "Cid", "T", "Read", "From" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.ReadTuple), global::LeanCloud.Realtime.Protocol.ReadTuple.Parser, new[]{ "Cid", "Timestamp", "Mid" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.MaxReadTuple), global::LeanCloud.Realtime.Protocol.MaxReadTuple.Parser, new[]{ "Pid", "MaxAckTimestamp", "MaxReadTimestamp" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.ReadCommand), global::LeanCloud.Realtime.Protocol.ReadCommand.Parser, new[]{ "Cid", "Cids", "Convs" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.PresenceCommand), global::LeanCloud.Realtime.Protocol.PresenceCommand.Parser, new[]{ "Status", "SessionPeerIds", "Cid" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.ReportCommand), global::LeanCloud.Realtime.Protocol.ReportCommand.Parser, new[]{ "Initiative", "Type", "Data" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.PatchItem), global::LeanCloud.Realtime.Protocol.PatchItem.Parser, new[]{ "Cid", "Mid", "Timestamp", "Recall", "Data", "PatchTimestamp", "From", "BinaryMsg", "MentionAll", "MentionPids", "PatchCode", "PatchReason" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.PatchCommand), global::LeanCloud.Realtime.Protocol.PatchCommand.Parser, new[]{ "Patches", "LastPatchTime" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.PubsubCommand), global::LeanCloud.Realtime.Protocol.PubsubCommand.Parser, new[]{ "Cid", "Cids", "Topic", "Subtopic", "Topics", "Subtopics", "Results" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.BlacklistCommand), global::LeanCloud.Realtime.Protocol.BlacklistCommand.Parser, new[]{ "SrcCid", "ToPids", "SrcPid", "ToCids", "Limit", "Next", "BlockedPids", "BlockedCids", "AllowedPids", "FailedPids", "T", "N", "S" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Protocol.GenericCommand), global::LeanCloud.Realtime.Protocol.GenericCommand.Parser, new[]{ "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "ServerTs", "ClientTs", "NotificationType", "LoginMessage", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", "PubsubMessage", "BlacklistMessage", "LoggedinMessage" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::LeanCloud.Realtime.Internal.Protocol.CommandType), typeof(global::LeanCloud.Realtime.Internal.Protocol.OpType), typeof(global::LeanCloud.Realtime.Internal.Protocol.StatusType), typeof(global::LeanCloud.Realtime.Internal.Protocol.DeviceType), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.SemanticVersion), global::LeanCloud.Realtime.Internal.Protocol.SemanticVersion.Parser, new[]{ "Major", "Minor", "Patch", "PreRelease", "Build" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.AndroidVersion), global::LeanCloud.Realtime.Internal.Protocol.AndroidVersion.Parser, new[]{ "Codename", "ApiLevel" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.SystemInfo), global::LeanCloud.Realtime.Internal.Protocol.SystemInfo.Parser, new[]{ "DeviceType", "OsVersion", "AndroidVersion", "IsEmulator" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage), global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage.Parser, new[]{ "Data" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.UnreadTuple), global::LeanCloud.Realtime.Internal.Protocol.UnreadTuple.Parser, new[]{ "Cid", "Unread", "Mid", "Timestamp", "From", "Data", "PatchTimestamp", "Mentioned", "BinaryMsg", "ConvType" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.LogItem), global::LeanCloud.Realtime.Internal.Protocol.LogItem.Parser, new[]{ "From", "Data", "Timestamp", "MsgId", "AckAt", "ReadAt", "PatchTimestamp", "MentionAll", "MentionPids", "Bin", "ConvType" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.ConvMemberInfo), global::LeanCloud.Realtime.Internal.Protocol.ConvMemberInfo.Parser, new[]{ "Pid", "Role", "InfoId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.LoginCommand), global::LeanCloud.Realtime.Internal.Protocol.LoginCommand.Parser, new[]{ "SystemInfo" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.LoggedinCommand), global::LeanCloud.Realtime.Internal.Protocol.LoggedinCommand.Parser, new[]{ "PushDisabled" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.DataCommand), global::LeanCloud.Realtime.Internal.Protocol.DataCommand.Parser, new[]{ "Ids", "Msg", "Offline" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.SessionCommand), global::LeanCloud.Realtime.Internal.Protocol.SessionCommand.Parser, new[]{ "T", "N", "S", "Ua", "R", "Tag", "DeviceId", "SessionPeerIds", "OnlineSessionPeerIds", "St", "StTtl", "Code", "Reason", "DeviceToken", "Sp", "Detail", "LastUnreadNotifTime", "LastPatchTime", "ConfigBitmap", "SystemInfo" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand), global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand.Parser, new[]{ "Code", "Reason", "AppCode", "Detail", "Pids", "AppMsg" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.DirectCommand), global::LeanCloud.Realtime.Internal.Protocol.DirectCommand.Parser, new[]{ "Msg", "Uid", "FromPeerId", "Timestamp", "Offline", "HasMore", "ToPeerIds", "R", "Cid", "Id", "Transient", "Dt", "RoomId", "PushData", "Will", "PatchTimestamp", "BinaryMsg", "MentionPids", "MentionAll", "ConvType" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.AckCommand), global::LeanCloud.Realtime.Internal.Protocol.AckCommand.Parser, new[]{ "Code", "Reason", "Mid", "Cid", "T", "Uid", "Fromts", "Tots", "Type", "Ids", "AppCode", "AppMsg" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.UnreadCommand), global::LeanCloud.Realtime.Internal.Protocol.UnreadCommand.Parser, new[]{ "Convs", "NotifTime" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.ConvCommand), global::LeanCloud.Realtime.Internal.Protocol.ConvCommand.Parser, new[]{ "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Info", "TempConv", "TempConvTTL", "TempConvIds", "AllowedPids", "FailedPids", "Next", "Results", "Where", "Attr", "AttrModified" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.RoomCommand), global::LeanCloud.Realtime.Internal.Protocol.RoomCommand.Parser, new[]{ "RoomId", "S", "T", "N", "Transient", "RoomPeerIds", "ByPeerId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.LogsCommand), global::LeanCloud.Realtime.Internal.Protocol.LogsCommand.Parser, new[]{ "Cid", "L", "Limit", "T", "Tt", "Tmid", "Mid", "Checksum", "Stored", "Direction", "TIncluded", "TtIncluded", "Lctype", "Logs" }, null, new[]{ typeof(global::LeanCloud.Realtime.Internal.Protocol.LogsCommand.Types.QueryDirection) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.RcpCommand), global::LeanCloud.Realtime.Internal.Protocol.RcpCommand.Parser, new[]{ "Id", "Cid", "T", "Read", "From" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.ReadTuple), global::LeanCloud.Realtime.Internal.Protocol.ReadTuple.Parser, new[]{ "Cid", "Timestamp", "Mid" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.MaxReadTuple), global::LeanCloud.Realtime.Internal.Protocol.MaxReadTuple.Parser, new[]{ "Pid", "MaxAckTimestamp", "MaxReadTimestamp" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.ReadCommand), global::LeanCloud.Realtime.Internal.Protocol.ReadCommand.Parser, new[]{ "Cid", "Cids", "Convs" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.PresenceCommand), global::LeanCloud.Realtime.Internal.Protocol.PresenceCommand.Parser, new[]{ "Status", "SessionPeerIds", "Cid" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.ReportCommand), global::LeanCloud.Realtime.Internal.Protocol.ReportCommand.Parser, new[]{ "Initiative", "Type", "Data" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.PatchItem), global::LeanCloud.Realtime.Internal.Protocol.PatchItem.Parser, new[]{ "Cid", "Mid", "Timestamp", "Recall", "Data", "PatchTimestamp", "From", "BinaryMsg", "MentionAll", "MentionPids", "PatchCode", "PatchReason" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.PatchCommand), global::LeanCloud.Realtime.Internal.Protocol.PatchCommand.Parser, new[]{ "Patches", "LastPatchTime" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.PubsubCommand), global::LeanCloud.Realtime.Internal.Protocol.PubsubCommand.Parser, new[]{ "Cid", "Cids", "Topic", "Subtopic", "Topics", "Subtopics", "Results" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.BlacklistCommand), global::LeanCloud.Realtime.Internal.Protocol.BlacklistCommand.Parser, new[]{ "SrcCid", "ToPids", "SrcPid", "ToCids", "Limit", "Next", "BlockedPids", "BlockedCids", "AllowedPids", "FailedPids", "T", "N", "S" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Realtime.Internal.Protocol.GenericCommand), global::LeanCloud.Realtime.Internal.Protocol.GenericCommand.Parser, new[]{ "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "ServerTs", "ClientTs", "NotificationType", "LoginMessage", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", "PubsubMessage", "BlacklistMessage", "LoggedinMessage" }, null, null, null, null)
           }));
     }
     #endregion
@@ -388,7 +388,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[0]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -693,7 +693,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[1]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -875,7 +875,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[2]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -907,11 +907,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "deviceType" field.</summary>
     public const int DeviceTypeFieldNumber = 1;
-    private readonly static global::LeanCloud.Realtime.Protocol.DeviceType DeviceTypeDefaultValue = global::LeanCloud.Realtime.Protocol.DeviceType.Unknown;
+    private readonly static global::LeanCloud.Realtime.Internal.Protocol.DeviceType DeviceTypeDefaultValue = global::LeanCloud.Realtime.Internal.Protocol.DeviceType.Unknown;
 
-    private global::LeanCloud.Realtime.Protocol.DeviceType deviceType_;
+    private global::LeanCloud.Realtime.Internal.Protocol.DeviceType deviceType_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.DeviceType DeviceType {
+    public global::LeanCloud.Realtime.Internal.Protocol.DeviceType DeviceType {
       get { if ((_hasBits0 & 1) != 0) { return deviceType_; } else { return DeviceTypeDefaultValue; } }
       set {
         _hasBits0 |= 1;
@@ -931,9 +931,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "osVersion" field.</summary>
     public const int OsVersionFieldNumber = 2;
-    private global::LeanCloud.Realtime.Protocol.SemanticVersion osVersion_;
+    private global::LeanCloud.Realtime.Internal.Protocol.SemanticVersion osVersion_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.SemanticVersion OsVersion {
+    public global::LeanCloud.Realtime.Internal.Protocol.SemanticVersion OsVersion {
       get { return osVersion_; }
       set {
         osVersion_ = value;
@@ -952,9 +952,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "androidVersion" field.</summary>
     public const int AndroidVersionFieldNumber = 3;
-    private global::LeanCloud.Realtime.Protocol.AndroidVersion androidVersion_;
+    private global::LeanCloud.Realtime.Internal.Protocol.AndroidVersion androidVersion_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.AndroidVersion AndroidVersion {
+    public global::LeanCloud.Realtime.Internal.Protocol.AndroidVersion AndroidVersion {
       get { return androidVersion_; }
       set {
         androidVersion_ = value;
@@ -1087,13 +1087,13 @@ namespace LeanCloud.Realtime.Protocol {
       }
       if (other.HasOsVersion) {
         if (!HasOsVersion) {
-          OsVersion = new global::LeanCloud.Realtime.Protocol.SemanticVersion();
+          OsVersion = new global::LeanCloud.Realtime.Internal.Protocol.SemanticVersion();
         }
         OsVersion.MergeFrom(other.OsVersion);
       }
       if (other.HasAndroidVersion) {
         if (!HasAndroidVersion) {
-          AndroidVersion = new global::LeanCloud.Realtime.Protocol.AndroidVersion();
+          AndroidVersion = new global::LeanCloud.Realtime.Internal.Protocol.AndroidVersion();
         }
         AndroidVersion.MergeFrom(other.AndroidVersion);
       }
@@ -1112,19 +1112,19 @@ namespace LeanCloud.Realtime.Protocol {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            DeviceType = (global::LeanCloud.Realtime.Protocol.DeviceType) input.ReadEnum();
+            DeviceType = (global::LeanCloud.Realtime.Internal.Protocol.DeviceType) input.ReadEnum();
             break;
           }
           case 18: {
             if (!HasOsVersion) {
-              OsVersion = new global::LeanCloud.Realtime.Protocol.SemanticVersion();
+              OsVersion = new global::LeanCloud.Realtime.Internal.Protocol.SemanticVersion();
             }
             input.ReadMessage(OsVersion);
             break;
           }
           case 26: {
             if (!HasAndroidVersion) {
-              AndroidVersion = new global::LeanCloud.Realtime.Protocol.AndroidVersion();
+              AndroidVersion = new global::LeanCloud.Realtime.Internal.Protocol.AndroidVersion();
             }
             input.ReadMessage(AndroidVersion);
             break;
@@ -1147,7 +1147,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[3]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1289,7 +1289,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[4]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1797,7 +1797,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[5]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2326,7 +2326,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[6]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2547,7 +2547,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[7]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2575,9 +2575,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "systemInfo" field.</summary>
     public const int SystemInfoFieldNumber = 1;
-    private global::LeanCloud.Realtime.Protocol.SystemInfo systemInfo_;
+    private global::LeanCloud.Realtime.Internal.Protocol.SystemInfo systemInfo_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.SystemInfo SystemInfo {
+    public global::LeanCloud.Realtime.Internal.Protocol.SystemInfo SystemInfo {
       get { return systemInfo_; }
       set {
         systemInfo_ = value;
@@ -2656,7 +2656,7 @@ namespace LeanCloud.Realtime.Protocol {
       }
       if (other.HasSystemInfo) {
         if (!HasSystemInfo) {
-          SystemInfo = new global::LeanCloud.Realtime.Protocol.SystemInfo();
+          SystemInfo = new global::LeanCloud.Realtime.Internal.Protocol.SystemInfo();
         }
         SystemInfo.MergeFrom(other.SystemInfo);
       }
@@ -2673,7 +2673,7 @@ namespace LeanCloud.Realtime.Protocol {
             break;
           case 10: {
             if (!HasSystemInfo) {
-              SystemInfo = new global::LeanCloud.Realtime.Protocol.SystemInfo();
+              SystemInfo = new global::LeanCloud.Realtime.Internal.Protocol.SystemInfo();
             }
             input.ReadMessage(SystemInfo);
             break;
@@ -2693,7 +2693,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[8]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[8]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2837,7 +2837,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[9]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[9]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2878,11 +2878,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "msg" field.</summary>
     public const int MsgFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Protocol.JsonObjectMessage> _repeated_msg_codec
-        = pb::FieldCodec.ForMessage(18, global::LeanCloud.Realtime.Protocol.JsonObjectMessage.Parser);
-    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.JsonObjectMessage> msg_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.JsonObjectMessage>();
+    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage> _repeated_msg_codec
+        = pb::FieldCodec.ForMessage(18, global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage.Parser);
+    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage> msg_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.JsonObjectMessage> Msg {
+    public pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage> Msg {
       get { return msg_; }
     }
 
@@ -3021,7 +3021,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[10]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[10]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -3488,9 +3488,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "systemInfo" field.</summary>
     public const int SystemInfoFieldNumber = 20;
-    private global::LeanCloud.Realtime.Protocol.SystemInfo systemInfo_;
+    private global::LeanCloud.Realtime.Internal.Protocol.SystemInfo systemInfo_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.SystemInfo SystemInfo {
+    public global::LeanCloud.Realtime.Internal.Protocol.SystemInfo SystemInfo {
       get { return systemInfo_; }
       set {
         systemInfo_ = value;
@@ -3783,7 +3783,7 @@ namespace LeanCloud.Realtime.Protocol {
       }
       if (other.HasSystemInfo) {
         if (!HasSystemInfo) {
-          SystemInfo = new global::LeanCloud.Realtime.Protocol.SystemInfo();
+          SystemInfo = new global::LeanCloud.Realtime.Internal.Protocol.SystemInfo();
         }
         SystemInfo.MergeFrom(other.SystemInfo);
       }
@@ -3876,7 +3876,7 @@ namespace LeanCloud.Realtime.Protocol {
           }
           case 162: {
             if (!HasSystemInfo) {
-              SystemInfo = new global::LeanCloud.Realtime.Protocol.SystemInfo();
+              SystemInfo = new global::LeanCloud.Realtime.Internal.Protocol.SystemInfo();
             }
             input.ReadMessage(SystemInfo);
             break;
@@ -3896,7 +3896,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[11]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[11]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -4221,7 +4221,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[12]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[12]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5093,7 +5093,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[13]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[13]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5661,7 +5661,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[14]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[14]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5691,11 +5691,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "convs" field.</summary>
     public const int ConvsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Protocol.UnreadTuple> _repeated_convs_codec
-        = pb::FieldCodec.ForMessage(10, global::LeanCloud.Realtime.Protocol.UnreadTuple.Parser);
-    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.UnreadTuple> convs_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.UnreadTuple>();
+    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Internal.Protocol.UnreadTuple> _repeated_convs_codec
+        = pb::FieldCodec.ForMessage(10, global::LeanCloud.Realtime.Internal.Protocol.UnreadTuple.Parser);
+    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.UnreadTuple> convs_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.UnreadTuple>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.UnreadTuple> Convs {
+    public pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.UnreadTuple> Convs {
       get { return convs_; }
     }
 
@@ -5825,7 +5825,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[15]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[15]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6418,11 +6418,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "maxReadTuples" field.</summary>
     public const int MaxReadTuplesFieldNumber = 24;
-    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Protocol.MaxReadTuple> _repeated_maxReadTuples_codec
-        = pb::FieldCodec.ForMessage(194, global::LeanCloud.Realtime.Protocol.MaxReadTuple.Parser);
-    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.MaxReadTuple> maxReadTuples_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.MaxReadTuple>();
+    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Internal.Protocol.MaxReadTuple> _repeated_maxReadTuples_codec
+        = pb::FieldCodec.ForMessage(194, global::LeanCloud.Realtime.Internal.Protocol.MaxReadTuple.Parser);
+    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.MaxReadTuple> maxReadTuples_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.MaxReadTuple>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.MaxReadTuple> MaxReadTuples {
+    public pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.MaxReadTuple> MaxReadTuples {
       get { return maxReadTuples_; }
     }
 
@@ -6438,9 +6438,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "info" field.</summary>
     public const int InfoFieldNumber = 26;
-    private global::LeanCloud.Realtime.Protocol.ConvMemberInfo info_;
+    private global::LeanCloud.Realtime.Internal.Protocol.ConvMemberInfo info_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.ConvMemberInfo Info {
+    public global::LeanCloud.Realtime.Internal.Protocol.ConvMemberInfo Info {
       get { return info_; }
       set {
         info_ = value;
@@ -6527,11 +6527,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "failedPids" field.</summary>
     public const int FailedPidsFieldNumber = 31;
-    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Protocol.ErrorCommand> _repeated_failedPids_codec
-        = pb::FieldCodec.ForMessage(250, global::LeanCloud.Realtime.Protocol.ErrorCommand.Parser);
-    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.ErrorCommand> failedPids_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.ErrorCommand>();
+    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand> _repeated_failedPids_codec
+        = pb::FieldCodec.ForMessage(250, global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand.Parser);
+    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand> failedPids_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.ErrorCommand> FailedPids {
+    public pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand> FailedPids {
       get { return failedPids_; }
     }
 
@@ -6563,9 +6563,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "results" field.</summary>
     public const int ResultsFieldNumber = 100;
-    private global::LeanCloud.Realtime.Protocol.JsonObjectMessage results_;
+    private global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage results_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.JsonObjectMessage Results {
+    public global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage Results {
       get { return results_; }
       set {
         results_ = value;
@@ -6584,9 +6584,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "where" field.</summary>
     public const int WhereFieldNumber = 101;
-    private global::LeanCloud.Realtime.Protocol.JsonObjectMessage where_;
+    private global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage where_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.JsonObjectMessage Where {
+    public global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage Where {
       get { return where_; }
       set {
         where_ = value;
@@ -6605,9 +6605,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "attr" field.</summary>
     public const int AttrFieldNumber = 103;
-    private global::LeanCloud.Realtime.Protocol.JsonObjectMessage attr_;
+    private global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage attr_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.JsonObjectMessage Attr {
+    public global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage Attr {
       get { return attr_; }
       set {
         attr_ = value;
@@ -6626,9 +6626,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "attrModified" field.</summary>
     public const int AttrModifiedFieldNumber = 104;
-    private global::LeanCloud.Realtime.Protocol.JsonObjectMessage attrModified_;
+    private global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage attrModified_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.JsonObjectMessage AttrModified {
+    public global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage AttrModified {
       get { return attrModified_; }
       set {
         attrModified_ = value;
@@ -7061,7 +7061,7 @@ namespace LeanCloud.Realtime.Protocol {
       cids_.Add(other.cids_);
       if (other.HasInfo) {
         if (!HasInfo) {
-          Info = new global::LeanCloud.Realtime.Protocol.ConvMemberInfo();
+          Info = new global::LeanCloud.Realtime.Internal.Protocol.ConvMemberInfo();
         }
         Info.MergeFrom(other.Info);
       }
@@ -7079,25 +7079,25 @@ namespace LeanCloud.Realtime.Protocol {
       }
       if (other.HasResults) {
         if (!HasResults) {
-          Results = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+          Results = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         Results.MergeFrom(other.Results);
       }
       if (other.HasWhere) {
         if (!HasWhere) {
-          Where = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+          Where = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         Where.MergeFrom(other.Where);
       }
       if (other.HasAttr) {
         if (!HasAttr) {
-          Attr = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+          Attr = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         Attr.MergeFrom(other.Attr);
       }
       if (other.HasAttrModified) {
         if (!HasAttrModified) {
-          AttrModified = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+          AttrModified = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         AttrModified.MergeFrom(other.AttrModified);
       }
@@ -7214,7 +7214,7 @@ namespace LeanCloud.Realtime.Protocol {
           }
           case 210: {
             if (!HasInfo) {
-              Info = new global::LeanCloud.Realtime.Protocol.ConvMemberInfo();
+              Info = new global::LeanCloud.Realtime.Internal.Protocol.ConvMemberInfo();
             }
             input.ReadMessage(Info);
             break;
@@ -7245,28 +7245,28 @@ namespace LeanCloud.Realtime.Protocol {
           }
           case 802: {
             if (!HasResults) {
-              Results = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+              Results = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(Results);
             break;
           }
           case 810: {
             if (!HasWhere) {
-              Where = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+              Where = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(Where);
             break;
           }
           case 826: {
             if (!HasAttr) {
-              Attr = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+              Attr = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(Attr);
             break;
           }
           case 834: {
             if (!HasAttrModified) {
-              AttrModified = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+              AttrModified = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(AttrModified);
             break;
@@ -7286,7 +7286,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[16]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[16]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7651,7 +7651,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[17]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[17]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7905,11 +7905,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "direction" field.</summary>
     public const int DirectionFieldNumber = 10;
-    private readonly static global::LeanCloud.Realtime.Protocol.LogsCommand.Types.QueryDirection DirectionDefaultValue = global::LeanCloud.Realtime.Protocol.LogsCommand.Types.QueryDirection.Old;
+    private readonly static global::LeanCloud.Realtime.Internal.Protocol.LogsCommand.Types.QueryDirection DirectionDefaultValue = global::LeanCloud.Realtime.Internal.Protocol.LogsCommand.Types.QueryDirection.Old;
 
-    private global::LeanCloud.Realtime.Protocol.LogsCommand.Types.QueryDirection direction_;
+    private global::LeanCloud.Realtime.Internal.Protocol.LogsCommand.Types.QueryDirection direction_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.LogsCommand.Types.QueryDirection Direction {
+    public global::LeanCloud.Realtime.Internal.Protocol.LogsCommand.Types.QueryDirection Direction {
       get { if ((_hasBits0 & 32) != 0) { return direction_; } else { return DirectionDefaultValue; } }
       set {
         _hasBits0 |= 32;
@@ -8001,11 +8001,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "logs" field.</summary>
     public const int LogsFieldNumber = 105;
-    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Protocol.LogItem> _repeated_logs_codec
-        = pb::FieldCodec.ForMessage(842, global::LeanCloud.Realtime.Protocol.LogItem.Parser);
-    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.LogItem> logs_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.LogItem>();
+    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Internal.Protocol.LogItem> _repeated_logs_codec
+        = pb::FieldCodec.ForMessage(842, global::LeanCloud.Realtime.Internal.Protocol.LogItem.Parser);
+    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.LogItem> logs_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.LogItem>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.LogItem> Logs {
+    public pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.LogItem> Logs {
       get { return logs_; }
     }
 
@@ -8269,7 +8269,7 @@ namespace LeanCloud.Realtime.Protocol {
             break;
           }
           case 80: {
-            Direction = (global::LeanCloud.Realtime.Protocol.LogsCommand.Types.QueryDirection) input.ReadEnum();
+            Direction = (global::LeanCloud.Realtime.Internal.Protocol.LogsCommand.Types.QueryDirection) input.ReadEnum();
             break;
           }
           case 88: {
@@ -8315,7 +8315,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[18]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[18]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -8620,7 +8620,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[19]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[19]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -8844,7 +8844,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[20]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[20]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -9068,7 +9068,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[21]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[21]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -9131,11 +9131,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "convs" field.</summary>
     public const int ConvsFieldNumber = 3;
-    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Protocol.ReadTuple> _repeated_convs_codec
-        = pb::FieldCodec.ForMessage(26, global::LeanCloud.Realtime.Protocol.ReadTuple.Parser);
-    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.ReadTuple> convs_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.ReadTuple>();
+    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Internal.Protocol.ReadTuple> _repeated_convs_codec
+        = pb::FieldCodec.ForMessage(26, global::LeanCloud.Realtime.Internal.Protocol.ReadTuple.Parser);
+    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.ReadTuple> convs_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.ReadTuple>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.ReadTuple> Convs {
+    public pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.ReadTuple> Convs {
       get { return convs_; }
     }
 
@@ -9250,7 +9250,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[22]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[22]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -9281,11 +9281,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "status" field.</summary>
     public const int StatusFieldNumber = 1;
-    private readonly static global::LeanCloud.Realtime.Protocol.StatusType StatusDefaultValue = global::LeanCloud.Realtime.Protocol.StatusType.On;
+    private readonly static global::LeanCloud.Realtime.Internal.Protocol.StatusType StatusDefaultValue = global::LeanCloud.Realtime.Internal.Protocol.StatusType.On;
 
-    private global::LeanCloud.Realtime.Protocol.StatusType status_;
+    private global::LeanCloud.Realtime.Internal.Protocol.StatusType status_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.StatusType Status {
+    public global::LeanCloud.Realtime.Internal.Protocol.StatusType Status {
       get { if ((_hasBits0 & 1) != 0) { return status_; } else { return StatusDefaultValue; } }
       set {
         _hasBits0 |= 1;
@@ -9428,7 +9428,7 @@ namespace LeanCloud.Realtime.Protocol {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Status = (global::LeanCloud.Realtime.Protocol.StatusType) input.ReadEnum();
+            Status = (global::LeanCloud.Realtime.Internal.Protocol.StatusType) input.ReadEnum();
             break;
           }
           case 18: {
@@ -9454,7 +9454,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[23]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[23]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -9678,7 +9678,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[24]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[24]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -10246,7 +10246,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[25]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[25]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -10276,11 +10276,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "patches" field.</summary>
     public const int PatchesFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Protocol.PatchItem> _repeated_patches_codec
-        = pb::FieldCodec.ForMessage(10, global::LeanCloud.Realtime.Protocol.PatchItem.Parser);
-    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.PatchItem> patches_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.PatchItem>();
+    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Internal.Protocol.PatchItem> _repeated_patches_codec
+        = pb::FieldCodec.ForMessage(10, global::LeanCloud.Realtime.Internal.Protocol.PatchItem.Parser);
+    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.PatchItem> patches_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.PatchItem>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.PatchItem> Patches {
+    public pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.PatchItem> Patches {
       get { return patches_; }
     }
 
@@ -10409,7 +10409,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[26]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[26]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -10542,9 +10542,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "results" field.</summary>
     public const int ResultsFieldNumber = 7;
-    private global::LeanCloud.Realtime.Protocol.JsonObjectMessage results_;
+    private global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage results_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.JsonObjectMessage Results {
+    public global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage Results {
       get { return results_; }
       set {
         results_ = value;
@@ -10674,7 +10674,7 @@ namespace LeanCloud.Realtime.Protocol {
       subtopics_.Add(other.subtopics_);
       if (other.HasResults) {
         if (!HasResults) {
-          Results = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+          Results = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         Results.MergeFrom(other.Results);
       }
@@ -10715,7 +10715,7 @@ namespace LeanCloud.Realtime.Protocol {
           }
           case 58: {
             if (!HasResults) {
-              Results = new global::LeanCloud.Realtime.Protocol.JsonObjectMessage();
+              Results = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(Results);
             break;
@@ -10735,7 +10735,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[27]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[27]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -10919,11 +10919,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "failedPids" field.</summary>
     public const int FailedPidsFieldNumber = 11;
-    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Protocol.ErrorCommand> _repeated_failedPids_codec
-        = pb::FieldCodec.ForMessage(90, global::LeanCloud.Realtime.Protocol.ErrorCommand.Parser);
-    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.ErrorCommand> failedPids_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.ErrorCommand>();
+    private static readonly pb::FieldCodec<global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand> _repeated_failedPids_codec
+        = pb::FieldCodec.ForMessage(90, global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand.Parser);
+    private readonly pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand> failedPids_ = new pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::LeanCloud.Realtime.Protocol.ErrorCommand> FailedPids {
+    public pbc::RepeatedField<global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand> FailedPids {
       get { return failedPids_; }
     }
 
@@ -11240,7 +11240,7 @@ namespace LeanCloud.Realtime.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::LeanCloud.Realtime.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[28]; }
+      get { return global::LeanCloud.Realtime.Internal.Protocol.Messages2ProtoReflection.Descriptor.MessageTypes[28]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -11297,11 +11297,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "cmd" field.</summary>
     public const int CmdFieldNumber = 1;
-    private readonly static global::LeanCloud.Realtime.Protocol.CommandType CmdDefaultValue = global::LeanCloud.Realtime.Protocol.CommandType.Session;
+    private readonly static global::LeanCloud.Realtime.Internal.Protocol.CommandType CmdDefaultValue = global::LeanCloud.Realtime.Internal.Protocol.CommandType.Session;
 
-    private global::LeanCloud.Realtime.Protocol.CommandType cmd_;
+    private global::LeanCloud.Realtime.Internal.Protocol.CommandType cmd_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.CommandType Cmd {
+    public global::LeanCloud.Realtime.Internal.Protocol.CommandType Cmd {
       get { if ((_hasBits0 & 1) != 0) { return cmd_; } else { return CmdDefaultValue; } }
       set {
         _hasBits0 |= 1;
@@ -11321,11 +11321,11 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "op" field.</summary>
     public const int OpFieldNumber = 2;
-    private readonly static global::LeanCloud.Realtime.Protocol.OpType OpDefaultValue = global::LeanCloud.Realtime.Protocol.OpType.Open;
+    private readonly static global::LeanCloud.Realtime.Internal.Protocol.OpType OpDefaultValue = global::LeanCloud.Realtime.Internal.Protocol.OpType.Open;
 
-    private global::LeanCloud.Realtime.Protocol.OpType op_;
+    private global::LeanCloud.Realtime.Internal.Protocol.OpType op_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.OpType Op {
+    public global::LeanCloud.Realtime.Internal.Protocol.OpType Op {
       get { if ((_hasBits0 & 2) != 0) { return op_; } else { return OpDefaultValue; } }
       set {
         _hasBits0 |= 2;
@@ -11558,9 +11558,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "loginMessage" field.</summary>
     public const int LoginMessageFieldNumber = 100;
-    private global::LeanCloud.Realtime.Protocol.LoginCommand loginMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.LoginCommand loginMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.LoginCommand LoginMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.LoginCommand LoginMessage {
       get { return loginMessage_; }
       set {
         loginMessage_ = value;
@@ -11579,9 +11579,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "dataMessage" field.</summary>
     public const int DataMessageFieldNumber = 101;
-    private global::LeanCloud.Realtime.Protocol.DataCommand dataMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.DataCommand dataMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.DataCommand DataMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.DataCommand DataMessage {
       get { return dataMessage_; }
       set {
         dataMessage_ = value;
@@ -11600,9 +11600,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "sessionMessage" field.</summary>
     public const int SessionMessageFieldNumber = 102;
-    private global::LeanCloud.Realtime.Protocol.SessionCommand sessionMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.SessionCommand sessionMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.SessionCommand SessionMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.SessionCommand SessionMessage {
       get { return sessionMessage_; }
       set {
         sessionMessage_ = value;
@@ -11621,9 +11621,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "errorMessage" field.</summary>
     public const int ErrorMessageFieldNumber = 103;
-    private global::LeanCloud.Realtime.Protocol.ErrorCommand errorMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand errorMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.ErrorCommand ErrorMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand ErrorMessage {
       get { return errorMessage_; }
       set {
         errorMessage_ = value;
@@ -11642,9 +11642,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "directMessage" field.</summary>
     public const int DirectMessageFieldNumber = 104;
-    private global::LeanCloud.Realtime.Protocol.DirectCommand directMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.DirectCommand directMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.DirectCommand DirectMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.DirectCommand DirectMessage {
       get { return directMessage_; }
       set {
         directMessage_ = value;
@@ -11663,9 +11663,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "ackMessage" field.</summary>
     public const int AckMessageFieldNumber = 105;
-    private global::LeanCloud.Realtime.Protocol.AckCommand ackMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.AckCommand ackMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.AckCommand AckMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.AckCommand AckMessage {
       get { return ackMessage_; }
       set {
         ackMessage_ = value;
@@ -11684,9 +11684,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "unreadMessage" field.</summary>
     public const int UnreadMessageFieldNumber = 106;
-    private global::LeanCloud.Realtime.Protocol.UnreadCommand unreadMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.UnreadCommand unreadMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.UnreadCommand UnreadMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.UnreadCommand UnreadMessage {
       get { return unreadMessage_; }
       set {
         unreadMessage_ = value;
@@ -11705,9 +11705,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "readMessage" field.</summary>
     public const int ReadMessageFieldNumber = 107;
-    private global::LeanCloud.Realtime.Protocol.ReadCommand readMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.ReadCommand readMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.ReadCommand ReadMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.ReadCommand ReadMessage {
       get { return readMessage_; }
       set {
         readMessage_ = value;
@@ -11726,9 +11726,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "rcpMessage" field.</summary>
     public const int RcpMessageFieldNumber = 108;
-    private global::LeanCloud.Realtime.Protocol.RcpCommand rcpMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.RcpCommand rcpMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.RcpCommand RcpMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.RcpCommand RcpMessage {
       get { return rcpMessage_; }
       set {
         rcpMessage_ = value;
@@ -11747,9 +11747,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "logsMessage" field.</summary>
     public const int LogsMessageFieldNumber = 109;
-    private global::LeanCloud.Realtime.Protocol.LogsCommand logsMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.LogsCommand logsMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.LogsCommand LogsMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.LogsCommand LogsMessage {
       get { return logsMessage_; }
       set {
         logsMessage_ = value;
@@ -11768,9 +11768,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "convMessage" field.</summary>
     public const int ConvMessageFieldNumber = 110;
-    private global::LeanCloud.Realtime.Protocol.ConvCommand convMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.ConvCommand convMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.ConvCommand ConvMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.ConvCommand ConvMessage {
       get { return convMessage_; }
       set {
         convMessage_ = value;
@@ -11789,9 +11789,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "roomMessage" field.</summary>
     public const int RoomMessageFieldNumber = 111;
-    private global::LeanCloud.Realtime.Protocol.RoomCommand roomMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.RoomCommand roomMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.RoomCommand RoomMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.RoomCommand RoomMessage {
       get { return roomMessage_; }
       set {
         roomMessage_ = value;
@@ -11810,9 +11810,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "presenceMessage" field.</summary>
     public const int PresenceMessageFieldNumber = 112;
-    private global::LeanCloud.Realtime.Protocol.PresenceCommand presenceMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.PresenceCommand presenceMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.PresenceCommand PresenceMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.PresenceCommand PresenceMessage {
       get { return presenceMessage_; }
       set {
         presenceMessage_ = value;
@@ -11831,9 +11831,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "reportMessage" field.</summary>
     public const int ReportMessageFieldNumber = 113;
-    private global::LeanCloud.Realtime.Protocol.ReportCommand reportMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.ReportCommand reportMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.ReportCommand ReportMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.ReportCommand ReportMessage {
       get { return reportMessage_; }
       set {
         reportMessage_ = value;
@@ -11852,9 +11852,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "patchMessage" field.</summary>
     public const int PatchMessageFieldNumber = 114;
-    private global::LeanCloud.Realtime.Protocol.PatchCommand patchMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.PatchCommand patchMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.PatchCommand PatchMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.PatchCommand PatchMessage {
       get { return patchMessage_; }
       set {
         patchMessage_ = value;
@@ -11873,9 +11873,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "pubsubMessage" field.</summary>
     public const int PubsubMessageFieldNumber = 115;
-    private global::LeanCloud.Realtime.Protocol.PubsubCommand pubsubMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.PubsubCommand pubsubMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.PubsubCommand PubsubMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.PubsubCommand PubsubMessage {
       get { return pubsubMessage_; }
       set {
         pubsubMessage_ = value;
@@ -11894,9 +11894,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "blacklistMessage" field.</summary>
     public const int BlacklistMessageFieldNumber = 116;
-    private global::LeanCloud.Realtime.Protocol.BlacklistCommand blacklistMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.BlacklistCommand blacklistMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.BlacklistCommand BlacklistMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.BlacklistCommand BlacklistMessage {
       get { return blacklistMessage_; }
       set {
         blacklistMessage_ = value;
@@ -11915,9 +11915,9 @@ namespace LeanCloud.Realtime.Protocol {
 
     /// <summary>Field number for the "loggedinMessage" field.</summary>
     public const int LoggedinMessageFieldNumber = 117;
-    private global::LeanCloud.Realtime.Protocol.LoggedinCommand loggedinMessage_;
+    private global::LeanCloud.Realtime.Internal.Protocol.LoggedinCommand loggedinMessage_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LeanCloud.Realtime.Protocol.LoggedinCommand LoggedinMessage {
+    public global::LeanCloud.Realtime.Internal.Protocol.LoggedinCommand LoggedinMessage {
       get { return loggedinMessage_; }
       set {
         loggedinMessage_ = value;
@@ -12281,109 +12281,109 @@ namespace LeanCloud.Realtime.Protocol {
       }
       if (other.HasLoginMessage) {
         if (!HasLoginMessage) {
-          LoginMessage = new global::LeanCloud.Realtime.Protocol.LoginCommand();
+          LoginMessage = new global::LeanCloud.Realtime.Internal.Protocol.LoginCommand();
         }
         LoginMessage.MergeFrom(other.LoginMessage);
       }
       if (other.HasDataMessage) {
         if (!HasDataMessage) {
-          DataMessage = new global::LeanCloud.Realtime.Protocol.DataCommand();
+          DataMessage = new global::LeanCloud.Realtime.Internal.Protocol.DataCommand();
         }
         DataMessage.MergeFrom(other.DataMessage);
       }
       if (other.HasSessionMessage) {
         if (!HasSessionMessage) {
-          SessionMessage = new global::LeanCloud.Realtime.Protocol.SessionCommand();
+          SessionMessage = new global::LeanCloud.Realtime.Internal.Protocol.SessionCommand();
         }
         SessionMessage.MergeFrom(other.SessionMessage);
       }
       if (other.HasErrorMessage) {
         if (!HasErrorMessage) {
-          ErrorMessage = new global::LeanCloud.Realtime.Protocol.ErrorCommand();
+          ErrorMessage = new global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand();
         }
         ErrorMessage.MergeFrom(other.ErrorMessage);
       }
       if (other.HasDirectMessage) {
         if (!HasDirectMessage) {
-          DirectMessage = new global::LeanCloud.Realtime.Protocol.DirectCommand();
+          DirectMessage = new global::LeanCloud.Realtime.Internal.Protocol.DirectCommand();
         }
         DirectMessage.MergeFrom(other.DirectMessage);
       }
       if (other.HasAckMessage) {
         if (!HasAckMessage) {
-          AckMessage = new global::LeanCloud.Realtime.Protocol.AckCommand();
+          AckMessage = new global::LeanCloud.Realtime.Internal.Protocol.AckCommand();
         }
         AckMessage.MergeFrom(other.AckMessage);
       }
       if (other.HasUnreadMessage) {
         if (!HasUnreadMessage) {
-          UnreadMessage = new global::LeanCloud.Realtime.Protocol.UnreadCommand();
+          UnreadMessage = new global::LeanCloud.Realtime.Internal.Protocol.UnreadCommand();
         }
         UnreadMessage.MergeFrom(other.UnreadMessage);
       }
       if (other.HasReadMessage) {
         if (!HasReadMessage) {
-          ReadMessage = new global::LeanCloud.Realtime.Protocol.ReadCommand();
+          ReadMessage = new global::LeanCloud.Realtime.Internal.Protocol.ReadCommand();
         }
         ReadMessage.MergeFrom(other.ReadMessage);
       }
       if (other.HasRcpMessage) {
         if (!HasRcpMessage) {
-          RcpMessage = new global::LeanCloud.Realtime.Protocol.RcpCommand();
+          RcpMessage = new global::LeanCloud.Realtime.Internal.Protocol.RcpCommand();
         }
         RcpMessage.MergeFrom(other.RcpMessage);
       }
       if (other.HasLogsMessage) {
         if (!HasLogsMessage) {
-          LogsMessage = new global::LeanCloud.Realtime.Protocol.LogsCommand();
+          LogsMessage = new global::LeanCloud.Realtime.Internal.Protocol.LogsCommand();
         }
         LogsMessage.MergeFrom(other.LogsMessage);
       }
       if (other.HasConvMessage) {
         if (!HasConvMessage) {
-          ConvMessage = new global::LeanCloud.Realtime.Protocol.ConvCommand();
+          ConvMessage = new global::LeanCloud.Realtime.Internal.Protocol.ConvCommand();
         }
         ConvMessage.MergeFrom(other.ConvMessage);
       }
       if (other.HasRoomMessage) {
         if (!HasRoomMessage) {
-          RoomMessage = new global::LeanCloud.Realtime.Protocol.RoomCommand();
+          RoomMessage = new global::LeanCloud.Realtime.Internal.Protocol.RoomCommand();
         }
         RoomMessage.MergeFrom(other.RoomMessage);
       }
       if (other.HasPresenceMessage) {
         if (!HasPresenceMessage) {
-          PresenceMessage = new global::LeanCloud.Realtime.Protocol.PresenceCommand();
+          PresenceMessage = new global::LeanCloud.Realtime.Internal.Protocol.PresenceCommand();
         }
         PresenceMessage.MergeFrom(other.PresenceMessage);
       }
       if (other.HasReportMessage) {
         if (!HasReportMessage) {
-          ReportMessage = new global::LeanCloud.Realtime.Protocol.ReportCommand();
+          ReportMessage = new global::LeanCloud.Realtime.Internal.Protocol.ReportCommand();
         }
         ReportMessage.MergeFrom(other.ReportMessage);
       }
       if (other.HasPatchMessage) {
         if (!HasPatchMessage) {
-          PatchMessage = new global::LeanCloud.Realtime.Protocol.PatchCommand();
+          PatchMessage = new global::LeanCloud.Realtime.Internal.Protocol.PatchCommand();
         }
         PatchMessage.MergeFrom(other.PatchMessage);
       }
       if (other.HasPubsubMessage) {
         if (!HasPubsubMessage) {
-          PubsubMessage = new global::LeanCloud.Realtime.Protocol.PubsubCommand();
+          PubsubMessage = new global::LeanCloud.Realtime.Internal.Protocol.PubsubCommand();
         }
         PubsubMessage.MergeFrom(other.PubsubMessage);
       }
       if (other.HasBlacklistMessage) {
         if (!HasBlacklistMessage) {
-          BlacklistMessage = new global::LeanCloud.Realtime.Protocol.BlacklistCommand();
+          BlacklistMessage = new global::LeanCloud.Realtime.Internal.Protocol.BlacklistCommand();
         }
         BlacklistMessage.MergeFrom(other.BlacklistMessage);
       }
       if (other.HasLoggedinMessage) {
         if (!HasLoggedinMessage) {
-          LoggedinMessage = new global::LeanCloud.Realtime.Protocol.LoggedinCommand();
+          LoggedinMessage = new global::LeanCloud.Realtime.Internal.Protocol.LoggedinCommand();
         }
         LoggedinMessage.MergeFrom(other.LoggedinMessage);
       }
@@ -12399,11 +12399,11 @@ namespace LeanCloud.Realtime.Protocol {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            Cmd = (global::LeanCloud.Realtime.Protocol.CommandType) input.ReadEnum();
+            Cmd = (global::LeanCloud.Realtime.Internal.Protocol.CommandType) input.ReadEnum();
             break;
           }
           case 16: {
-            Op = (global::LeanCloud.Realtime.Protocol.OpType) input.ReadEnum();
+            Op = (global::LeanCloud.Realtime.Internal.Protocol.OpType) input.ReadEnum();
             break;
           }
           case 26: {
@@ -12444,126 +12444,126 @@ namespace LeanCloud.Realtime.Protocol {
           }
           case 802: {
             if (!HasLoginMessage) {
-              LoginMessage = new global::LeanCloud.Realtime.Protocol.LoginCommand();
+              LoginMessage = new global::LeanCloud.Realtime.Internal.Protocol.LoginCommand();
             }
             input.ReadMessage(LoginMessage);
             break;
           }
           case 810: {
             if (!HasDataMessage) {
-              DataMessage = new global::LeanCloud.Realtime.Protocol.DataCommand();
+              DataMessage = new global::LeanCloud.Realtime.Internal.Protocol.DataCommand();
             }
             input.ReadMessage(DataMessage);
             break;
           }
           case 818: {
             if (!HasSessionMessage) {
-              SessionMessage = new global::LeanCloud.Realtime.Protocol.SessionCommand();
+              SessionMessage = new global::LeanCloud.Realtime.Internal.Protocol.SessionCommand();
             }
             input.ReadMessage(SessionMessage);
             break;
           }
           case 826: {
             if (!HasErrorMessage) {
-              ErrorMessage = new global::LeanCloud.Realtime.Protocol.ErrorCommand();
+              ErrorMessage = new global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand();
             }
             input.ReadMessage(ErrorMessage);
             break;
           }
           case 834: {
             if (!HasDirectMessage) {
-              DirectMessage = new global::LeanCloud.Realtime.Protocol.DirectCommand();
+              DirectMessage = new global::LeanCloud.Realtime.Internal.Protocol.DirectCommand();
             }
             input.ReadMessage(DirectMessage);
             break;
           }
           case 842: {
             if (!HasAckMessage) {
-              AckMessage = new global::LeanCloud.Realtime.Protocol.AckCommand();
+              AckMessage = new global::LeanCloud.Realtime.Internal.Protocol.AckCommand();
             }
             input.ReadMessage(AckMessage);
             break;
           }
           case 850: {
             if (!HasUnreadMessage) {
-              UnreadMessage = new global::LeanCloud.Realtime.Protocol.UnreadCommand();
+              UnreadMessage = new global::LeanCloud.Realtime.Internal.Protocol.UnreadCommand();
             }
             input.ReadMessage(UnreadMessage);
             break;
           }
           case 858: {
             if (!HasReadMessage) {
-              ReadMessage = new global::LeanCloud.Realtime.Protocol.ReadCommand();
+              ReadMessage = new global::LeanCloud.Realtime.Internal.Protocol.ReadCommand();
             }
             input.ReadMessage(ReadMessage);
             break;
           }
           case 866: {
             if (!HasRcpMessage) {
-              RcpMessage = new global::LeanCloud.Realtime.Protocol.RcpCommand();
+              RcpMessage = new global::LeanCloud.Realtime.Internal.Protocol.RcpCommand();
             }
             input.ReadMessage(RcpMessage);
             break;
           }
           case 874: {
             if (!HasLogsMessage) {
-              LogsMessage = new global::LeanCloud.Realtime.Protocol.LogsCommand();
+              LogsMessage = new global::LeanCloud.Realtime.Internal.Protocol.LogsCommand();
             }
             input.ReadMessage(LogsMessage);
             break;
           }
           case 882: {
             if (!HasConvMessage) {
-              ConvMessage = new global::LeanCloud.Realtime.Protocol.ConvCommand();
+              ConvMessage = new global::LeanCloud.Realtime.Internal.Protocol.ConvCommand();
             }
             input.ReadMessage(ConvMessage);
             break;
           }
           case 890: {
             if (!HasRoomMessage) {
-              RoomMessage = new global::LeanCloud.Realtime.Protocol.RoomCommand();
+              RoomMessage = new global::LeanCloud.Realtime.Internal.Protocol.RoomCommand();
             }
             input.ReadMessage(RoomMessage);
             break;
           }
           case 898: {
             if (!HasPresenceMessage) {
-              PresenceMessage = new global::LeanCloud.Realtime.Protocol.PresenceCommand();
+              PresenceMessage = new global::LeanCloud.Realtime.Internal.Protocol.PresenceCommand();
             }
             input.ReadMessage(PresenceMessage);
             break;
           }
           case 906: {
             if (!HasReportMessage) {
-              ReportMessage = new global::LeanCloud.Realtime.Protocol.ReportCommand();
+              ReportMessage = new global::LeanCloud.Realtime.Internal.Protocol.ReportCommand();
             }
             input.ReadMessage(ReportMessage);
             break;
           }
           case 914: {
             if (!HasPatchMessage) {
-              PatchMessage = new global::LeanCloud.Realtime.Protocol.PatchCommand();
+              PatchMessage = new global::LeanCloud.Realtime.Internal.Protocol.PatchCommand();
             }
             input.ReadMessage(PatchMessage);
             break;
           }
           case 922: {
             if (!HasPubsubMessage) {
-              PubsubMessage = new global::LeanCloud.Realtime.Protocol.PubsubCommand();
+              PubsubMessage = new global::LeanCloud.Realtime.Internal.Protocol.PubsubCommand();
             }
             input.ReadMessage(PubsubMessage);
             break;
           }
           case 930: {
             if (!HasBlacklistMessage) {
-              BlacklistMessage = new global::LeanCloud.Realtime.Protocol.BlacklistCommand();
+              BlacklistMessage = new global::LeanCloud.Realtime.Internal.Protocol.BlacklistCommand();
             }
             input.ReadMessage(BlacklistMessage);
             break;
           }
           case 938: {
             if (!HasLoggedinMessage) {
-              LoggedinMessage = new global::LeanCloud.Realtime.Protocol.LoggedinCommand();
+              LoggedinMessage = new global::LeanCloud.Realtime.Internal.Protocol.LoggedinCommand();
             }
             input.ReadMessage(LoggedinMessage);
             break;

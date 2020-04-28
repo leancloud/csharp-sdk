@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using Google.Protobuf;
-using LeanCloud.Realtime.Protocol;
+using LeanCloud.Realtime.Internal.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Controller {
     internal class LCIMMessageController : LCIMController {
@@ -45,6 +45,19 @@ namespace LeanCloud.Realtime.Internal.Controller {
             // 遗愿消息
             if (options.Will) {
                 direct.Will = options.Will;
+            }
+            // 推送数据
+            if (options.PushData != null) {
+                direct.PushData = JsonConvert.SerializeObject(options.PushData);
+            }
+            // 提醒所有人
+            if (message.MentionAll) {
+                direct.MentionAll = message.MentionAll;
+            }
+            // 提醒用户列表
+            if (message.MentionIdList != null &&
+                message.MentionIdList.Count > 0) {
+                direct.MentionPids.AddRange(message.MentionIdList);
             }
             GenericCommand command = NewCommand(CommandType.Direct);
             command.DirectMessage = direct;
@@ -177,6 +190,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 message.PatchedTimestamp = item.PatchTimestamp;
                 message.MentionAll = item.MentionAll;
                 message.MentionIdList = item.MentionPids.ToList();
+                message.Mentioned = message.MentionAll ||
+                    message.MentionIdList.Contains(Client.Id);
                 return message;
             }).ToList().AsReadOnly();
         }
@@ -256,6 +271,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             message.SentTimestamp = direct.Timestamp;
             message.MentionAll = direct.MentionAll;
             message.MentionIdList = direct.MentionPids.ToList();
+            message.Mentioned = message.MentionAll ||
+                message.MentionIdList.Contains(Client.Id);
             message.PatchedTimestamp = direct.PatchTimestamp;
             message.IsTransient = direct.Transient;
             // 通知服务端已接收
@@ -265,6 +282,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }
             // 获取对话
             LCIMConversation conversation = await Client.GetOrQueryConversation(direct.Cid);
+            conversation.Unread++;
             conversation.LastMessage = message;
             Client.OnMessage?.Invoke(conversation, message);
         }

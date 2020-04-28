@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using LeanCloud.Realtime.Protocol;
+using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Storage.Internal;
 using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Common;
@@ -552,7 +552,12 @@ namespace LeanCloud.Realtime.Internal.Controller {
             if (errors != null) {
                 result.FailureList = new List<LCIMOperationFailure>();
                 foreach (ErrorCommand error in errors) {
-                    result.FailureList.Add(new LCIMOperationFailure(error));
+                    LCIMOperationFailure failure = new LCIMOperationFailure {
+                        Code = error.Code,
+                        Reason = error.Reason,
+                        IdList = error.Pids?.ToList()
+                    };
+                    result.FailureList.Add(failure);
                 }
             }
             return result;
@@ -597,6 +602,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     message.Id = conv.Mid;
                     message.FromClientId = conv.From;
                     message.SentTimestamp = conv.Timestamp;
+                    message.Mentioned = conv.Mentioned;
                     conversation.LastMessage = message;
                 }
                 return conversation;

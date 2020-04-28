@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LeanCloud.Realtime.Protocol;
+using LeanCloud.Realtime.Internal.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Controller {
     internal class LCIMSessionController : LCIMController {

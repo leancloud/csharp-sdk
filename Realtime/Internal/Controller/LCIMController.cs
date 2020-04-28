@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using LeanCloud.Realtime.Protocol;
+using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime.Internal.Controller {
