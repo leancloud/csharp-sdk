@@ -125,6 +125,7 @@ namespace LeanCloud.Realtime {
                 // 未注册的类型消息
                 message = new LCIMTypedMessage();
             }
+            // 已知类型消息的固定
             message.MessageType = msgType;
             if (msgData.TryGetValue(MessageAttributesKey, out object attrObj)) {
                 message.customProperties = LCDecoder.Decode(attrObj) as Dictionary<string, object>;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
@@ -21,6 +22,9 @@ namespace LeanCloud.Realtime {
         }
 
         internal override Dictionary<string, object> Encode() {
+            if (Location == null) {
+                throw new ArgumentNullException(nameof(Location));
+            }
             Dictionary<string, object> data = base.Encode();
             Dictionary<string, object> locationData = new Dictionary<string, object> {
                 { MessageDataLongitudeKey, Location.Longitude },
@@ -34,6 +38,9 @@ namespace LeanCloud.Realtime {
             base.Decode(msgData);
             if (msgData.TryGetValue(MessageLocationKey, out object val)) {
                 Dictionary<string, object> locationData = val as Dictionary<string, object>;
+                if (locationData == null) {
+                    return;
+                }
                 double latitude = 0, longitude = 0;
                 if (locationData.TryGetValue(MessageDataLatitudeKey, out object lat) &&
                     double.TryParse(lat as string, out double la)) {
