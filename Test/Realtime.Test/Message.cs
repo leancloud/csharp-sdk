@@ -2,7 +2,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using LeanCloud;
 using LeanCloud.Common;
 using LeanCloud.Storage;
@@ -172,10 +171,9 @@ namespace Realtime.Test {
             string clientId = Guid.NewGuid().ToString();
             LCIMClient client = new LCIMClient(clientId);
             LCIMConversation conversation = await m1.CreateConversation(new string[] { clientId });
-
+            await client.Open();
             LCIMTextMessage textMessage = new LCIMTextMessage("hello");
             await conversation.Send(textMessage);
-
             client.OnUnreadMessagesCountUpdated = (convs) => {
                 foreach (LCIMConversation conv in convs) {
                     WriteLine($"unread count: {conv.Unread}");
@@ -183,20 +181,10 @@ namespace Realtime.Test {
                     Assert.True(conv.LastMessage is LCIMTextMessage);
                     LCIMTextMessage textMsg = conv.LastMessage as LCIMTextMessage;
                     Assert.AreEqual(textMsg.Text, "hello");
+                    tcs.SetResult(true);
                 }
             };
             await client.Open();
-
-            client.OnMessage = (conv, msg) => {
-                WriteLine($"unread count: {conv.Unread}");
-                Assert.AreEqual(conv.Unread, 2);
-                Assert.True(conv.LastMessage is LCIMTextMessage);
-                LCIMTextMessage textMsg = conv.LastMessage as LCIMTextMessage;
-                Assert.AreEqual(textMsg.Text, "world");
-                tcs.SetResult(true);
-            };
-            textMessage = new LCIMTextMessage("world");
-            await conversation.Send(textMessage);
 
             await tcs.Task;
         }
@@ -239,42 +227,6 @@ namespace Realtime.Test {
                 Ecode = "#0123"
             };
             await conversation.Send(emojiMessage);
-
-            await tcs.Task;
-        }
-
-        [Test]
-        [Order(8)]
-        public async Task MentionList() {
-            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
-            m2.OnMessage = (conv, msg) => {
-                Assert.True(msg.Mentioned);
-                Assert.True(msg.MentionIdList.Contains(m2.Id));
-                tcs.SetResult(null);
-            };
-
-            LCIMTextMessage textMessage = new LCIMTextMessage("hello") {
-                MentionIdList = new List<string> { m2.Id }
-            };
-            await conversation.Send(textMessage);
-
-            await tcs.Task;
-        }
-
-        [Test]
-        [Order(9)]
-        public async Task MentionAll() {
-            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
-            m2.OnMessage = (conv, msg) => {
-                Assert.True(msg.Mentioned);
-                Assert.True(msg.MentionAll);
-                tcs.SetResult(null);
-            };
-
-            LCIMTextMessage textMessage = new LCIMTextMessage("world") {
-                MentionAll = true
-            };
-            await conversation.Send(textMessage);
 
             await tcs.Task;
         }
