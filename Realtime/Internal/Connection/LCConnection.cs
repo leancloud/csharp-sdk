@@ -6,7 +6,6 @@ using Google.Protobuf;
 using LeanCloud.Realtime.Internal.Router;
 using LeanCloud.Realtime.Internal.WebSocket;
 using LeanCloud.Realtime.Internal.Protocol;
-using LeanCloud.Common;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime.Internal.Connection {

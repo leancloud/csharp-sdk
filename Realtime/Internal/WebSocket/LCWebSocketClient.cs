@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
-using LeanCloud.Common;
 using LeanCloud.Realtime.Internal.Router;
 using LeanCloud.Realtime.Internal.Connection;
 
