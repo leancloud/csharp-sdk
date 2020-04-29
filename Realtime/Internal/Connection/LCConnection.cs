@@ -44,11 +44,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal Action OnDisconnect;
 
         /// <summary>
-        /// 开始重连事件
-        /// </summary>
-        internal Action OnReconnecting;
-
-        /// <summary>
         /// 重连成功事件
         /// </summary>
         internal Action OnReconnected;
@@ -73,14 +68,26 @@ namespace LeanCloud.Realtime.Internal.Connection {
             responses = new Dictionary<int, TaskCompletionSource<GenericCommand>>();
             heartBeat = new LCHeartBeat(this, HEART_BEAT_INTERVAL, HEART_BEAT_INTERVAL);
             router = new LCRTMRouter();
-            client = new LCWebSocketClient(router, heartBeat) {
+            client = new LCWebSocketClient {
                 OnMessage = OnClientMessage,
                 OnClose = OnClientDisconnect
             };
         }
 
         internal async Task Connect() {
-            await client.Connect();
+            try {
+                LCRTMServer rtmServer = await router.GetServer();
+                try {
+                    LCLogger.Debug($"Primary Server");
+                    await client.Connect(rtmServer.Primary);
+                } catch (Exception e) {
+                    LCLogger.Error(e);
+                    LCLogger.Debug($"Secondary Server");
+                    await client.Connect(rtmServer.Secondary);
+                }
+            } catch (Exception e) {
+                throw e;
+            }
         }
 
         /// <summary>
@@ -93,7 +100,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
             // 重新创建连接组件
             heartBeat = new LCHeartBeat(this, HEART_BEAT_INTERVAL, HEART_BEAT_INTERVAL);
             router = new LCRTMRouter();
-            client = new LCWebSocketClient(router, heartBeat) {
+            client = new LCWebSocketClient {
                 OnMessage = OnClientMessage,
                 OnClose = OnClientDisconnect
             };
@@ -140,12 +147,12 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal async Task Close() {
             OnNotification = null;
             OnDisconnect = null;
-            OnReconnecting = null;
             OnReconnected = null;
             await client.Close();
         }
 
         private void OnClientMessage(byte[] bytes) {
+            _ = heartBeat.Refresh(OnPingTimeout);
             try {
                 GenericCommand command = GenericCommand.Parser.ParseFrom(bytes);
                 LCLogger.Debug($"{id} <= {FormatCommand(command)}");
@@ -178,21 +185,25 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         private void OnClientDisconnect() {
+            heartBeat.Stop();
             OnDisconnect?.Invoke();
-            OnReconnecting?.Invoke();
             // 重连
             _ = Reconnect();
         }
 
+        private async void OnPingTimeout() {
+            await client.Close();
+            OnClientDisconnect();
+        }
+
         private async Task Reconnect() {
-            OnReconnecting?.Invoke();
             while (true) {
                 int reconnectCount = 0;
                 // 重连策略
                 while (reconnectCount < MAX_RECONNECT_TIMES) {
                     try {
                         LCLogger.Debug($"Reconnecting... {reconnectCount}");
-                        await client.Connect();
+                        await Connect();
                         break;
                     } catch (Exception e) {
                         reconnectCount++;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
-using LeanCloud.Realtime.Internal.Router;
-using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime.Internal.WebSocket {
     /// <summary>
@@ -34,44 +32,12 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
         private ClientWebSocket ws;
 
-        private readonly LCRTMRouter router;
-
-        private readonly LCHeartBeat heartBeat;
-
-        internal LCWebSocketClient(LCRTMRouter router, LCHeartBeat heartBeat) {
-            this.router = router;
-            this.heartBeat = heartBeat;
-        }
-
-        /// <summary>
-        /// 连接
-        /// </summary>
-        /// <returns></returns>
-        internal async Task Connect() {
-            try {
-                LCRTMServer rtmServer = await router.GetServer();
-                try {
-                    LCLogger.Debug($"Primary Server");
-                    await Connect(rtmServer.Primary);
-                } catch (Exception e) {
-                    LCLogger.Error(e);
-                    LCLogger.Debug($"Secondary Server");
-                    await Connect(rtmServer.Secondary);
-                }
-            } catch (Exception e) {
-                throw e;
-            }
-            
-            // 接收
-            _ = StartReceive();
-        }
-
         /// <summary>
         /// 连接指定 ws 服务器
         /// </summary>
         /// <param name="server"></param>
         /// <returns></returns>
-        private async Task Connect(string server) {
+        internal async Task Connect(string server) {
             LCLogger.Debug($"Connecting WebSocket: {server}");
             Task timeoutTask = Task.Delay(CONNECT_TIMEOUT);
             ws = new ClientWebSocket();
@@ -79,6 +45,9 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             Task connectTask = ws.ConnectAsync(new Uri(server), default);
             if (await Task.WhenAny(connectTask, timeoutTask) == connectTask) {
                 LCLogger.Debug($"Connected WebSocket: {server}");
+                await connectTask;
+                // 接收
+                _ = StartReceive();
             } else {
                 throw new TimeoutException("Connect timeout");
             }
@@ -92,7 +61,6 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             LCLogger.Debug("Closing WebSocket");
             OnMessage = null;
             OnClose = null;
-            heartBeat.Stop();
             try {
                 // 发送关闭帧可能会很久，所以增加超时
                 // 主动挥手关闭，不会再收到 Close Frame
@@ -152,7 +120,6 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                             }
                         }
                     } else if (result.MessageType == WebSocketMessageType.Binary) {
-                        _ = heartBeat.Update(HandleExceptionClose);
                         // 拼合 WebSocket Message
                         int length = result.Count;
                         byte[] data = new byte[length];
@@ -165,13 +132,12 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             } catch (Exception e) {
                 // 客户端网络异常
                 LCLogger.Error(e);
-                OnClose?.Invoke();
+                HandleExceptionClose();
             }
         }
 
         private void HandleExceptionClose() {
             try {
-                heartBeat.Stop();
                 ws.Abort();
                 ws.Dispose();
             } catch (Exception e) {

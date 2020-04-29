@@ -38,7 +38,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// 更新心跳监听
         /// </summary>
         /// <returns></returns>
-        internal async Task Update(Action onTimeout) {
+        internal async Task Refresh(Action onTimeout) {
             LCLogger.Debug("HeartBeat update");
             pingCTS?.Cancel();
             pongCTS?.Cancel();
