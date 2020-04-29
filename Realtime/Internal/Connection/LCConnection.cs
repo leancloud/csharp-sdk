@@ -140,6 +140,8 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal async Task Close() {
             OnNotification = null;
             OnDisconnect = null;
+            OnReconnecting = null;
+            OnReconnected = null;
             await client.Close();
         }
 
