@@ -39,7 +39,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// </summary>
         /// <returns></returns>
         internal async Task Refresh(Action onTimeout) {
-            LCLogger.Debug("HeartBeat update");
+            LCLogger.Debug("HeartBeat refresh");
             pingCTS?.Cancel();
             pongCTS?.Cancel();
 

@@ -21,7 +21,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// <summary>
         /// 最大重连次数，超过后重置 Router 缓存后再次尝试重连
         /// </summary>
-        private const int MAX_RECONNECT_TIMES = 3;
+        private const int MAX_RECONNECT_TIMES = 10;
 
         /// <summary>
         /// 重连间隔
@@ -31,7 +31,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// <summary>
         /// 心跳间隔
         /// </summary>
-        private const int HEART_BEAT_INTERVAL = 5000;
+        private const int HEART_BEAT_INTERVAL = 30000;
 
         /// <summary>
         /// 通知事件
@@ -148,6 +148,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
             OnNotification = null;
             OnDisconnect = null;
             OnReconnected = null;
+            heartBeat.Stop();
             await client.Close();
         }
 
