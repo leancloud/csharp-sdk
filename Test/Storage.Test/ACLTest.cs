@@ -1,19 +1,19 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
+using LeanCloud;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public class ACLTest {
         [SetUp]
         public void SetUp() {
-            Logger.LogDelegate += Utils.Print;
-            LeanCloud.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            LCLogger.LogDelegate += Utils.Print;
+            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
         }
 
         [TearDown]
         public void TearDown() {
-            Logger.LogDelegate -= Utils.Print;
+            LCLogger.LogDelegate -= Utils.Print;
         }
 
         [Test]

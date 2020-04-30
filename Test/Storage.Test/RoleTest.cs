@@ -2,22 +2,21 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
+using LeanCloud;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     [TestFixture]
     public class RoleTest {
         [SetUp]
         public void SetUp() {
-            Logger.LogDelegate += Utils.Print;
-            LeanCloud.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            LCLogger.LogDelegate += Utils.Print;
+            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
         }
 
         [TearDown]
         public void TearDown() {
-            Logger.LogDelegate -= Utils.Print;
+            LCLogger.LogDelegate -= Utils.Print;
         }
 
         [Test]

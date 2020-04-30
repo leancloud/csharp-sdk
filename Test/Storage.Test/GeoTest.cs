@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using LeanCloud.Storage;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public class GeoTest {
         [Test]
         public void Calculate() {

@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using LeanCloud;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     internal class Hello : LCObject {
         internal World World => this["objectValue"] as World;
 
@@ -39,13 +39,13 @@ namespace LeanCloud.Test {
     public class SubClassTest {
         [SetUp]
         public void SetUp() {
-            Logger.LogDelegate += Utils.Print;
-            LeanCloud.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            LCLogger.LogDelegate += Utils.Print;
+            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
         }
 
         [TearDown]
         public void TearDown() {
-            Logger.LogDelegate -= Utils.Print;
+            LCLogger.LogDelegate -= Utils.Print;
         }
 
         [Test]

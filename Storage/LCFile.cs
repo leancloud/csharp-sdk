@@ -101,7 +101,7 @@ namespace LeanCloud.Storage {
                 return;
             }
             string path = $"files/{ObjectId}";
-            await LeanCloud.HttpClient.Delete(path);
+            await LCApplication.HttpClient.Delete(path);
         }
 
         public string GetThumbnailUrl(int width, int height, int quality = 100, bool scaleToFit = true, string format = "png") {
@@ -117,7 +117,7 @@ namespace LeanCloud.Storage {
                 { "mime_type", MimeType },
                 { "metaData", MetaData }
             };
-            return await LeanCloud.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
+            return await LCApplication.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
         }
 
         public static LCQuery<LCFile> GetQuery() {

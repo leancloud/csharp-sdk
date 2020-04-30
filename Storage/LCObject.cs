@@ -86,7 +86,7 @@ namespace LeanCloud.Storage {
             if (string.IsNullOrEmpty(objectId)) {
                 throw new ArgumentNullException(nameof(objectId));
             }
-            LCObject obj = new LCObject(className);
+            LCObject obj = Create(className);
             obj.data.ObjectId = objectId;
             obj.isNew = false;
             return obj;
@@ -311,7 +311,7 @@ namespace LeanCloud.Storage {
                     { "requests", LCEncoder.Encode(requestList) }
                 };
 
-                List<Dictionary<string, object>> results = await LeanCloud.HttpClient.Post<List<Dictionary<string, object>>>("batch", data: data);
+                List<Dictionary<string, object>> results = await LCApplication.HttpClient.Post<List<Dictionary<string, object>>>("batch", data: data);
                 List<LCObjectData> resultList = results.Select(item => {
                     if (item.TryGetValue("error", out object error)) {
                         Dictionary<string, object> err = error as Dictionary<string, object>;
@@ -349,8 +349,8 @@ namespace LeanCloud.Storage {
                 queryParams["where"] = query.BuildWhere();
             }
             Dictionary<string, object> response = ObjectId == null ?
-                await LeanCloud.HttpClient.Post<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams) :
-                await LeanCloud.HttpClient.Put<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams);
+                await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams) :
+                await LCApplication.HttpClient.Put<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams);
             LCObjectData data = LCObjectData.Decode(response);
             Merge(data);
             return this;
@@ -375,7 +375,7 @@ namespace LeanCloud.Storage {
                 return;
             }
             string path = $"classes/{ClassName}/{ObjectId}";
-            await LeanCloud.HttpClient.Delete(path);
+            await LCApplication.HttpClient.Delete(path);
         }
 
         public static async Task DeleteAll(List<LCObject> objectList) {
@@ -385,7 +385,7 @@ namespace LeanCloud.Storage {
             IEnumerable<LCObject> objects = objectList.Where(item => item.ObjectId != null);
             HashSet<LCObject> objectSet = new HashSet<LCObject>(objects);
             List<Dictionary<string, object>> requestList = objectSet.Select(item => {
-                string path = $"/{LeanCloud.APIVersion}/classes/{item.ClassName}/{item.ObjectId}";
+                string path = $"/{LCApplication.APIVersion}/classes/{item.ClassName}/{item.ObjectId}";
                 return new Dictionary<string, object> {
                     { "path", path },
                     { "method", "DELETE" }
@@ -394,7 +394,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "requests", LCEncoder.Encode(requestList) }
             };
-            await LeanCloud.HttpClient.Post<List<object>>("batch", data: data);
+            await LCApplication.HttpClient.Post<List<object>>("batch", data: data);
         }
 
         public async Task<LCObject> Fetch(IEnumerable<string> keys = null, IEnumerable<string> includes = null) {
@@ -406,13 +406,13 @@ namespace LeanCloud.Storage {
                 queryParams["include"] = string.Join(",", includes);
             }
             string path = $"classes/{ClassName}/{ObjectId}";
-            Dictionary<string, object> response = await LeanCloud.HttpClient.Get<Dictionary<string, object>>(path, queryParams: queryParams);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path, queryParams: queryParams);
             LCObjectData objectData = LCObjectData.Decode(response);
             Merge(objectData);
             return this;
         }
 
-        public static void RegisterSubclass<T>(string className, Func<LCObject> constructor) where T : LCObject {
+        public static void RegisterSubclass<T>(string className, Func<T> constructor) where T : LCObject {
             Type classType = typeof(T);
             LCSubclassInfo subclassInfo = new LCSubclassInfo(className, classType, constructor);
             subclassNameDict[className] = subclassInfo;

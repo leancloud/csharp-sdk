@@ -116,7 +116,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LeanCloud.HttpClient.Post<Dictionary<string, object>>("requestLoginSmsCode", data: data);
+            await LCApplication.HttpClient.Post<Dictionary<string, object>>("requestLoginSmsCode", data: data);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace LeanCloud.Storage {
                 { "mobilePhoneNumber", mobile },
                 { "smsCode", code }
             };
-            Dictionary<string, object> response = await LeanCloud.HttpClient.Post<Dictionary<string, object>>("usersByMobilePhone", data: data);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>("usersByMobilePhone", data: data);
             LCObjectData objectData = LCObjectData.Decode(response);
             currentUser = new LCUser(objectData);
             return currentUser;
@@ -346,7 +346,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "email", email }
             };
-            await LeanCloud.HttpClient.Post<Dictionary<string, object>>("requestEmailVerify", data: data);
+            await LCApplication.HttpClient.Post<Dictionary<string, object>>("requestEmailVerify", data: data);
         }
 
         /// <summary>
@@ -361,7 +361,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LeanCloud.HttpClient.Post<Dictionary<string, object>>("requestMobilePhoneVerify", data: data);
+            await LCApplication.HttpClient.Post<Dictionary<string, object>>("requestMobilePhoneVerify", data: data);
         }
 
         /// <summary>
@@ -381,7 +381,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LeanCloud.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> headers = new Dictionary<string, object> {
                 { "X-LC-Session", sessionToken }
             };
-            Dictionary<string, object> response = await LeanCloud.HttpClient.Get<Dictionary<string, object>>("users/me",
+            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>("users/me",
                 headers: headers);
             LCObjectData objectData = LCObjectData.Decode(response);
             currentUser = new LCUser(objectData);
@@ -415,7 +415,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "email", email }
             };
-            await LeanCloud.HttpClient.Post<Dictionary<string, object>>("requestPasswordReset",
+            await LCApplication.HttpClient.Post<Dictionary<string, object>>("requestPasswordReset",
                 data: data);
         }
 
@@ -431,7 +431,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LeanCloud.HttpClient.Post<Dictionary<string, object>>("requestPasswordResetBySmsCode",
+            await LCApplication.HttpClient.Post<Dictionary<string, object>>("requestPasswordResetBySmsCode",
                 data: data);
         }
 
@@ -456,7 +456,7 @@ namespace LeanCloud.Storage {
                 { "mobilePhoneNumber", mobile },
                 { "password", newPassword }
             };
-            await LeanCloud.HttpClient.Put<Dictionary<string, object>>($"resetPasswordBySmsCode/{code}",
+            await LCApplication.HttpClient.Put<Dictionary<string, object>>($"resetPasswordBySmsCode/{code}",
                 data: data);
         }
 
@@ -477,7 +477,7 @@ namespace LeanCloud.Storage {
                 { "old_password", oldPassword },
                 { "new_password", newPassword }
             };
-            Dictionary<string, object> response = await LeanCloud.HttpClient.Put<Dictionary<string, object>>(
+            Dictionary<string, object> response = await LCApplication.HttpClient.Put<Dictionary<string, object>>(
                 $"users/{ObjectId}/updatePassword", data:data);
             LCObjectData objectData = LCObjectData.Decode(response);
             Merge(objectData);
@@ -502,7 +502,7 @@ namespace LeanCloud.Storage {
                 return false;
             }
             try {
-                await LeanCloud.HttpClient.Get<Dictionary<string, object>>("users/me");
+                await LCApplication.HttpClient.Get<Dictionary<string, object>>("users/me");
                 return true;
             } catch (Exception) {
                 return false;
@@ -525,7 +525,7 @@ namespace LeanCloud.Storage {
         }
 
         static async Task<LCUser> Login(Dictionary<string, object> data) {
-            Dictionary<string, object> response = await LeanCloud.HttpClient.Post<Dictionary<string, object>>("login", data: data);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>("login", data: data);
             LCObjectData objectData = LCObjectData.Decode(response);
             currentUser = new LCUser(objectData);
             return currentUser;
@@ -536,7 +536,7 @@ namespace LeanCloud.Storage {
                 { authType, data }
             };
             string path = failOnNotExist ? "users?failOnNotExist=true" : "users";
-            Dictionary<string, object> response = await LeanCloud.HttpClient.Post<Dictionary<string, object>>(path, data: new Dictionary<string, object> {
+            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: new Dictionary<string, object> {
                 { "authData", authData }
             });
             LCObjectData objectData = LCObjectData.Decode(response);

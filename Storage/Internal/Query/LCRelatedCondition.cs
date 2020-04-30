@@ -2,11 +2,11 @@
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage.Internal.Query {
-    internal class LCRelatedCondition : ILCQueryCondition {
+    public class LCRelatedCondition : ILCQueryCondition {
         readonly LCObject parent;
         readonly string key;
 
-        internal LCRelatedCondition(LCObject parent, string key) {
+        public LCRelatedCondition(LCObject parent, string key) {
             this.parent = parent;
             this.key = key;
         }

@@ -2,23 +2,23 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using LeanCloud;
 using LeanCloud.Storage;
-using LeanCloud.Common;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public class FileTest {
-        static readonly string AvatarFilePath = "../../../assets/hello.png";
-        static readonly string APKFilePath = "../../../assets/test.apk";
+        static readonly string AvatarFilePath = "../../../../assets/hello.png";
+        static readonly string APKFilePath = "../../../../assets/test.apk";
 
         [SetUp]
         public void SetUp() {
-            Logger.LogDelegate += Utils.Print;
-            LeanCloud.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            LCLogger.LogDelegate += Utils.Print;
+            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
         }
 
         [TearDown]
         public void TearDown() {
-            Logger.LogDelegate -= Utils.Print;
+            LCLogger.LogDelegate -= Utils.Print;
         }
 
         [Test]
@@ -72,7 +72,7 @@ namespace LeanCloud.Test {
 
         [Test]
         public async Task AWS() {
-            LeanCloud.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r");
+            LCApplication.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r");
             LCFile file = new LCFile("avatar", AvatarFilePath);
             await file.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");

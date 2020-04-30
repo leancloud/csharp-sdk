@@ -5,8 +5,8 @@ using LeanCloud.Storage.Internal.Operation;
 using LeanCloud.Storage.Internal.Query;
 
 namespace LeanCloud.Storage.Internal.Codec {
-    internal static class LCEncoder {
-        internal static object Encode(object obj) {
+    public static class LCEncoder {
+        public static object Encode(object obj) {
             if (obj is DateTime dateTime) {
                 return EncodeDateTime(dateTime);
             } else if (obj is byte[] bytes) {

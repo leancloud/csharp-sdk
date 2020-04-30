@@ -1,19 +1,17 @@
-﻿using System;
+﻿using NUnit.Framework;
 using LeanCloud;
-using LeanCloud.Common;
-using NUnit.Framework;
 
-namespace LeanCloud.Test {
+namespace Storage.Test {
     public static class Utils {
-        internal static void Print(LogLevel level, string info) {
+        internal static void Print(LCLogLevel level, string info) {
             switch (level) {
-                case LogLevel.Debug:
+                case LCLogLevel.Debug:
                     TestContext.Out.WriteLine($"[DEBUG] {info}");
                     break;
-                case LogLevel.Warn:
+                case LCLogLevel.Warn:
                     TestContext.Out.WriteLine($"[WARNING] {info}");
                     break;
-                case LogLevel.Error:
+                case LCLogLevel.Error:
                     TestContext.Out.WriteLine($"[ERROR] {info}");
                     break;
                 default:
