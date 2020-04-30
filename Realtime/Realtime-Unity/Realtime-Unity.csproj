@@ -1,0 +1,130 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Realtime\Conversation\LCIMConversation.cs">
+      <Link>Conversation\LCIMConversation.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Conversation\LCIMServiceConversation.cs">
+      <Link>Conversation\LCIMServiceConversation.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Conversation\LCIMConversationMemberInfo.cs">
+      <Link>Conversation\LCIMConversationMemberInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Conversation\LCIMConversationQuery.cs">
+      <Link>Conversation\LCIMConversationQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Conversation\LCIMChatRoom.cs">
+      <Link>Conversation\LCIMChatRoom.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Conversation\LCIMMessageQueryOptions.cs">
+      <Link>Conversation\LCIMMessageQueryOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Conversation\LCIMTemporaryConversation.cs">
+      <Link>Conversation\LCIMTemporaryConversation.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\WebSocket\LCWebSocketClient.cs">
+      <Link>Internal\WebSocket\LCWebSocketClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Connection\LCHeartBeat.cs">
+      <Link>Internal\Connection\LCHeartBeat.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Connection\LCConnection.cs">
+      <Link>Internal\Connection\LCConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Protocol\Messages2Proto.cs">
+      <Link>Internal\Protocol\Messages2Proto.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Controller\LCIMSessionController.cs">
+      <Link>Internal\Controller\LCIMSessionController.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Controller\LCIMController.cs">
+      <Link>Internal\Controller\LCIMController.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Controller\LCIMMessageController.cs">
+      <Link>Internal\Controller\LCIMMessageController.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Controller\LCIMConversationController.cs">
+      <Link>Internal\Controller\LCIMConversationController.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Controller\LCIMGoAwayController.cs">
+      <Link>Internal\Controller\LCIMGoAwayController.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Router\LCRTMServer.cs">
+      <Link>Internal\Router\LCRTMServer.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Internal\Router\LCRTMRouter.cs">
+      <Link>Internal\Router\LCRTMRouter.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMVideoMessage.cs">
+      <Link>Message\LCIMVideoMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMMessageSendOptions.cs">
+      <Link>Message\LCIMMessageSendOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMBinaryMessage.cs">
+      <Link>Message\LCIMBinaryMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMFileMessage.cs">
+      <Link>Message\LCIMFileMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMRecalledMessage.cs">
+      <Link>Message\LCIMRecalledMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMMessage.cs">
+      <Link>Message\LCIMMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMTextMessage.cs">
+      <Link>Message\LCIMTextMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMImageMessage.cs">
+      <Link>Message\LCIMImageMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMAudioMessage.cs">
+      <Link>Message\LCIMAudioMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMLocationMessage.cs">
+      <Link>Message\LCIMLocationMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Message\LCIMTypedMessage.cs">
+      <Link>Message\LCIMTypedMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Result\LCIMOperationFailure.cs">
+      <Link>Result\LCIMOperationFailure.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Result\LCIMPageResult.cs">
+      <Link>Result\LCIMPageResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Result\LCIMPartiallySuccessResult.cs">
+      <Link>Result\LCIMPartiallySuccessResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Signature\LCIMSignature.cs">
+      <Link>Signature\LCIMSignature.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Signature\ILCIMSignatureFactory.cs">
+      <Link>Signature\ILCIMSignatureFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\Signature\LCIMSignatureAction.cs">
+      <Link>Signature\LCIMSignatureAction.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\LCIMClient.cs">
+      <Link>LCIMClient.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common-Unity\Common-Unity.csproj" />
+    <ProjectReference Include="..\..\Storage\Storage-Unity\Storage-Unity.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\UnityLibs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.11.4" />
+  </ItemGroup>
+</Project>

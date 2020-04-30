@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using LeanCloud;
-using LeanCloud.Common;
 using LeanCloud.Storage;
 using LeanCloud.Realtime;
 
@@ -79,13 +78,13 @@ namespace Realtime.Test {
             await conversation.Send(textMessage);
             Assert.NotNull(textMessage.Id);
 
-            LCFile image = new LCFile("hello", "../../../../assets/hello.png");
+            LCFile image = new LCFile("hello", "../../../../../assets/hello.png");
             await image.Save();
             LCIMImageMessage imageMessage = new LCIMImageMessage(image);
             await conversation.Send(imageMessage);
             Assert.NotNull(imageMessage.Id);
 
-            LCFile file = new LCFile("apk", "../../../../assets/test.apk");
+            LCFile file = new LCFile("apk", "../../../../../assets/test.apk");
             await file.Save();
             LCIMFileMessage fileMessage = new LCIMFileMessage(file);
             await conversation.Send(fileMessage);

@@ -1,0 +1,129 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Storage\LCACL.cs">
+      <Link>LCACL.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCApplication.cs">
+      <Link>LCApplication.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCCloud.cs">
+      <Link>LCCloud.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCException.cs">
+      <Link>LCException.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCFile.cs">
+      <Link>LCFile.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCGeoPoint.cs">
+      <Link>LCGeoPoint.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCObject.cs">
+      <Link>LCObject.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCQuery.cs">
+      <Link>LCQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCRelation.cs">
+      <Link>LCRelation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCRole.cs">
+      <Link>LCRole.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCUser.cs">
+      <Link>LCUser.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCUserAuthDataLoginOption.cs">
+      <Link>LCUserAuthDataLoginOption.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Operation\LCNumberOperation.cs">
+      <Link>Internal\Operation\LCNumberOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Operation\LCAddRelationOperation.cs">
+      <Link>Internal\Operation\LCAddRelationOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Operation\LCDeleteOperation.cs">
+      <Link>Internal\Operation\LCDeleteOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Operation\LCSetOperation.cs">
+      <Link>Internal\Operation\LCSetOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Operation\LCAddUniqueOperation.cs">
+      <Link>Internal\Operation\LCAddUniqueOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Operation\LCRemoveOperation.cs">
+      <Link>Internal\Operation\LCRemoveOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Operation\LCRemoveRelationOperation.cs">
+      <Link>Internal\Operation\LCRemoveRelationOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Operation\LCAddOperation.cs">
+      <Link>Internal\Operation\LCAddOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Operation\ILCOperation.cs">
+      <Link>Internal\Operation\ILCOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\File\LCProgressableStreamContent.cs">
+      <Link>Internal\File\LCProgressableStreamContent.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\File\LCQiniuUploader.cs">
+      <Link>Internal\File\LCQiniuUploader.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\File\LCMimeTypeMap.cs">
+      <Link>Internal\File\LCMimeTypeMap.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\File\LCAWSUploader.cs">
+      <Link>Internal\File\LCAWSUploader.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Codec\LCEncoder.cs">
+      <Link>Internal\Codec\LCEncoder.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Codec\LCDecoder.cs">
+      <Link>Internal\Codec\LCDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Object\LCSubClassInfo.cs">
+      <Link>Internal\Object\LCSubClassInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Object\LCBatch.cs">
+      <Link>Internal\Object\LCBatch.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Object\LCObjectData.cs">
+      <Link>Internal\Object\LCObjectData.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Http\LCHttpClient.cs">
+      <Link>Internal\Http\LCHttpClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Http\LCJsonConverter.cs">
+      <Link>Internal\Http\LCJsonConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Query\LCEqualCondition.cs">
+      <Link>Internal\Query\LCEqualCondition.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Query\LCOperationCondition.cs">
+      <Link>Internal\Query\LCOperationCondition.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Query\LCRelatedCondition.cs">
+      <Link>Internal\Query\LCRelatedCondition.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Query\ILCQueryCondition.cs">
+      <Link>Internal\Query\ILCQueryCondition.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Query\LCCompositionalCondition.cs">
+      <Link>Internal\Query\LCCompositionalCondition.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\UnityLibs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common-Unity\Common-Unity.csproj" />
+  </ItemGroup>
+</Project>
