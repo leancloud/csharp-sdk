@@ -6,8 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Common.csproj" />
-    <ProjectReference Include="..\..\Realtime\Realtime.csproj" />
-    <ProjectReference Include="..\..\Storage\Storage.csproj" />
+    <ProjectReference Include="..\..\Realtime\Realtime\Realtime.csproj" />
   </ItemGroup>
 </Project>

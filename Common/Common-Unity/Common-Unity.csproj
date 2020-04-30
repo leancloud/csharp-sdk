@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Common\AppRouter\LCAppServer.cs">
+      <Link>AppRouter\LCAppServer.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\AppRouter\LCAppRouter.cs">
+      <Link>AppRouter\LCAppRouter.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Http\LCHttpUtils.cs">
+      <Link>Http\LCHttpUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Json\LCJsonUtils.cs">
+      <Link>Json\LCJsonUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Log\LCLogger.cs">
+      <Link>Log\LCLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Log\LCLogLevel.cs">
+      <Link>Log\LCLogLevel.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Task\LCTaskExtensions.cs">
+      <Link>Task\LCTaskExtensions.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\UnityLibs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

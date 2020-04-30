@@ -1,14 +1,19 @@
 #!/bin/sh
-mkdir DLLs
-rsync -avz ./Storage/bin/Release/netstandard2.0/ ./DLLs/
-#rsync -avz ./RTM/RTM.PCL/bin/Release/ DLLs
-#rsync -avz ./LiveQuery/LiveQuery.PCL/bin/Release/ DLLs
-zip -r LeanCloud-SDK-Standard.zip DLLs
-rm -r DLLs
 
-mkdir Plugins
-rsync -av --exclude='UnityEngine.dll' ./Storage/bin/Release/netstandard2.0/ ./Plugins/
-#rsync -av --exclude='UnityEngine.dll' ./RTM/RTM.Unity/bin/Release/ Plugins
-#rsync -av --exclude='UnityEngine.dll' ./LiveQuery/LiveQuery.Unity/bin/Release/ Plugins
-zip -r LeanCloud-SDK-Unity.zip Plugins
-rm -r Plugins
+pack() {
+    local path=$1;
+    local dir=$2;
+    local output=$3;
+    mkdir $dir
+    rsync -avz $path $dir
+    zip -r $output $dir
+    rm -r $dir
+}
+
+# Storage
+pack ./Storage/Storage/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-Storage-Standard.zip
+pack ./Storage/Storage-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-Storage-Unity.zip
+
+# Realtime
+pack ./Realtime/Realtime/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-Realtime-Standard.zip
+pack ./Realtime/Realtime-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-Realtime-Unity.zip

@@ -7,8 +7,8 @@ using LeanCloud.Storage;
 
 namespace Storage.Test {
     public class FileTest {
-        static readonly string AvatarFilePath = "../../../../assets/hello.png";
-        static readonly string APKFilePath = "../../../../assets/test.apk";
+        static readonly string AvatarFilePath = "../../../../../assets/hello.png";
+        static readonly string APKFilePath = "../../../../../assets/test.apk";
 
         [SetUp]
         public void SetUp() {
