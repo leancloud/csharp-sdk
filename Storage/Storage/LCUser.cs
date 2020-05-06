@@ -67,6 +67,12 @@ namespace LeanCloud.Storage {
             }
         }
 
+        /// <summary>
+        /// 是否是匿名登录
+        /// </summary>
+        public bool IsAnonymous => AuthData != null &&
+            AuthData.ContainsKey("anonymous");
+
         static LCUser currentUser;
 
         public static Task<LCUser> GetCurrent() {
