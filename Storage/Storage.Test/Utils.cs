@@ -3,6 +3,10 @@ using LeanCloud;
 
 namespace Storage.Test {
     public static class Utils {
+        internal const string AppId = "ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz";
+        internal const string AppKey = "NUKmuRbdAhg1vrb2wexYo1jo";
+        internal const string AppServer = "https://ikggdre2.lc-cn-n1-shared.com";
+
         internal static void Print(LCLogLevel level, string info) {
             switch (level) {
                 case LCLogLevel.Debug:
