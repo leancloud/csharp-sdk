@@ -79,6 +79,7 @@ namespace Storage.Test {
         public async Task LoginAnonymous() {
             LCUser user = await LCUser.LoginAnonymously();
             Assert.NotNull(user.ObjectId);
+            Assert.IsTrue(user.IsAnonymous);
         }
 
         [Test]
