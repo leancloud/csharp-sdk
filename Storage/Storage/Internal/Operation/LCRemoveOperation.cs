@@ -17,7 +17,10 @@ namespace LeanCloud.Storage.Internal.Operation {
                 return previousOp;
             }
             if (previousOp is LCRemoveOperation removeOp) {
-                valueList.AddRange(removeOp.valueList);
+                List<object> list = new List<object>(removeOp.valueList);
+                list.AddRange(valueList);
+                valueList = list;
+                return this;
             }
             throw new ArgumentException("Operation is invalid after previous operation.");
         }
@@ -30,7 +33,10 @@ namespace LeanCloud.Storage.Internal.Operation {
         }
 
         public object Apply(object oldValue, string key) {
-            List<object> list = new List<object>(oldValue as IEnumerable<object>);
+            List<object> list = new List<object>();
+            if (oldValue != null) {
+                list.AddRange(oldValue as IEnumerable<object>);
+            }
             list.RemoveAll(item => valueList.Contains(item));
             return list;
         }

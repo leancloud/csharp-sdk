@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using LeanCloud;
 using LeanCloud.Storage;
 
+using static NUnit.Framework.TestContext;
+
 namespace Storage.Test {
     public class ObjectTest {
         [SetUp]
@@ -143,6 +145,26 @@ namespace Storage.Test {
             await hello.Save();
             TestContext.WriteLine(hello["content"]);
             Assert.IsNull(hello["content"]);
+        }
+
+        [Test]
+        public async Task OperateNullProperty() {
+            LCObject obj = new LCObject("Hello");
+            obj.Increment("intValue", 123);
+            obj.Increment("intValue", 321);
+            obj.Add("intList", 1);
+            obj.Add("intList", 2);
+            obj.Add("intList", 3);
+            await obj.Save();
+
+            WriteLine(obj["intValue"]);
+            Assert.AreEqual(obj["intValue"], 444);
+            List<object> intList = obj["intList"] as List<object>;
+            WriteLine(intList.Count);
+            Assert.AreEqual(intList.Count, 3);
+            Assert.AreEqual(intList[0], 1);
+            Assert.AreEqual(intList[1], 2);
+            Assert.AreEqual(intList[2], 3);
         }
     }
 }

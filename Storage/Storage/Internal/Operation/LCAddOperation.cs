@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage.Internal.Operation {
@@ -16,11 +17,15 @@ namespace LeanCloud.Storage.Internal.Operation {
                 return previousOp;
             }
             if (previousOp is LCAddOperation addOp) {
-                valueList.AddRange(addOp.valueList);
+                List<object> list = new List<object>(addOp.valueList);
+                list.AddRange(valueList);
+                valueList = list;
                 return this;
             }
             if (previousOp is LCAddUniqueOperation addUniqueOp) {
-                valueList.AddRange(addUniqueOp.values);
+                List<object> list = addUniqueOp.values.ToList();
+                list.AddRange(valueList);
+                valueList = list;
                 return this;
             }
             throw new ArgumentException("Operation is invalid after previous operation.");

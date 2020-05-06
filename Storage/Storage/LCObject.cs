@@ -420,11 +420,6 @@ namespace LeanCloud.Storage {
         }
 
         void ApplyOperation(string key, ILCOperation op) {
-            if (operationDict.TryGetValue(key, out ILCOperation previousOp)) {
-                operationDict[key] = op.MergeWithPrevious(previousOp);
-            } else {
-                operationDict[key] = op;
-            }
             if (op is LCDeleteOperation) {
                 estimatedData.Remove(key);
             } else {
@@ -433,6 +428,11 @@ namespace LeanCloud.Storage {
                 } else {
                     estimatedData[key] = op.Apply(null, key);
                 }
+            }
+            if (operationDict.TryGetValue(key, out ILCOperation previousOp)) {
+                operationDict[key] = op.MergeWithPrevious(previousOp);
+            } else {
+                operationDict[key] = op;
             }
         }
 
