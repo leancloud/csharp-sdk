@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using LeanCloud;
 using LeanCloud.Storage;
 
@@ -63,7 +63,7 @@ namespace Storage.Test {
             LCObject.RegisterSubclass<Account>("Account", () => new Account());
             LCQuery<Account> query = new LCQuery<Account>("Account");
             query.WhereGreaterThan("balance", 500);
-            List<Account> list = await query.Find();
+            ReadOnlyCollection<Account> list = await query.Find();
             TestContext.WriteLine(list.Count);
             Assert.Greater(list.Count, 0);
             foreach (Account account in list) {

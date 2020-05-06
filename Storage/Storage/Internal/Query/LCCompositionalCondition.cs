@@ -44,7 +44,7 @@ namespace LeanCloud.Storage.Internal.Query {
         }
 
         public void WhereNotContainedIn(string key, IEnumerable values) {
-            AddOperation(key, "nin", values);
+            AddOperation(key, "$nin", values);
         }
 
         public void WhereContainsAll(string key, IEnumerable values) {
@@ -106,6 +106,32 @@ namespace LeanCloud.Storage.Internal.Query {
             AddOperation(key, "$regex", $".*{subString}.*");
         }
 
+        public void WhereMatches(string key, string regex, string modifiers) {
+            Dictionary<string, object> value = new Dictionary<string, object> {
+                { "$regex", regex }
+            };
+            if (modifiers != null) {
+                value["$options"] = modifiers;
+            }
+            Add(new LCEqualCondition(key, value));
+        }
+
+        public void WhereMatchesQuery<K>(string key, LCQuery<K> query) where K : LCObject {
+            Dictionary<string, object> inQuery = new Dictionary<string, object> {
+                { "where", query.condition },
+                { "className", query.ClassName }
+            };
+            AddOperation(key, "$inQuery", inQuery);
+        }
+
+        public void WhereDoesNotMatchQuery<K>(string key, LCQuery<K> query) where K : LCObject {
+            Dictionary<string, object> inQuery = new Dictionary<string, object> {
+                { "where", query.condition },
+                { "className", query.ClassName }
+            };
+            AddOperation(key, "$notInQuery", inQuery);
+        }
+
         void AddOperation(string key, string op, object value) {
             LCOperationCondition cond = new LCOperationCondition(key, op, value);
             Add(cond);
@@ -123,15 +149,24 @@ namespace LeanCloud.Storage.Internal.Query {
         }
 
         // 筛选条件
-        public void OrderBy(string key) {
+        public void OrderByAscending(string key) {
+            orderByList = new List<string>();
+            orderByList.Add(key);
+        }
+
+        public void OrderByDescending(string key) {
+            OrderByAscending($"-{key}");
+        }
+
+        public void AddAscendingOrder(string key) {
             if (orderByList == null) {
                 orderByList = new List<string>();
             }
             orderByList.Add(key);
         }
 
-        public void OrderByDescending(string key) {
-            OrderBy($"-{key}");
+        public void AddDescendingOrder(string key) {
+            AddAscendingOrder($"-{key}");
         }
 
         public void Include(string key) {
