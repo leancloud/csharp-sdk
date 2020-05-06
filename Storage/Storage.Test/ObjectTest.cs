@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using LeanCloud;
 using LeanCloud.Storage;
 
+using static NUnit.Framework.TestContext;
+
 namespace Storage.Test {
     public class ObjectTest {
         [SetUp]
@@ -143,6 +145,74 @@ namespace Storage.Test {
             await hello.Save();
             TestContext.WriteLine(hello["content"]);
             Assert.IsNull(hello["content"]);
+        }
+
+        [Test]
+        public async Task OperateNullProperty() {
+            LCObject obj = new LCObject("Hello");
+            obj.Increment("intValue", 123);
+            obj.Increment("intValue", 321);
+            obj.Add("intList", 1);
+            obj.Add("intList", 2);
+            obj.Add("intList", 3);
+            await obj.Save();
+
+            WriteLine(obj["intValue"]);
+            Assert.AreEqual(obj["intValue"], 444);
+            List<object> intList = obj["intList"] as List<object>;
+            WriteLine(intList.Count);
+            Assert.AreEqual(intList.Count, 3);
+            Assert.AreEqual(intList[0], 1);
+            Assert.AreEqual(intList[1], 2);
+            Assert.AreEqual(intList[2], 3);
+        }
+
+        [Test]
+        public async Task FetchAll() {
+            List<LCObject> list = new List<LCObject> {
+                LCObject.CreateWithoutData("Hello", "5e8fe86938ed12000870ae82"),
+                LCObject.CreateWithoutData("Hello", "5e8fe867158a7a0006be0feb"),
+                LCObject.CreateWithoutData("Hello", "5e8fe84e5c385800081a1d64"),
+            };
+            await LCObject.FetchAll(list);
+            Assert.Greater(list.Count, 0);
+            foreach (LCObject obj in list) {
+                Assert.NotNull(obj["intList"]);
+            }
+        }
+
+        [Test]
+        public async Task Serialization() {
+            LCObject obj = new LCObject("Hello");
+            obj["intValue"] = 123;
+            obj["boolValue"] = true;
+            obj["stringValue"] = "hello, world";
+            obj["time"] = DateTime.Now;
+            obj["intList"] = new List<int> { 1, 1, 2, 3, 5, 8 };
+            obj["stringMap"] = new Dictionary<string, object> {
+                { "k1", 111 },
+                { "k2", true },
+                { "k3", "haha" }
+            };
+            LCObject nestedObj = new LCObject("World");
+            nestedObj["content"] = "7788";
+            obj["objectValue"] = nestedObj;
+            obj["pointerList"] = new List<object> {
+                new LCObject("World"),
+                nestedObj
+            };
+            await obj.Save();
+
+            string json = obj.ToString();
+            WriteLine(json);
+            LCObject newObj = LCObject.ParseObject(json);
+            Assert.NotNull(newObj.ObjectId);
+            Assert.NotNull(newObj.ClassName);
+            Assert.NotNull(newObj.CreatedAt);
+            Assert.NotNull(newObj.UpdatedAt);
+            Assert.AreEqual(newObj["intValue"], 123);
+            Assert.AreEqual(newObj["boolValue"], true);
+            Assert.AreEqual(newObj["stringValue"], "hello, world");
         }
     }
 }

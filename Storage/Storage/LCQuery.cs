@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using LeanCloud.Storage.Internal.Query;
 using LeanCloud.Storage.Internal.Object;
@@ -16,7 +17,7 @@ namespace LeanCloud.Storage {
             get; private set;
         }
 
-        LCCompositionalCondition condition;
+        internal LCCompositionalCondition condition;
 
         public LCQuery(string className) {
             ClassName = className;
@@ -29,7 +30,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public LCQuery<T> WhereEqualTo(string key, object value) {
+        public LCQuery<T> WhereEqualTo(string key, object value)  {
             condition.WhereEqualTo(key, value);
             return this;
         }
@@ -53,6 +54,17 @@ namespace LeanCloud.Storage {
         /// <returns></returns>
         public LCQuery<T> WhereContainedIn(string key, IEnumerable values) {
             condition.WhereContainedIn(key, values);
+            return this;
+        }
+
+        /// <summary>
+        /// 不包含
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public LCQuery<T> WhereNotContainedIn(string key, IEnumerable values) {
+            condition.WhereNotContainedIn(key, values);
             return this;
         }
 
@@ -210,12 +222,47 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
+        /// 正则匹配
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="regex"></param>
+        /// <param name="modifiers"></param>
+        /// <returns></returns>
+        public LCQuery<T> WhereMatches(string key, string regex, string modifiers = null) {
+            condition.WhereMatches(key, regex, modifiers);
+            return this;
+        }
+
+        /// <summary>
+        /// 关系查询
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public LCQuery<T> WhereMatchesQuery<K>(string key, LCQuery<K> query) where K : LCObject {
+            condition.WhereMatchesQuery(key, query);
+            return this;
+        }
+
+        /// <summary>
+        /// 不满足子查询
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public LCQuery<T> WhereDoesNotMatchQuery<K>(string key, LCQuery<K> query) where K : LCObject {
+            condition.WhereDoesNotMatchQuery(key, query);
+            return this;
+        }
+
+        /// <summary>
         /// 按 key 升序
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public LCQuery<T> OrderBy(string key) {
-            condition.OrderBy(key);
+        public LCQuery<T> OrderByAscending(string key) {
+            condition.OrderByAscending(key);
             return this;
         }
 
@@ -226,6 +273,26 @@ namespace LeanCloud.Storage {
         /// <returns></returns>
         public LCQuery<T> OrderByDescending(string key) {
             condition.OrderByDescending(key);
+            return this;
+        }
+
+        /// <summary>
+        /// 增加按 key 升序
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public LCQuery<T> AddAscendingOrder(string key) {
+            condition.AddAscendingOrder(key);
+            return this;
+        }
+
+        /// <summary>
+        /// 增加按 key 降序
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public LCQuery<T> AddDescendingOrder(string key) {
+            condition.AddDescendingOrder(key);
             return this;
         }
 
@@ -284,7 +351,7 @@ namespace LeanCloud.Storage {
             }
             WhereEqualTo("objectId", objectId);
             Limit(1);
-            List<T> results = await Find();
+            ReadOnlyCollection<T> results = await Find();
             if (results != null) {
                 if (results.Count == 0) {
                     return null;
@@ -294,7 +361,7 @@ namespace LeanCloud.Storage {
             return null;
         }
 
-        public async Task<List<T>> Find() {
+        public async Task<ReadOnlyCollection<T>> Find() {
             string path = $"classes/{ClassName}";
             Dictionary<string, object> parameters = BuildParams();
             Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path, queryParams: parameters);
@@ -306,12 +373,12 @@ namespace LeanCloud.Storage {
                 obj.Merge(objectData);
                 list.Add(obj);
             }
-            return list;
+            return list.AsReadOnly();
         }
 
         public async Task<T> First() {
             Limit(1);
-            List<T> results = await Find();
+            ReadOnlyCollection<T> results = await Find();
             if (results != null && results.Count > 0) {
                 return results[0];
             }

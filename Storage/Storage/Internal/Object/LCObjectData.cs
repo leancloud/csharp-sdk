@@ -55,11 +55,17 @@ namespace LeanCloud.Storage.Internal.Object {
                 return null;
             }
             Dictionary<string, object> dict = new Dictionary<string, object> {
-                { "className", objectData.ClassName },
-                { "objectId", objectData.ObjectId },
-                { "createdAt", objectData.CreatedAt },
-                { "updatedAt", objectData.UpdatedAt },
+                { "className", objectData.ClassName }
             };
+            if (!string.IsNullOrEmpty(objectData.ObjectId)) {
+                dict["objectId"] = objectData.ObjectId;
+            }
+            if (objectData.CreatedAt != null) {
+                dict["createdAt"] = objectData.CreatedAt;
+            }
+            if (objectData.UpdatedAt != null) {
+                dict["updatedAt"] = objectData.UpdatedAt;
+            }
             if (objectData.CustomPropertyDict != null) {
                 foreach (KeyValuePair<string, object> kv in objectData.CustomPropertyDict) {
                     string key = kv.Key;

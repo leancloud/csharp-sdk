@@ -117,6 +117,12 @@
     <Compile Include="..\Storage\Internal\Query\LCCompositionalCondition.cs">
       <Link>Internal\Query\LCCompositionalCondition.cs</Link>
     </Compile>
+    <Compile Include="..\Storage\LCCaptchaClient.cs">
+      <Link>LCCaptchaClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCSMSClient.cs">
+      <Link>LCSMSClient.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

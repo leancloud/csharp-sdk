@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using LeanCloud;
 using LeanCloud.Storage;
@@ -34,8 +34,8 @@ namespace Storage.Test {
         [Test]
         public async Task Query() {
             LCQuery<LCRole> query = LCRole.GetQuery();
-            List<LCRole> list = await query.Find();
-            list.ForEach(item => {
+            ReadOnlyCollection<LCRole> results = await query.Find();
+            foreach (LCRole item in results) {
                 TestContext.WriteLine($"{item.ObjectId} : {item.Name}");
                 Assert.NotNull(item.ObjectId);
                 Assert.NotNull(item.Name);
@@ -43,7 +43,7 @@ namespace Storage.Test {
                 TestContext.WriteLine(item.Users.GetType());
                 Assert.IsTrue(item.Roles is LCRelation<LCRole>);
                 Assert.IsTrue(item.Users is LCRelation<LCUser>);
-            });
+            }
         }
     }
 }

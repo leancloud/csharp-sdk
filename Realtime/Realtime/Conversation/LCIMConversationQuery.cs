@@ -184,7 +184,7 @@ namespace LeanCloud.Realtime {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCIMConversationQuery OrderBy(string key) {
-            Condition.OrderBy(key);
+            Condition.OrderByAscending(key);
             return this;
         }
 

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using LeanCloud;
 using LeanCloud.Storage;
 
@@ -56,11 +56,11 @@ namespace Storage.Test {
             Assert.NotNull(relation.TargetClass);
 
             LCQuery<LCObject> relationQuery = relation.Query;
-            List<LCObject> list = await relationQuery.Find();
-            list.ForEach(item => {
+            ReadOnlyCollection<LCObject> results = await relationQuery.Find();
+            foreach (LCObject item in results) {
                 TestContext.WriteLine(item.ObjectId);
                 Assert.NotNull(item.ObjectId);
-            });
+            }
         }
     }
 }
