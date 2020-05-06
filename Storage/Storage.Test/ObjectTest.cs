@@ -166,5 +166,19 @@ namespace Storage.Test {
             Assert.AreEqual(intList[1], 2);
             Assert.AreEqual(intList[2], 3);
         }
+
+        [Test]
+        public async Task FetchAll() {
+            List<LCObject> list = new List<LCObject> {
+                LCObject.CreateWithoutData("Hello", "5e8fe86938ed12000870ae82"),
+                LCObject.CreateWithoutData("Hello", "5e8fe867158a7a0006be0feb"),
+                LCObject.CreateWithoutData("Hello", "5e8fe84e5c385800081a1d64"),
+            };
+            await LCObject.FetchAll(list);
+            Assert.Greater(list.Count, 0);
+            foreach (LCObject obj in list) {
+                Assert.NotNull(obj["intList"]);
+            }
+        }
     }
 }

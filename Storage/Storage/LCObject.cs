@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using LeanCloud.Storage.Internal.Object;
 using LeanCloud.Storage.Internal.Operation;
 using LeanCloud.Storage.Internal.Codec;
@@ -410,6 +411,43 @@ namespace LeanCloud.Storage {
             LCObjectData objectData = LCObjectData.Decode(response);
             Merge(objectData);
             return this;
+        }
+
+        public static async Task<IEnumerable<LCObject>> FetchAll(IEnumerable<LCObject> objects) {
+            if (objects == null || objects.Count() == 0) {
+                throw new ArgumentNullException(nameof(objects));
+            }
+
+            IEnumerable<LCObject> uniqueObjects = objects.Where(item => item.ObjectId != null);
+            List<Dictionary<string, object>> requestList = uniqueObjects.Select(item => {
+                string path = $"/{LCApplication.APIVersion}/classes/{item.ClassName}/{item.ObjectId}";
+                return new Dictionary<string, object> {
+                    { "path", path },
+                    { "method", "GET" }
+                };
+            }).ToList();
+
+            Dictionary<string, object> data = new Dictionary<string, object> {
+                { "requests", LCEncoder.Encode(requestList) }
+            };
+            List<Dictionary<string, object>> results = await LCApplication.HttpClient.Post<List<Dictionary<string, object>>>("batch",
+                data: data);
+            Dictionary<string, LCObjectData> dict = new Dictionary<string, LCObjectData>();
+            foreach (Dictionary<string, object> item in results) {
+                if (item.TryGetValue("error", out object error)) {
+                    int code = (int)error;
+                    string message = item["error"] as string;
+                    throw new LCException(code, message);
+                }
+                Dictionary<string, object> d = item["success"] as Dictionary<string, object>;
+                string objectId = d["objectId"] as string;
+                dict[objectId] = LCObjectData.Decode(d);
+            }
+            foreach (LCObject obj in objects) {
+                LCObjectData objData = dict[obj.ObjectId];
+                obj.Merge(objData);
+            }
+            return objects;
         }
 
         public static void RegisterSubclass<T>(string className, Func<T> constructor) where T : LCObject {
