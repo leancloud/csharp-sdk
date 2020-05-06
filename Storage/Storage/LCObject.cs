@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 using LeanCloud.Storage.Internal.Object;
 using LeanCloud.Storage.Internal.Operation;
 using LeanCloud.Storage.Internal.Codec;
@@ -456,6 +456,26 @@ namespace LeanCloud.Storage {
             subclassNameDict[className] = subclassInfo;
             subclassTypeDict[classType] = subclassInfo;
         }
+
+        /// <summary>
+        /// 序列化为 json 字符串
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() {
+            return JsonConvert.SerializeObject(LCObjectData.Encode(data));
+        }
+
+        /// <summary>
+        /// 反序列化为 LCObject 对象
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static LCObject ParseObject(string json) {
+            LCObjectData objectData = LCObjectData.Decode(JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+            LCObject obj = Create(objectData.ClassName);
+            obj.Merge(objectData);
+            return obj;
+        } 
 
         void ApplyOperation(string key, ILCOperation op) {
             if (op is LCDeleteOperation) {

@@ -180,5 +180,39 @@ namespace Storage.Test {
                 Assert.NotNull(obj["intList"]);
             }
         }
+
+        [Test]
+        public async Task Serialization() {
+            LCObject obj = new LCObject("Hello");
+            obj["intValue"] = 123;
+            obj["boolValue"] = true;
+            obj["stringValue"] = "hello, world";
+            obj["time"] = DateTime.Now;
+            obj["intList"] = new List<int> { 1, 1, 2, 3, 5, 8 };
+            obj["stringMap"] = new Dictionary<string, object> {
+                { "k1", 111 },
+                { "k2", true },
+                { "k3", "haha" }
+            };
+            LCObject nestedObj = new LCObject("World");
+            nestedObj["content"] = "7788";
+            obj["objectValue"] = nestedObj;
+            obj["pointerList"] = new List<object> {
+                new LCObject("World"),
+                nestedObj
+            };
+            await obj.Save();
+
+            string json = obj.ToString();
+            WriteLine(json);
+            LCObject newObj = LCObject.ParseObject(json);
+            Assert.NotNull(newObj.ObjectId);
+            Assert.NotNull(newObj.ClassName);
+            Assert.NotNull(newObj.CreatedAt);
+            Assert.NotNull(newObj.UpdatedAt);
+            Assert.AreEqual(newObj["intValue"], 123);
+            Assert.AreEqual(newObj["boolValue"], true);
+            Assert.AreEqual(newObj["stringValue"], "hello, world");
+        }
     }
 }
