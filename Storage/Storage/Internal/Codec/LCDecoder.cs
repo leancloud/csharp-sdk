@@ -41,19 +41,19 @@ namespace LeanCloud.Storage.Internal.Codec {
             return obj;
         }
 
-        static DateTime DecodeDate(IDictionary dict) {
+        public static DateTime DecodeDate(IDictionary dict) {
             string str = dict["iso"].ToString();
             DateTime dateTime = DateTime.Parse(str);
             return dateTime.ToLocalTime();
         }
 
-        static byte[] DecodeBytes(IDictionary dict) {
+        public static byte[] DecodeBytes(IDictionary dict) {
             string str = dict["base64"].ToString();
             byte[] bytes = Convert.FromBase64String(str);
             return bytes;
         }
 
-        static LCObject DecodeObject(IDictionary dict) {
+        public static LCObject DecodeObject(IDictionary dict) {
             string className = dict["className"].ToString();
             LCObject obj = LCObject.Create(className);
             LCObjectData objectData = LCObjectData.Decode(dict as Dictionary<string, object>);
@@ -61,13 +61,13 @@ namespace LeanCloud.Storage.Internal.Codec {
             return obj;
         }
 
-        static LCRelation<LCObject> DecodeRelation(IDictionary dict) {
+        public static LCRelation<LCObject> DecodeRelation(IDictionary dict) {
             LCRelation<LCObject> relation = new LCRelation<LCObject>();
             relation.TargetClass = dict["className"].ToString();
             return relation;
         }
 
-        static LCGeoPoint DecodeGeoPoint(IDictionary data) {
+        public static LCGeoPoint DecodeGeoPoint(IDictionary data) {
             double latitude = double.Parse(data["latitude"].ToString());
             double longitude = double.Parse(data["longitude"].ToString());
             LCGeoPoint geoPoint = new LCGeoPoint(latitude, longitude);

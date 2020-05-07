@@ -69,7 +69,7 @@ namespace LeanCloud.Storage.Internal.Http {
 
         public async Task<T> Post<T>(string path,
             Dictionary<string, object> headers = null,
-            Dictionary<string, object> data = null,
+            object data = null,
             Dictionary<string, object> queryParams = null) {
             string url = await BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
@@ -102,7 +102,7 @@ namespace LeanCloud.Storage.Internal.Http {
 
         public async Task<T> Put<T>(string path,
             Dictionary<string, object> headers = null,
-            Dictionary<string, object> data = null,
+            object data = null,
             Dictionary<string, object> queryParams = null) {
             string url = await BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
@@ -188,12 +188,17 @@ namespace LeanCloud.Storage.Internal.Http {
                     headers.Add(kv.Key, kv.Value.ToString());
                 }
             }
-            // 签名
-            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            string data = $"{timestamp}{appKey}";
-            string hash = GetMd5Hash(md5, data);
-            string sign = $"{hash},{timestamp}";
-            headers.Add("X-LC-Sign", sign);
+            if (LCApplication.UseMasterKey && !string.IsNullOrEmpty(LCApplication.MasterKey)) {
+                // Master Key
+                headers.Add("X-LC-Key", $"{LCApplication.MasterKey},master");
+            } else {
+                // 签名
+                long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                string data = $"{timestamp}{appKey}";
+                string hash = GetMd5Hash(md5, data);
+                string sign = $"{hash},{timestamp}";
+                headers.Add("X-LC-Sign", sign);
+            }
             // 当前用户 Session Token
             LCUser currentUser = await LCUser.GetCurrent();
             if (currentUser != null) {
