@@ -22,6 +22,10 @@ namespace LeanCloud {
             get; private set;
         }
 
+        public static string MasterKey {
+            get; private set;
+        }
+
         public static bool UseProduction {
             get; set;
         }
@@ -34,7 +38,14 @@ namespace LeanCloud {
             get; private set;
         }
 
-        public static void Initialize(string appId, string appKey, string server = null) {
+        public static bool UseMasterKey {
+            get; set;
+        }
+
+        public static void Initialize(string appId,
+            string appKey,
+            string server = null,
+            string masterKey = null) {
             if (string.IsNullOrEmpty(appId)) {
                 throw new ArgumentException(nameof(appId));
             }
@@ -44,6 +55,7 @@ namespace LeanCloud {
 
             AppId = appId;
             AppKey = appKey;
+            MasterKey = masterKey;
 
             // 注册 LeanCloud 内部子类化类型
             LCObject.RegisterSubclass(LCUser.CLASS_NAME, () => new LCUser());

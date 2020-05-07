@@ -85,7 +85,7 @@ namespace LeanCloud.Storage {
             
         }
 
-        LCUser(LCObjectData objectData) : this() {
+        internal LCUser(LCObjectData objectData) : this() {
             Merge(objectData);
         }
 

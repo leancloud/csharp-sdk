@@ -21,6 +21,7 @@
     <Folder Include="Internal\Object\" />
     <Folder Include="Internal\Operation\" />
     <Folder Include="Internal\Query\" />
+    <Folder Include="Leaderboard\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common\Common.csproj" />

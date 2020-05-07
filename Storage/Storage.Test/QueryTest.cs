@@ -334,7 +334,9 @@ namespace Storage.Test {
             Assert.Greater(hellos.Count, 0);
             foreach (LCObject item in hellos) {
                 LCObject world = item["objectValue"] as LCObject;
-                Assert.IsTrue(world == null || world["content"] != "7788");
+                Assert.IsTrue(world == null ||
+                    world["content"] == null ||
+                    world["content"] as string != "7788");
             }
         }
     }

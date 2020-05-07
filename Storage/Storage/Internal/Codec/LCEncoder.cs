@@ -31,7 +31,7 @@ namespace LeanCloud.Storage.Internal.Codec {
             return obj;
         }
 
-        static object EncodeDateTime(DateTime dateTime) {
+        public static object EncodeDateTime(DateTime dateTime) {
             DateTime utc = dateTime.ToUniversalTime();
             string str = utc.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
             return new Dictionary<string, object> {
@@ -40,7 +40,7 @@ namespace LeanCloud.Storage.Internal.Codec {
             };
         }
 
-        static object EncodeBytes(byte[] bytes) {
+        public static object EncodeBytes(byte[] bytes) {
             string str = Convert.ToBase64String(bytes);
             return new Dictionary<string, object> {
                 { "__type", "Bytes" },
@@ -48,7 +48,7 @@ namespace LeanCloud.Storage.Internal.Codec {
             };
         }
 
-        static object EncodeList(IList list) {
+        public static object EncodeList(IList list) {
             List<object> l = new List<object>();
             foreach (object obj in list) {
                 l.Add(Encode(obj));
@@ -56,7 +56,7 @@ namespace LeanCloud.Storage.Internal.Codec {
             return l;
         }
 
-        static object EncodeDictionary(IDictionary dict) {
+        public static object EncodeDictionary(IDictionary dict) {
             Dictionary<string, object> d = new Dictionary<string, object>();
             foreach (DictionaryEntry entry in dict) {
                 string key = entry.Key.ToString();
@@ -66,7 +66,7 @@ namespace LeanCloud.Storage.Internal.Codec {
             return d;
         }
 
-        static object EncodeLCObject(LCObject obj) {
+        public static object EncodeLCObject(LCObject obj) {
             return new Dictionary<string, object> {
                 { "__type", "Pointer" },
                 { "className", obj.ClassName },
@@ -78,11 +78,11 @@ namespace LeanCloud.Storage.Internal.Codec {
             return operation.Encode();
         }
 
-        static object EncodeQueryCondition(ILCQueryCondition cond) {
+        public static object EncodeQueryCondition(ILCQueryCondition cond) {
             return cond.Encode();
         }
 
-        static object EncodeACL(LCACL acl) {
+        public static object EncodeACL(LCACL acl) {
             HashSet<string> readers = acl.readers;
             HashSet<string> writers = acl.writers;
             HashSet<string> union = new HashSet<string>(readers);
@@ -97,14 +97,14 @@ namespace LeanCloud.Storage.Internal.Codec {
             return dict;
         }
 
-        static object EncodeRelation(LCRelation<LCObject> relation) {
+        public static object EncodeRelation(LCRelation<LCObject> relation) {
             return new Dictionary<string, object> {
                 { "__type", "Relation" },
                 { "className", relation.TargetClass }
             };
         }
 
-        static object EncodeGeoPoint(LCGeoPoint geoPoint) {
+        public static object EncodeGeoPoint(LCGeoPoint geoPoint) {
             return new Dictionary<string, object> {
                 { "__type", "GeoPoint" },
                 { "latitude", geoPoint.Latitude },

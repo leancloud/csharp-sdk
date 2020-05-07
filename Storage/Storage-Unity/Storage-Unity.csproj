@@ -123,6 +123,18 @@
     <Compile Include="..\Storage\LCSMSClient.cs">
       <Link>LCSMSClient.cs</Link>
     </Compile>
+    <Compile Include="..\Storage\Leaderboard\LCLeaderboardArchive.cs">
+      <Link>Leaderboard\LCLeaderboardArchive.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Leaderboard\LCStatistic.cs">
+      <Link>Leaderboard\LCStatistic.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Leaderboard\LCLeaderboard.cs">
+      <Link>Leaderboard\LCLeaderboard.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Leaderboard\LCRanking.cs">
+      <Link>Leaderboard\LCRanking.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
