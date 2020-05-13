@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using LeanCloud.Realtime.Internal.Protocol;
-using LeanCloud.Storage.Internal;
 using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Common;
 
@@ -441,7 +440,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             command.ConvMessage = convMessage;
             GenericCommand response = await Connection.SendRequest(command);
             JsonObjectMessage results = response.ConvMessage.Results;
-            List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data, new LCJsonConverter());
+            List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data,
+                LCJsonConverter.Default);
             return convs.Select(item => {
                 Dictionary<string, object> conv = item as Dictionary<string, object>;
                 string convId = conv["objectId"] as string;
@@ -478,7 +478,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             request.ConvMessage = convMessage;
             GenericCommand response = await Connection.SendRequest(request);
             JsonObjectMessage results = response.ConvMessage.Results;
-            List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data, new LCJsonConverter());
+            List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data,
+                LCJsonConverter.Default);
             List<LCIMTemporaryConversation> convList = convs.Select(item => {
                 LCIMTemporaryConversation temporaryConversation = new LCIMTemporaryConversation(Client);
                 temporaryConversation.MergeFrom(item as Dictionary<string, object>);
@@ -800,7 +801,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         private async Task OnPropertiesUpdated(ConvCommand conv) {
             LCIMConversation conversation = await Client.GetOrQueryConversation(conv.Cid);
             Dictionary<string, object> updatedAttr = JsonConvert.DeserializeObject<Dictionary<string, object>>(conv.AttrModified.Data,
-                new LCJsonConverter());
+                LCJsonConverter.Default);
             // 更新内存数据
             conversation.MergeInfo(updatedAttr);
             Client.OnConversationInfoUpdated?.Invoke(conversation,

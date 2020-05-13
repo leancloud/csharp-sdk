@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace LeanCloud.Storage.Internal {
+namespace LeanCloud.Common {
     public class LCJsonConverter : JsonConverter {
         public override bool CanConvert(Type objectType) {
             return objectType == typeof(object);
@@ -31,5 +31,7 @@ namespace LeanCloud.Storage.Internal {
 
             return serializer.Deserialize(reader);
         }
+
+        public readonly static LCJsonConverter Default = new LCJsonConverter();
     }
 }

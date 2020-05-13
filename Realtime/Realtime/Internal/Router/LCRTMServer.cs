@@ -2,38 +2,38 @@
 using Newtonsoft.Json;
 
 namespace LeanCloud.Realtime.Internal.Router {
-    internal class LCRTMServer {
+    public class LCRTMServer {
         [JsonProperty("groupId")]
-        internal string GroupId {
+        public string GroupId {
             get; set;
         }
 
         [JsonProperty("groupUrl")]
-        internal string GroupUrl {
+        public string GroupUrl {
             get; set;
         }
 
         [JsonProperty("server")]
-        internal string Primary {
+        public string Primary {
             get; set;
         }
 
         [JsonProperty("secondary")]
-        internal string Secondary {
+        public string Secondary {
             get; set;
         }
 
         [JsonProperty("ttl")]
-        internal int Ttl {
+        public int Ttl {
             get; set;
         }
 
         DateTimeOffset createdAt;
 
-        internal LCRTMServer() {
+        public LCRTMServer() {
             createdAt = DateTimeOffset.Now;
         }
 
-        internal bool IsValid => DateTimeOffset.Now < createdAt + TimeSpan.FromSeconds(Ttl);
+        public bool IsValid => DateTimeOffset.Now < createdAt + TimeSpan.FromSeconds(Ttl);
     }
 }

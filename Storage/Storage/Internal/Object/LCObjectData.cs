@@ -4,30 +4,30 @@ using System.Collections.Generic;
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage.Internal.Object {
-    internal class LCObjectData {
-        internal string ClassName {
+    public class LCObjectData {
+        public string ClassName {
             get; set;
         }
 
-        internal string ObjectId {
+        public string ObjectId {
             get; set;
         }
 
-        internal DateTime CreatedAt {
+        public DateTime CreatedAt {
             get; set;
         }
 
-        internal DateTime UpdatedAt {
+        public DateTime UpdatedAt {
             get; set;
         }
 
-        internal Dictionary<string, object> CustomPropertyDict;
+        public Dictionary<string, object> CustomPropertyDict;
 
-        internal LCObjectData() {
+        public LCObjectData() {
             CustomPropertyDict = new Dictionary<string, object>();
         }
 
-        internal static LCObjectData Decode(IDictionary dict) {
+        public static LCObjectData Decode(IDictionary dict) {
             if (dict == null) {
                 return null;
             }
@@ -50,7 +50,7 @@ namespace LeanCloud.Storage.Internal.Object {
             return objectData;
         }
 
-        internal static Dictionary<string, object> Encode(LCObjectData objectData) {
+        public static Dictionary<string, object> Encode(LCObjectData objectData) {
             if (objectData == null) {
                 return null;
             }

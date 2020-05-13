@@ -61,7 +61,8 @@ namespace LeanCloud.Storage.Internal.Http {
             LCHttpUtils.PrintResponse(response, resultString);
 
             if (response.IsSuccessStatusCode) {
-                T ret = JsonConvert.DeserializeObject<T>(resultString, new LCJsonConverter());
+                T ret = JsonConvert.DeserializeObject<T>(resultString,
+                    LCJsonConverter.Default);
                 return ret;
             }
             throw HandleErrorResponse(response.StatusCode, resultString);
@@ -94,7 +95,8 @@ namespace LeanCloud.Storage.Internal.Http {
             LCHttpUtils.PrintResponse(response, resultString);
 
             if (response.IsSuccessStatusCode) {
-                T ret = JsonConvert.DeserializeObject<T>(resultString, new LCJsonConverter());
+                T ret = JsonConvert.DeserializeObject<T>(resultString,
+                    LCJsonConverter.Default);
                 return ret;
             }
             throw HandleErrorResponse(response.StatusCode, resultString);
@@ -127,7 +129,8 @@ namespace LeanCloud.Storage.Internal.Http {
             LCHttpUtils.PrintResponse(response, resultString);
 
             if (response.IsSuccessStatusCode) {
-                T ret = JsonConvert.DeserializeObject<T>(resultString, new LCJsonConverter());
+                T ret = JsonConvert.DeserializeObject<T>(resultString,
+                    LCJsonConverter.Default);
                 return ret;
             }
             throw HandleErrorResponse(response.StatusCode, resultString);
@@ -150,7 +153,8 @@ namespace LeanCloud.Storage.Internal.Http {
             LCHttpUtils.PrintResponse(response, resultString);
 
             if (response.IsSuccessStatusCode) {
-                Dictionary<string, object> ret = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString, new LCJsonConverter());
+                Dictionary<string, object> ret = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString,
+                    LCJsonConverter.Default);
                 return;
             }
             throw HandleErrorResponse(response.StatusCode, resultString);
@@ -161,7 +165,8 @@ namespace LeanCloud.Storage.Internal.Http {
             string message = responseContent;
             try {
                 // 尝试获取 LeanCloud 返回错误信息
-                Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseContent, new LCJsonConverter());
+                Dictionary<string, object> error = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseContent,
+                    LCJsonConverter.Default);
                 code = (int)error["code"];
                 message = error["error"].ToString();
             } catch (Exception e) {

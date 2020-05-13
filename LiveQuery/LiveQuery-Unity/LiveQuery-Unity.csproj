@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Realtime\Realtime-Unity\Realtime-Unity.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\LiveQuery\Internal\LCLiveQueryHeartBeat.cs">
+      <Link>Internal\LCLiveQueryHeartBeat.cs</Link>
+    </Compile>
+    <Compile Include="..\LiveQuery\Internal\LCLiveQueryConnection.cs">
+      <Link>Internal\LCLiveQueryConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\LiveQuery\LCLiveQuery.cs">
+      <Link>LCLiveQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\LiveQuery\LCQueryExtension.cs">
+      <Link>LCQueryExtension.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\UnityLibs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

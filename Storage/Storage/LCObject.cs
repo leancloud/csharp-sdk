@@ -93,7 +93,7 @@ namespace LeanCloud.Storage {
             return obj;
         }
 
-        internal static LCObject Create(string className) {
+        public static LCObject Create(string className) {
             if (subclassNameDict.TryGetValue(className, out LCSubclassInfo subclassInfo)) {
                 return subclassInfo.Constructor.Invoke();
             }
@@ -494,7 +494,7 @@ namespace LeanCloud.Storage {
             }
         }
 
-        internal void Merge(LCObjectData objectData) {
+        public void Merge(LCObjectData objectData) {
             data.ClassName = objectData.ClassName ?? data.ClassName;
             data.ObjectId = objectData.ObjectId ?? data.ObjectId;
             data.CreatedAt = objectData.CreatedAt != null ? objectData.CreatedAt : data.CreatedAt;

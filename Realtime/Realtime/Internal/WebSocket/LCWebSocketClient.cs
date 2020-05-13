@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
+using System.Text;
 
 namespace LeanCloud.Realtime.Internal.WebSocket {
     /// <summary>
     /// WebSocket 客户端，负责底层连接和事件，只与通信协议相关
     /// </summary>
-    internal class LCWebSocketClient {
+    public class LCWebSocketClient {
         // .net standard 2.0 好像在拼合 Frame 时有 bug，所以将这个值调整大一些
         private const int RECV_BUFFER_SIZE = 1024 * 5;
 
@@ -23,12 +24,12 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         /// <summary>
         /// 消息事件
         /// </summary>
-        internal Action<byte[]> OnMessage;
+        public Action<byte[]> OnMessage;
 
         /// <summary>
         /// 连接关闭
         /// </summary>
-        internal Action OnClose;
+        public Action OnClose;
 
         private ClientWebSocket ws;
 
@@ -37,11 +38,14 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         /// </summary>
         /// <param name="server"></param>
         /// <returns></returns>
-        internal async Task Connect(string server) {
+        public async Task Connect(string server,
+            string subProtocol = null) {
             LCLogger.Debug($"Connecting WebSocket: {server}");
             Task timeoutTask = Task.Delay(CONNECT_TIMEOUT);
             ws = new ClientWebSocket();
-            ws.Options.AddSubProtocol("lc.protobuf2.3");
+            if (!string.IsNullOrEmpty(subProtocol)) {
+                ws.Options.AddSubProtocol(subProtocol);
+            }
             Task connectTask = ws.ConnectAsync(new Uri(server), default);
             if (await Task.WhenAny(connectTask, timeoutTask) == connectTask) {
                 LCLogger.Debug($"Connected WebSocket: {server}");
@@ -57,7 +61,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         /// 主动关闭连接
         /// </summary>
         /// <returns></returns>
-        internal async Task Close() {
+        public async Task Close() {
             LCLogger.Debug("Closing WebSocket");
             OnMessage = null;
             OnClose = null;
@@ -81,11 +85,12 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        internal async Task Send(byte[] data) {
+        public async Task Send(byte[] data,
+            WebSocketMessageType messageType = WebSocketMessageType.Binary) {
             ArraySegment<byte> bytes = new ArraySegment<byte>(data);
             if (ws.State == WebSocketState.Open) {
                 try {
-                    await ws.SendAsync(bytes, WebSocketMessageType.Binary, true, default);
+                    await ws.SendAsync(bytes, messageType, true, default);
                 } catch (Exception e) {
                     LCLogger.Error(e);
                     throw e;
@@ -95,6 +100,15 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                 LCLogger.Error(message);
                 throw new Exception(message);
             }
+        }
+
+        /// <summary>
+        /// 发送文本数据
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public async Task Send(string text) {
+            await Send(Encoding.UTF8.GetBytes(text), WebSocketMessageType.Text);
         }
 
         /// <summary>
@@ -119,14 +133,12 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                                 HandleExceptionClose();
                             }
                         }
-                    } else if (result.MessageType == WebSocketMessageType.Binary) {
+                    } else {
                         // 拼合 WebSocket Message
                         int length = result.Count;
                         byte[] data = new byte[length];
                         Array.Copy(buffer, data, length);
                         OnMessage?.Invoke(data);
-                    } else {
-                        LCLogger.Error($"Error message type: {result.MessageType}");
                     }
                 }
             } catch (Exception e) {

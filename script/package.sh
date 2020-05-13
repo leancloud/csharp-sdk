@@ -17,3 +17,7 @@ pack ./Storage/Storage-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK
 # Realtime
 pack ./Realtime/Realtime/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-Realtime-Standard.zip
 pack ./Realtime/Realtime-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-Realtime-Unity.zip
+
+# LiveQuery
+pack ./LiveQuery/LiveQuery/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-LiveQuery-Standard.zip
+pack ./LiveQuery/LiveQuery-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-LiveQuery-Unity.zip
