@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace RealtimeApp {
+namespace LiveQueryApp {
     /// <summary>
     /// 单线程环境，用于控制台应用 await 返回
     /// </summary>
