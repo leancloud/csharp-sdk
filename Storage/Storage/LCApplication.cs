@@ -9,7 +9,7 @@ namespace LeanCloud {
     /// </summary>
     public class LCApplication {
         // SDK 版本号，用于 User-Agent 统计
-        internal const string SDKVersion = "0.3.0";
+        internal const string SDKVersion = "0.4.0";
 
         // 接口版本号，用于接口版本管理
         internal const string APIVersion = "1.1";
