@@ -16,6 +16,8 @@ deploy:
     - "LeanCloud-SDK-Storage-Unity.zip"
     - "LeanCloud-SDK-Realtime-Standard.zip"
     - "LeanCloud-SDK-Realtime-Unity.zip"
+    - "LeanCloud-SDK-LiveQuery-Standard.zip"
+    - "LeanCloud-SDK-LiveQuery-Unity.zip"
   skip_cleanup: true
   on:
     repo: leancloud/csharp-sdk
