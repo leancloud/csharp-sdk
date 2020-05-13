@@ -27,6 +27,9 @@
     <Compile Include="..\Common\Task\LCTaskExtensions.cs">
       <Link>Task\LCTaskExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Common\Json\LCJsonConverter.cs">
+      <Link>Json\LCJsonConverter.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
