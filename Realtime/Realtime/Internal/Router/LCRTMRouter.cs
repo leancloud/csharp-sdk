@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Net.Http;
-using LeanCloud.Storage.Internal;
 using LeanCloud.Common;
 using Newtonsoft.Json;
 
@@ -9,7 +8,7 @@ namespace LeanCloud.Realtime.Internal.Router {
     /// <summary>
     /// RTM Router
     /// </summary>
-    internal class LCRTMRouter {
+    public class LCRTMRouter {
         /// <summary>
         /// 请求超时
         /// </summary>
@@ -17,14 +16,14 @@ namespace LeanCloud.Realtime.Internal.Router {
 
         private LCRTMServer rtmServer;
 
-        internal LCRTMRouter() {
+        public LCRTMRouter() {
         }
 
         /// <summary>
         /// 获取服务器地址
         /// </summary>
         /// <returns></returns>
-        internal async Task<LCRTMServer> GetServer() {
+        public async Task<LCRTMServer> GetServer() {
             if (rtmServer == null || !rtmServer.IsValid) {
                 await Fetch();
             }
@@ -53,7 +52,7 @@ namespace LeanCloud.Realtime.Internal.Router {
             response.Dispose();
             LCHttpUtils.PrintResponse(response, resultString);
 
-            rtmServer = JsonConvert.DeserializeObject<LCRTMServer>(resultString, new LCJsonConverter());
+            rtmServer = JsonConvert.DeserializeObject<LCRTMServer>(resultString, LCJsonConverter.Default);
 
             return rtmServer;
         }

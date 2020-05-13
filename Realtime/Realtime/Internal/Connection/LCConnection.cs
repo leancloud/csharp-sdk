@@ -34,6 +34,11 @@ namespace LeanCloud.Realtime.Internal.Connection {
         private const int HEART_BEAT_INTERVAL = 30000;
 
         /// <summary>
+        /// 子协议
+        /// </summary>
+        private const string SUB_PROTOCOL = "lc.protobuf2.3";
+
+        /// <summary>
         /// 通知事件
         /// </summary>
         internal Action<GenericCommand> OnNotification;
@@ -79,11 +84,11 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 LCRTMServer rtmServer = await router.GetServer();
                 try {
                     LCLogger.Debug($"Primary Server");
-                    await client.Connect(rtmServer.Primary);
+                    await client.Connect(rtmServer.Primary, SUB_PROTOCOL);
                 } catch (Exception e) {
                     LCLogger.Error(e);
                     LCLogger.Debug($"Secondary Server");
-                    await client.Connect(rtmServer.Secondary);
+                    await client.Connect(rtmServer.Secondary, SUB_PROTOCOL);
                 }
             } catch (Exception e) {
                 throw e;

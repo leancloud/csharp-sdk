@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using LeanCloud.Storage.Internal.Codec;
-using LeanCloud.Storage.Internal;
+using LeanCloud.Common;
 
 namespace LeanCloud.Realtime {
     /// <summary>
@@ -115,7 +115,7 @@ namespace LeanCloud.Realtime {
 
         internal static LCIMTypedMessage Deserialize(string json) {
             Dictionary<string, object> msgData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json,
-                new LCJsonConverter());
+                LCJsonConverter.Default);
             LCIMTypedMessage message = null;
             int msgType = (int)msgData[MessageTypeKey];
             if (customMessageDict.TryGetValue(msgType, out Func<LCIMTypedMessage> msgConstructor)) {
