@@ -8,13 +8,9 @@ using LeanCloud.Storage.Internal.Query;
 using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
-    /// <summary>
-    /// 查询类
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class LCQuery<T> where T : LCObject {
+    public class LCQuery {
         public string ClassName {
-            get; private set;
+            get; internal set;
         }
 
         public LCCompositionalCondition Condition {
@@ -24,6 +20,25 @@ namespace LeanCloud.Storage {
         public LCQuery(string className) {
             ClassName = className;
             Condition = new LCCompositionalCondition();
+        }
+
+        internal Dictionary<string, object> BuildParams() {
+            return Condition.BuildParams();
+        }
+
+        internal string BuildWhere() {
+            return Condition.BuildWhere();
+        }
+    }
+
+    /// <summary>
+    /// 查询类
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class LCQuery<T> : LCQuery where T : LCObject {
+        public LCQuery(string className) :
+            base(className) {
+
         }
 
         /// <summary>
@@ -420,14 +435,6 @@ namespace LeanCloud.Storage {
             }
             compositionQuery.ClassName = className;
             return compositionQuery;
-        }
-
-        Dictionary<string, object> BuildParams() {
-            return Condition.BuildParams();
-        }
-
-        internal string BuildWhere() {
-            return Condition.BuildWhere();
         }
     }
 }
