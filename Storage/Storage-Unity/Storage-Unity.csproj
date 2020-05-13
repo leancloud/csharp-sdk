@@ -99,9 +99,6 @@
     <Compile Include="..\Storage\Internal\Http\LCHttpClient.cs">
       <Link>Internal\Http\LCHttpClient.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\Internal\Http\LCJsonConverter.cs">
-      <Link>Internal\Http\LCJsonConverter.cs</Link>
-    </Compile>
     <Compile Include="..\Storage\Internal\Query\LCEqualCondition.cs">
       <Link>Internal\Query\LCEqualCondition.cs</Link>
     </Compile>

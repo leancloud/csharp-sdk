@@ -118,7 +118,7 @@ namespace LeanCloud.Storage.Internal.Query {
 
         public void WhereMatchesQuery<K>(string key, LCQuery<K> query) where K : LCObject {
             Dictionary<string, object> inQuery = new Dictionary<string, object> {
-                { "where", query.condition },
+                { "where", query.Condition },
                 { "className", query.ClassName }
             };
             AddOperation(key, "$inQuery", inQuery);
@@ -126,7 +126,7 @@ namespace LeanCloud.Storage.Internal.Query {
 
         public void WhereDoesNotMatchQuery<K>(string key, LCQuery<K> query) where K : LCObject {
             Dictionary<string, object> inQuery = new Dictionary<string, object> {
-                { "where", query.condition },
+                { "where", query.Condition },
                 { "className", query.ClassName }
             };
             AddOperation(key, "$notInQuery", inQuery);

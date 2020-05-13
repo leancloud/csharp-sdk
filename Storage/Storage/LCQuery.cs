@@ -17,11 +17,13 @@ namespace LeanCloud.Storage {
             get; private set;
         }
 
-        internal LCCompositionalCondition condition;
+        public LCCompositionalCondition Condition {
+            get; internal set;
+        }
 
         public LCQuery(string className) {
             ClassName = className;
-            condition = new LCCompositionalCondition();
+            Condition = new LCCompositionalCondition();
         }
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace LeanCloud.Storage {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCQuery<T> WhereEqualTo(string key, object value)  {
-            condition.WhereEqualTo(key, value);
+            Condition.WhereEqualTo(key, value);
             return this;
         }
 
@@ -42,7 +44,7 @@ namespace LeanCloud.Storage {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCQuery<T> WhereNotEqualTo(string key, object value) {
-            condition.WhereNotEqualTo(key, value);
+            Condition.WhereNotEqualTo(key, value);
             return this;
         }
 
@@ -53,7 +55,7 @@ namespace LeanCloud.Storage {
         /// <param name="values"></param>
         /// <returns></returns>
         public LCQuery<T> WhereContainedIn(string key, IEnumerable values) {
-            condition.WhereContainedIn(key, values);
+            Condition.WhereContainedIn(key, values);
             return this;
         }
 
@@ -64,7 +66,7 @@ namespace LeanCloud.Storage {
         /// <param name="values"></param>
         /// <returns></returns>
         public LCQuery<T> WhereNotContainedIn(string key, IEnumerable values) {
-            condition.WhereNotContainedIn(key, values);
+            Condition.WhereNotContainedIn(key, values);
             return this;
         }
 
@@ -75,7 +77,7 @@ namespace LeanCloud.Storage {
         /// <param name="values"></param>
         /// <returns></returns>
         public LCQuery<T> WhereContainsAll(string key, IEnumerable values) {
-            condition.WhereContainsAll(key, values);
+            Condition.WhereContainsAll(key, values);
             return this;
         }
 
@@ -85,7 +87,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCQuery<T> WhereExists(string key) {
-            condition.WhereExists(key);
+            Condition.WhereExists(key);
             return this;
         }
 
@@ -95,7 +97,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCQuery<T> WhereDoesNotExist(string key) {
-            condition.WhereDoesNotExist(key);
+            Condition.WhereDoesNotExist(key);
             return this;
         }
 
@@ -106,7 +108,7 @@ namespace LeanCloud.Storage {
         /// <param name="size"></param>
         /// <returns></returns>
         public LCQuery<T> WhereSizeEqualTo(string key, int size) {
-            condition.WhereSizeEqualTo(key, size);
+            Condition.WhereSizeEqualTo(key, size);
             return this;
         }
 
@@ -117,7 +119,7 @@ namespace LeanCloud.Storage {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCQuery<T> WhereGreaterThan(string key, object value) {
-            condition.WhereGreaterThan(key, value);
+            Condition.WhereGreaterThan(key, value);
             return this;
         }
 
@@ -128,7 +130,7 @@ namespace LeanCloud.Storage {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCQuery<T> WhereGreaterThanOrEqualTo(string key, object value) {
-            condition.WhereGreaterThanOrEqualTo(key, value);
+            Condition.WhereGreaterThanOrEqualTo(key, value);
             return this;
         }
 
@@ -139,7 +141,7 @@ namespace LeanCloud.Storage {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCQuery<T> WhereLessThan(string key, object value) {
-            condition.WhereLessThan(key, value);
+            Condition.WhereLessThan(key, value);
             return this;
         }
 
@@ -150,7 +152,7 @@ namespace LeanCloud.Storage {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCQuery<T> WhereLessThanOrEqualTo(string key, object value) {
-            condition.WhereLessThanOrEqualTo(key, value);
+            Condition.WhereLessThanOrEqualTo(key, value);
             return this;
         }
 
@@ -161,7 +163,7 @@ namespace LeanCloud.Storage {
         /// <param name="point"></param>
         /// <returns></returns>
         public LCQuery<T> WhereNear(string key, LCGeoPoint point) {
-            condition.WhereNear(key, point);
+            Condition.WhereNear(key, point);
             return this;
         }
 
@@ -173,7 +175,7 @@ namespace LeanCloud.Storage {
         /// <param name="northeast"></param>
         /// <returns></returns>
         public LCQuery<T> WhereWithinGeoBox(string key, LCGeoPoint southwest, LCGeoPoint northeast) {
-            condition.WhereWithinGeoBox(key, southwest, northeast);
+            Condition.WhereWithinGeoBox(key, southwest, northeast);
             return this;
         }
 
@@ -184,7 +186,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCQuery<T> WhereRelatedTo(LCObject parent, string key) {
-            condition.WhereRelatedTo(parent, key);
+            Condition.WhereRelatedTo(parent, key);
             return this;
         }
 
@@ -195,7 +197,7 @@ namespace LeanCloud.Storage {
         /// <param name="prefix"></param>
         /// <returns></returns>
         public LCQuery<T> WhereStartsWith(string key, string prefix) {
-            condition.WhereStartsWith(key, prefix);
+            Condition.WhereStartsWith(key, prefix);
             return this;
         }
 
@@ -206,7 +208,7 @@ namespace LeanCloud.Storage {
         /// <param name="suffix"></param>
         /// <returns></returns>
         public LCQuery<T> WhereEndsWith(string key, string suffix) {
-            condition.WhereEndsWith(key, suffix);
+            Condition.WhereEndsWith(key, suffix);
             return this;
         }
 
@@ -217,7 +219,7 @@ namespace LeanCloud.Storage {
         /// <param name="subString"></param>
         /// <returns></returns>
         public LCQuery<T> WhereContains(string key, string subString) {
-            condition.WhereContains(key, subString);
+            Condition.WhereContains(key, subString);
             return this;
         }
 
@@ -229,7 +231,7 @@ namespace LeanCloud.Storage {
         /// <param name="modifiers"></param>
         /// <returns></returns>
         public LCQuery<T> WhereMatches(string key, string regex, string modifiers = null) {
-            condition.WhereMatches(key, regex, modifiers);
+            Condition.WhereMatches(key, regex, modifiers);
             return this;
         }
 
@@ -240,7 +242,7 @@ namespace LeanCloud.Storage {
         /// <param name="query"></param>
         /// <returns></returns>
         public LCQuery<T> WhereMatchesQuery<K>(string key, LCQuery<K> query) where K : LCObject {
-            condition.WhereMatchesQuery(key, query);
+            Condition.WhereMatchesQuery(key, query);
             return this;
         }
 
@@ -252,7 +254,7 @@ namespace LeanCloud.Storage {
         /// <param name="query"></param>
         /// <returns></returns>
         public LCQuery<T> WhereDoesNotMatchQuery<K>(string key, LCQuery<K> query) where K : LCObject {
-            condition.WhereDoesNotMatchQuery(key, query);
+            Condition.WhereDoesNotMatchQuery(key, query);
             return this;
         }
 
@@ -262,7 +264,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCQuery<T> OrderByAscending(string key) {
-            condition.OrderByAscending(key);
+            Condition.OrderByAscending(key);
             return this;
         }
 
@@ -272,7 +274,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCQuery<T> OrderByDescending(string key) {
-            condition.OrderByDescending(key);
+            Condition.OrderByDescending(key);
             return this;
         }
 
@@ -282,7 +284,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCQuery<T> AddAscendingOrder(string key) {
-            condition.AddAscendingOrder(key);
+            Condition.AddAscendingOrder(key);
             return this;
         }
 
@@ -292,7 +294,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCQuery<T> AddDescendingOrder(string key) {
-            condition.AddDescendingOrder(key);
+            Condition.AddDescendingOrder(key);
             return this;
         }
 
@@ -302,7 +304,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCQuery<T> Include(string key) {
-            condition.Include(key);
+            Condition.Include(key);
             return this;
         }
 
@@ -312,7 +314,7 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <returns></returns>
         public LCQuery<T> Select(string key) {
-            condition.Select(key);
+            Condition.Select(key);
             return this;
         }
 
@@ -322,7 +324,7 @@ namespace LeanCloud.Storage {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCQuery<T> Skip(int value) {
-            condition.Skip = value;
+            Condition.Skip = value;
             return this;
         }
 
@@ -332,7 +334,7 @@ namespace LeanCloud.Storage {
         /// <param name="value"></param>
         /// <returns></returns>
         public LCQuery<T> Limit(int value) {
-            condition.Limit = value;
+            Condition.Limit = value;
             return this;
         }
 
@@ -396,7 +398,7 @@ namespace LeanCloud.Storage {
                     throw new Exception("All of the queries in an or query must be on the same class.");
                 }
                 className = query.ClassName;
-                compositionQuery.condition.Add(query.condition);
+                compositionQuery.Condition.Add(query.Condition);
             }
             compositionQuery.ClassName = className;
             return compositionQuery;
@@ -407,25 +409,25 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(queries));
             }
             LCQuery<T> compositionQuery = new LCQuery<T>(null);
-            compositionQuery.condition = new LCCompositionalCondition(LCCompositionalCondition.Or);
+            compositionQuery.Condition = new LCCompositionalCondition(LCCompositionalCondition.Or);
             string className = null;
             foreach (LCQuery<T> query in queries) {
                 if (className != null && className != query.ClassName) {
                     throw new Exception("All of the queries in an or query must be on the same class.");
                 }
                 className = query.ClassName;
-                compositionQuery.condition.Add(query.condition);
+                compositionQuery.Condition.Add(query.Condition);
             }
             compositionQuery.ClassName = className;
             return compositionQuery;
         }
 
         Dictionary<string, object> BuildParams() {
-            return condition.BuildParams();
+            return Condition.BuildParams();
         }
 
         internal string BuildWhere() {
-            return condition.BuildWhere();
+            return Condition.BuildWhere();
         }
     }
 }
