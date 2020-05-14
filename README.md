@@ -137,6 +137,106 @@ m2.OnMessage = (conv, msg) => {
 
 更多关于**对话**用法：[参考](https://github.com/leancloud/csharp-sdk/blob/master/Realtime/Realtime.Test/Message.cs)
 
+## 排行榜
+
+### 创建排行榜
+
+```csharp
+LCLeaderboard leaderboard = await LCLeaderboard.CreateLeaderboard(leaderboardName);
+```
+
+### 更新成绩
+
+```csharp
+await LCLeaderboard.UpdateStatistics(user, new Dictionary<string, double> {
+    { leaderboardName, 100 }
+});
+```
+
+### 获取成绩
+
+```csharp
+LCUser user = await LCUser.Login(username, password);
+ReadOnlyCollection<LCStatistic> statistics = await LCLeaderboard.GetStatistics(user);
+foreach (LCStatistic statistic in statistics) {
+    WriteLine($"{statistic.Name} : {statistic.Value}");
+}
+```
+
+### 获取我附近的成绩
+
+```csharp
+await LCUser.Login(username, password);
+LCLeaderboard leaderboard = LCLeaderboard.CreateWithoutData(leaderboardName);
+ReadOnlyCollection<LCRanking> rankings = await leaderboard.GetResultsAroundUser(limit: 5);
+foreach (LCRanking ranking in rankings) {
+    WriteLine($"{ranking.Rank} : {ranking.User.ObjectId}, {ranking.Value}");
+}
+```
+
+### 获取榜单
+
+```csharp
+LCLeaderboard leaderboard = LCLeaderboard.CreateWithoutData(leaderboardName);
+ReadOnlyCollection<LCRanking> rankings = await leaderboard.GetResults();
+foreach (LCRanking ranking in rankings) {
+    WriteLine($"{ranking.Rank} : {ranking.User.ObjectId}, {ranking.Value}");
+}
+```
+
+## LiveQuery
+
+### 订阅
+
+```csharp
+LCQuery<LCObject> query = new LCQuery<LCObject>("Account");
+query.WhereGreaterThan("balance", 100);
+liveQuery = await query.Subscribe();
+```
+
+### 事件
+
+```csharp
+// 新建符合条件对象的事件
+liveQuery.OnCreate = (obj) => {
+    WriteLine($"create: {obj}");
+};
+
+// 符合条件对象更新事件
+liveQuery.OnUpdate = (obj, updatedKeys) => {
+    WriteLine($"update: {obj}");
+};
+
+// 符合条件对象被删除事件
+liveQuery.OnDelete = (objId) => {
+    WriteLine($"delete: {objId}");
+};
+
+// 有新的符合条件的对象事件
+liveQuery.OnEnter = (obj, updatedKeys) => {
+    WriteLine($"enter: {obj}");
+};
+
+// 有符合条件的对象不再满足条件事件
+liveQuery.OnLeave = (obj, updatedKeys) => {
+    WriteLine($"level: {obj}");
+};
+```
+
+### 特殊事件
+
+当一个用户成功登录应用，OnLogin 事件会被触发。下面的 user 就是登录的 LCUser:
+
+```csharp
+await LCUser.Login("hello", "world");
+LCQuery<LCUser> userQuery = LCUser.GetQuery();
+userQuery.WhereEqualTo("username", "hello");
+LCLiveQuery userLiveQuery = await userQuery.Subscribe();
+userLiveQuery.OnLogin = (user) => {
+    WriteLine($"login: {user}");
+};
+```
+
 ## 文档
 
 [API 文档](https://leancloud.github.io/csharp-sdk/html/index.html)
