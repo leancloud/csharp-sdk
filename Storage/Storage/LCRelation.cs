@@ -1,7 +1,7 @@
-﻿/// <summary>
-/// 关系类
-/// </summary>
-namespace LeanCloud.Storage {
+﻿namespace LeanCloud.Storage {
+    /// <summary>
+    /// 关系类
+    /// </summary>
     public class LCRelation<T> where T : LCObject {
         /// <summary>
         /// 字段名
