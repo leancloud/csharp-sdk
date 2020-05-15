@@ -6,6 +6,39 @@ LeanCloud 数据存储，即时通讯 C# SDK，基于 .Net Standard 2.0 标准�
 
 从 [Release](https://github.com/leancloud/csharp-sdk/releases) 下载指定版本 SDK，暂不支持 Nuget 方式。
 
+## 编译
+
+从 [Repo](https://github.com/leancloud/csharp-sdk) clone 仓库，使用 Visual Studio 打开 csharp-sdk.sln 编译。
+Unity 用户在编译完成后，请将 XX-Unity 工程中 Debug/Release 的 dlls 拷贝至 Unity 工程下的 Plugins 目录中即可使用。
+其他 .Net 平台用户使用 XX 工程即可。
+（XX 指 Storage，Realtime，LiveQuery 等）
+
+## 项目结构
+
+由于 Unity 平台并不是标准的 .Net Standard 2.0，所以在每个服务下单独拆分出了 XX-Unity 工程，源码和主工程是一致的，只是在依赖库方面有些区别。后面也可能针对 Unity 平台做些相关支持。
+
+```
+├── csharp-sdk.sln              // 项目配置
+├── Common                      // 公共库，包含基础功能
+├── Storage                     // 存储服务
+│   ├── Storage                 // .Net Standard 2.0 工程
+│   ├── Storage-Unity           // Unity 工程
+│   └── Storage.Test            // 单元测试
+├── Realtime                    // 即时通讯服务
+│   ├── Realtime                // .Net Standard 2.0 工程
+│   ├── Realtime-Unity          // Unity 工程
+│   └── Realtime.Test           // 单元测试
+├── LiveQuery                   // LiveQuery 服务
+│   ├── LiveQuery               // .Net Standard 2.0 工程
+│   ├── LiveQuery-Unity         // Unity 工程
+│   └── LiveQuery.Test          // 单元测试
+├── Sample                      // 示例
+│   ├── RealtimeApp             // 即时通讯应用，主要测试断线重连
+│   └── LiveQueryApp            // LiveQuery 应用，主要测试断线重连
+└── UnityLibs                   // Unity 依赖
+    └── Newtonsoft.Json.dll     // Json 库，由于 Unity iOS AOT 的原因，不能使用 .Net Standard 2.0 版本
+```
+
 ## 导入
 
 ```csharp
