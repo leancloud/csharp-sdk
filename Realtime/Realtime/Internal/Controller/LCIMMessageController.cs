@@ -70,6 +70,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             AckCommand ack = response.AckMessage;
             message.Id = ack.Uid;
             message.SentTimestamp = ack.T;
+            message.FromClientId = Client.Id;
             return message;
         }
 
