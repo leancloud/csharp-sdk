@@ -477,6 +477,9 @@ namespace LeanCloud.Realtime {
             if (conv.TryGetValue("objectId", out object idObj)) {
                 Id = idObj as string;
             }
+            if (conv.TryGetValue("name", out object nameObj)) {
+                Name = nameObj as string;
+            }
             if (conv.TryGetValue("unique", out object uniqueObj)) {
                 Unique = (bool)uniqueObj;
             }
