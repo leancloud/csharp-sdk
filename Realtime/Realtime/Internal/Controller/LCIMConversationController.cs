@@ -84,6 +84,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             conversation.CreatorId = Client.Id;
             conversation.ids = members != null ?
                 new HashSet<string>(members) : new HashSet<string>();
+            // 将自己加入
+            conversation.ids.Add(Client.Id);
             conversation.CreatedAt = DateTime.Parse(response.ConvMessage.Cdate);
             conversation.UpdatedAt = conversation.CreatedAt;
             return conversation;
