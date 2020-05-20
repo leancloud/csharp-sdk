@@ -43,18 +43,21 @@ namespace LeanCloud.Realtime.Internal.Controller {
             if (members != null) {
                 conv.M.AddRange(members);
             }
-            if (!string.IsNullOrEmpty(name)) {
-                conv.N = name;
-            }
             if (temporary) {
                 conv.TempConv = temporary;
                 conv.TempConvTTL = temporaryTtl;
             }
-            if (properties != null) {
-                conv.Attr = new JsonObjectMessage {
-                    Data = JsonConvert.SerializeObject(LCEncoder.Encode(properties))
-                };
+            Dictionary<string, object> attrs = new Dictionary<string, object>();
+            if (!string.IsNullOrEmpty(name)) {
+                attrs["name"] = name;
             }
+            if (properties != null) {
+                attrs = properties.Union(attrs)
+                    .ToDictionary(k => k.Key, v => v.Value);
+            }
+            conv.Attr = new JsonObjectMessage {
+                Data = JsonConvert.SerializeObject(LCEncoder.Encode(attrs))
+            };
             if (Client.SignatureFactory != null) {
                 LCIMSignature signature = await Client.SignatureFactory.CreateStartConversationSignature(Client.Id, members);
                 conv.S = signature.Signature;
@@ -84,6 +87,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
             conversation.CreatorId = Client.Id;
             conversation.ids = members != null ?
                 new HashSet<string>(members) : new HashSet<string>();
+            // 将自己加入
+            conversation.ids.Add(Client.Id);
             conversation.CreatedAt = DateTime.Parse(response.ConvMessage.Cdate);
             conversation.UpdatedAt = conversation.CreatedAt;
             return conversation;
