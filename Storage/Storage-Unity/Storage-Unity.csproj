@@ -15,9 +15,6 @@
     <Compile Include="..\Storage\LCCloud.cs">
       <Link>LCCloud.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCException.cs">
-      <Link>LCException.cs</Link>
-    </Compile>
     <Compile Include="..\Storage\LCFile.cs">
       <Link>LCFile.cs</Link>
     </Compile>
