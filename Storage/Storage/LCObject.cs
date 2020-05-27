@@ -462,7 +462,10 @@ namespace LeanCloud.Storage {
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
-            return JsonConvert.SerializeObject(LCObjectData.Encode(data));
+            Dictionary<string, object> originalData = LCObjectData.Encode(data);
+            Dictionary<string, object> currentData = estimatedData.Union(originalData.Where(kv => !estimatedData.ContainsKey(kv.Key)))
+                .ToDictionary(k => k.Key, v => v.Value);
+            return JsonConvert.SerializeObject(currentData);
         }
 
         /// <summary>
