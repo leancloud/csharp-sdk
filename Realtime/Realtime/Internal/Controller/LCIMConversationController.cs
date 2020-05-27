@@ -52,7 +52,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 attrs["name"] = name;
             }
             if (properties != null) {
-                attrs = properties.Union(attrs)
+                attrs = properties.Union(attrs.Where(kv => !properties.ContainsKey(kv.Key)))
                     .ToDictionary(k => k.Key, v => v.Value);
             }
             conv.Attr = new JsonObjectMessage {
