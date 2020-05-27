@@ -10,22 +10,32 @@ namespace LeanCloud.Storage {
 
         const string RoleKeyPrefix = "role:";
 
-        internal HashSet<string> readers;
-        internal HashSet<string> writers;
+        internal Dictionary<string, bool> readAccess = new Dictionary<string, bool>();
+        internal Dictionary<string, bool> writeAccess = new Dictionary<string, bool>();
+
+        public static LCACL CreateWithOwner(LCUser owner) {
+            if (owner == null) {
+                throw new ArgumentNullException(nameof(owner));
+            }
+            LCACL acl = new LCACL();
+            acl.SetUserReadAccess(owner, true);
+            acl.SetUserWriteAccess(owner, true);
+            return acl;
+        }
 
         public bool PublicReadAccess {
             get {
-                return GetAccess(readers, PublicKey);
+                return GetAccess(readAccess, PublicKey);
             } set {
-                SetAccess(readers, PublicKey, value);
+                SetAccess(readAccess, PublicKey, value);
             }
         }
 
         public bool PublicWriteAccess {
             get {
-                return GetAccess(writers, PublicKey);
+                return GetAccess(writeAccess, PublicKey);
             } set {
-                SetAccess(writers, PublicKey, value);
+                SetAccess(writeAccess, PublicKey, value);
             }
         }
 
@@ -33,28 +43,28 @@ namespace LeanCloud.Storage {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }
-            return GetAccess(readers, userId);
+            return GetAccess(readAccess, userId);
         }
 
         public void SetUserIdReadAccess(string userId, bool value) {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }
-            SetAccess(readers, userId, value);
+            SetAccess(readAccess, userId, value);
         }
 
         public bool GetUserIdWriteAccess(string userId) {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }
-            return GetAccess(writers, userId);
+            return GetAccess(writeAccess, userId);
         }
 
         public void SetUserIdWriteAccess(string userId, bool value) {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }
-            SetAccess(writers, userId, value);
+            SetAccess(writeAccess, userId, value);
         }
 
         public bool GetUserReadAccess(LCUser user) {
@@ -90,7 +100,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(role));
             }
             string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
-            return GetAccess(readers, roleKey);
+            return GetAccess(readAccess, roleKey);
         }
 
         public void SetRoleReadAccess(LCRole role, bool value) {
@@ -98,7 +108,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(role));
             }
             string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
-            SetAccess(readers, roleKey, value);
+            SetAccess(readAccess, roleKey, value);
         }
 
         public bool GetRoleWriteAccess(LCRole role) {
@@ -106,7 +116,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(role));
             }
             string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
-            return GetAccess(writers, roleKey);
+            return GetAccess(writeAccess, roleKey);
         }
 
         public void SetRoleWriteAccess(LCRole role, bool value) {
@@ -114,34 +124,16 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(role));
             }
             string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
-            SetAccess(writers, roleKey, value);
+            SetAccess(writeAccess, roleKey, value);
         }
 
-        public LCACL() {
-            readers = new HashSet<string>();
-            writers = new HashSet<string>();
+        bool GetAccess(Dictionary<string, bool> access, string key) {
+            return access.ContainsKey(key) ?
+                access[key] : false;
         }
 
-        public static LCACL CreateWithOwner(LCUser owner) {
-            if (owner == null) {
-                throw new ArgumentNullException(nameof(owner));
-            }
-            LCACL acl = new LCACL();
-            acl.SetUserReadAccess(owner, true);
-            acl.SetUserWriteAccess(owner, true);
-            return acl;
-        }
-
-        bool GetAccess(HashSet<string> set, string key) {
-            return set.Contains(key);
-        }
-
-        void SetAccess(HashSet<string> set, string key, bool value) {
-            if (value) {
-                set.Add(key);
-            } else {
-                set.Remove(key);
-            }
+        void SetAccess(Dictionary<string, bool> access, string key, bool value) {
+            access[key] = value;
         }
     }
 }

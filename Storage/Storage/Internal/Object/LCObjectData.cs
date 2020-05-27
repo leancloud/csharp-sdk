@@ -44,7 +44,12 @@ namespace LeanCloud.Storage.Internal.Object {
                 } else if (key == "updatedAt" && DateTime.TryParse(value.ToString(), out DateTime updatedAt)) {
                     objectData.UpdatedAt = updatedAt.ToLocalTime();
                 } else {
-                    objectData.CustomPropertyDict[key] = LCDecoder.Decode(value);
+                    if (key == "ACL" &&
+                        value is Dictionary<string, object> dic) {
+                        objectData.CustomPropertyDict[key] = LCDecoder.DecodeACL(dic);
+                    } else {
+                        objectData.CustomPropertyDict[key] = LCDecoder.Decode(value);
+                    }
                 }
             }
             return objectData;

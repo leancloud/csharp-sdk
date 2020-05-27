@@ -78,12 +78,15 @@ namespace Storage.Test {
 
         [Test]
         public async Task Serialization() {
+            await LCUser.Login("hello", "world");
             LCQuery<LCObject> query = new LCQuery<LCObject>("Account") {
                 IncludeACL = true
             };
+            query.OrderByDescending("createdAt");
             ReadOnlyCollection<LCObject> accounts = await query.Find();
             foreach (LCObject account in accounts) {
-                TestContext.WriteLine(account);
+                TestContext.WriteLine($"public read access: {account.ACL.PublicReadAccess}");
+                TestContext.WriteLine($"public write access: {account.ACL.PublicWriteAccess}");
             }
         }
     }

@@ -83,18 +83,25 @@ namespace LeanCloud.Storage.Internal.Codec {
         }
 
         public static object EncodeACL(LCACL acl) {
-            HashSet<string> readers = acl.readers;
-            HashSet<string> writers = acl.writers;
-            HashSet<string> union = new HashSet<string>(readers);
-            union.UnionWith(writers);
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-            foreach (string k in union) {
-                dict[k] = new Dictionary<string, object> {
-                    { "read", readers.Contains(k) },
-                    { "write", writers.Contains(k) }
-                };
+            HashSet<string> keys = new HashSet<string>();
+            if (acl.readAccess.Count > 0) {
+                keys.UnionWith(acl.readAccess.Keys);
             }
-            return dict;
+            if (acl.writeAccess.Count > 0) {
+                keys.UnionWith(acl.writeAccess.Keys);
+            }
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            foreach (string key in keys) {
+                Dictionary<string, bool> access = new Dictionary<string, bool>();
+                if (acl.readAccess.TryGetValue(key, out bool ra)) {
+                    access["read"] = ra;
+                }
+                if (acl.writeAccess.TryGetValue(key, out bool wa)) {
+                    access["write"] = wa;
+                }
+                result[key] = access;
+            }
+            return result;
         }
 
         public static object EncodeRelation(LCRelation<LCObject> relation) {
