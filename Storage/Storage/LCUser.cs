@@ -49,13 +49,13 @@ namespace LeanCloud.Storage {
 
         public bool EmailVerified {
             get {
-                return (bool)this["emailVerified"];
+                return Convert.ToBoolean(this["emailVerified"]);
             }
         }
 
         public bool MobileVerified {
             get {
-                return (bool)this["mobilePhoneVerified"];
+                return Convert.ToBoolean(this["mobilePhoneVerified"]);
             }
         }
 

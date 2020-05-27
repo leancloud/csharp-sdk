@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using LeanCloud;
 using LeanCloud.Storage;
 
@@ -73,6 +74,17 @@ namespace Storage.Test {
             LCObject account = await query.Get("5e144525dd3c13006a8f8de2");
             TestContext.WriteLine(account.ObjectId);
             Assert.NotNull(account.ObjectId);
+        }
+
+        [Test]
+        public async Task Serialization() {
+            LCQuery<LCObject> query = new LCQuery<LCObject>("Account") {
+                IncludeACL = true
+            };
+            ReadOnlyCollection<LCObject> accounts = await query.Find();
+            foreach (LCObject account in accounts) {
+                TestContext.WriteLine(account);
+            }
         }
     }
 }

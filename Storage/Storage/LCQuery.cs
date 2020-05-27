@@ -334,6 +334,17 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
+        /// 是否包含 ACL
+        /// </summary>
+        public bool IncludeACL {
+            get {
+                return Condition.IncludeACL;
+            } set {
+                Condition.IncludeACL = value;
+            }
+        }
+
+        /// <summary>
         /// 跳过
         /// </summary>
         /// <param name="value"></param>
