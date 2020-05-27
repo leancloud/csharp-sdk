@@ -75,7 +75,6 @@ namespace LeanCloud.Storage.Internal.Codec {
         }
 
         public static LCACL DecodeACL(Dictionary<string, object> dict) {
-            Console.WriteLine($"count: {dict.Count}");
             LCACL acl = new LCACL();
             foreach (KeyValuePair<string, object> kv in dict) {
                 string key = kv.Key;
