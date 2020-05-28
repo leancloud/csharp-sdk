@@ -8,20 +8,31 @@ namespace LeanCloud.Storage {
     /// </summary>
     public static class LCCloud {
         /// <summary>
-        /// 调用云函数，结果为 Dictionary 类型
+        /// 调用云函数
         /// </summary>
         /// <param name="name"></param>
         /// <param name="parameters"></param>
-        /// <returns></returns>
-        public static async Task<Dictionary<string, object>> Run(string name, Dictionary<string, object> parameters = null) {
+        /// <returns>返回类型为 Dictionary<string, object></returns>
+        public static async Task<Dictionary<string, object>> Run(string name,
+            Dictionary<string, object> parameters = null) {
             string path = $"functions/{name}";
-            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: parameters);
+            object encodeParams = LCEncoder.Encode(parameters);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path,
+                data: encodeParams);
             return response;
         }
 
-        public static async Task<object> RPC(string name, Dictionary<string, object> parameters = null) {
+        /// <summary>
+        /// 调用 RPC 云函数
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="parameters"></param>
+        /// <returns>返回类型为 LCObject 容器类型</returns>
+        public static async Task<object> RPC(string name, object parameters = null) {
             string path = $"call/{name}";
-            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: parameters);
+            object encodeParams = LCEncoder.Encode(parameters);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path,
+                data: encodeParams);
             return LCDecoder.Decode(response["result"]);
         }
     }

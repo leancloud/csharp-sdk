@@ -24,6 +24,10 @@ namespace LeanCloud.Storage.Internal.Query {
             get; set;
         }
 
+        public bool IncludeACL {
+            get; set;
+        }
+
         public LCCompositionalCondition(string composition = And) {
             this.composition = composition;
             Skip = 0;
@@ -216,6 +220,9 @@ namespace LeanCloud.Storage.Internal.Query {
             }
             if (selectedKeys != null && selectedKeys.Count > 0) {
                 dict["keys"] = string.Join(",", selectedKeys);
+            }
+            if (IncludeACL) {
+                dict["returnACL"] = "true";
             }
             return dict;
         }

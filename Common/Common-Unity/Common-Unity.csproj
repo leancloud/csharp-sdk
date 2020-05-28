@@ -30,6 +30,9 @@
     <Compile Include="..\Common\Json\LCJsonConverter.cs">
       <Link>Json\LCJsonConverter.cs</Link>
     </Compile>
+    <Compile Include="..\Common\Exception\LCException.cs">
+      <Link>Exception\LCException.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

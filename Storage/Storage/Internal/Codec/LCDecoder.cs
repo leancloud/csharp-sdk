@@ -68,10 +68,25 @@ namespace LeanCloud.Storage.Internal.Codec {
         }
 
         public static LCGeoPoint DecodeGeoPoint(IDictionary data) {
-            double latitude = double.Parse(data["latitude"].ToString());
-            double longitude = double.Parse(data["longitude"].ToString());
+            double latitude = Convert.ToDouble(data["latitude"]);
+            double longitude = Convert.ToDouble(data["longitude"]);
             LCGeoPoint geoPoint = new LCGeoPoint(latitude, longitude);
             return geoPoint;
+        }
+
+        public static LCACL DecodeACL(Dictionary<string, object> dict) {
+            LCACL acl = new LCACL();
+            foreach (KeyValuePair<string, object> kv in dict) {
+                string key = kv.Key;
+                Dictionary<string, object> access = kv.Value as Dictionary<string, object>;
+                if (access.TryGetValue("read", out object ra)) {
+                    acl.readAccess[key] = Convert.ToBoolean(ra);
+                }
+                if (access.TryGetValue("write", out object wa)) {
+                    acl.writeAccess[key] = Convert.ToBoolean(wa);
+                }
+            }
+            return acl;
         }
     }
 }

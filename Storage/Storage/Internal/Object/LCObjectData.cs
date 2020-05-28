@@ -40,11 +40,16 @@ namespace LeanCloud.Storage.Internal.Object {
                 } else if (key == "objectId") {
                     objectData.ObjectId = value.ToString();
                 } else if (key == "createdAt" && DateTime.TryParse(value.ToString(), out DateTime createdAt)) {
-                    objectData.CreatedAt = createdAt;
+                    objectData.CreatedAt = createdAt.ToLocalTime();
                 } else if (key == "updatedAt" && DateTime.TryParse(value.ToString(), out DateTime updatedAt)) {
-                    objectData.UpdatedAt = updatedAt;
+                    objectData.UpdatedAt = updatedAt.ToLocalTime();
                 } else {
-                    objectData.CustomPropertyDict[key] = LCDecoder.Decode(value);
+                    if (key == "ACL" &&
+                        value is Dictionary<string, object> dic) {
+                        objectData.CustomPropertyDict[key] = LCDecoder.DecodeACL(dic);
+                    } else {
+                        objectData.CustomPropertyDict[key] = LCDecoder.Decode(value);
+                    }
                 }
             }
             return objectData;
@@ -61,10 +66,10 @@ namespace LeanCloud.Storage.Internal.Object {
                 dict["objectId"] = objectData.ObjectId;
             }
             if (objectData.CreatedAt != null) {
-                dict["createdAt"] = objectData.CreatedAt;
+                dict["createdAt"] = objectData.CreatedAt.ToUniversalTime();
             }
             if (objectData.UpdatedAt != null) {
-                dict["updatedAt"] = objectData.UpdatedAt;
+                dict["updatedAt"] = objectData.UpdatedAt.ToUniversalTime();
             }
             if (objectData.CustomPropertyDict != null) {
                 foreach (KeyValuePair<string, object> kv in objectData.CustomPropertyDict) {
