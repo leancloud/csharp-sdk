@@ -8,11 +8,11 @@ namespace LeanCloud.Storage {
     /// </summary>
     public static class LCCloud {
         /// <summary>
-        /// 调用云函数，结果为 Dictionary 类型
+        /// 调用云函数
         /// </summary>
         /// <param name="name"></param>
         /// <param name="parameters"></param>
-        /// <returns></returns>
+        /// <returns>返回类型为 Dictionary<string, object></returns>
         public static async Task<Dictionary<string, object>> Run(string name,
             Dictionary<string, object> parameters = null) {
             string path = $"functions/{name}";
@@ -22,6 +22,12 @@ namespace LeanCloud.Storage {
             return response;
         }
 
+        /// <summary>
+        /// 调用 RPC 云函数
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="parameters"></param>
+        /// <returns>返回类型为 LCObject 容器类型</returns>
         public static async Task<object> RPC(string name, object parameters = null) {
             string path = $"call/{name}";
             object encodeParams = LCEncoder.Encode(parameters);
