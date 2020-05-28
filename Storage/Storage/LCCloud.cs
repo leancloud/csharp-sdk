@@ -13,15 +13,20 @@ namespace LeanCloud.Storage {
         /// <param name="name"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static async Task<Dictionary<string, object>> Run(string name, Dictionary<string, object> parameters = null) {
+        public static async Task<Dictionary<string, object>> Run(string name,
+            Dictionary<string, object> parameters = null) {
             string path = $"functions/{name}";
-            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: parameters);
+            object encodeParams = LCEncoder.Encode(parameters);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path,
+                data: encodeParams);
             return response;
         }
 
-        public static async Task<object> RPC(string name, Dictionary<string, object> parameters = null) {
+        public static async Task<object> RPC(string name, object parameters = null) {
             string path = $"call/{name}";
-            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: parameters);
+            object encodeParams = LCEncoder.Encode(parameters);
+            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path,
+                data: encodeParams);
             return LCDecoder.Decode(response["result"]);
         }
     }
