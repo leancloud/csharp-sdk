@@ -1,6 +1,13 @@
 # csharp-sdk
 
-LeanCloud 数据存储，即时通讯 C# SDK，基于 .Net Standard 2.0 标准开发。
+LeanCloud C# SDK，基于 .Net Standard 2.0 标准开发，包括服务如下：
+
+- 存储
+- 排行榜
+- 即时通讯
+- Live Query
+
+参考：[Unity Demo](https://github.com/leancloud/CSharp-SDK-Unity-Demo)
 
 ## 安装
 
