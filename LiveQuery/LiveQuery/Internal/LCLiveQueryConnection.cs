@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using LeanCloud.Realtime.Internal.Router;
 using LeanCloud.Realtime.Internal.WebSocket;
 using LeanCloud.Common;
-using LeanCloud.Storage;
+using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.LiveQuery.Internal {
     public class LCLiveQueryConnection {
@@ -63,7 +63,7 @@ namespace LeanCloud.LiveQuery.Internal {
         public LCLiveQueryConnection(string id) {
             this.id = id;
             responses = new Dictionary<int, TaskCompletionSource<Dictionary<string, object>>>();
-            heartBeat = new LCLiveQueryHeartBeat(this);
+            heartBeat = new LCLiveQueryHeartBeat(this, OnPingTimeout);
             router = new LCRTMRouter();
             client = new LCWebSocketClient {
                 OnMessage = OnClientMessage,
@@ -82,6 +82,8 @@ namespace LeanCloud.LiveQuery.Internal {
                     LCLogger.Debug($"Secondary Server");
                     await client.Connect(rtmServer.Secondary, SUB_PROTOCOL);
                 }
+                // 启动心跳
+                heartBeat.Start();
             } catch (Exception e) {
                 throw e;
             }
@@ -92,10 +94,11 @@ namespace LeanCloud.LiveQuery.Internal {
         /// </summary>
         /// <returns></returns>
         internal async Task Reset() {
+            heartBeat?.Stop();
             // 关闭就连接
             await client.Close();
             // 重新创建连接组件
-            heartBeat = new LCLiveQueryHeartBeat(this);
+            heartBeat = new LCLiveQueryHeartBeat(this, OnPingTimeout);
             router = new LCRTMRouter();
             client = new LCWebSocketClient {
                 OnMessage = OnClientMessage,
@@ -151,7 +154,6 @@ namespace LeanCloud.LiveQuery.Internal {
         }
 
         private void OnClientMessage(byte[] bytes) {
-            _ = heartBeat.Refresh(OnPingTimeout);
             try {
                 string json = Encoding.UTF8.GetString(bytes);
                 Dictionary<string, object> msg = JsonConvert.DeserializeObject<Dictionary<string, object>>(json,
@@ -177,8 +179,12 @@ namespace LeanCloud.LiveQuery.Internal {
                         LCLogger.Error($"No request for {requestIndex}");
                     }
                 } else {
-                    // 通知
-                    OnNotification?.Invoke(msg);
+                    if (json == "{}") {
+                        heartBeat.Pong();
+                    } else {
+                        // 通知
+                        OnNotification?.Invoke(msg);
+                    }
                 }
             } catch (Exception e) {
                 LCLogger.Error(e);
@@ -194,7 +200,9 @@ namespace LeanCloud.LiveQuery.Internal {
 
         private async void OnPingTimeout() {
             await client.Close();
-            OnClientDisconnect();
+            OnDisconnect?.Invoke();
+            // 重连
+            _ = Reconnect();
         }
 
         private async Task Reconnect() {
