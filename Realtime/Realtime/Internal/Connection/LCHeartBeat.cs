@@ -6,75 +6,98 @@ using LeanCloud.Realtime.Internal.Protocol;
 namespace LeanCloud.Realtime.Internal.Connection {
     /// <summary>
     /// 心跳控制器，由于 .Net Standard 2.0 不支持发送 ping frame，所以需要发送逻辑心跳
-    /// 1. 每次接收到消息后开始监听，如果在 pingInterval 时间内没有再次接收到消息，则发送 ping 请求；
-    /// 2. 发送后等待 pongInterval 时间，如果在此时间内接收到了任何消息，则取消并重新开始监听 1；
-    /// 3. 如果没收到消息，则认为超时并回调，连接层接收回调后放弃当前连接，以断线逻辑处理
+    /// 1. 每隔 180s 发送 ping 包
+    /// 2. 接收到 pong 包刷新上次 pong 时间
+    /// 3. 每隔 180s 检测 pong 包间隔，超过 360s 则认为断开
     /// </summary>
-    internal class LCHeartBeat {
+    public class LCHeartBeat {
+        private const int PING_INTERVAL = 5 * 1000;
+
         private readonly LCConnection connection;
 
-        /// <summary>
-        /// ping 间隔
-        /// </summary>
-        private readonly int pingInterval;
+        private readonly Action onTimeout;
 
-        /// <summary>
-        /// pong 间隔
-        /// </summary>
-        private readonly int pongInterval;
+        private CancellationTokenSource heartBeatCTS;
 
-        private CancellationTokenSource pingCTS;
-        private CancellationTokenSource pongCTS;
+        private bool running = false;
+
+        private DateTimeOffset lastPongTime;
+
+        public LCHeartBeat(Action onTimeout) {
+            this.onTimeout = onTimeout;
+        }
 
         internal LCHeartBeat(LCConnection connection,
-            int pingInterval,
-            int pongInterval) {
+            Action onTimeout) : this(onTimeout) {
             this.connection = connection;
-            this.pingInterval = pingInterval;
-            this.pongInterval = pongInterval;
         }
 
         /// <summary>
-        /// 更新心跳监听
+        /// 启动心跳
         /// </summary>
-        /// <returns></returns>
-        internal async Task Refresh(Action onTimeout) {
-            LCLogger.Debug("HeartBeat refresh");
-            pingCTS?.Cancel();
-            pongCTS?.Cancel();
+        public void Start() {
+            running = true;
+            heartBeatCTS = new CancellationTokenSource();
+            StartPing();
+            StartPong();
+        }
 
-            // 计时准备 ping
-            pingCTS = new CancellationTokenSource();
-            Task delayTask = Task.Delay(pingInterval, pingCTS.Token);
-            await delayTask;
-            if (delayTask.IsCanceled) {
-                return;
+        private async void StartPing() {
+            while (running) {
+                try {
+                    await Task.Delay(PING_INTERVAL, heartBeatCTS.Token);
+                } catch (TaskCanceledException) {
+                    return;
+                }
+                LCLogger.Debug("Ping ~~~");
+                SendPing();
             }
+        }
+
+        protected virtual void SendPing() {
             // 发送 ping 包
-            LCLogger.Debug("Ping ~~~");
             GenericCommand command = new GenericCommand {
                 Cmd = CommandType.Echo,
                 AppId = LCApplication.AppId,
                 PeerId = connection.id
             };
-            _ = connection.SendRequest(command);
-            pongCTS = new CancellationTokenSource();
-            Task timeoutTask = Task.Delay(pongInterval, pongCTS.Token);
-            await timeoutTask;
-            if (timeoutTask.IsCanceled) {
-                return;
+            try {
+                _ = connection.SendCommand(command);
+            } catch (Exception e) {
+                LCLogger.Error(e.Message);
             }
-            // timeout
-            LCLogger.Error("Ping timeout");
-            onTimeout.Invoke();
+        }
+
+        private async void StartPong() {
+            lastPongTime = DateTimeOffset.Now;
+            while (running) {
+                try {
+                    await Task.Delay(PING_INTERVAL / 2, heartBeatCTS.Token);
+                } catch (TaskCanceledException) {
+                    return;
+                }
+                // 检查 pong 包时间
+                TimeSpan interval = DateTimeOffset.Now - lastPongTime;
+                if (interval.TotalMilliseconds > PING_INTERVAL * 2) {
+                    // 断线
+                    Stop();
+                    onTimeout.Invoke();
+                }
+            }
+        }
+
+        public void Pong() {
+            LCLogger.Debug("Pong ~~~");
+            // 刷新最近 pong 时间戳
+            lastPongTime = DateTimeOffset.Now;
         }
 
         /// <summary>
         /// 停止心跳监听
         /// </summary>
-        internal void Stop() {
-            pingCTS?.Cancel();
-            pongCTS?.Cancel();
+        public void Stop() {
+            running = false;
+            heartBeatCTS.Cancel();
         }
     }
 }
