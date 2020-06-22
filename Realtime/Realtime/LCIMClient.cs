@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.ObjectModel;
-using LeanCloud.Common;
 using LeanCloud.Storage;
 using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
@@ -283,11 +282,10 @@ namespace LeanCloud.Realtime {
             MessageController = new LCIMMessageController(this);
             GoAwayController = new LCIMGoAwayController(this);
 
-            Connection = new LCConnection(Id) {
-                OnNotification = OnConnectionNotification,
-                OnDisconnect = OnConnectionDisconnect,
-                OnReconnected = OnConnectionReconnect
-            };
+            Connection = LCRealtime.GetConnection(LCApplication.AppId);
+            Connection.OnNotification = OnConnectionNotification;
+            Connection.OnDisconnect = OnConnectionDisconnect;
+            Connection.OnReconnected = OnConnectionReconnect;
         }
 
         /// <summary>
@@ -315,7 +313,7 @@ namespace LeanCloud.Realtime {
         public async Task Close() {
             // 关闭 session
             await SessionController.Close();
-            await Connection.Close();
+            //await Connection.Close();
         }
 
         /// <summary>

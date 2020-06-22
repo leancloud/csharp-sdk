@@ -13,6 +13,28 @@ namespace LeanCloud.Realtime.Internal.Connection {
     /// </summary>
     public class LCConnection {
         /// <summary>
+        /// 连接状态
+        /// </summary>
+        enum State {
+            /// <summary>
+            /// 初始状态
+            /// </summary>
+            None,
+            /// <summary>
+            /// 连接中
+            /// </summary>
+            Connecting,
+            /// <summary>
+            /// 连接成功
+            /// </summary>
+            Open,
+            /// <summary>
+            /// 关闭的
+            /// </summary>
+            Closed,
+        }
+
+        /// <summary>
         /// 发送超时
         /// </summary>
         private const int SEND_TIMEOUT = 10000;
@@ -62,6 +84,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
 
         private LCWebSocketClient client;
 
+        private State state;
+        private Task connectTask;
+
         internal LCConnection(string id) {
             this.id = id;
             responses = new Dictionary<int, TaskCompletionSource<GenericCommand>>();
@@ -71,9 +96,22 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 OnMessage = OnClientMessage,
                 OnClose = OnClientDisconnect
             };
+            state = State.None;
         }
 
-        internal async Task Connect() {
+        internal Task Connect() {
+            if (state == State.Open) {
+                return Task.FromResult<object>(null);
+            }
+            if (state == State.Connecting) {
+                return connectTask;
+            }
+            connectTask = _Connect();
+            return connectTask;
+        }
+
+        internal async Task _Connect() {
+            state = State.Connecting;
             try {
                 LCRTMServer rtmServer = await router.GetServer();
                 try {
@@ -86,6 +124,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 }
                 // 启动心跳
                 heartBeat.Start();
+                state = State.Open;
             } catch (Exception e) {
                 throw e;
             }
@@ -191,14 +230,16 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         private void OnClientDisconnect() {
+            state = State.Closed;
             heartBeat.Stop();
             OnDisconnect?.Invoke();
             // 重连
             _ = Reconnect();
         }
 
-        private async void OnPingTimeout() {
-            await client.Close();
+        private void OnPingTimeout() {
+            state = State.Closed;
+            _ = client.Close();
             OnDisconnect?.Invoke();
             // 重连
             _ = Reconnect();
