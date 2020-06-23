@@ -72,7 +72,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         private State state;
         private Task connectTask;
 
-        private readonly Dictionary<string, LCIMClient> clients;
+        private readonly Dictionary<string, LCIMClient> idToClients;
 
         internal LCConnection(string id) {
             this.id = id;
@@ -83,7 +83,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 OnMessage = OnClientMessage,
                 OnClose = OnClientDisconnect
             };
-            clients = new Dictionary<string, LCIMClient>();
+            idToClients = new Dictionary<string, LCIMClient>();
             state = State.None;
         }
 
@@ -207,7 +207,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                         heartBeat.Pong();
                     } else {
                         // 通知
-                        if (clients.TryGetValue(command.PeerId, out LCIMClient client)) {
+                        if (idToClients.TryGetValue(command.PeerId, out LCIMClient client)) {
                             // 通知具体客户端
                             client.HandleNotification(command);
                         }
@@ -221,7 +221,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         private void OnClientDisconnect() {
             state = State.Closed;
             heartBeat.Stop();
-            foreach (LCIMClient client in clients.Values) {
+            foreach (LCIMClient client in idToClients.Values) {
                 client.HandleDisconnected();
             }
             // 重连
@@ -231,7 +231,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         private void OnPingTimeout() {
             state = State.Closed;
             _ = ws.Close();
-            foreach (LCIMClient client in clients.Values) {
+            foreach (LCIMClient client in idToClients.Values) {
                 client.HandleDisconnected();
             }
             // 重连
@@ -259,7 +259,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     LCLogger.Debug("Reconnected");
                     ws.OnMessage = OnClientMessage;
                     ws.OnClose = OnClientDisconnect;
-                    foreach (LCIMClient client in clients.Values) {
+                    foreach (LCIMClient client in idToClients.Values) {
                         client.HandleReconnected();
                     }
                     break;
@@ -280,12 +280,12 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         internal void Register(LCIMClient client) {
-            clients[client.Id] = client;
+            idToClients[client.Id] = client;
         }
 
         internal void UnRegister(LCIMClient client) {
-            clients.Remove(client.Id);
-            if (clients.Count == 0) {
+            idToClients.Remove(client.Id);
+            if (idToClients.Count == 0) {
                 _ = Close();
             }
         }
