@@ -123,6 +123,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// </summary>
         /// <returns></returns>
         internal async Task Reset() {
+            state = State.Closed;
             heartBeat?.Stop();
             // 关闭就连接
             await ws.Close();
@@ -205,6 +206,8 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 } else {
                     if (command.Cmd == CommandType.Echo) {
                         heartBeat.Pong();
+                    } else if (command.Cmd == CommandType.Goaway) {
+                        _ = Reset();
                     } else {
                         // 通知
                         if (idToClients.TryGetValue(command.PeerId, out LCIMClient client)) {

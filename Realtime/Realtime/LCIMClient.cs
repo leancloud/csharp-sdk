@@ -240,10 +240,6 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
-        internal LCIMGoAwayController GoAwayController {
-            get; private set;
-        }
-
         internal LCIMConversationController ConversationController {
             get; private set;
         }
@@ -290,7 +286,6 @@ namespace LeanCloud.Realtime {
             SessionController = new LCIMSessionController(this);
             ConversationController = new LCIMConversationController(this);
             MessageController = new LCIMMessageController(this);
-            GoAwayController = new LCIMGoAwayController(this);
         }
 
         /// <summary>
@@ -450,9 +445,6 @@ namespace LeanCloud.Realtime {
                 case CommandType.Patch:
                 case CommandType.Rcp:
                     MessageController.HandleNotification(notification);
-                    break;
-                case CommandType.Goaway:
-                    GoAwayController.HandleNotification(notification);
                     break;
                 default:
                     break;
