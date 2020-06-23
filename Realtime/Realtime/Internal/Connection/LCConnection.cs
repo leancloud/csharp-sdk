@@ -54,21 +54,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// </summary>
         private const string SUB_PROTOCOL = "lc.protobuf2.3";
 
-        /// <summary>
-        /// 通知事件
-        /// </summary>
-        internal Action<GenericCommand> OnNotification;
-
-        /// <summary>
-        /// 断线事件
-        /// </summary>
-        internal Action OnDisconnect;
-
-        /// <summary>
-        /// 重连成功事件
-        /// </summary>
-        internal Action OnReconnected;
-
         internal string id;
 
         /// <summary>
@@ -190,9 +175,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// <returns></returns>
         internal async Task Close() {
             LCRealtime.RemoveConnection(this);
-            OnNotification = null;
-            OnDisconnect = null;
-            OnReconnected = null;
             heartBeat.Stop();
             await ws.Close();
         }
@@ -277,7 +259,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     LCLogger.Debug("Reconnected");
                     ws.OnMessage = OnClientMessage;
                     ws.OnClose = OnClientDisconnect;
-                    OnReconnected?.Invoke();
+                    foreach (LCIMClient client in clients.Values) {
+                        client.HandleReconnected();
+                    }
                     break;
                 } else {
                     // 重置 Router，继续尝试重连
