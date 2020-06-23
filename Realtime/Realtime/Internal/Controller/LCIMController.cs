@@ -15,7 +15,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         protected LCConnection Connection {
             get {
-                return Client.Connection;
+                return LCRealtime.GetConnection(LCApplication.AppId);
             }
         }
 

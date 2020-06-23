@@ -20,13 +20,16 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// </summary>
         /// <returns></returns>
         internal async Task Open(bool force) {
+            await Connection.Connect();
+
             SessionCommand session = await NewSessionCommand();
             session.R = !force;
             session.ConfigBitmap = 0x2B;
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
-            GenericCommand response = await Client.Connection.SendRequest(request);
+            GenericCommand response = await Connection.SendRequest(request);
             UpdateSession(response.SessionMessage);
+            Connection.Register(Client);
         }
 
         /// <summary>
@@ -38,7 +41,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             session.R = true;
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
-            GenericCommand response = await Client.Connection.SendRequest(request);
+            GenericCommand response = await Connection.SendRequest(request);
             if (response.Op == OpType.Opened) {
                 UpdateSession(response.SessionMessage);
             } else if (response.Op == OpType.Closed) {
@@ -52,7 +55,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// <returns></returns>
         internal async Task Close() {
             GenericCommand request = NewCommand(CommandType.Session, OpType.Close);
-            await Client.Connection.SendRequest(request);
+            await Connection.SendRequest(request);
+            Connection.UnRegister(Client);
         }
 
         /// <summary>
@@ -72,7 +76,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             SessionCommand session = await NewSessionCommand();
             GenericCommand request = NewCommand(CommandType.Session, OpType.Refresh);
             request.SessionMessage = session;
-            GenericCommand response = await Client.Connection.SendRequest(request);
+            GenericCommand response = await Connection.SendRequest(request);
             UpdateSession(response.SessionMessage);
         }
 

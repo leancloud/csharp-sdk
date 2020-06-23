@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using LeanCloud.Storage;
 using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
-using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime {
     /// <summary>
@@ -233,10 +232,6 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
-        internal LCConnection Connection {
-            get; set;
-        }
-
         internal LCIMSessionController SessionController {
             get; private set;
         }
@@ -296,8 +291,6 @@ namespace LeanCloud.Realtime {
             ConversationController = new LCIMConversationController(this);
             MessageController = new LCIMMessageController(this);
             GoAwayController = new LCIMGoAwayController(this);
-
-            Connection = LCRealtime.GetConnection(LCApplication.AppId);
         }
 
         /// <summary>
@@ -306,15 +299,12 @@ namespace LeanCloud.Realtime {
         /// <param name="force">是否强制登录</param>
         /// <returns></returns>
         public async Task Open(bool force = true) {
-            await Connection.Connect();
             try {
                 // 打开 Session
                 await SessionController.Open(force);
-                Connection.Register(this);
             } catch (Exception e) {
                 LCLogger.Error(e);
                 // 如果 session 阶段异常，则关闭连接
-                Connection.UnRegister(this);
                 throw e;
             }
         }
@@ -326,7 +316,6 @@ namespace LeanCloud.Realtime {
         public async Task Close() {
             // 关闭 session
             await SessionController.Close();
-            Connection.UnRegister(this);
         }
 
         /// <summary>
@@ -449,9 +438,6 @@ namespace LeanCloud.Realtime {
         #endregion
 
         internal void HandleNotification(GenericCommand notification) {
-            if (notification.PeerId != Id) {
-                return;
-            }
             switch (notification.Cmd) {
                 case CommandType.Session:
                     SessionController.HandleNotification(notification);
@@ -485,8 +471,7 @@ namespace LeanCloud.Realtime {
                 OnResume?.Invoke();
             } catch (Exception e) {
                 LCLogger.Error(e);
-                Connection.UnRegister(this);
-                // TODO 告知
+                // 重连成功，但 session/open 失败
                 OnClose?.Invoke(0, string.Empty);
             }
         }
