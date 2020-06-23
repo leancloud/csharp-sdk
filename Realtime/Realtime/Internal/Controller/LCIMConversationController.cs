@@ -573,11 +573,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         #region 消息处理
 
-        internal override async Task OnNotification(GenericCommand notification) {
+        internal override void HandleNotification(GenericCommand notification) {
             if (notification.Cmd == CommandType.Conv) {
-                await OnConversation(notification);
+                _ = OnConversation(notification);
             } else if (notification.Cmd == CommandType.Unread) {
-                await OnUnread(notification);
+                _ = OnUnread(notification);
             }
         }
 

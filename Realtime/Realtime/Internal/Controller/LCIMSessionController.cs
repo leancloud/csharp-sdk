@@ -42,7 +42,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             if (response.Op == OpType.Opened) {
                 UpdateSession(response.SessionMessage);
             } else if (response.Op == OpType.Closed) {
-                await OnClosed(response.SessionMessage);
+                OnClosed(response.SessionMessage);
             }
         }
 
@@ -120,10 +120,10 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         #region 消息处理
 
-        internal override async Task OnNotification(GenericCommand notification) {
+        internal override void HandleNotification(GenericCommand notification) {
             switch (notification.Op) {
                 case OpType.Closed:
-                    await OnClosed(notification.SessionMessage);
+                    OnClosed(notification.SessionMessage);
                     break;
                 default:
                     break;
@@ -135,11 +135,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        private async Task OnClosed(SessionCommand session) {
+        private void OnClosed(SessionCommand session) {
             int code = session.Code;
             string reason = session.Reason;
             string detail = session.Detail;
-            await Connection.Close();
+            Connection.UnRegister(Client);
             Client.OnClose?.Invoke(code, reason);
         }
 

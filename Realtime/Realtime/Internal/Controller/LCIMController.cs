@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using LeanCloud.Realtime.Internal.Protocol;
+﻿using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime.Internal.Controller {
@@ -12,7 +11,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             Client = client;
         }
 
-        internal abstract Task OnNotification(GenericCommand notification);
+        internal abstract void HandleNotification(GenericCommand notification);
 
         protected LCConnection Connection {
             get {

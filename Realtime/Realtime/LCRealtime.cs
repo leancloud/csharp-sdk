@@ -17,10 +17,17 @@ namespace LeanCloud.Realtime {
             if (appToConnections.TryGetValue(appId, out LCConnection connection)) {
                 return connection;
             }
-            string connId = appId.Substring(0, 8).ToLower();
-            connection = new LCConnection(connId);
+            connection = new LCConnection(appId);
             appToConnections[appId] = connection;
             return connection;
+        }
+
+        /// <summary>
+        /// 移除 Connection
+        /// </summary>
+        /// <param name="connection"></param>
+        internal static void RemoveConnection(LCConnection connection) {
+            appToConnections.Remove(connection.id);
         }
 
         /// <summary>

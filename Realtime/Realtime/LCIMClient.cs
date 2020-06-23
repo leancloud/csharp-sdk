@@ -13,20 +13,35 @@ namespace LeanCloud.Realtime {
     /// 通信客户端
     /// </summary>
     public class LCIMClient {
+        /// <summary>
+        /// 对话缓存
+        /// </summary>
         internal Dictionary<string, LCIMConversation> ConversationDict;
 
+        /// <summary>
+        /// 用户 Id
+        /// </summary>
         public string Id {
             get; private set;
         }
 
+        /// <summary>
+        /// 用户标识
+        /// </summary>
         public string Tag {
             get; private set;
         }
 
+        /// <summary>
+        /// 设备 Id
+        /// </summary>
         public string DeviceId {
             get; private set;
         }
 
+        /// <summary>
+        /// 登录 tokens
+        /// </summary>
         internal string SessionToken {
             get; private set;
         }
@@ -283,9 +298,6 @@ namespace LeanCloud.Realtime {
             GoAwayController = new LCIMGoAwayController(this);
 
             Connection = LCRealtime.GetConnection(LCApplication.AppId);
-            Connection.OnNotification = OnConnectionNotification;
-            Connection.OnDisconnect = OnConnectionDisconnect;
-            Connection.OnReconnected = OnConnectionReconnect;
         }
 
         /// <summary>
@@ -298,10 +310,11 @@ namespace LeanCloud.Realtime {
             try {
                 // 打开 Session
                 await SessionController.Open(force);
+                Connection.Register(this);
             } catch (Exception e) {
                 LCLogger.Error(e);
                 // 如果 session 阶段异常，则关闭连接
-                await Connection.Close();
+                Connection.UnRegister(this);
                 throw e;
             }
         }
@@ -313,7 +326,7 @@ namespace LeanCloud.Realtime {
         public async Task Close() {
             // 关闭 session
             await SessionController.Close();
-            //await Connection.Close();
+            Connection.UnRegister(this);
         }
 
         /// <summary>
@@ -435,37 +448,36 @@ namespace LeanCloud.Realtime {
 
         #endregion
 
-        private void OnConnectionNotification(GenericCommand notification) {
+        internal void HandleNotification(GenericCommand notification) {
+            if (notification.PeerId != Id) {
+                return;
+            }
             switch (notification.Cmd) {
                 case CommandType.Session:
-                    _ = SessionController.OnNotification(notification);
+                    SessionController.HandleNotification(notification);
                     break;
                 case CommandType.Conv:
                 case CommandType.Unread:
-                    _ = ConversationController.OnNotification(notification);
+                    ConversationController.HandleNotification(notification);
                     break;
                 case CommandType.Direct:
                 case CommandType.Patch:
                 case CommandType.Rcp:
-                    _ = MessageController.OnNotification(notification);
+                    MessageController.HandleNotification(notification);
                     break;
                 case CommandType.Goaway:
-                    _ = GoAwayController.OnNotification(notification);
+                    GoAwayController.HandleNotification(notification);
                     break;
                 default:
                     break;
             }
         }
 
-        private void OnConnectionDisconnect() {
+        internal void HandleDisconnected() {
             OnPaused?.Invoke();
         }
 
-        private void OnConnectionReconnect() {
-            _ = HandleReconnected();
-        }
-
-        private async Task HandleReconnected() {
+        internal async void HandleReconnected() {
             try {
                 // 打开 Session
                 await SessionController.Reopen();
@@ -473,12 +485,12 @@ namespace LeanCloud.Realtime {
                 OnResume?.Invoke();
             } catch (Exception e) {
                 LCLogger.Error(e);
-                await Connection.Close();
+                Connection.UnRegister(this);
                 // TODO 告知
                 OnClose?.Invoke(0, string.Empty);
             }
         }
-
+        
         internal async Task<LCIMConversation> GetOrQueryConversation(string convId) {
             if (ConversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
                 return conversation;

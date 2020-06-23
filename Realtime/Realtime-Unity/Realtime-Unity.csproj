@@ -115,6 +115,9 @@
     <Compile Include="..\Realtime\LCIMClient.cs">
       <Link>LCIMClient.cs</Link>
     </Compile>
+    <Compile Include="..\Realtime\LCRealtime.cs">
+      <Link>LCRealtime.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common-Unity\Common-Unity.csproj" />

@@ -9,9 +9,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         #region 消息处理
 
-        internal override async Task OnNotification(GenericCommand notification) {
+        internal override void HandleNotification(GenericCommand notification) {
             // 清空缓存，断开连接，等待重新连接
-            await Connection.Reset();
+            _ = Connection.Reset();
         }
 
         #endregion

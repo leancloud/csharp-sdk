@@ -238,13 +238,13 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         #region 消息处理
 
-        internal override async Task OnNotification(GenericCommand notification) {
+        internal override void HandleNotification(GenericCommand notification) {
             if (notification.Cmd == CommandType.Direct) {
-                await OnMessaage(notification);
+                _ = OnMessaage(notification);
             } else if (notification.Cmd == CommandType.Patch) {
-                await OnMessagePatched(notification);
+                _ = OnMessagePatched(notification);
             } else if (notification.Cmd == CommandType.Rcp) {
-                await OnMessageReceipt(notification);
+                _ = OnMessageReceipt(notification);
             }
         }
 
