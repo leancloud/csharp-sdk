@@ -81,7 +81,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         }
 
         /// <summary>
-        /// 发送数据
+        /// 发送二进制数据
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>

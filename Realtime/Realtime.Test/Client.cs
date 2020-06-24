@@ -3,7 +3,6 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using LeanCloud;
-using LeanCloud.Common;
 using LeanCloud.Realtime;
 using LeanCloud.Storage;
 
@@ -24,9 +23,13 @@ namespace Realtime.Test {
 
         [Test]
         public async Task OpenAndClose() {
-            LCIMClient client = new LCIMClient("c1");
-            await client.Open();
-            await client.Close();
+            LCIMClient c1 = new LCIMClient("c1");
+            LCIMClient c2 = new LCIMClient("c2");
+            await c1.Open();
+            await c2.Open();
+
+            await c1.Close();
+            await c2.Close();
         }
 
         [Test]
@@ -34,7 +37,14 @@ namespace Realtime.Test {
             LCUser user = await LCUser.Login("hello", "world");
             LCIMClient client = new LCIMClient(user);
             await client.Open();
+
+
+            LCUser game = await LCUser.Login("game", "play");
+            LCIMClient client2 = new LCIMClient(game);
+            await client2.Open();
+
             await client.Close();
+            await client2.Close();
         }
 
         [Test]
@@ -67,8 +77,6 @@ namespace Realtime.Test {
 
         [Test]
         public async Task CreateChatRoom() {
-            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
-
             string clientId = Guid.NewGuid().ToString();
             LCIMClient client = new LCIMClient(clientId);
 
@@ -85,15 +93,12 @@ namespace Realtime.Test {
             LCIMClient visitor = new LCIMClient(visitorId);
 
             await visitor.Open();
-            visitor.OnInvited = async (conv, initBy) => {
-                WriteLine($"on invited: {visitor.Id}");
-                LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
-                await conversation.Send(textMessage);
-                tcs.SetResult(null);
-            };
 
             LCIMChatRoom chatRoom = await visitor.GetConversation(conversation.Id) as LCIMChatRoom;
             await chatRoom.Join();
+
+            LCIMTextMessage textMessage = new LCIMTextMessage("hello, world");
+            await conversation.Send(textMessage);
 
             int count = await chatRoom.GetMembersCount();
 
@@ -105,8 +110,6 @@ namespace Realtime.Test {
 
             await client.Close();
             await visitor.Close();
-
-            await tcs.Task;
         }
 
         [Test]

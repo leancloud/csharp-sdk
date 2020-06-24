@@ -11,7 +11,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
     /// 3. 每隔 180s 检测 pong 包间隔，超过 360s 则认为断开
     /// </summary>
     public class LCHeartBeat {
-        private const int PING_INTERVAL = 5 * 1000;
+        private const int PING_INTERVAL = 180 * 1000;
 
         private readonly LCConnection connection;
 

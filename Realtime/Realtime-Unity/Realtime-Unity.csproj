@@ -52,9 +52,6 @@
     <Compile Include="..\Realtime\Internal\Controller\LCIMConversationController.cs">
       <Link>Internal\Controller\LCIMConversationController.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Internal\Controller\LCIMGoAwayController.cs">
-      <Link>Internal\Controller\LCIMGoAwayController.cs</Link>
-    </Compile>
     <Compile Include="..\Realtime\Internal\Router\LCRTMServer.cs">
       <Link>Internal\Router\LCRTMServer.cs</Link>
     </Compile>
@@ -114,6 +111,9 @@
     </Compile>
     <Compile Include="..\Realtime\LCIMClient.cs">
       <Link>LCIMClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Realtime\LCRealtime.cs">
+      <Link>LCRealtime.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

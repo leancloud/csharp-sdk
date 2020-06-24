@@ -65,7 +65,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             if (command.Priority > 0) {
                 command.Priority = (int)options.Priority;
             }
-            GenericCommand response = await Client.Connection.SendRequest(command);
+            GenericCommand response = await Connection.SendRequest(command);
             // 消息发送应答
             AckCommand ack = response.AckMessage;
             message.Id = ack.Uid;
@@ -94,7 +94,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             patch.Patches.Add(item);
             GenericCommand request = NewCommand(CommandType.Patch, OpType.Modify);
             request.PatchMessage = patch;
-            await Client.Connection.SendRequest(request);
+            await Connection.SendRequest(request);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             patch.Patches.Add(item);
             GenericCommand request = NewCommand(CommandType.Patch, OpType.Modify);
             request.PatchMessage = patch;
-            GenericCommand response = await Client.Connection.SendRequest(request);
+            GenericCommand response = await Connection.SendRequest(request);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }
             GenericCommand request = NewCommand(CommandType.Logs, OpType.Open);
             request.LogsMessage = logs;
-            GenericCommand response = await Client.Connection.SendRequest(request);
+            GenericCommand response = await Connection.SendRequest(request);
             // 反序列化聊天记录
             return response.LogsMessage.Logs.Select(item => {
                 LCIMMessage message;
@@ -211,7 +211,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             };
             GenericCommand command = NewCommand(CommandType.Ack);
             command.AckMessage = ack;
-            await Client.Connection.SendCommand(command);
+            await Connection.SendCommand(command);
         }
 
         /// <summary>
@@ -231,20 +231,20 @@ namespace LeanCloud.Realtime.Internal.Controller {
             read.Convs.Add(tuple);
             GenericCommand command = NewCommand(CommandType.Read);
             command.ReadMessage = read;
-            await Client.Connection.SendCommand(command);
+            await Connection.SendCommand(command);
         }
 
         #endregion
 
         #region 消息处理
 
-        internal override async Task OnNotification(GenericCommand notification) {
+        internal override void HandleNotification(GenericCommand notification) {
             if (notification.Cmd == CommandType.Direct) {
-                await OnMessaage(notification);
+                _ = OnMessaage(notification);
             } else if (notification.Cmd == CommandType.Patch) {
-                await OnMessagePatched(notification);
+                _ = OnMessagePatched(notification);
             } else if (notification.Cmd == CommandType.Rcp) {
-                await OnMessageReceipt(notification);
+                _ = OnMessageReceipt(notification);
             }
         }
 

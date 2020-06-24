@@ -3,31 +3,44 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.ObjectModel;
-using LeanCloud.Common;
 using LeanCloud.Storage;
 using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
-using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime {
     /// <summary>
     /// 通信客户端
     /// </summary>
     public class LCIMClient {
+        /// <summary>
+        /// 对话缓存
+        /// </summary>
         internal Dictionary<string, LCIMConversation> ConversationDict;
 
+        /// <summary>
+        /// 用户 Id
+        /// </summary>
         public string Id {
             get; private set;
         }
 
+        /// <summary>
+        /// 用户标识
+        /// </summary>
         public string Tag {
             get; private set;
         }
 
+        /// <summary>
+        /// 设备 Id
+        /// </summary>
         public string DeviceId {
             get; private set;
         }
 
+        /// <summary>
+        /// 登录 tokens
+        /// </summary>
         internal string SessionToken {
             get; private set;
         }
@@ -219,19 +232,11 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
-        internal LCConnection Connection {
-            get; set;
-        }
-
         internal LCIMSessionController SessionController {
             get; private set;
         }
 
         internal LCIMMessageController MessageController {
-            get; private set;
-        }
-
-        internal LCIMGoAwayController GoAwayController {
             get; private set;
         }
 
@@ -281,13 +286,6 @@ namespace LeanCloud.Realtime {
             SessionController = new LCIMSessionController(this);
             ConversationController = new LCIMConversationController(this);
             MessageController = new LCIMMessageController(this);
-            GoAwayController = new LCIMGoAwayController(this);
-
-            Connection = new LCConnection(Id) {
-                OnNotification = OnConnectionNotification,
-                OnDisconnect = OnConnectionDisconnect,
-                OnReconnected = OnConnectionReconnect
-            };
         }
 
         /// <summary>
@@ -296,14 +294,12 @@ namespace LeanCloud.Realtime {
         /// <param name="force">是否强制登录</param>
         /// <returns></returns>
         public async Task Open(bool force = true) {
-            await Connection.Connect();
             try {
                 // 打开 Session
                 await SessionController.Open(force);
             } catch (Exception e) {
                 LCLogger.Error(e);
                 // 如果 session 阶段异常，则关闭连接
-                await Connection.Close();
                 throw e;
             }
         }
@@ -315,7 +311,6 @@ namespace LeanCloud.Realtime {
         public async Task Close() {
             // 关闭 session
             await SessionController.Close();
-            await Connection.Close();
         }
 
         /// <summary>
@@ -437,37 +432,30 @@ namespace LeanCloud.Realtime {
 
         #endregion
 
-        private void OnConnectionNotification(GenericCommand notification) {
+        internal void HandleNotification(GenericCommand notification) {
             switch (notification.Cmd) {
                 case CommandType.Session:
-                    _ = SessionController.OnNotification(notification);
+                    SessionController.HandleNotification(notification);
                     break;
                 case CommandType.Conv:
                 case CommandType.Unread:
-                    _ = ConversationController.OnNotification(notification);
+                    ConversationController.HandleNotification(notification);
                     break;
                 case CommandType.Direct:
                 case CommandType.Patch:
                 case CommandType.Rcp:
-                    _ = MessageController.OnNotification(notification);
-                    break;
-                case CommandType.Goaway:
-                    _ = GoAwayController.OnNotification(notification);
+                    MessageController.HandleNotification(notification);
                     break;
                 default:
                     break;
             }
         }
 
-        private void OnConnectionDisconnect() {
+        internal void HandleDisconnected() {
             OnPaused?.Invoke();
         }
 
-        private void OnConnectionReconnect() {
-            _ = HandleReconnected();
-        }
-
-        private async Task HandleReconnected() {
+        internal async void HandleReconnected() {
             try {
                 // 打开 Session
                 await SessionController.Reopen();
@@ -475,12 +463,11 @@ namespace LeanCloud.Realtime {
                 OnResume?.Invoke();
             } catch (Exception e) {
                 LCLogger.Error(e);
-                await Connection.Close();
-                // TODO 告知
+                // 重连成功，但 session/open 失败
                 OnClose?.Invoke(0, string.Empty);
             }
         }
-
+        
         internal async Task<LCIMConversation> GetOrQueryConversation(string convId) {
             if (ConversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
                 return conversation;
