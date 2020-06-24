@@ -70,8 +70,10 @@ namespace LeanCloud.Realtime.Internal.Connection {
         private LCWebSocketClient ws;
 
         private State state;
+        // 可以在 connecting 状态时拿到 Task，并在重连成功后继续操作
         private Task connectTask;
 
+        // 共享这条连接的 IM Client
         private readonly Dictionary<string, LCIMClient> idToClients;
 
         internal LCConnection(string id) {
@@ -193,8 +195,10 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     }
                 } else {
                     if (command.Cmd == CommandType.Echo) {
+                        // 心跳应答
                         heartBeat.Pong();
                     } else if (command.Cmd == CommandType.Goaway) {
+                        // 针对连接的消息
                         Reset();
                     } else {
                         // 通知
