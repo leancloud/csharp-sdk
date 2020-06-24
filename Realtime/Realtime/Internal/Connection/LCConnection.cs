@@ -77,11 +77,11 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal LCConnection(string id) {
             this.id = id;
             responses = new Dictionary<int, TaskCompletionSource<GenericCommand>>();
-            heartBeat = new LCHeartBeat(this, OnPingTimeout);
+            heartBeat = new LCHeartBeat(this, OnDisconnect);
             router = new LCRTMRouter();
             ws = new LCWebSocketClient {
-                OnMessage = OnClientMessage,
-                OnClose = OnClientDisconnect
+                OnMessage = OnMessage,
+                OnClose = OnDisconnect
             };
             idToClients = new Dictionary<string, LCIMClient>();
             state = State.None;
@@ -168,7 +168,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// 消息接收回调
         /// </summary>
         /// <param name="bytes"></param>
-        private void OnClientMessage(byte[] bytes) {
+        private void OnMessage(byte[] bytes) {
             try {
                 GenericCommand command = GenericCommand.Parser.ParseFrom(bytes);
                 LCLogger.Debug($"{id} <= {FormatCommand(command)}");
@@ -212,15 +212,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// <summary>
         /// 连接断开回调
         /// </summary>
-        private void OnClientDisconnect() {
-            Disconnect();
-            _ = Reconnect();
-        }
-
-        /// <summary>
-        /// Pong 超时回调
-        /// </summary>
-        private void OnPingTimeout() {
+        private void OnDisconnect() {
             Disconnect();
             _ = Reconnect();
         }
@@ -232,11 +224,11 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal void Reset() {
             Disconnect();
             // 重新创建连接组件
-            heartBeat = new LCHeartBeat(this, OnPingTimeout);
+            heartBeat = new LCHeartBeat(this, OnDisconnect);
             router = new LCRTMRouter();
             ws = new LCWebSocketClient {
-                OnMessage = OnClientMessage,
-                OnClose = OnClientDisconnect
+                OnMessage = OnMessage,
+                OnClose = OnDisconnect
             };
             _ = Reconnect();
         }
@@ -260,8 +252,8 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 if (reconnectCount < MAX_RECONNECT_TIMES) {
                     // 重连成功
                     LCLogger.Debug("Reconnected");
-                    ws.OnMessage = OnClientMessage;
-                    ws.OnClose = OnClientDisconnect;
+                    ws.OnMessage = OnMessage;
+                    ws.OnClose = OnDisconnect;
                     foreach (LCIMClient client in idToClients.Values) {
                         client.HandleReconnected();
                     }
