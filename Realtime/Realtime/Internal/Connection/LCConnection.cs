@@ -60,6 +60,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// 请求回调缓存
         /// </summary>
         private readonly Dictionary<int, TaskCompletionSource<GenericCommand>> responses;
+        private readonly List<GenericCommand> sendingRequests;
 
         private int requestI = 1;
 
@@ -79,6 +80,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal LCConnection(string id) {
             this.id = id;
             responses = new Dictionary<int, TaskCompletionSource<GenericCommand>>();
+            sendingRequests = new List<GenericCommand>();
             heartBeat = new LCHeartBeat(this, OnDisconnect);
             router = new LCRTMRouter();
             ws = new LCWebSocketClient {
@@ -127,6 +129,22 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// <param name="request"></param>
         /// <returns></returns>
         internal async Task<GenericCommand> SendRequest(GenericCommand request) {
+            if (IsIdempotentCommand(request)) {
+                GenericCommand sendingReq = sendingRequests.Find(item => {
+                    // TRICK 除了 I 其他字段相等
+                    request.I = item.I;
+                    return Equals(request, item);
+                });
+                if (sendingReq == null) {
+                    sendingRequests.Add(request);
+                } else {
+                    LCLogger.Warn("duplicated request");
+                    if (responses.TryGetValue(sendingReq.I, out TaskCompletionSource<GenericCommand> waitingTcs)) {
+                        return await waitingTcs.Task;
+                    }
+                }
+            }
+
             TaskCompletionSource<GenericCommand> tcs = new TaskCompletionSource<GenericCommand>();
             request.I = requestI++;
             responses.Add(request.I, tcs);
@@ -187,6 +205,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
                             LCException exception = new LCException(code, detail);
                             tcs.TrySetException(exception);
                         } else {
+                            sendingRequests.RemoveAll(item => {
+                                return item.I == command.I;
+                            });
                             tcs.TrySetResult(command);
                         }
                         responses.Remove(requestIndex);
@@ -302,6 +323,17 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// </summary>
         internal void Resume() {
             _ = Reconnect();
+        }
+
+        private static bool IsIdempotentCommand(GenericCommand command) {
+            return !(
+                command.Cmd == CommandType.Direct ||
+                (command.Cmd == CommandType.Session && command.Op == OpType.Open) ||
+                (command.Cmd == CommandType.Conv &&
+                (command.Op == OpType.Start ||
+                command.Op == OpType.Update ||
+                command.Op == OpType.Members))
+            );
         }
     }
 }
