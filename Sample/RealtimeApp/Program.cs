@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using LeanCloud;
 using LeanCloud.Realtime;
 
@@ -7,15 +8,43 @@ using static System.Console;
 namespace RealtimeApp {
     class Program {
         static void Main(string[] args) {
-            Console.WriteLine("Hello World!");
+            WriteLine("Hello World!");
 
             SingleThreadSynchronizationContext.Run(async () => {
                 LCLogger.LogDelegate += Print;
                 LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
 
-                LCIMClient client = new LCIMClient("lean");
+                LCIMClient client = new LCIMClient("lean") {
+                    OnPaused = () => {
+                        WriteLine("~~~~~~~~~~~~~~~ disconnected");
+                    },
+                    OnResume = () => {
+                        WriteLine("~~~~~~~~~~~~~~~ reconnected");
+                    }
+                };
+
                 await client.Open();
-                //await client.Close();
+
+                int count = 0;
+                while (count < 2) {
+                    WriteLine($"pause : {count}");
+
+                    await Task.Delay(5 * 1000);
+                    LCRealtime.Pause();
+
+                    await Task.Delay(5 * 1000);
+                    LCRealtime.Resume();
+
+                    await Task.Delay(5 * 1000);
+                    count++;
+                }
+
+                try {
+                    await client.Close();
+                    // Done
+                } catch (Exception e) {
+                    WriteLine($"xxxxxxxxxxxx {e.Message}");
+                }
             });
         }
 

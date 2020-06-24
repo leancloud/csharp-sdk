@@ -34,14 +34,18 @@ namespace LeanCloud.Realtime {
         /// 主动断开所有 RTM 连接
         /// </summary>
         public static void Pause() {
-
+            foreach (LCConnection connection in appToConnections.Values) {
+                connection.Pause();
+            }
         }
 
         /// <summary>
         /// 主动恢复所有 RTM 连接
         /// </summary>
         public static void Resume() {
-
+            foreach (LCConnection connection in appToConnections.Values) {
+                connection.Resume();
+            }
         }
     }
 }

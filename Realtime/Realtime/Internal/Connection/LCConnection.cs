@@ -114,28 +114,10 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 heartBeat.Start();
                 state = State.Open;
             } catch (Exception e) {
+                state = State.Closed;
                 throw e;
             }
         }
-
-        /// <summary>
-        /// 重置连接
-        /// </summary>
-        /// <returns></returns>
-        internal async Task Reset() {
-            state = State.Closed;
-            heartBeat?.Stop();
-            // 关闭就连接
-            await ws.Close();
-            // 重新创建连接组件
-            heartBeat = new LCHeartBeat(this, OnPingTimeout);
-            router = new LCRTMRouter();
-            ws = new LCWebSocketClient {
-                OnMessage = OnClientMessage,
-                OnClose = OnClientDisconnect
-            };
-            await Reconnect();
-        }   
 
         /// <summary>
         /// 发送请求，会在收到应答后返回
@@ -171,15 +153,21 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         /// <summary>
-        /// 关闭连接
+        /// 断开连接
         /// </summary>
-        /// <returns></returns>
-        internal async Task Close() {
-            LCRealtime.RemoveConnection(this);
+        private void Disconnect() {
+            state = State.Closed;
             heartBeat.Stop();
-            await ws.Close();
+            _ = ws.Close();
+            foreach (LCIMClient client in idToClients.Values) {
+                client.HandleDisconnected();
+            }
         }
 
+        /// <summary>
+        /// 消息接收回调
+        /// </summary>
+        /// <param name="bytes"></param>
         private void OnClientMessage(byte[] bytes) {
             try {
                 GenericCommand command = GenericCommand.Parser.ParseFrom(bytes);
@@ -207,7 +195,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     if (command.Cmd == CommandType.Echo) {
                         heartBeat.Pong();
                     } else if (command.Cmd == CommandType.Goaway) {
-                        _ = Reset();
+                        Reset();
                     } else {
                         // 通知
                         if (idToClients.TryGetValue(command.PeerId, out LCIMClient client)) {
@@ -221,23 +209,35 @@ namespace LeanCloud.Realtime.Internal.Connection {
             }
         }
 
+        /// <summary>
+        /// 连接断开回调
+        /// </summary>
         private void OnClientDisconnect() {
-            state = State.Closed;
-            heartBeat.Stop();
-            foreach (LCIMClient client in idToClients.Values) {
-                client.HandleDisconnected();
-            }
-            // 重连
+            Disconnect();
             _ = Reconnect();
         }
 
+        /// <summary>
+        /// Pong 超时回调
+        /// </summary>
         private void OnPingTimeout() {
-            state = State.Closed;
-            _ = ws.Close();
-            foreach (LCIMClient client in idToClients.Values) {
-                client.HandleDisconnected();
-            }
-            // 重连
+            Disconnect();
+            _ = Reconnect();
+        }
+
+        /// <summary>
+        /// 重置连接
+        /// </summary>
+        /// <returns></returns>
+        internal void Reset() {
+            Disconnect();
+            // 重新创建连接组件
+            heartBeat = new LCHeartBeat(this, OnPingTimeout);
+            router = new LCRTMRouter();
+            ws = new LCWebSocketClient {
+                OnMessage = OnClientMessage,
+                OnClose = OnClientDisconnect
+            };
             _ = Reconnect();
         }
 
@@ -289,7 +289,8 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal void UnRegister(LCIMClient client) {
             idToClients.Remove(client.Id);
             if (idToClients.Count == 0) {
-                _ = Close();
+                Disconnect();
+                LCRealtime.RemoveConnection(this);
             }
         }
 
@@ -297,14 +298,14 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// 暂停连接
         /// </summary>
         internal void Pause() {
-
+            Disconnect();
         }
 
         /// <summary>
         ///  恢复连接
         /// </summary>
         internal void Resume() {
-
+            _ = Reconnect();
         }
     }
 }
