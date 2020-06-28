@@ -135,13 +135,14 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     request.I = item.I;
                     return Equals(request, item);
                 });
-                if (sendingReq == null) {
-                    sendingRequests.Add(request);
-                } else {
+                if (sendingReq != null) {
                     LCLogger.Warn("duplicated request");
                     if (responses.TryGetValue(sendingReq.I, out TaskCompletionSource<GenericCommand> waitingTcs)) {
                         return await waitingTcs.Task;
                     }
+                    LCLogger.Error($"error request: {request}");
+                } else {
+                    sendingRequests.Add(request);
                 }
             }
 
