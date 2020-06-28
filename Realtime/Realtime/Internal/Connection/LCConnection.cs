@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,6 +13,17 @@ namespace LeanCloud.Realtime.Internal.Connection {
     /// 连接层，只与数据协议相关
     /// </summary>
     public class LCConnection {
+        // 请求/应答比对，即 I 相等
+        class RequestAndResponseComparer : IEqualityComparer<GenericCommand> {
+            public bool Equals(GenericCommand x, GenericCommand y) {
+                return true;
+            }
+
+            public int GetHashCode(GenericCommand obj) {
+                return obj.I;
+            }
+        }
+
         /// <summary>
         /// 连接状态
         /// </summary>
@@ -59,7 +71,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// <summary>
         /// 请求回调缓存
         /// </summary>
-        private readonly Dictionary<int, TaskCompletionSource<GenericCommand>> responses;
+        private readonly Dictionary<GenericCommand, TaskCompletionSource<GenericCommand>> requestToResponses;
 
         private int requestI = 1;
 
@@ -78,7 +90,8 @@ namespace LeanCloud.Realtime.Internal.Connection {
 
         internal LCConnection(string id) {
             this.id = id;
-            responses = new Dictionary<int, TaskCompletionSource<GenericCommand>>();
+            requestToResponses = new Dictionary<GenericCommand, TaskCompletionSource<GenericCommand>>(new RequestAndResponseComparer());
+
             heartBeat = new LCHeartBeat(this, OnDisconnect);
             router = new LCRTMRouter();
             ws = new LCWebSocketClient {
@@ -127,9 +140,24 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// <param name="request"></param>
         /// <returns></returns>
         internal async Task<GenericCommand> SendRequest(GenericCommand request) {
+            if (IsIdempotentCommand(request)) {
+                GenericCommand sendingReq = requestToResponses.Keys.FirstOrDefault(item => {
+                    // TRICK 除了 I 其他字段相等
+                    request.I = item.I;
+                    return Equals(request, item);
+                });
+                if (sendingReq != null) {
+                    LCLogger.Warn("duplicated request");
+                    if (requestToResponses.TryGetValue(sendingReq, out TaskCompletionSource<GenericCommand> waitingTcs)) {
+                        return await waitingTcs.Task;
+                    }
+                    LCLogger.Error($"error request: {request}");
+                }
+            }
+
             TaskCompletionSource<GenericCommand> tcs = new TaskCompletionSource<GenericCommand>();
             request.I = requestI++;
-            responses.Add(request.I, tcs);
+            requestToResponses.Add(request, tcs);
             try {
                 await SendCommand(request);
             } catch (Exception e) {
@@ -177,7 +205,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 if (command.HasI) {
                     // 应答
                     int requestIndex = command.I;
-                    if (responses.TryGetValue(requestIndex, out TaskCompletionSource<GenericCommand> tcs)) {
+                    if (requestToResponses.TryGetValue(command, out TaskCompletionSource<GenericCommand> tcs)) {
                         if (command.HasErrorMessage) {
                             // 错误
                             ErrorCommand error = command.ErrorMessage;
@@ -189,7 +217,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                         } else {
                             tcs.TrySetResult(command);
                         }
-                        responses.Remove(requestIndex);
+                        requestToResponses.Remove(command);
                     } else {
                         LCLogger.Error($"No request for {requestIndex}");
                     }
@@ -302,6 +330,17 @@ namespace LeanCloud.Realtime.Internal.Connection {
         /// </summary>
         internal void Resume() {
             _ = Reconnect();
+        }
+
+        private static bool IsIdempotentCommand(GenericCommand command) {
+            return !(
+                command.Cmd == CommandType.Direct ||
+                (command.Cmd == CommandType.Session && command.Op == OpType.Open) ||
+                (command.Cmd == CommandType.Conv &&
+                (command.Op == OpType.Start ||
+                command.Op == OpType.Update ||
+                command.Op == OpType.Members))
+            );
         }
     }
 }
