@@ -57,7 +57,7 @@ namespace Realtime.Test {
         }
 
         [Test]
-        public async Task CreateSameConversation() {
+        public async Task RemoveMemberTwice() {
             Task t1 = conversation.RemoveMembers(new string[] { c2.Id }).ContinueWith(t => {
                 Assert.IsTrue(t.IsCompleted && !t.IsFaulted);
             });
