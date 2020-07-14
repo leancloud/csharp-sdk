@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="LeanCloud.Realtime.Internal.\lConnection.LCHeartBeat",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classLeanCloud_1_1Realtime_1_1Internal_1_1Connection_1_1LCHeartBeat.html",tooltip="心跳控制器，由于 .Net Standard 2.0 不支持发送 ping frame，所以需要发送逻辑心跳 "];
+}

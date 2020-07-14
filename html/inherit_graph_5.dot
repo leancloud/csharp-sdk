@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="LeanCloud.Realtime.Internal.\lConnection.LCConnection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classLeanCloud_1_1Realtime_1_1Internal_1_1Connection_1_1LCConnection.html",tooltip="连接层，只与数据协议相关 "];
+}

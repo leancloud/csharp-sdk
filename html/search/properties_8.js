@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['i',['I',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1GenericCommand.html#a9a0654d53141151c1ee44e70db7f73d0',1,'LeanCloud::Realtime::Internal::Protocol::GenericCommand']]],
+  ['id',['Id',['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a300dbe0bd692092b17d69a7ce762b247',1,'LeanCloud.Realtime.LCIMConversation.Id()'],['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1DirectCommand.html#a459fe9ea2c73fec069bf5e190d5f9375',1,'LeanCloud.Realtime.Internal.Protocol.DirectCommand.Id()'],['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1RcpCommand.html#a6c84eddede1e0d77e881e37f517863b5',1,'LeanCloud.Realtime.Internal.Protocol.RcpCommand.Id()'],['../classLeanCloud_1_1Realtime_1_1LCIMClient.html#a4ff3f8c16dfce8e5539f07ad78dd0f2e',1,'LeanCloud.Realtime.LCIMClient.Id()'],['../classLeanCloud_1_1Realtime_1_1LCIMMessage.html#a03314d25caf05a8244add90a1a366c66',1,'LeanCloud.Realtime.LCIMMessage.Id()'],['../classLeanCloud_1_1LiveQuery_1_1LCLiveQuery.html#a4e6a9fcf645ec3d679171eaf40b60574',1,'LeanCloud.LiveQuery.LCLiveQuery.Id()']]],
+  ['idlist',['IdList',['../classLeanCloud_1_1Realtime_1_1LCIMOperationFailure.html#a01eeec252581e14db065104f5263916d',1,'LeanCloud::Realtime::LCIMOperationFailure']]],
+  ['ids',['Ids',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1DataCommand.html#a60b15adcc2b2de534e1a2bf0cdd37089',1,'LeanCloud.Realtime.Internal.Protocol.DataCommand.Ids()'],['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1AckCommand.html#a8d435318e080cfc8ad57396b5d8e5f0c',1,'LeanCloud.Realtime.Internal.Protocol.AckCommand.Ids()']]],
+  ['includeacl',['IncludeACL',['../classLeanCloud_1_1Storage_1_1Internal_1_1Query_1_1LCCompositionalCondition.html#a4c58e0082c9675dbde76b1f27d171b9c',1,'LeanCloud.Storage.Internal.Query.LCCompositionalCondition.IncludeACL()'],['../classLeanCloud_1_1Storage_1_1LCQuery.html#a5dd7ab096c027dc7091e4f3a3b1fd3be',1,'LeanCloud.Storage.LCQuery.IncludeACL()']]],
+  ['includedstatistics',['IncludedStatistics',['../classLeanCloud_1_1Storage_1_1LCRanking.html#a47c1795f97d73751ec7945f1ae024731',1,'LeanCloud::Storage::LCRanking']]],
+  ['info',['Info',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1ConvCommand.html#aeea14232d9f8081e2fc48bd8233d6e3f',1,'LeanCloud::Realtime::Internal::Protocol::ConvCommand']]],
+  ['infoid',['InfoId',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1ConvMemberInfo.html#ab811c340f5bd3be0d358b385bafe8fc6',1,'LeanCloud::Realtime::Internal::Protocol::ConvMemberInfo']]],
+  ['initby',['InitBy',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1ConvCommand.html#af43846c28aee4204fb3eb473636bccef',1,'LeanCloud::Realtime::Internal::Protocol::ConvCommand']]],
+  ['initiative',['Initiative',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1ReportCommand.html#a0e72f59e411958e90915cdebfd965fda',1,'LeanCloud::Realtime::Internal::Protocol::ReportCommand']]],
+  ['installationid',['InstallationId',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1GenericCommand.html#a3aa782b25011764fde8d8ab4004436ac',1,'LeanCloud::Realtime::Internal::Protocol::GenericCommand']]],
+  ['isclosed',['IsClosed',['../classLeanCloud_1_1Realtime_1_1LCIMMessageQueryEndpoint.html#ac5a55c1ca3f253a5ffd80bf97edf0132',1,'LeanCloud::Realtime::LCIMMessageQueryEndpoint']]],
+  ['isemulator',['IsEmulator',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1SystemInfo.html#a169d8e5121b59b968a4ea7b687458808',1,'LeanCloud::Realtime::Internal::Protocol::SystemInfo']]],
+  ['isexpired',['IsExpired',['../classLeanCloud_1_1Realtime_1_1LCIMTemporaryConversation.html#a0d07edaf51bf59e3eee4b207eb2adc5e',1,'LeanCloud::Realtime::LCIMTemporaryConversation']]],
+  ['ismanager',['IsManager',['../classLeanCloud_1_1Realtime_1_1LCIMConversationMemberInfo.html#a5a5b183c9d1e923a366ee71daf551262',1,'LeanCloud::Realtime::LCIMConversationMemberInfo']]],
+  ['ismute',['IsMute',['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a6c4a58a669f564716eb0e46821568eed',1,'LeanCloud::Realtime::LCIMConversation']]],
+  ['isowner',['IsOwner',['../classLeanCloud_1_1Realtime_1_1LCIMConversationMemberInfo.html#a190518d4d8deb73a7455b4bba52ae12c',1,'LeanCloud::Realtime::LCIMConversationMemberInfo']]],
+  ['isproduction',['IsProduction',['../classLeanCloud_1_1Storage_1_1LCCloud.html#adb1dae6f75087dd551f6968e544696dd',1,'LeanCloud::Storage::LCCloud']]],
+  ['istransient',['IsTransient',['../classLeanCloud_1_1Realtime_1_1LCIMMessage.html#afc1e35e90049f8a6eb6b2cc88394cb86',1,'LeanCloud::Realtime::LCIMMessage']]]
+];
