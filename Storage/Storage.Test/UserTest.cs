@@ -229,5 +229,17 @@ namespace Storage.Test {
         //public async Task ResetPasswordBySMSCode() {
         //    await LCUser.ResetPasswordBySmsCode("15101006007", "732552", "112358");
         //}
+
+        [Test]
+        public async Task RequestSMSCodeForUpdatingPhoneNumber() {
+            await LCUser.Login("hello", "world");
+            await LCUser.RequestSMSCodeForUpdatingPhoneNumber("15101006007");
+        }
+
+        [Test]
+        public async Task VerifyCodeForUpdatingPhoneNumber() {
+            await LCUser.Login("hello", "world");
+            await LCUser.VerifyCodeForUpdatingPhoneNumber("15101006007", "055595");
+        }
     }
 }

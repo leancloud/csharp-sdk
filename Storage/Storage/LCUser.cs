@@ -555,5 +555,39 @@ namespace LeanCloud.Storage {
             authData["main_account"] = option.AsMainAccount;
             authData["unionid"] = unionId;
         }
+
+        /// <summary>
+        /// 请求修改手机号验证码
+        /// </summary>
+        /// <param name="mobile"></param>
+        /// <param name="ttl"></param>
+        /// <param name="captchaToken"></param>
+        /// <returns></returns>
+        public static async Task RequestSMSCodeForUpdatingPhoneNumber(string mobile, int ttl = 360, string captchaToken = null) {
+            string path = "requestChangePhoneNumber";
+            Dictionary<string, object> data = new Dictionary<string, object> {
+                { "mobilePhoneNumber", mobile },
+                { "ttl", ttl }
+            };
+            if (!string.IsNullOrEmpty(captchaToken)) {
+                data["validate_token"] = captchaToken;
+            }
+            await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+        }
+
+        /// <summary>
+        /// 验证修改手机号验证码
+        /// </summary>
+        /// <param name="mobile"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static async Task VerifyCodeForUpdatingPhoneNumber(string mobile, string code) {
+            string path = "changePhoneNumber";
+            Dictionary<string, object> data = new Dictionary<string, object> {
+                { "mobilePhoneNumber", mobile },
+                { "code", code }
+            };
+            await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+        }
     }
 }
