@@ -4,46 +4,37 @@ using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// 归档的排行榜
+    /// Archived leaderboard.
     /// </summary>
     public class LCLeaderboardArchive {
-        /// <summary>
-        /// 名称
-        /// </summary>
         public string StatisticName {
             get; internal set;
         }
 
-        /// <summary>
-        /// 版本号
-        /// </summary>
         public int Version {
             get; internal set;
         }
 
         /// <summary>
-        /// 状态
+        /// Archive status. One of scheduled, inProgress, failed, completed.
         /// </summary>
         public string Status {
             get; internal set;
         }
-
+        
         /// <summary>
-        /// 下载地址
+        /// Download URL of the archived leaderboard file.
         /// </summary>
         public string Url {
             get; internal set;
         }
 
-        /// <summary>
-        /// 激活时间
-        /// </summary>
         public DateTime ActivatedAt {
             get; internal set;
         }
 
         /// <summary>
-        /// 归档时间
+        /// Archive time.
         /// </summary>
         public DateTime DeactivatedAt {
             get; internal set;

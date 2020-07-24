@@ -4,41 +4,23 @@ using System.Collections.ObjectModel;
 using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
-    /// <summary>
-    /// 排名
-    /// </summary>
     public class LCRanking {
-        /// <summary>
-        /// 名次
-        /// </summary>
         public int Rank {
             get; private set;
         }
 
-        /// <summary>
-        /// 用户
-        /// </summary>
         public LCUser User {
             get; private set;
         }
 
-        /// <summary>
-        /// 成绩名称
-        /// </summary>
         public string StatisticName {
             get; private set;
         }
 
-        /// <summary>
-        /// 分数
-        /// </summary>
         public double Value {
             get; private set;
         }
         
-        /// <summary>
-        /// 成绩
-        /// </summary>
         public ReadOnlyCollection<LCStatistic> IncludedStatistics {
             get; private set;
         }

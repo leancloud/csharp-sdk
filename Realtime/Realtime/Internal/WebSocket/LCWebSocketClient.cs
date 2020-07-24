@@ -4,40 +4,20 @@ using System.Net.WebSockets;
 using System.Text;
 
 namespace LeanCloud.Realtime.Internal.WebSocket {
-    /// <summary>
-    /// WebSocket 客户端，负责底层连接和事件，只与通信协议相关
-    /// </summary>
     public class LCWebSocketClient {
         // .net standard 2.0 好像在拼合 Frame 时有 bug，所以将这个值调整大一些
         private const int RECV_BUFFER_SIZE = 1024 * 5;
 
-        /// <summary>
-        /// 关闭超时
-        /// </summary>
         private const int CLOSE_TIMEOUT = 5000;
 
-        /// <summary>
-        /// 连接超时
-        /// </summary>
         private const int CONNECT_TIMEOUT = 10000;
 
-        /// <summary>
-        /// 消息事件
-        /// </summary>
         public Action<byte[]> OnMessage;
 
-        /// <summary>
-        /// 连接关闭
-        /// </summary>
         public Action OnClose;
 
         private ClientWebSocket ws;
 
-        /// <summary>
-        /// 连接指定 ws 服务器
-        /// </summary>
-        /// <param name="server"></param>
-        /// <returns></returns>
         public async Task Connect(string server,
             string subProtocol = null) {
             LCLogger.Debug($"Connecting WebSocket: {server}");
@@ -57,10 +37,6 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             }
         }
 
-        /// <summary>
-        /// 主动关闭连接
-        /// </summary>
-        /// <returns></returns>
         public async Task Close() {
             LCLogger.Debug("Closing WebSocket");
             OnMessage = null;
@@ -80,11 +56,6 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             }
         }
 
-        /// <summary>
-        /// 发送二进制数据
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
         public async Task Send(byte[] data,
             WebSocketMessageType messageType = WebSocketMessageType.Binary) {
             ArraySegment<byte> bytes = new ArraySegment<byte>(data);
@@ -102,19 +73,10 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             }
         }
 
-        /// <summary>
-        /// 发送文本数据
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
         public async Task Send(string text) {
             await Send(Encoding.UTF8.GetBytes(text), WebSocketMessageType.Text);
         }
 
-        /// <summary>
-        /// 接收数据
-        /// </summary>
-        /// <returns></returns>
         private async Task StartReceive() {
             byte[] buffer = new byte[RECV_BUFFER_SIZE];
             try {

@@ -9,9 +9,6 @@ using LeanCloud.Realtime;
 
 using static NUnit.Framework.TestContext;
 
-/// <summary>
-/// Emoji 消息
-/// </summary>
 class EmojiMessage : LCIMTypedMessage {
     public const int EmojiMessageType = 1;
 

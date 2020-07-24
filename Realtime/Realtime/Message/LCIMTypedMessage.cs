@@ -6,40 +6,19 @@ using LeanCloud.Common;
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// 已知类型消息
+    /// Known message types.
     /// </summary>
     public class LCIMTypedMessage : LCIMMessage {
-        /// <summary>
-        /// 文本消息
-        /// </summary>
         public const int TextMessageType = -1;
-        /// <summary>
-        /// 图像消息
-        /// </summary>
         public const int ImageMessageType = -2;
-        /// <summary>
-        /// 音频消息
-        /// </summary>
         public const int AudioMessageType = -3;
-        /// <summary>
-        /// 视频消息
-        /// </summary>
         public const int VideoMessageType = -4;
-        /// <summary>
-        /// 位置消息
-        /// </summary>
         public const int LocationMessageType = -5;
-        /// <summary>
-        /// 文件消息
-        /// </summary>
         public const int FileMessageType = -6;
-        /// <summary>
-        /// 撤回消息
-        /// </summary>
         public const int RecalledMessageType = -127;
 
         /// <summary>
-        /// 保留字段
+        /// Preserved fields.
         /// </summary>
         protected const string MessageTypeKey = "_lctype";
         protected const string MessageAttributesKey = "_lcattrs";
@@ -64,19 +43,16 @@ namespace LeanCloud.Realtime {
         private Dictionary<string, object> customProperties;
 
         /// <summary>
-        /// 完整的消息数据
+        /// Complete data of message.
         /// </summary>
         protected Dictionary<string, object> data = new Dictionary<string, object>();
 
-        /// <summary>
-        /// 消息类型
-        /// </summary>
         public virtual int MessageType {
             get; private set;
         }
 
         /// <summary>
-        /// 消息属性访问
+        /// Gets message attributes.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -146,7 +122,7 @@ namespace LeanCloud.Realtime {
         };
 
         /// <summary>
-        /// 注册自定义类型消息
+        /// Registers a custom message type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="msgType"></param>

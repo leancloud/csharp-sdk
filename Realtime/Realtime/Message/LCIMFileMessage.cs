@@ -4,33 +4,27 @@ using System.Collections.Generic;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
-    /// <summary>
-    /// 文件消息
-    /// </summary>
     public class LCIMFileMessage : LCIMTextMessage {
-        /// <summary>
-        /// 文件
-        /// </summary>
         public LCFile File {
             get; set;
         }
 
         /// <summary>
-        /// 文件大小
+        /// The size of the file in bytes.
         /// </summary>
         public int Size {
             get; private set;
         }
 
         /// <summary>
-        /// 文件扩展名
+        /// The format extension of the file. 
         /// </summary>
         public string Format {
             get; private set;
         }
 
         /// <summary>
-        /// 文件链接
+        /// The URL of the file.
         /// </summary>
         public string Url {
             get {

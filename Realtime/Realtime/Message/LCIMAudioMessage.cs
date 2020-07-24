@@ -2,13 +2,7 @@
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
-    /// <summary>
-    /// 音频消息
-    /// </summary>
     public class LCIMAudioMessage : LCIMFileMessage {
-        /// <summary>
-        /// 时长
-        /// </summary>
         public double Duration {
             get; private set;
         }

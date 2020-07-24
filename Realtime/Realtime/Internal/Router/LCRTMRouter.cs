@@ -5,13 +5,8 @@ using LeanCloud.Common;
 using Newtonsoft.Json;
 
 namespace LeanCloud.Realtime.Internal.Router {
-    /// <summary>
-    /// RTM Router
-    /// </summary>
+
     public class LCRTMRouter {
-        /// <summary>
-        /// 请求超时
-        /// </summary>
         private const int REQUEST_TIMEOUT = 10000;
 
         private LCRTMServer rtmServer;
@@ -19,10 +14,6 @@ namespace LeanCloud.Realtime.Internal.Router {
         public LCRTMRouter() {
         }
 
-        /// <summary>
-        /// 获取服务器地址
-        /// </summary>
-        /// <returns></returns>
         public async Task<LCRTMServer> GetServer() {
             if (rtmServer == null || !rtmServer.IsValid) {
                 await Fetch();

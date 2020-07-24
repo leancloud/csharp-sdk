@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// 验证码
+    /// An image CAPTCHA to prevent SMS abuse.
     /// </summary>
     public class LCCapture {
         public string Url {
@@ -17,14 +17,14 @@ namespace LeanCloud.Storage {
     }
 
     /// <summary>
-    /// 验证码工具类
+    /// Requests a CAPTCHA image and sends the verification code.
     /// </summary>
     public static class LCCaptchaClient {
         /// <summary>
-        /// 请求验证码
+        /// Requests a CAPTCHA image from LeanCloud.
         /// </summary>
-        /// <param name="width">验证码图片宽度</param>
-        /// <param name="height">验证码图片高度</param>
+        /// <param name="width">Width of the CAPTCHA image.</param>
+        /// <param name="height">Height of the CAPTCHA image.</param>
         /// <returns></returns>
         public static async Task<LCCapture> RequestCaptcha(int width = 82,
             int height = 39) {
@@ -41,10 +41,10 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 验证
+        /// Sends the code to LeanCloud for verification.
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="token"></param>
+        /// <param name="code">entered by the user</param>
+        /// <param name="token">for LeanCloud to recognize which CAPTCHA to verify</param>
         /// <returns></returns>
         public static async Task VerifyCaptcha(string code,
             string token) {

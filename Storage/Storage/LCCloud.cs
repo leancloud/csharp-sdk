@@ -4,24 +4,24 @@ using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// 云引擎
+    /// LeanEngine
     /// </summary>
     public static class LCCloud {
         private const string PRODUCTION_KEY = "X-LC-Prod";
 
         /// <summary>
-        /// 是否是生产环境，默认为 true
+        /// Whether using production environment (default) or staging environment.
         /// </summary>
         public static bool IsProduction {
             get; set;
         } = true;
 
         /// <summary>
-        /// 调用云函数
+        /// Invokes a cloud function.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="parameters"></param>
-        /// <returns>返回类型为 Dictionary<string, object></returns>
+        /// <param name="name">Cloud function name.</param>
+        /// <param name="parameters">Parameters of cloud function.</param>
+        /// <returns>Dictionary<string, object> or List<object>.</returns>
         public static async Task<Dictionary<string, object>> Run(string name,
             Dictionary<string, object> parameters = null) {
             string path = $"functions/{name}";
@@ -36,11 +36,11 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 调用 RPC 云函数
+        /// Invokes a cloud function as a remote procedure call.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="parameters"></param>
-        /// <returns>返回类型为 LCObject 容器类型</returns>
+        /// <param name="name">Cloud function name.</param>
+        /// <param name="parameters">Parameters of cloud function.</param>
+        /// <returns>LCObject, List<LCObject>, or Map<string, LCObject>.</returns>
         public static async Task<object> RPC(string name, object parameters = null) {
             string path = $"call/{name}";
             Dictionary<string, object> headers = new Dictionary<string, object> {

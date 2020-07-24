@@ -2,20 +2,11 @@
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
-    /// <summary>
-    /// 图像消息
-    /// </summary>
     public class LCIMImageMessage : LCIMFileMessage {
-        /// <summary>
-        /// 图像宽度
-        /// </summary>
         public int Width {
             get; private set;
         }
 
-        /// <summary>
-        /// 图像高度
-        /// </summary>
         public int Height {
             get; private set;
         }

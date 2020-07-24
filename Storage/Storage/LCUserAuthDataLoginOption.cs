@@ -1,24 +1,24 @@
 ﻿/// <summary>
-/// 第三方登录选项
+/// LCUser UnionID login parameters.
 /// </summary>
 namespace LeanCloud.Storage {
     public class LCUserAuthDataLoginOption {
         /// <summary>
-        /// Union Id 平台
+        /// The platform of the UnionID.
         /// </summary>
         public string UnionIdPlatform {
             get; set;
         }
 
         /// <summary>
-        /// 是否作为主账号
+        /// Whether the current authentication information will be used as the main account.
         /// </summary>
         public bool AsMainAccount {
             get; set;
         }
 
         /// <summary>
-        /// 是否在不存在的情况下返回失败
+        /// Whether the login request will fail if no user matching this authData exists.
         /// </summary>
         public bool FailOnNotExist {
             get; set;

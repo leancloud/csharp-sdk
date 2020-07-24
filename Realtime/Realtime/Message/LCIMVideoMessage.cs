@@ -2,27 +2,15 @@
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
-    /// <summary>
-    /// 视频消息
-    /// </summary>
     public class LCIMVideoMessage : LCIMFileMessage {
-        /// <summary>
-        /// 宽度
-        /// </summary>
         public int Width {
             get; private set;
         }
 
-        /// <summary>
-        /// 高度
-        /// </summary>
         public int Height {
             get; private set;
         }
 
-        /// <summary>
-        /// 时长
-        /// </summary>
         public double Duration {
             get; private set;
         }

@@ -1,13 +1,11 @@
 ﻿namespace LeanCloud.Storage {
     /// <summary>
-    /// 角色
+    /// LeanCloud Role, a group of users for the purposes of granting permissions.
     /// </summary>
     public class LCRole : LCObject {
         public const string CLASS_NAME = "_Role";
 
-        /// <summary>
-        /// 名字
-        /// </summary>
+
         public string Name {
             get {
                 return this["name"] as string;
@@ -17,7 +15,7 @@
         }
 
         /// <summary>
-        /// 关联角色
+        /// Child roles.
         /// </summary>
         public LCRelation<LCRole> Roles {
             get {
@@ -30,7 +28,7 @@
         }
 
         /// <summary>
-        /// 关联用户
+        /// Child users.
         /// </summary>
         public LCRelation<LCUser> Users {
             get {
@@ -54,7 +52,7 @@
         }
 
         /// <summary>
-        /// 获取角色查询对象
+        /// Constructs a LCQuery for this role.
         /// </summary>
         /// <returns></returns>
         public static LCQuery<LCRole> GetQuery() {

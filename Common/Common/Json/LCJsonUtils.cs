@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace LeanCloud.Common {
     /// <summary>
-    /// 为 Json 解析提供异步接口
+    /// Serialize and deserialize
     /// </summary>
     public static class LCJsonUtils {
         public static async Task<string> SerializeObjectAsync(object obj) {

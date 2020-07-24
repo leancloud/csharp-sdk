@@ -3,39 +3,39 @@ using System.Collections.Generic;
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// 消息基类
+    /// The base class of message.
     /// </summary>
     public abstract class LCIMMessage {
         /// <summary>
-        /// 消息所在对话 Id
+        /// The conversation ID this message belongs to.
         /// </summary>
         public string ConversationId {
             get; set;
         }
 
         /// <summary>
-        /// 消息 Id
+        /// The ID of this message.
         /// </summary>
         public string Id {
             get; set;
         }
 
         /// <summary>
-        /// 发送者 Id
+        /// The ID of the client who sends this message.
         /// </summary>
         public string FromClientId {
             get; set;
         }
 
         /// <summary>
-        /// 发送时间戳
+        /// The timestamp of this message.
         /// </summary>
         public long SentTimestamp {
             get; internal set;
         }
 
         /// <summary>
-        /// 发送时间
+        /// The sending date of this message.
         /// </summary>
         public DateTime SentAt {
             get {
@@ -52,7 +52,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 送达时间
+        /// The delivered date of this message.
         /// </summary>
         public DateTime DeliveredAt {
             get {
@@ -62,14 +62,14 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 已读时间戳
+        /// The timestamp when this message has been read by others.
         /// </summary>
         public long ReadTimestamp {
             get; internal set;
         }
 
         /// <summary>
-        /// 已读时间
+        /// When this message has been read by others.
         /// </summary>
         public DateTime ReadAt {
             get {
@@ -79,14 +79,14 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 修改时间戳
+        /// The timestamp when this message is updated.
         /// </summary>
         public long PatchedTimestamp {
             get; internal set;
         }
 
         /// <summary>
-        /// 修改时间
+        /// When this message is updated. 
         /// </summary>
         public DateTime PatchedAt {
             get {
@@ -96,28 +96,28 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 提醒成员 Id 列表
+        /// The members in the conversation mentioned by this message. 
         /// </summary>
         public List<string> MentionIdList {
             get; set;
         }
 
         /// <summary>
-        /// 是否提醒所有人
+        /// Whether all members in the conversation are mentioned by this message.
         /// </summary>
         public bool MentionAll {
             get; set;
         }
 
         /// <summary>
-        /// 是否提醒当前用户
+        /// Whether the current user has been mentioned in this message.
         /// </summary>
         public bool Mentioned {
             get; internal set;
         }
 
         /// <summary>
-        /// 是否是暂态消息
+        /// Indicates whether this message is transient.
         /// </summary>
         public bool IsTransient {
             get; internal set;

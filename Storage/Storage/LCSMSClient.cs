@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// 短信工具类
+    /// LeanCloud SMS Client
     /// </summary>
     public static class LCSMSClient {
         /// <summary>
-        /// 请求短信验证码
+        /// Requests an SMS code for operation verification.
         /// </summary>
         /// <param name="mobile"></param>
         /// <param name="template"></param>
         /// <param name="signature"></param>
         /// <param name="captchaToken"></param>
-        /// <param name="variables"></param>
+        /// <param name="variables">Template variables</param>
         /// <returns></returns>
         public static async Task RequestSMSCode(string mobile,
             string template = null,
@@ -47,7 +47,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 请求语音验证码
+        /// Requests to send the verification code via phone call.
         /// </summary>
         /// <param name="mobile"></param>
         /// <returns></returns>
@@ -60,12 +60,6 @@ namespace LeanCloud.Storage {
             await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
-        /// <summary>
-        /// 验证手机号
-        /// </summary>
-        /// <param name="mobile"></param>
-        /// <param name="code"></param>
-        /// <returns></returns>
         public static async Task VerifyMobilePhone(string mobile, string code) {
             string path = $"verifySmsCode/{code}";
             Dictionary<string, object> data = new Dictionary<string, object> {

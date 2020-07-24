@@ -8,39 +8,31 @@ using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
 
 namespace LeanCloud.Realtime {
-    /// <summary>
-    /// 通信客户端
-    /// </summary>
+
     public class LCIMClient {
         /// <summary>
-        /// 对话缓存
+        /// Conversation cache
         /// </summary>
         internal Dictionary<string, LCIMConversation> ConversationDict;
 
         /// <summary>
-        /// 用户 Id
+        /// Client Id
         /// </summary>
         public string Id {
             get; private set;
         }
 
         /// <summary>
-        /// 用户标识
+        /// Client tag
         /// </summary>
         public string Tag {
             get; private set;
         }
 
-        /// <summary>
-        /// 设备 Id
-        /// </summary>
         public string DeviceId {
             get; private set;
         }
 
-        /// <summary>
-        /// 登录 tokens
-        /// </summary>
         internal string SessionToken {
             get; private set;
         }
@@ -50,21 +42,22 @@ namespace LeanCloud.Realtime {
         #region 连接状态事件
 
         /// <summary>
-        /// 客户端连接断开
+        /// Occurs when the connection is lost.
         /// </summary>
         public Action OnPaused {
             get; set;
         }
 
         /// <summary>
-        /// 客户端连接恢复正常
+        /// Occurs when the connection is recovered. 
         /// </summary>
         public Action OnResume {
             get; set;
         }
 
         /// <summary>
-        /// 当前客户端被服务端强行下线
+        /// Occurs when the connection is closed and there will be no auto reconnection.
+        /// Possible causes include there is a single device login conflict or the client has been kicked off by the server.
         /// </summary>
         public Action<int, string> OnClose {
             get; set;
@@ -75,92 +68,92 @@ namespace LeanCloud.Realtime {
         #region 对话事件
 
         /// <summary>
-        /// 当前用户被加入某个对话的黑名单
+        /// Occurs when the current user is added into the blacklist of a conversation.
         /// </summary>
         public Action<LCIMConversation, string> OnBlocked {
             get; set;
         }
 
         /// <summary>
-        /// 当用户被解除黑名单
+        /// Occurs when the current user is removed from the blacklist of a conversation.
         /// </summary>
         public Action<LCIMConversation, string> OnUnblocked {
             get; set;
         }
 
         /// <summary>
-        /// 当前用户在某个对话中被禁言
+        /// Occurs when the current user is muted in a conversation.
         /// </summary>
         public Action<LCIMConversation, string> OnMuted;
 
         /// <summary>
-        /// 当前用户在某个对话中被解除禁言
+        /// Occurs when the current user is unmuted in a conversation. 
         /// </summary>
         public Action<LCIMConversation, string> OnUnmuted;
 
         /// <summary>
-        /// 该对话信息被更新
+        /// Occurs when the properties of a conversation are updated.
         /// </summary>
         public Action<LCIMConversation, ReadOnlyDictionary<string, object>, string> OnConversationInfoUpdated;
 
         /// <summary>
-        /// 当前用户被添加至某个对话
+        /// Occurs when the current user is invited to a conversation.
         /// </summary>
         public Action<LCIMConversation, string> OnInvited {
             get; set;
         }
 
         /// <summary>
-        /// 当前用户被从某个对话中移除
+        /// Occurs when the current user is kicked from a conversation.
         /// </summary>
         public Action<LCIMConversation, string> OnKicked {
             get; set;
         }
 
         /// <summary>
-        /// 有用户被添加至某个对话
+        /// Occurs when a user joined a conversation.
         /// </summary>
         public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersJoined {
             get; set;
         }
 
         /// <summary>
-        /// 有成员被从某个对话中移除
+        /// Occurs when a user left a conversation. 
         /// </summary>
         public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersLeft {
             get; set;
         }
 
         /// <summary>
-        /// 有成员被加入某个对话的黑名单
+        /// Occurs when a user is added to the blacklist of a conversation.
         /// </summary>
         public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersBlocked {
             get; set;
         }
 
         /// <summary>
-        /// 有成员被移出某个对话的黑名单
+        /// Occurs when a user is removed from the blacklist of a conversation. 
         /// </summary>
         public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersUnblocked {
             get; set;
         }
 
         /// <summary>
-        /// 有成员在某个对话中被禁言
+        /// Occurs when a user is muted in a conversation. 
         /// </summary>
         public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersMuted {
             get; set;
         }
 
         /// <summary>
-        /// 有成员被移出某个对话的黑名单
+        /// Occurs when a user is unmuted in a conversation.
         /// </summary>
         public Action<LCIMConversation, ReadOnlyCollection<string>, string> OnMembersUnmuted {
             get; set;
         }
 
         /// <summary>
-        /// 有成员的对话信息被更新
+        /// Occurs when the properties of someone are updated.
         /// </summary>
         public Action<LCIMConversation, string, string, string> OnMemberInfoUpdated;
 
@@ -169,56 +162,56 @@ namespace LeanCloud.Realtime {
         #region 消息事件
 
         /// <summary>
-        /// 当前用户收到消息
+        /// Occurs when a new message is delivered to a conversation the current user is already in.
         /// </summary>
         public Action<LCIMConversation, LCIMMessage> OnMessage {
             get; set;
         }
 
         /// <summary>
-        /// 消息被撤回
+        /// Occurs when a message is recalled.
         /// </summary>
         public Action<LCIMConversation, LCIMRecalledMessage> OnMessageRecalled {
             get; set;
         }
 
         /// <summary>
-        /// 消息被修改
+        /// Occurs when a message is updated.
         /// </summary>
         public Action<LCIMConversation, LCIMMessage> OnMessageUpdated {
             get; set;
         }
 
         /// <summary>
-        /// 消息已送达
+        /// Occurs when a message is delivered.
         /// </summary>
         public Action<LCIMConversation, string> OnMessageDelivered {
             get; set;
         }
 
         /// <summary>
-        /// 消息已读
+        /// Occurs when a message is read.
         /// </summary>
         public Action<LCIMConversation, string> OnMessageRead {
             get; set;
         }
 
         /// <summary>
-        /// 未读消息数目更新
+        /// Occurs when the number of unreadMessagesCount is updatded.
         /// </summary>
         public Action<ReadOnlyCollection<LCIMConversation>> OnUnreadMessagesCountUpdated {
             get; set;
         }
 
         /// <summary>
-        /// 最近分发消息更新
+        /// Occurs when the last delivered message is updated.
         /// </summary>
         public Action OnLastDeliveredAtUpdated {
             get; set;
         }
 
         /// <summary>
-        /// 最近已读消息更新
+        /// Occurs when the last delivered message is updated.
         /// </summary>
         public Action OnLastReadAtUpdated {
             get; set;
@@ -289,9 +282,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 登录
+        /// Signing in
         /// </summary>
-        /// <param name="force">是否强制登录</param>
+        /// <param name="force">If this is ture (default value), and single device sign-on is enabled, users already logged in on another device with the same tag will be logged out.</param>
         /// <returns></returns>
         public async Task Open(bool force = true) {
             try {
@@ -305,7 +298,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 关闭
+        /// Closes the session
         /// </summary>
         /// <returns></returns>
         public async Task Close() {
@@ -314,12 +307,14 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 创建普通对话
+        /// Creates a conversation
         /// </summary>
-        /// <param name="members"></param>
-        /// <param name="name"></param>
-        /// <param name="unique"></param>
-        /// <param name="properties"></param>
+        /// <param name="members">The list of clientIds of participants in this conversation (except the creator)</param>
+        /// <param name="name">The name of this conversation</param>
+        /// <param name="unique">Whether this conversation is unique;
+        /// if it is true and an existing conversation contains the same composition of members,
+        /// the existing conversation will be reused, otherwise a new conversation will be created.</param>
+        /// <param name="properties">Custom attributes of this conversation</param>
         /// <returns></returns>
         public async Task<LCIMConversation> CreateConversation(
             IEnumerable<string> members,
@@ -333,10 +328,10 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 创建聊天室
+        /// Creates a chatroom
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="properties"></param>
+        /// <param name="name">The name of this chatroom</param>
+        /// <param name="properties">Custom attributes of this chatroom</param>
         /// <returns></returns>
         public async Task<LCIMChatRoom> CreateChatRoom(
             string name,
@@ -348,11 +343,11 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 创建临时对话
+        /// Creates a temporary conversation
         /// </summary>
-        /// <param name="members"></param>
-        /// <param name="ttl"></param>
-        /// <param name="properties"></param>
+        /// <param name="members">The list of clientIds of participants in this temporary conversation (except the creator)</param>
+        /// <param name="ttl">TTL of this temporary conversation</param>
+        /// <param name="properties">Custom attributes of this temporary conversation</param>
         /// <returns></returns>
         public async Task<LCIMTemporaryConversation> CreateTemporaryConversation(
             IEnumerable<string> members,
@@ -366,9 +361,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 根据 id 获取对话
+        /// Queries a conversation based on its id.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">objectId</param>
         /// <returns></returns>
         public async Task<LCIMConversation> GetConversation(string id) {
             if (string.IsNullOrEmpty(id)) {
@@ -392,9 +387,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 获取某些特定的对话
+        /// Queries conversations based on their ids.
         /// </summary>
-        /// <param name="ids"></param>
+        /// <param name="ids">objectId list</param>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<LCIMConversation>> GetConversationList(IEnumerable<string> ids) {
             if (ids == null || ids.Count() == 0) {
@@ -423,7 +418,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 获取对话查询对象
+        /// Constructs a conversation query.
         /// </summary>
         /// <returns></returns>
         public LCIMConversationQuery GetQuery() {

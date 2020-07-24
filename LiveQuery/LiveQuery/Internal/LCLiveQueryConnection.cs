@@ -10,45 +10,28 @@ using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.LiveQuery.Internal {
     public class LCLiveQueryConnection {
-        /// <summary>
-        /// 发送超时
-        /// </summary>
         private const int SEND_TIMEOUT = 10000;
 
         /// <summary>
-        /// 最大重连次数，超过后重置 Router 缓存后再次尝试重连
+        /// After exceeding this limit, will reset the Router cache and try to reconnect again.
         /// </summary>
         private const int MAX_RECONNECT_TIMES = 10;
 
-        /// <summary>
-        /// 重连间隔
-        /// </summary>
         private const int RECONNECT_INTERVAL = 10000;
 
-        /// <summary>
-        /// 子协议
-        /// </summary>
         private const string SUB_PROTOCOL = "lc.json.3";
 
-        /// <summary>
-        /// 通知事件
-        /// </summary>
+ 
         internal Action<Dictionary<string, object>> OnNotification;
 
-        /// <summary>
-        /// 断线事件
-        /// </summary>
         internal Action OnDisconnect;
 
-        /// <summary>
-        /// 重连成功事件
-        /// </summary>
         internal Action OnReconnected;
 
         internal string id;
 
         /// <summary>
-        /// 请求回调缓存
+        /// Request callback cache
         /// </summary>
         private readonly Dictionary<int, TaskCompletionSource<Dictionary<string, object>>> responses;
 
@@ -90,7 +73,7 @@ namespace LeanCloud.LiveQuery.Internal {
         }
 
         /// <summary>
-        /// 重置连接
+        /// Resets connection
         /// </summary>
         /// <returns></returns>
         internal async Task Reset() {
@@ -108,7 +91,7 @@ namespace LeanCloud.LiveQuery.Internal {
         }
 
         /// <summary>
-        /// 发送请求，会在收到应答后返回
+        /// Sends the request. It will return after receiving a response.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -127,7 +110,7 @@ namespace LeanCloud.LiveQuery.Internal {
         }
 
         /// <summary>
-        /// 发送文本消息
+        /// Sends text message.
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
@@ -142,7 +125,7 @@ namespace LeanCloud.LiveQuery.Internal {
         }
 
         /// <summary>
-        /// 关闭连接
+        /// Closes the connection.
         /// </summary>
         /// <returns></returns>
         internal async Task Close() {

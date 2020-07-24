@@ -14,12 +14,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         #region 内部接口
 
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        /// <param name="convId"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
+
         internal async Task<LCIMMessage> Send(string convId,
             LCIMMessage message,
             LCIMMessageSendOptions options) {
@@ -74,12 +69,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return message;
         }
 
-        /// <summary>
-        /// 撤回消息
-        /// </summary>
-        /// <param name="convId"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
+
         internal async Task RecallMessage(string convId,
             LCIMMessage message) {
             PatchCommand patch = new PatchCommand();
@@ -97,13 +87,6 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Connection.SendRequest(request);
         }
 
-        /// <summary>
-        /// 修改消息
-        /// </summary>
-        /// <param name="convId"></param>
-        /// <param name="oldMessage"></param>
-        /// <param name="newMessage"></param>
-        /// <returns></returns>
         internal async Task UpdateMessage(string convId,
             LCIMMessage oldMessage,
             LCIMMessage newMessage) {
@@ -133,16 +116,6 @@ namespace LeanCloud.Realtime.Internal.Controller {
             GenericCommand response = await Connection.SendRequest(request);
         }
 
-        /// <summary>
-        /// 查询消息
-        /// </summary>
-        /// <param name="convId"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="direction"></param>
-        /// <param name="limit"></param>
-        /// <param name="messageType"></param>
-        /// <returns></returns>
         internal async Task<ReadOnlyCollection<LCIMMessage>> QueryMessages(string convId,
             LCIMMessageQueryEndpoint start = null,
             LCIMMessageQueryEndpoint end = null,
@@ -197,12 +170,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }).ToList().AsReadOnly();
         }
 
-        /// <summary>
-        /// 确认收到消息
-        /// </summary>
-        /// <param name="convId"></param>
-        /// <param name="msgId"></param>
-        /// <returns></returns>
+
         internal async Task Ack(string convId,
             string msgId) {
             AckCommand ack = new AckCommand {
@@ -214,12 +182,6 @@ namespace LeanCloud.Realtime.Internal.Controller {
             await Connection.SendCommand(command);
         }
 
-        /// <summary>
-        /// 确认已读消息
-        /// </summary>
-        /// <param name="convId"></param>
-        /// <param name="msg"></param>
-        /// <returns></returns>
         internal async Task Read(string convId,
             LCIMMessage msg) {
             ReadCommand read = new ReadCommand();
@@ -248,11 +210,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }
         }
 
-        /// <summary>
-        /// 接收消息事件
-        /// </summary>
-        /// <param name="notification"></param>
-        /// <returns></returns>
+
         private async Task OnMessaage(GenericCommand notification) {
             DirectCommand direct = notification.DirectMessage;
             // 反序列化消息
@@ -288,11 +246,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             Client.OnMessage?.Invoke(conversation, message);
         }
 
-        /// <summary>
-        /// 消息被修改事件
-        /// </summary>
-        /// <param name="notification"></param>
-        /// <returns></returns>
+
         private async Task OnMessagePatched(GenericCommand notification) {
             PatchCommand patchMessage = notification.PatchMessage;
             foreach (PatchItem patch in patchMessage.Patches) {
@@ -320,11 +274,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }
         }
 
-        /// <summary>
-        /// 消息回执事件
-        /// </summary>
-        /// <param name="notification"></param>
-        /// <returns></returns>
+ 
         private async Task OnMessageReceipt(GenericCommand notification) {
             RcpCommand rcp = notification.RcpMessage;
             string convId = rcp.Cid;

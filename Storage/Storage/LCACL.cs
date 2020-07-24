@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// 访问控制类
+    /// LeanCloud Access Control Lists.
     /// </summary>
     public class LCACL {
         const string PublicKey = "*";

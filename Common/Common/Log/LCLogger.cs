@@ -3,11 +3,11 @@ using System.Text;
 
 namespace LeanCloud {
     /// <summary>
-    /// 日志类
+    /// Logger
     /// </summary>
     public static class LCLogger {
         /// <summary>
-        /// 日志回调接口，方便开发者调试
+        /// Configures the logger.
         /// </summary>
         /// <value>The log delegate.</value>
         public static Action<LCLogLevel, string> LogDelegate {

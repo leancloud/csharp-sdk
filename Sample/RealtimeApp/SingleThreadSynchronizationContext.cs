@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace RealtimeApp {
     /// <summary>
-    /// 单线程环境，用于控制台应用 await 返回
+    /// Mimics UI thread under .Net console.
     /// </summary>
     public class SingleThreadSynchronizationContext : SynchronizationContext {
         private readonly BlockingCollection<KeyValuePair<SendOrPostCallback, object>> queue = new BlockingCollection<KeyValuePair<SendOrPostCallback, object>>();

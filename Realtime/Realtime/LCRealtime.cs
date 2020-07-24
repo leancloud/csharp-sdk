@@ -4,14 +4,14 @@ using LeanCloud.Realtime.Internal.Connection;
 namespace LeanCloud.Realtime {
     public class LCRealtime {
         /// <summary>
-        /// RTM 服务中，每个 app 对应一条连接
+        /// Every application uses a connection.
         /// </summary>
         private static readonly Dictionary<string, LCConnection> appToConnections = new Dictionary<string, LCConnection>();
 
         /// <summary>
-        /// 获取对应的 Connection
+        /// Gets the connection.
         /// </summary>
-        /// <param name="appId"></param>
+        /// <param name="appId">App ID of the application</param>
         /// <returns></returns>
         internal static LCConnection GetConnection(string appId) {
             if (appToConnections.TryGetValue(appId, out LCConnection connection)) {
@@ -23,15 +23,15 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 移除 Connection
+        /// Removes the connection.
         /// </summary>
-        /// <param name="connection"></param>
+        /// <param name="connection">The LCConnection to remove</param>
         internal static void RemoveConnection(LCConnection connection) {
             appToConnections.Remove(connection.id);
         }
 
         /// <summary>
-        /// 主动断开所有 RTM 连接
+        /// Disconnects all.
         /// </summary>
         public static void Pause() {
             foreach (LCConnection connection in appToConnections.Values) {
@@ -40,7 +40,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 主动恢复所有 RTM 连接
+        /// Reconnects all.
         /// </summary>
         public static void Resume() {
             foreach (LCConnection connection in appToConnections.Values) {

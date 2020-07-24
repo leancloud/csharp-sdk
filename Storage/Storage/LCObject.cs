@@ -10,21 +10,21 @@ using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// 对象类
+    /// LeanCloud Object
     /// </summary>
     public class LCObject {
         /// <summary>
-        /// 最近一次与服务端同步的数据
+        /// Last synced data.
         /// </summary>
         LCObjectData data;
 
         /// <summary>
-        /// 预算数据
+        /// Estimated data.
         /// </summary>
         internal Dictionary<string, object> estimatedData;
 
         /// <summary>
-        /// 操作字典
+        /// Operations.
         /// </summary>
         internal Dictionary<string, ILCOperation> operationDict;
 
@@ -134,7 +134,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 删除字段
+        /// Removes the key.
         /// </summary>
         /// <param name="key"></param>
         public void Unset(string key) {
@@ -145,11 +145,7 @@ namespace LeanCloud.Storage {
             ApplyOperation(key, deleteOp);
         }
 
-        /// <summary>
-        /// 增加关联
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
+
         public void AddRelation(string key, LCObject value) {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
@@ -161,11 +157,6 @@ namespace LeanCloud.Storage {
             ApplyOperation(key, op);
         }
 
-        /// <summary>
-        /// 删除关联
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
         public void RemoveRelation(string key, LCObject value) {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
@@ -178,7 +169,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 增加数字属性值
+        /// Atomically increments the value of the given key with amount.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -194,7 +185,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 在数组属性中增加一个元素
+        /// Atomically adds value to the end of the array key.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -210,7 +201,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 在数组属性中增加一组元素
+        /// Atomically adds values to the end of the array key.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="values"></param>
@@ -226,7 +217,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 在数组属性中增加一个唯一元素
+        /// Atomically adds value to the array key, only if not already present.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -242,10 +233,10 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 在数组属性中增加一组唯一元素
+        /// Atomically adds values to the array key, only if not already present.
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <param name="values"></param>
         public void AddAllUnique(string key, IEnumerable values) {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
@@ -258,7 +249,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 移除某个元素
+        /// Atomically removes all value from the array key.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -274,7 +265,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 移除一组元素
+        /// Atomically removes all values from the array key.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="values"></param>
@@ -458,7 +449,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 序列化为 json 字符串
+        /// Serializes this LCObject to a JSON string.
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
@@ -469,7 +460,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 反序列化为 LCObject 对象
+        /// Deserializes a JSON string to a LCObject.
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>

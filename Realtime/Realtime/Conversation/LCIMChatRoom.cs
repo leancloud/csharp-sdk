@@ -5,25 +5,21 @@ using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// 聊天室
+    /// Chatroom
     /// </summary>
     public class LCIMChatRoom : LCIMConversation {
         public LCIMChatRoom(LCIMClient client) :
             base(client) {
         }
 
-        /// <summary>
-        /// 获取在线用户数量
-        /// </summary>
-        /// <returns></returns>
         public async Task<int> GetOnlineMembersCount() {
             return await GetMembersCount();
         }
 
         /// <summary>
-        /// 获取在线用户
+        /// Gets online members.
         /// </summary>
-        /// <param name="limit"></param>
+        /// <param name="limit">Query limit, defaults to 50.</param>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<string>> GetOnlineMembers(int limit = 50) {
             return await Client.ConversationController.GetOnlineMembers(Id, limit);
