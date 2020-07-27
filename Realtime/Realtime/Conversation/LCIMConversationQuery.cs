@@ -53,6 +53,18 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
+        /// 不包含
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public LCIMConversationQuery WhereNotContainedIn(string key,
+            IEnumerable values) {
+            Condition.WhereNotContainedIn(key, values);
+            return this;
+        }
+
+        /// <summary>
         /// 包含全部
         /// </summary>
         /// <param name="key"></param>
