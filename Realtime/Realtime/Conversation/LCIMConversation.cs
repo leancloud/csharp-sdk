@@ -297,7 +297,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// Mutes members of this conversatino.
+        /// Mutes members of this conversation.
         /// </summary>
         /// <param name="clientIds">Member list.</param>
         /// <returns></returns>
@@ -313,7 +313,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// Unmutes members of this conversatino.
+        /// Unmutes members of this conversation.
         /// </summary>
         /// <param name="clientIdList">Member list.</param>
         /// <returns></returns>
