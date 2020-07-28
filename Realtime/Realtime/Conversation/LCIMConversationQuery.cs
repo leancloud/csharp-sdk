@@ -53,6 +53,18 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
+        /// The value of key must not be contained in values.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public LCIMConversationQuery WhereNotContainedIn(string key,
+            IEnumerable values) {
+            Condition.WhereNotContainedIn(key, values);
+            return this;
+        }
+
+        /// <summary>
         /// The array corresponding to key contains all elements in values.
         /// </summary>
         /// <param name="key"></param>
