@@ -83,7 +83,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return conversation;
         }
 
->
+
         internal async Task<int> GetMembersCount(string convId) {
             ConvCommand conv = new ConvCommand {
                 Cid = convId,
@@ -115,7 +115,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return null;
         }
 
->
+
         internal async Task<LCIMPartiallySuccessResult> AddMembers(string convId,
             IEnumerable<string> clientIds) {
             ConvCommand conv = new ConvCommand {
@@ -234,7 +234,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
         }
 
->
+
         internal async Task<LCIMPartiallySuccessResult> UnblockMembers(string convId,
             IEnumerable<string> clientIds) {
             BlacklistCommand blacklist = new BlacklistCommand {
@@ -256,7 +256,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             return NewPartiallySuccessResult(response.BlacklistMessage.AllowedPids, response.BlacklistMessage.FailedPids);
         }
 
->
+
         internal async Task UpdateMemberRole(string convId,
             string memberId,
             string role) {
@@ -316,7 +316,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 Next = response.ConvMessage.Next
             };
         }
->
+
         internal async Task<LCIMPageResult> QueryBlockedMembers(string convId,
             int limit = 10,
             string next = null) {
