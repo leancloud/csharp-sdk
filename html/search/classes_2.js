@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['convcommand',['ConvCommand',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1ConvCommand.html',1,'LeanCloud::Realtime::Internal::Protocol']]],
-  ['convmemberinfo',['ConvMemberInfo',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1ConvMemberInfo.html',1,'LeanCloud::Realtime::Internal::Protocol']]]
+  ['convcommand_1259',['ConvCommand',['../class_lean_cloud_1_1_realtime_1_1_internal_1_1_protocol_1_1_conv_command.html',1,'LeanCloud::Realtime::Internal::Protocol']]],
+  ['convmemberinfo_1260',['ConvMemberInfo',['../class_lean_cloud_1_1_realtime_1_1_internal_1_1_protocol_1_1_conv_member_info.html',1,'LeanCloud::Realtime::Internal::Protocol']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['genericcommand',['GenericCommand',['../classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1GenericCommand.html',1,'LeanCloud::Realtime::Internal::Protocol']]]
+  ['genericcommand_1264',['GenericCommand',['../class_lean_cloud_1_1_realtime_1_1_internal_1_1_protocol_1_1_generic_command.html',1,'LeanCloud::Realtime::Internal::Protocol']]]
 ];

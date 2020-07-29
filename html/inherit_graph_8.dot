@@ -1,7 +1,0 @@
-digraph "Graphical Class Hierarchy"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node1 [label="LeanCloud.Realtime.Internal.\lProtocol.LogsCommand.Types",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classLeanCloud_1_1Realtime_1_1Internal_1_1Protocol_1_1LogsCommand_1_1Types.html",tooltip="Container for nested types declared in the LogsCommand message type."];
-}
