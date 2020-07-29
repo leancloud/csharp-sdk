@@ -13,27 +13,27 @@ namespace LeanCloud.LiveQuery {
     /// </summary>
     public class LCLiveQuery {
         /// <summary>
-        /// 新对象创建事件
+        /// A new LCObject which fulfills the LCQuery you subscribe is created. 
         /// </summary>
         public Action<LCObject> OnCreate;
         /// <summary>
-        /// 对象更新事件
+        /// An existing LCObject which fulfills the LCQuery you subscribe is updated.
         /// </summary>
         public Action<LCObject, ReadOnlyCollection<string>> OnUpdate;
         /// <summary>
-        /// 对象被删除
+        /// An existing LCObject which fulfills the LCQuery you subscribe is deleted.
         /// </summary>
         public Action<string> OnDelete;
         /// <summary>
-        /// 有新的满足条件的对象产生
+        /// An existing LCObject which doesn't fulfill the LCQuery is updated and now it fulfills the LCQuery.
         /// </summary>
         public Action<LCObject, ReadOnlyCollection<string>> OnEnter;
         /// <summary>
-        /// 不再满足条件
+        /// An existing LCObject which fulfills the LCQuery is updated and now it doesn't fulfill the LCQuery.
         /// </summary>
         public Action<LCObject, ReadOnlyCollection<string>> OnLeave;
         /// <summary>
-        /// 当一个用户登录成功
+        /// A LCUser logged in successfully.
         /// </summary>
         public Action<LCUser> OnLogin;
 
@@ -55,10 +55,7 @@ namespace LeanCloud.LiveQuery {
 
         private static readonly string DeviceId = Guid.NewGuid().ToString();
 
-        /// <summary>
-        /// 订阅
-        /// </summary>
-        /// <returns></returns>
+
         public async Task Subscribe() {
             // TODO 判断当前连接情况
             if (connection == null) {
@@ -92,10 +89,6 @@ namespace LeanCloud.LiveQuery {
             }
         }
 
-        /// <summary>
-        /// 取消订阅
-        /// </summary>
-        /// <returns></returns>
         public async Task Unsubscribe() {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "id", DeviceId },

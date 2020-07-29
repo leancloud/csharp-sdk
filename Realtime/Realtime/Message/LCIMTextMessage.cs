@@ -1,13 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace LeanCloud.Realtime {
-    /// <summary>
-    /// 文本消息
-    /// </summary>
     public class LCIMTextMessage : LCIMTypedMessage {
-        /// <summary>
-        /// 文本
-        /// </summary>
         public string Text {
             get; set;
         }

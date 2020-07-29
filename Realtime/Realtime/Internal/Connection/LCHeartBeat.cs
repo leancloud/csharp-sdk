@@ -5,10 +5,11 @@ using LeanCloud.Realtime.Internal.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Connection {
     /// <summary>
-    /// 心跳控制器，由于 .Net Standard 2.0 不支持发送 ping frame，所以需要发送逻辑心跳
-    /// 1. 每隔 180s 发送 ping 包
-    /// 2. 接收到 pong 包刷新上次 pong 时间
-    /// 3. 每隔 180s 检测 pong 包间隔，超过 360s 则认为断开
+    /// Heartbeat controller is needed because .Net Standard 2.0 does not support sending ping frame.
+    /// 1. Ping every 180 seconds.
+    /// 2. Receiving a pong packet will refresh the pong interval.
+    /// 3. Check pong interval every 180 seconds.
+    ///    If the interval is greater than 360 seconds, the connection is considered disconnected.
     /// </summary>
     public class LCHeartBeat {
         private const int PING_INTERVAL = 180 * 1000;
@@ -32,9 +33,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
             this.connection = connection;
         }
 
-        /// <summary>
-        /// 启动心跳
-        /// </summary>
         public void Start() {
             running = true;
             heartBeatCTS = new CancellationTokenSource();
@@ -92,9 +90,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
             lastPongTime = DateTimeOffset.Now;
         }
 
-        /// <summary>
-        /// 停止心跳监听
-        /// </summary>
         public void Stop() {
             running = false;
             heartBeatCTS.Cancel();

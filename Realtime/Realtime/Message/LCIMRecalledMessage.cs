@@ -1,7 +1,7 @@
 ﻿
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// 撤回消息
+    /// The recall message, i.e. a message to recall a previous sent message.
     /// </summary>
     public class LCIMRecalledMessage : LCIMTypedMessage {
         public LCIMRecalledMessage() {

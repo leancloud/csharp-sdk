@@ -3,13 +3,7 @@ using System.Collections.Generic;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
-    /// <summary>
-    /// 位置消息
-    /// </summary>
     public class LCIMLocationMessage : LCIMTextMessage {
-        /// <summary>
-        /// 位置
-        /// </summary>
         public LCGeoPoint Location {
             get; set;
         }

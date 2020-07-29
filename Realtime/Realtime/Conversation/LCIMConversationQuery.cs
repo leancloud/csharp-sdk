@@ -17,7 +17,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 等于
+        /// The value corresponding to key is equal to value, or the array corresponding to key contains value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -29,7 +29,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 不等于
+        /// The value corresponding to key is not equal to value, or the array corresponding to key does not contain value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -41,7 +41,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 包含
+        /// Values contains value corresponding to key, or values contains at least one element in the array corresponding to key.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="values"></param>
@@ -53,7 +53,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 不包含
+        /// The value of key must not be contained in values.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="values"></param>
@@ -65,7 +65,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 包含全部
+        /// The array corresponding to key contains all elements in values.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="values"></param>
@@ -77,7 +77,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 存在
+        /// The attribute corresponding to key exists.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -87,7 +87,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 不存在
+        /// The attribute corresponding to key does not exist. 
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -97,7 +97,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 长度等于
+        /// The size of the array corresponding to key is equal to size.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="size"></param>
@@ -109,7 +109,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 大于
+        /// The value corresponding to key is greater than value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -121,7 +121,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 大于等于
+        /// The value corresponding to key is greater than or equal to value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -133,7 +133,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 小于
+        /// The value corresponding to key is less than value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -145,7 +145,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 小于等于
+        /// The value corresponding to key is less than or equal to value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -157,7 +157,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 前缀
+        /// The string corresponding to key has a prefix.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="prefix"></param>
@@ -169,7 +169,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 后缀
+        /// The string corresponding to key has a suffix.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="suffix"></param>
@@ -180,7 +180,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 字符串包含
+        /// The string corresponding to key has a subString.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="subString"></param>
@@ -191,9 +191,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 按 key 升序
+        /// The ascending order by the value corresponding to key. 
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">Multi-field sorting is supported with comma.</param>
         /// <returns></returns>
         public LCIMConversationQuery OrderBy(string key) {
             Condition.OrderByAscending(key);
@@ -201,9 +201,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 按 key 降序
+        /// The descending order by the value corresponding to key.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">Multi-field sorting is supported with comma.</param>
         /// <returns></returns>
         public LCIMConversationQuery OrderByDescending(string key) {
             Condition.OrderByDescending(key);
@@ -211,7 +211,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 拉取 key 的完整对象
+        /// Includes nested LCObject for the provided key.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -221,7 +221,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 包含 key
+        /// Restricts the keys of the LCObject returned.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -231,7 +231,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 跳过
+        /// Sets the amount of results to skip before returning any results.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -241,7 +241,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 限制数量
+        /// Sets the limit of the number of results to return.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -255,7 +255,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 查找
+        /// Retrieves a list of LCObjects matching this query.
         /// </summary>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<LCIMConversation>> Find() {

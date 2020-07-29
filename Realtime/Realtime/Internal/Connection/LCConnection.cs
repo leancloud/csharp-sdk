@@ -10,7 +10,7 @@ using LeanCloud.Realtime.Internal.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Connection {
     /// <summary>
-    /// 连接层，只与数据协议相关
+    /// Connection layer
     /// </summary>
     public class LCConnection {
         // 请求/应答比对，即 I 相等
@@ -24,53 +24,29 @@ namespace LeanCloud.Realtime.Internal.Connection {
             }
         }
 
-        /// <summary>
-        /// 连接状态
-        /// </summary>
         enum State {
             /// <summary>
-            /// 初始状态
+            /// Initial
             /// </summary>
             None,
-            /// <summary>
-            /// 连接中
-            /// </summary>
             Connecting,
             /// <summary>
-            /// 连接成功
+            /// Connected
             /// </summary>
             Open,
-            /// <summary>
-            /// 关闭的
-            /// </summary>
             Closed,
         }
 
-        /// <summary>
-        /// 发送超时
-        /// </summary>
         private const int SEND_TIMEOUT = 10000;
 
-        /// <summary>
-        /// 最大重连次数，超过后重置 Router 缓存后再次尝试重连
-        /// </summary>
         private const int MAX_RECONNECT_TIMES = 10;
 
-        /// <summary>
-        /// 重连间隔
-        /// </summary>
         private const int RECONNECT_INTERVAL = 10000;
 
-        /// <summary>
-        /// 子协议
-        /// </summary>
         private const string SUB_PROTOCOL = "lc.protobuf2.3";
 
         internal string id;
 
-        /// <summary>
-        /// 请求回调缓存
-        /// </summary>
         private readonly Dictionary<GenericCommand, TaskCompletionSource<GenericCommand>> requestToResponses;
 
         private int requestI = 1;
@@ -134,11 +110,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
             }
         }
 
-        /// <summary>
-        /// 发送请求，会在收到应答后返回
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
         internal async Task<GenericCommand> SendRequest(GenericCommand request) {
             if (IsIdempotentCommand(request)) {
                 GenericCommand sendingReq = requestToResponses.Keys.FirstOrDefault(item => {
@@ -166,11 +137,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
             return await tcs.Task;
         }
 
-        /// <summary>
-        /// 发送命令
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
         internal async Task SendCommand(GenericCommand command) {
             LCLogger.Debug($"{id} => {FormatCommand(command)}");
             byte[] bytes = command.ToByteArray();
@@ -182,9 +148,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
             }
         }
 
-        /// <summary>
-        /// 断开连接
-        /// </summary>
         private void Disconnect() {
             state = State.Closed;
             heartBeat.Stop();
@@ -194,10 +157,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
             }
         }
 
-        /// <summary>
-        /// 消息接收回调
-        /// </summary>
-        /// <param name="bytes"></param>
         private void OnMessage(byte[] bytes) {
             try {
                 GenericCommand command = GenericCommand.Parser.ParseFrom(bytes);
@@ -241,18 +200,11 @@ namespace LeanCloud.Realtime.Internal.Connection {
             }
         }
 
-        /// <summary>
-        /// 连接断开回调
-        /// </summary>
         private void OnDisconnect() {
             Disconnect();
             _ = Reconnect();
         }
 
-        /// <summary>
-        /// 重置连接
-        /// </summary>
-        /// <returns></returns>
         internal void Reset() {
             Disconnect();
             // 重新创建连接组件
@@ -318,16 +270,10 @@ namespace LeanCloud.Realtime.Internal.Connection {
             }
         }
 
-        /// <summary>
-        /// 暂停连接
-        /// </summary>
         internal void Pause() {
             Disconnect();
         }
 
-        /// <summary>
-        ///  恢复连接
-        /// </summary>
         internal void Resume() {
             _ = Reconnect();
         }

@@ -5,7 +5,7 @@ using LeanCloud.Storage.Internal.Http;
 
 namespace LeanCloud {
     /// <summary>
-    /// LeanCloud 全局接口
+    /// LeanCloud Application
     /// </summary>
     public class LCApplication {
         // SDK 版本号，用于 User-Agent 统计

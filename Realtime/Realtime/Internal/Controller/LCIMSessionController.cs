@@ -15,10 +15,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         #region 内部接口
 
-        /// <summary>
-        /// 打开会话
-        /// </summary>
-        /// <returns></returns>
+
         internal async Task Open(bool force) {
             await Connection.Connect();
 
@@ -32,10 +29,6 @@ namespace LeanCloud.Realtime.Internal.Controller {
             Connection.Register(Client);
         }
 
-        /// <summary>
-        /// 重新打开会话，重连时调用
-        /// </summary>
-        /// <returns></returns>
         internal async Task Reopen() {
             SessionCommand session = await NewSessionCommand();
             session.R = true;
@@ -49,20 +42,14 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }
         }
 
-        /// <summary>
-        /// 关闭会话
-        /// </summary>
-        /// <returns></returns>
+
         internal async Task Close() {
             GenericCommand request = NewCommand(CommandType.Session, OpType.Close);
             await Connection.SendRequest(request);
             Connection.UnRegister(Client);
         }
 
-        /// <summary>
-        /// 获取可用 token
-        /// </summary>
-        /// <returns></returns>
+ 
         internal async Task<string> GetToken() {
             if (IsExpired) {
                 await Refresh();
@@ -134,11 +121,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             }
         }
 
-        /// <summary>
-        /// 被关闭
-        /// </summary>
-        /// <param name="session"></param>
-        /// <returns></returns>
+ 
         private void OnClosed(SessionCommand session) {
             int code = session.Code;
             string reason = session.Reason;

@@ -32,7 +32,7 @@ namespace LeanCloud.Storage {
     }
 
     /// <summary>
-    /// 查询类
+    /// A query to fetch LCObject.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class LCQuery<T> : LCQuery where T : LCObject {
@@ -42,7 +42,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 等于
+        /// The value corresponding to key is equal to value, or the array corresponding to key contains value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -53,7 +53,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 不等于
+        /// The value corresponding to key is not equal to value, or the array corresponding to key does not contain value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -64,7 +64,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 包含
+        /// Values contains value corresponding to key, or values contains at least one element in the array corresponding to key.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="values"></param>
@@ -75,7 +75,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 不包含
+        /// The value of key must not be contained in values.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="values"></param>
@@ -86,7 +86,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 包含全部
+        /// The array corresponding to key contains all elements in values.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="values"></param>
@@ -97,7 +97,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 存在
+        /// The attribute corresponding to key exists.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -107,7 +107,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 不存在
+        /// The attribute corresponding to key does not exist. 
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -117,7 +117,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 长度等于
+        /// The size of the array corresponding to key is equal to size.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="size"></param>
@@ -128,7 +128,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 大于
+        /// The value corresponding to key is greater than value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -139,7 +139,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 大于等于
+        /// The value corresponding to key is greater than or equal to value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -150,7 +150,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 小于
+        /// The value corresponding to key is less than value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -161,7 +161,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 小于等于
+        /// The value corresponding to key is less than or equal to value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -171,42 +171,23 @@ namespace LeanCloud.Storage {
             return this;
         }
 
-        /// <summary>
-        /// 相邻
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="point"></param>
-        /// <returns></returns>
         public LCQuery<T> WhereNear(string key, LCGeoPoint point) {
             Condition.WhereNear(key, point);
             return this;
         }
 
-        /// <summary>
-        /// 在坐标区域内
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="southwest"></param>
-        /// <param name="northeast"></param>
-        /// <returns></returns>
         public LCQuery<T> WhereWithinGeoBox(string key, LCGeoPoint southwest, LCGeoPoint northeast) {
             Condition.WhereWithinGeoBox(key, southwest, northeast);
             return this;
         }
 
-        /// <summary>
-        /// 相关
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public LCQuery<T> WhereRelatedTo(LCObject parent, string key) {
             Condition.WhereRelatedTo(parent, key);
             return this;
         }
 
         /// <summary>
-        /// 前缀
+        /// The string corresponding to key has a prefix.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="prefix"></param>
@@ -217,7 +198,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 后缀
+        /// The string corresponding to key has a suffix.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="suffix"></param>
@@ -228,7 +209,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 字符串包含
+        /// The string corresponding to key has a subString.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="subString"></param>
@@ -239,7 +220,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 正则匹配
+        /// Matches the regexp.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="regex"></param>
@@ -251,7 +232,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 关系查询
+        /// The value of key must match query.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="query"></param>
@@ -262,7 +243,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 不满足子查询
+        /// The value of key must not match query.
         /// </summary>
         /// <typeparam name="K"></typeparam>
         /// <param name="key"></param>
@@ -273,28 +254,20 @@ namespace LeanCloud.Storage {
             return this;
         }
 
-        /// <summary>
-        /// 按 key 升序
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
+
         public LCQuery<T> OrderByAscending(string key) {
             Condition.OrderByAscending(key);
             return this;
         }
 
-        /// <summary>
-        /// 按 key 降序
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
+
         public LCQuery<T> OrderByDescending(string key) {
             Condition.OrderByDescending(key);
             return this;
         }
 
         /// <summary>
-        /// 增加按 key 升序
+        /// Also sorts the results in ascending order by the given key.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -304,7 +277,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 增加按 key 降序
+        /// Also sorts the results in descending order by the given key.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -314,7 +287,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 拉取 key 的完整对象
+        /// Includes nested LCObject for the provided key.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -324,7 +297,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 包含 key
+        /// Restricts the keys of the LCObject returned.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -334,7 +307,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 是否包含 ACL
+        /// Includes the ALC or not.
         /// </summary>
         public bool IncludeACL {
             get {
@@ -345,7 +318,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 跳过
+        /// Sets the amount of results to skip before returning any results.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -355,7 +328,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 限制数量
+        /// Sets the limit of the number of results to return.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>

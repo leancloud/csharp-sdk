@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace LeanCloud.LiveQuery.Internal {
     /// <summary>
-    /// LiveQuery 心跳控制器
+    /// LiveQuery heartbeat controller
     /// </summary>
     internal class LCLiveQueryHeartBeat : LCHeartBeat {
         private readonly LCLiveQueryConnection connection;

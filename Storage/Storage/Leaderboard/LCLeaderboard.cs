@@ -7,121 +7,53 @@ using System.Collections.Generic;
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
-    /// <summary>
-    /// 排行榜顺序
-    /// </summary>
     public enum LCLeaderboardOrder {
-        /// <summary>
-        /// 升序
-        /// </summary>
         Ascending,
-        /// <summary>
-        /// 降序
-        /// </summary>
         Descending
     }
 
-    /// <summary>
-    /// 排行榜更新策略
-    /// </summary>
     public enum LCLeaderboardUpdateStrategy {
-        /// <summary>
-        /// 更好的
-        /// </summary>
         Better,
-        /// <summary>
-        /// 最近的
-        /// </summary>
         Last,
-        /// <summary>
-        /// 总和
-        /// </summary>
         Sum
     }
 
-    /// <summary>
-    /// 排行榜刷新频率
-    /// </summary>
     public enum LCLeaderboardVersionChangeInterval {
-        /// <summary>
-        /// 从不
-        /// </summary>
         Never,
-        /// <summary>
-        /// 每天
-        /// </summary>
         Day,
-        /// <summary>
-        /// 每周
-        /// </summary>
         Week,
-        /// <summary>
-        /// 每月
-        /// </summary>
         Month
     }
 
-    /// <summary>
-    /// 排行榜
-    /// </summary>
     public class LCLeaderboard {
-        /// <summary>
-        /// 成绩名字
-        /// </summary>
         public string StatisticName {
             get; private set;
         }
 
-        /// <summary>
-        /// 排名顺序
-        /// </summary>
         public LCLeaderboardOrder Order {
             get; private set;
         }
 
-        /// <summary>
-        /// 排名更新策略
-        /// </summary>
         public LCLeaderboardUpdateStrategy UpdateStrategy {
             get; private set;
         }
 
-        /// <summary>
-        /// 版本更新频率
-        /// </summary>
         public LCLeaderboardVersionChangeInterval VersionChangeInterval {
             get; private set;
         }
 
-        /// <summary>
-        /// 版本号
-        /// </summary>
         public int Version {
             get; private set;
         }
 
-        /// <summary>
-        /// 下次重置时间
-        /// </summary>
         public DateTime NextResetAt {
             get; private set;
         }
 
-        /// <summary>
-        /// 创建时间
-        /// </summary>
         public DateTime CreatedAt {
             get; private set;
         }
 
-        /// <summary>
-        /// 创建排行榜
-        /// </summary>
-        /// <param name="statisticName"></param>
-        /// <param name="order"></param>
-        /// <param name="updateStrategy"></param>
-        /// <param name="versionChangeInterval"></param>
-        /// <returns></returns>
         public static async Task<LCLeaderboard> CreateLeaderboard(string statisticName,
             LCLeaderboardOrder order = LCLeaderboardOrder.Descending,
             LCLeaderboardUpdateStrategy updateStrategy = LCLeaderboardUpdateStrategy.Better,
@@ -144,7 +76,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 创建只包含名称的排行榜对象
+        /// Creates an empty leaderboard with a specified name.
         /// </summary>
         /// <param name="statisticName"></param>
         /// <returns></returns>
@@ -157,23 +89,12 @@ namespace LeanCloud.Storage {
             };
         }
 
-        /// <summary>
-        /// 获取排行榜
-        /// </summary>
-        /// <param name="statisticName"></param>
-        /// <returns></returns>
         public static Task<LCLeaderboard> GetLeaderboard(string statisticName) {
             LCLeaderboard leaderboard = CreateWithoutData(statisticName);
             return leaderboard.Fetch();
         }
 
-        /// <summary>
-        /// 更新用户成绩
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="statistics"></param>
-        /// <param name="overwrite"></param>
-        /// <returns></returns>
+
         public static async Task<ReadOnlyCollection<LCStatistic>> UpdateStatistics(LCUser user,
             Dictionary<string, double> statistics,
             bool overwrite = true) {
@@ -205,12 +126,7 @@ namespace LeanCloud.Storage {
             return null;
         }
 
-        /// <summary>
-        /// 获得用户成绩
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="statisticNames"></param>
-        /// <returns></returns>
+
         public static async Task<ReadOnlyCollection<LCStatistic>> GetStatistics(LCUser user,
             IEnumerable<string> statisticNames = null) {
             if (user == null) {
@@ -234,12 +150,7 @@ namespace LeanCloud.Storage {
             return null;
         }
 
-        /// <summary>
-        /// 删除用户成绩
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="statisticNames"></param>
-        /// <returns></returns>
+ 
         public static async Task DeleteStatistics(LCUser user,
             IEnumerable<string> statisticNames) {
             if (user == null) {
@@ -254,7 +165,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 获取排行榜历史数据
+        /// Gets historical data of this leaderboard.
         /// </summary>
         /// <param name="skip"></param>
         /// <param name="limit"></param>
@@ -283,15 +194,7 @@ namespace LeanCloud.Storage {
             return null;
         }
 
-        /// <summary>
-        /// 获取排行榜结果
-        /// </summary>
-        /// <param name="version"></param>
-        /// <param name="skip"></param>
-        /// <param name="limit"></param>
-        /// <param name="selectUserKeys"></param>
-        /// <param name="includeStatistics"></param>
-        /// <returns></returns>
+
         public Task<ReadOnlyCollection<LCRanking>> GetResults(int version = -1,
             int skip = 0,
             int limit = 10,
@@ -300,15 +203,7 @@ namespace LeanCloud.Storage {
             return GetResults(null, version, skip, limit, selectUserKeys, includeStatistics);
         }
 
-        /// <summary>
-        /// 获取用户及附近的排名
-        /// </summary>
-        /// <param name="version"></param>
-        /// <param name="skip"></param>
-        /// <param name="limit"></param>
-        /// <param name="selectUserKeys"></param>
-        /// <param name="includeStatistics"></param>
-        /// <returns></returns>
+
         public async Task<ReadOnlyCollection<LCRanking>> GetResultsAroundUser(int version = -1,
             int skip = 0,
             int limit = 10,
@@ -353,11 +248,7 @@ namespace LeanCloud.Storage {
             return null;
         }
 
-        /// <summary>
-        /// 设置更新策略
-        /// </summary>
-        /// <param name="updateStrategy"></param>
-        /// <returns></returns>
+
         public async Task<LCLeaderboard> UpdateUpdateStrategy(LCLeaderboardUpdateStrategy updateStrategy) {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "updateStrategy", updateStrategy.ToString().ToLower() }
@@ -372,11 +263,7 @@ namespace LeanCloud.Storage {
             return this;
         }
 
-        /// <summary>
-        /// 设置版本更新频率
-        /// </summary>
-        /// <param name="versionChangeInterval"></param>
-        /// <returns></returns>
+
         public async Task<LCLeaderboard> UpdateVersionChangeInterval(LCLeaderboardVersionChangeInterval versionChangeInterval) {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "versionChangeInterval", versionChangeInterval.ToString().ToLower() }
@@ -392,7 +279,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 拉取排行榜数据
+        /// Fetches leaderboard data.
         /// </summary>
         /// <returns></returns>
         public async Task<LCLeaderboard> Fetch() {
@@ -403,7 +290,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 重置排行榜
+        /// Resets this leaderboard.
         /// </summary>
         /// <returns></returns>
         public async Task<LCLeaderboard> Reset() {
@@ -414,7 +301,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 销毁排行榜
+        /// Destroys this leaderboard.
         /// </summary>
         /// <returns></returns>
         public async Task Destroy() {

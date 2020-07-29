@@ -2,7 +2,7 @@
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// 消息优先级
+    /// The priority for sending messages in chatroom.
     /// </summary>
     public enum LCIMMessagePriority {
         Hight = 1,
@@ -11,32 +11,33 @@ namespace LeanCloud.Realtime {
     }
 
     /// <summary>
-    /// 发送消息选项
+    /// The options for sending message.
     /// </summary>
     public class LCIMMessageSendOptions {
         /// <summary>
-        /// 是否作为暂态消息发送
+        /// Whether this is a transient message.
         /// </summary>
         public bool Transient {
             get; set;
         }
 
         /// <summary>
-        /// 是否需要消息回执，仅在普通对话中有效
+        /// Whether receipts are needed, only for normal conversations.
         /// </summary>
         public bool Receipt {
             get; set;
         }
 
         /// <summary>
-        /// 是否作为遗愿消息发送
+        /// Whether this is a will message,
+        /// which will be sent automatically when a user goes offline unexpectedly.
         /// </summary>
         public bool Will {
             get; set;
         }
 
         /// <summary>
-        /// 消息优先级，仅在暂态对话中有效
+        /// The priority for sending messages in chatroom. 
         /// </summary>
         public LCIMMessagePriority Priority {
             get; set;

@@ -68,7 +68,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 是否是匿名登录
+        /// Checks whether this user is anonymous.
         /// </summary>
         public bool IsAnonymous => AuthData != null &&
             AuthData.ContainsKey("anonymous");
@@ -90,7 +90,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 注册
+        /// Signs up a new user.
         /// </summary>
         /// <returns></returns>
         public async Task<LCUser> SignUp() {
@@ -111,9 +111,9 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 请求登录注册码
+        /// Requests sending a login sms code.
         /// </summary>
-        /// <param name="mobile"></param>
+        /// <param name="mobile">The mobile number of an existing user</param>
         /// <returns></returns>
         public static async Task RequestLoginSMSCode(string mobile) {
             if (string.IsNullOrEmpty(mobile)) {
@@ -126,7 +126,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 使用手机号和验证码注册或登录
+        /// Signs up or signs in a user with their mobile number and verification code.
         /// </summary>
         /// <param name="mobile"></param>
         /// <param name="code"></param>
@@ -149,7 +149,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 以账号和密码登陆
+        /// Signs in a user with their username and password.
         /// </summary>
         /// <param name="username"></param>
         /// <param name="password"></param>
@@ -169,7 +169,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 以邮箱和密码登陆
+        /// Signs in a user with their email and password.
         /// </summary>
         /// <param name="email"></param>
         /// <param name="password"></param>
@@ -189,7 +189,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 以手机号和密码登陆
+        /// Signs in a user with their mobile number and password.
         /// </summary>
         /// <param name="mobile"></param>
         /// <param name="password"></param>
@@ -209,7 +209,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 以手机号和验证码登录
+        /// Signs in a user with their mobile number and verification code.
         /// </summary>
         /// <param name="mobile"></param>
         /// <param name="code"></param>
@@ -229,7 +229,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 使用第三方数据登录
+        /// Signs up or signs in a user with third party authData.
         /// </summary>
         /// <param name="authData"></param>
         /// <param name="platform"></param>
@@ -250,7 +250,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 使用第三方数据和 Union Id 登录
+        /// Signs up or signs in a user with third party authData and unionId.
         /// </summary>
         /// <param name="authData"></param>
         /// <param name="platform"></param>
@@ -276,7 +276,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 绑定第三方登录
+        /// Associates this user with a third party authData. 
         /// </summary>
         /// <param name="authData"></param>
         /// <param name="platform"></param>
@@ -292,7 +292,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 使用 Union Id 绑定第三方登录
+        /// Associates this user with a third party authData and unionId.
         /// </summary>
         /// <param name="authData"></param>
         /// <param name="platform"></param>
@@ -318,7 +318,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 解绑第三方登录
+        /// Unlinks a user from a third party platform.
         /// </summary>
         /// <param name="platform"></param>
         /// <returns></returns>
@@ -330,7 +330,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 匿名登录
+        /// Creates an anonymous user.
         /// </summary>
         /// <returns></returns>
         public static Task<LCUser> LoginAnonymously() {
@@ -341,7 +341,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 请求验证邮箱
+        /// Requests a verification email to be sent to a user's email address.
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
@@ -356,7 +356,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 请求手机验证码
+        /// Requests a verification SMS to be sent to a user's mobile number.
         /// </summary>
         /// <param name="mobile"></param>
         /// <returns></returns>
@@ -371,7 +371,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 验证手机号
+        /// Requests to verify a user's mobile number with sms code they received.
         /// </summary>
         /// <param name="mobile"></param>
         /// <param name="code"></param>
@@ -391,7 +391,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 设置当前用户
+        /// Signs in a user with a sessionToken.
         /// </summary>
         /// <param name="sessionToken"></param>
         /// <returns></returns>
@@ -410,7 +410,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 请求使用邮箱重置密码
+        /// Requests a password reset email to be sent to a user's email address.
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
@@ -426,7 +426,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 请求验证码重置密码
+        /// Requests a reset password sms code to be sent to a user's mobile number.
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
@@ -442,7 +442,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 使用验证码重置密码
+        /// Resets a user's password via mobile phone.
         /// </summary>
         /// <param name="mobile"></param>
         /// <param name="code"></param>
@@ -467,7 +467,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 更新密码
+        /// Updates newPassword safely with oldPassword.
         /// </summary>
         /// <param name="oldPassword"></param>
         /// <param name="newPassword"></param>
@@ -490,7 +490,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 注销登录
+        /// Logs out the currently logged in user session.
         /// </summary>
         public static Task Logout() {
             currentUser = null;
@@ -500,7 +500,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 是否是有效登录
+        /// Checks whether the current sessionToken is valid.
         /// </summary>
         /// <returns></returns>
         public async Task<bool> IsAuthenticated() {
@@ -516,7 +516,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 得到 LCUser 类型的查询对象
+        /// Constructs a LCQuery for LCUser.
         /// </summary>
         /// <returns></returns>
         public static LCQuery<LCUser> GetQuery() {
@@ -557,7 +557,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 请求修改手机号验证码
+        /// Requests an SMS code for updating phone number.
         /// </summary>
         /// <param name="mobile"></param>
         /// <param name="ttl"></param>
@@ -576,7 +576,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// 验证修改手机号验证码
+        /// Verify code for updating phone number.
         /// </summary>
         /// <param name="mobile"></param>
         /// <param name="code"></param>

@@ -2,16 +2,10 @@
 
 namespace LeanCloud.Storage {
     public class LCGeoPoint {
-        /// <summary>
-        /// 纬度
-        /// </summary>
         public double Latitude {
             get;
         }
 
-        /// <summary>
-        /// 经度
-        /// </summary>
         public double Longitude {
             get;
         }
@@ -27,11 +21,6 @@ namespace LeanCloud.Storage {
             }
         }
 
-        /// <summary>
-        /// 据某点的距离（单位：千米）
-        /// </summary>
-        /// <param name="point"></param>
-        /// <returns></returns>
         public double KilometersTo(LCGeoPoint point) {
             if (point == null) {
                 throw new ArgumentNullException(nameof(point));
@@ -39,11 +28,6 @@ namespace LeanCloud.Storage {
             return RadiansTo(point) * 6371.0;
         }
 
-        /// <summary>
-        /// 据某点的距离（单位：英里）
-        /// </summary>
-        /// <param name="point"></param>
-        /// <returns></returns>
         public double MilesTo(LCGeoPoint point) {
             if (point == null) {
                 throw new ArgumentNullException(nameof(point));
@@ -51,11 +35,6 @@ namespace LeanCloud.Storage {
             return RadiansTo(point) * 3958.8;
         }
 
-        /// <summary>
-        /// 据某点的距离（单位：弧度）
-        /// </summary>
-        /// <param name="point"></param>
-        /// <returns></returns>
         public double RadiansTo(LCGeoPoint point) {
             if (point == null) {
                 throw new ArgumentNullException(nameof(point));

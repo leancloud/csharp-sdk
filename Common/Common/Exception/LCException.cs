@@ -2,18 +2,18 @@
 
 namespace LeanCloud {
     /// <summary>
-    /// LeanCloud 异常
+    /// LeanCloud Exceptions
     /// </summary>
     public class LCException : Exception {
         /// <summary>
-        /// 错误码
+        /// Error code
         /// </summary>
         public int Code {
             get; set;
         }
 
         /// <summary>
-        /// 错误信息
+        /// Error message
         /// </summary>
         public new string Message {
             get; set;

@@ -7,32 +7,32 @@ using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// 普通对话
+    /// Conversation
     /// </summary>
     public class LCIMConversation {
         /// <summary>
-        /// 对话 Id
+        /// The ID of this conversation
         /// </summary>
         public string Id {
             get; internal set;
         }
 
         /// <summary>
-        /// 是否唯一
+        /// Indicates whether this conversation is normal and unique. The uniqueness is based on the members when creating. 
         /// </summary>
         public bool Unique {
             get; internal set;
         }
 
         /// <summary>
-        /// 唯一 Id
+        /// If this conversation is unique, then it will have a unique ID.
         /// </summary>
         public string UniqueId {
             get; internal set;
         }
 
         /// <summary>
-        /// 对话名称
+        /// The name of this conversation.
         /// </summary>
         public string Name {
             get {
@@ -44,14 +44,14 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 创建者 Id
+        /// The creator of this conversation.
         /// </summary>
         public string CreatorId {
             get; set;
         }
 
         /// <summary>
-        /// 成员 Id
+        /// The members of this conversation.
         /// </summary>
         public ReadOnlyCollection<string> MemberIds {
             get {
@@ -60,7 +60,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 静音成员 Id
+        /// Muted members of this conversation.
         /// </summary>
         public ReadOnlyCollection<string> MutedMemberIds {
             get {
@@ -69,42 +69,42 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 未读消息数量
+        /// The count of the unread messages.
         /// </summary>
         public int Unread {
             get; internal set;
         }
 
         /// <summary>
-        /// 最新的一条消息
+        /// The last message in this conversation.
         /// </summary>
         public LCIMMessage LastMessage {
             get; internal set;
         }
 
         /// <summary>
-        /// 创建时间
+        /// The created date of this conversation. 
         /// </summary>
         public DateTime CreatedAt {
             get; internal set;
         }
 
         /// <summary>
-        /// 更新时间
+        /// The last updated date of this conversation.
         /// </summary>
         public DateTime UpdatedAt {
             get; internal set;
         }
 
         /// <summary>
-        /// 最新送达消息时间戳
+        /// The last timestamp of the delivered message.
         /// </summary>
         public long LastDeliveredTimestamp {
             get; internal set;
         }
 
         /// <summary>
-        /// 最新送达消息时间
+        /// The last date of the delivered message.
         /// </summary>
         public DateTime LastDeliveredAt {
             get {
@@ -114,14 +114,14 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 最新已读消息时间戳
+        /// The last timestamp of the message which has been read by other clients.
         /// </summary>
         public long LastReadTimestamp {
             get; internal set;
         }
 
         /// <summary>
-        /// 最新已读消息时间
+        /// The last date of the message which has been read by other clients. 
         /// </summary>
         public DateTime LastReadAt {
             get {
@@ -131,9 +131,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 设置/获取对话属性
+        /// Custom attributes.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">Custom attribute name.</param>
         /// <returns></returns>
         public object this[string key] {
             get {
@@ -145,7 +145,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 是否已静音
+        /// Indicates whether offline notifications about this conversation has been muted.
         /// </summary>
         public bool IsMute {
             get; private set;
@@ -170,7 +170,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 获取对话人数，或暂态对话的在线人数
+        /// The count of members of this conversation.
         /// </summary>
         /// <returns></returns>
         public async Task<int> GetMembersCount() {
@@ -178,7 +178,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 将该会话标记为已读
+        /// Mark the last message of this conversation as read.
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -191,9 +191,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 修改对话属性
+        /// Update attributes of this conversation.
         /// </summary>
-        /// <param name="attributes"></param>
+        /// <param name="attributes">Attributes to update.</param>
         /// <returns></returns>
         public async Task UpdateInfo(Dictionary<string, object> attributes) {
             if (attributes == null || attributes.Count == 0) {
@@ -206,9 +206,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 添加用户到对话
+        /// Adds members to this conversation.
         /// </summary>
-        /// <param name="clientIds">用户 Id</param>
+        /// <param name="clientIds">Member list.</param>
         /// <returns></returns>
         public virtual async Task<LCIMPartiallySuccessResult> AddMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
@@ -220,9 +220,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 删除用户
+        /// Removes members from this conversation.
         /// </summary>
-        /// <param name="removeIds">用户 Id</param>
+        /// <param name="removeIds">Member list.</param>
         /// <returns></returns>
         public async Task<LCIMPartiallySuccessResult> RemoveMembers(IEnumerable<string> removeIds) {
             if (removeIds == null || removeIds.Count() == 0) {
@@ -234,7 +234,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 加入对话
+        /// Joins this conversation.
         /// </summary>
         /// <returns></returns>
         public async Task Join() {
@@ -249,7 +249,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 离开对话
+        /// Leaves this conversation.
         /// </summary>
         /// <returns></returns>
         public async Task Quit() {
@@ -261,9 +261,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 发送消息
+        /// Sends a message in this conversation.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">The message to send.</param>
         /// <returns></returns>
         public async Task<LCIMMessage> Send(LCIMMessage message,
             LCIMMessageSendOptions options = null) {
@@ -279,7 +279,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 静音
+        /// Turns off the offline notifications of this conversation.
         /// </summary>
         /// <returns></returns>
         public async Task Mute() {
@@ -288,7 +288,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 取消静音
+        /// Turns on the offline notifications of this conversation. 
         /// </summary>
         /// <returns></returns>
         public async Task Unmute() {
@@ -297,9 +297,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 禁言
+        /// Mutes members of this conversation.
         /// </summary>
-        /// <param name="clientIds"></param>
+        /// <param name="clientIds">Member list.</param>
         /// <returns></returns>
         public async Task<LCIMPartiallySuccessResult> MuteMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
@@ -313,9 +313,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 取消禁言
+        /// Unmutes members of this conversation.
         /// </summary>
-        /// <param name="clientIdList"></param>
+        /// <param name="clientIdList">Member list.</param>
         /// <returns></returns>
         public async Task<LCIMPartiallySuccessResult> UnmuteMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
@@ -329,9 +329,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 将用户加入黑名单
+        /// Adds members to the blocklist of this conversation.
         /// </summary>
-        /// <param name="clientIds"></param>
+        /// <param name="clientIds">Member list.</param>
         /// <returns></returns>
         public async Task<LCIMPartiallySuccessResult> BlockMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
@@ -341,9 +341,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 将用户移除黑名单
+        /// Removes members from the blocklist of this conversation. 
         /// </summary>
-        /// <param name="clientIds"></param>
+        /// <param name="clientIds">Member list.</param>
         /// <returns></returns>
         public async Task<LCIMPartiallySuccessResult> UnblockMembers(IEnumerable<string> clientIds) {
             if (clientIds == null || clientIds.Count() == 0) {
@@ -353,9 +353,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 撤回消息
+        /// Recalls a sent message.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">The message to recall.</param>
         /// <returns></returns>
         public async Task RecallMessage(LCIMMessage message) {
             if (message == null) {
@@ -365,10 +365,10 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 修改消息
+        /// Updates a sent message.
         /// </summary>
-        /// <param name="oldMessage"></param>
-        /// <param name="newMessage"></param>
+        /// <param name="oldMessage">The message to update.</param>
+        /// <param name="newMessage">The updated message.</param>
         /// <returns></returns>
         public async Task UpdateMessage(LCIMMessage oldMessage, LCIMMessage newMessage) {
             if (oldMessage == null) {
@@ -381,10 +381,10 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 更新对话中成员的角色
+        /// Updates the role of a member of this conversation.
         /// </summary>
-        /// <param name="memberId"></param>
-        /// <param name="role"></param>
+        /// <param name="memberId">The member to update.</param>
+        /// <param name="role">The new role of the member.</param>
         /// <returns></returns>
         public async Task UpdateMemberRole(string memberId, string role) {
             if (string.IsNullOrEmpty(memberId)) {
@@ -397,7 +397,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 获取对话中成员的角色（只返回管理员）
+        /// Gets all member roles.
         /// </summary>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<LCIMConversationMemberInfo>> GetAllMemberInfo() {
@@ -405,9 +405,9 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 获取对话中指定成员的角色
+        /// Gets the role of a specific member.
         /// </summary>
-        /// <param name="memberId"></param>
+        /// <param name="memberId">The member to query.</param>
         /// <returns></returns>
         public async Task<LCIMConversationMemberInfo> GetMemberInfo(string memberId) {
             if (string.IsNullOrEmpty(memberId)) {
@@ -423,10 +423,10 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 查询禁言用户
+        /// Queries muted members.
         /// </summary>
-        /// <param name="limit"></param>
-        /// <param name="next"></param>
+        /// <param name="limit">Limits the number of returned results.</param>
+        /// <param name="next">Can be used for pagination with the limit parameter.</param>
         /// <returns></returns>
         public async Task<LCIMPageResult> QueryMutedMembers(int limit = 10,
             string next = null) {
@@ -434,10 +434,10 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 查询黑名单用户
+        /// Queries blocked members.
         /// </summary>
-        /// <param name="limit">限制</param>
-        /// <param name="next">其实用户 Id</param>
+        /// <param name="limit">Limits the number of returned results.</param>
+        /// <param name="next">Can be used for pagination with the limit parameter.</param>
         /// <returns></returns>
         public async Task<LCIMPageResult> QueryBlockedMembers(int limit = 10,
             string next = null) {
@@ -445,13 +445,13 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 查询聊天记录
+        /// Retrieves messages.
         /// </summary>
-        /// <param name="start">起点</param>
-        /// <param name="end">终点</param>
-        /// <param name="direction">查找方向</param>
-        /// <param name="limit">限制</param>
-        /// <param name="messageType">消息类型</param>
+        /// <param name="start">Start message ID.</param>
+        /// <param name="end">End message ID.</param>
+        /// <param name="direction">Query direction (defaults to NewToOld).</param>
+        /// <param name="limit">Limits the number of returned results. Its default value is 20.</param>
+        /// <param name="messageType">The message type to query. The default value is 0 (text message).</param>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<LCIMMessage>> QueryMessages(LCIMMessageQueryEndpoint start = null,
             LCIMMessageQueryEndpoint end = null,
@@ -462,7 +462,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// 获取会话已收/已读时间戳
+        /// Fetches receipt timestamp.
         /// </summary>
         /// <returns></returns>
         public async Task FetchReciptTimestamps() {
