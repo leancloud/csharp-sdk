@@ -79,19 +79,31 @@ namespace LeanCloud.Storage {
                 string key = uploadToken["key"] as string;
                 string token = uploadToken["token"] as string;
                 string provider = uploadToken["provider"] as string;
-                if (provider == "s3") {
-                    // AWS
-                    LCAWSUploader uploader = new LCAWSUploader(uploadUrl, MimeType, data);
-                    await uploader.Upload(onProgress);
-                } else if (provider == "qiniu") {
-                    // Qiniu
-                    LCQiniuUploader uploader = new LCQiniuUploader(uploadUrl, token, key, data);
-                    await uploader.Upload(onProgress);
-                } else {
-                    throw new Exception($"{provider} is not support.");
+                try {
+                    if (provider == "s3") {
+                        // AWS
+                        LCAWSUploader uploader = new LCAWSUploader(uploadUrl, MimeType, data);
+                        await uploader.Upload(onProgress);
+                    } else if (provider == "qiniu") {
+                        // Qiniu
+                        LCQiniuUploader uploader = new LCQiniuUploader(uploadUrl, token, key, data);
+                        await uploader.Upload(onProgress);
+                    } else {
+                        throw new Exception($"{provider} is not support.");
+                    }
+                    LCObjectData objectData = LCObjectData.Decode(uploadToken);
+                    Merge(objectData);
+                    _ = LCApplication.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
+                        { "result", true },
+                        { "token", token }
+                    });
+                } catch (Exception e) {
+                    _ = LCApplication.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
+                        { "result", false },
+                        { "token", token }
+                    });
+                    throw e;
                 }
-                LCObjectData objectData = LCObjectData.Decode(uploadToken);
-                Merge(objectData);
             }
             return this;
         }
