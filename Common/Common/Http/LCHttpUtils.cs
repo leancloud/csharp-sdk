@@ -5,6 +5,9 @@ using System.Net.Http;
 namespace LeanCloud.Common {
     public static class LCHttpUtils {
         public static void PrintRequest(HttpClient client, HttpRequestMessage request, string content = null) {
+            if (LCLogger.LogDelegate == null) {
+                return;
+            }
             if (client == null) {
                 return;
             }
@@ -35,6 +38,9 @@ namespace LeanCloud.Common {
         }
 
         public static void PrintResponse(HttpResponseMessage response, string content = null) {
+            if (LCLogger.LogDelegate == null) {
+                return;
+            }
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("=== HTTP Response Start ===");
             sb.AppendLine($"URL: {response.RequestMessage.RequestUri}");
