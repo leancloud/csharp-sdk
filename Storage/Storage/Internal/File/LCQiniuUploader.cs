@@ -1,32 +1,32 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using LeanCloud.Common;
 
 namespace LeanCloud.Storage.Internal.File {
     internal class LCQiniuUploader {
-        string uploadUrl;
+        private string uploadUrl;
 
-        string token;
+        private string token;
 
-        string key;
+        private string key;
 
-        byte[] data;
+        private Stream stream;
 
-        internal LCQiniuUploader(string uploadUrl, string token, string key, byte[] data) {
+        internal LCQiniuUploader(string uploadUrl, string token, string key, Stream stream) {
             this.uploadUrl = uploadUrl;
             this.token = token;
             this.key = key;
-            this.data = data;
+            this.stream = stream;
         }
 
         internal async Task Upload(Action<long, long> onProgress) {
             MultipartFormDataContent dataContent = new MultipartFormDataContent();
             dataContent.Add(new StringContent(key), "key");
             dataContent.Add(new StringContent(token), "token");
-            dataContent.Add(new ByteArrayContent(data), "file");
+            dataContent.Add(new StreamContent(stream), "file");
 
             LCProgressableStreamContent content = new LCProgressableStreamContent(dataContent, onProgress);
 
