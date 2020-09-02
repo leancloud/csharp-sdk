@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -7,20 +8,20 @@ using LeanCloud.Common;
 
 namespace LeanCloud.Storage.Internal.File {
     internal class LCAWSUploader {
-        string uploadUrl;
+        private string uploadUrl;
 
-        string mimeType;
+        private string mimeType;
 
-        byte[] data;
+        private Stream stream;
 
-        internal LCAWSUploader(string uploadUrl, string mimeType, byte[] data) {
+        internal LCAWSUploader(string uploadUrl, string mimeType, Stream stream) {
             this.uploadUrl = uploadUrl;
             this.mimeType = mimeType;
-            this.data = data;
+            this.stream = stream;
         }
 
         internal async Task Upload(Action<long, long> onProgress) {
-            LCProgressableStreamContent content = new LCProgressableStreamContent(new ByteArrayContent(data), onProgress);
+            LCProgressableStreamContent content = new LCProgressableStreamContent(new StreamContent(stream), onProgress);
 
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(uploadUrl),

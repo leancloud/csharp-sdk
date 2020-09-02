@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LeanCloud.Storage.Internal.File;
 using LeanCloud.Storage.Internal.Object;
-using LeanCloud.Common;
 
 namespace LeanCloud.Storage {
     public class LCFile : LCObject {
@@ -42,7 +41,7 @@ namespace LeanCloud.Storage {
             }
         }
 
-        readonly byte[] data;
+        readonly Stream stream;
 
         public LCFile() : base(CLASS_NAME) {
             MetaData = new Dictionary<string, object>();
@@ -50,13 +49,13 @@ namespace LeanCloud.Storage {
 
         public LCFile(string name, byte[] bytes) : this() {
             Name = name;
-            data = bytes;
+            stream = new MemoryStream(bytes);
         }
 
         public LCFile(string name, string path) : this() {
             Name = name;
             MimeType = LCMimeTypeMap.GetMimeType(path);
-            data = File.ReadAllBytes(path);
+            stream = new FileStream(path, FileMode.Open);
         }
 
         public LCFile(string name, Uri url) : this() {
@@ -82,11 +81,11 @@ namespace LeanCloud.Storage {
                 try {
                     if (provider == "s3") {
                         // AWS
-                        LCAWSUploader uploader = new LCAWSUploader(uploadUrl, MimeType, data);
+                        LCAWSUploader uploader = new LCAWSUploader(uploadUrl, MimeType, stream);
                         await uploader.Upload(onProgress);
                     } else if (provider == "qiniu") {
                         // Qiniu
-                        LCQiniuUploader uploader = new LCQiniuUploader(uploadUrl, token, key, data);
+                        LCQiniuUploader uploader = new LCQiniuUploader(uploadUrl, token, key, stream);
                         await uploader.Upload(onProgress);
                     } else {
                         throw new Exception($"{provider} is not support.");
