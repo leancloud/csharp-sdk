@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <ReleaseVersion>0.4.2</ReleaseVersion>
+    <AssemblyName>LiveQuery</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
