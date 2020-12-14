@@ -37,8 +37,6 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
-        #region 事件
-
         #region 连接状态事件
 
         /// <summary>
@@ -216,8 +214,6 @@ namespace LeanCloud.Realtime {
         public Action OnLastReadAtUpdated {
             get; set;
         }
-
-        #endregion
 
         #endregion
 

@@ -5,7 +5,7 @@ namespace LeanCloud.Realtime {
     /// The priority for sending messages in chatroom.
     /// </summary>
     public enum LCIMMessagePriority {
-        Hight = 1,
+        High = 1,
         Normal = 2,
         Low = 3
     }
