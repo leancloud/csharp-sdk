@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using LeanCloud.Storage;
+using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime {
     public class LCIMFileMessage : LCIMTextMessage {
@@ -123,6 +124,12 @@ namespace LeanCloud.Realtime {
                         }
                     }
                 }
+            }
+        }
+
+        internal override async Task PrepareSend() {
+            if (File != null && string.IsNullOrEmpty(File.ObjectId)) {
+                await File.Save();
             }
         }
     }

@@ -273,6 +273,7 @@ namespace LeanCloud.Realtime {
             if (options == null) {
                 options = LCIMMessageSendOptions.Default;
             }
+            await message.PrepareSend();
             await Client.MessageController.Send(Id, message, options);
             LastMessage = message;
             return message;
@@ -450,13 +451,13 @@ namespace LeanCloud.Realtime {
         /// <param name="start">Start message ID.</param>
         /// <param name="end">End message ID.</param>
         /// <param name="direction">Query direction (defaults to NewToOld).</param>
-        /// <param name="limit">Limits the number of returned results. Its default value is 20.</param>
+        /// <param name="limit">Limits the number of returned results. Its default value is 100.</param>
         /// <param name="messageType">The message type to query. The default value is 0 (text message).</param>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<LCIMMessage>> QueryMessages(LCIMMessageQueryEndpoint start = null,
             LCIMMessageQueryEndpoint end = null,
             LCIMMessageQueryDirection direction = LCIMMessageQueryDirection.NewToOld,
-            int limit = 20,
+            int limit = 100,
             int messageType = 0) {
             return await Client.MessageController.QueryMessages(Id, start, end, direction, limit, messageType);
         }
