@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.ObjectModel;
-using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
     /// <summary>
@@ -470,6 +469,17 @@ namespace LeanCloud.Realtime {
             await Client.ConversationController.FetchReciptTimestamp(Id);
         }
 
+        /// <summary>
+        /// Fetch conversation from server.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<LCIMConversation> Fetch() {
+            LCIMConversationQuery query = new LCIMConversationQuery(Client);
+            query.WhereEqualTo("objectId", Id);
+            await query.Find();
+            return this;
+        }
+
         internal static bool IsTemporayConversation(string convId) {
             return convId.StartsWith("_tmp:");
         }
@@ -504,9 +514,28 @@ namespace LeanCloud.Realtime {
                 IEnumerable<string> ids = (muo as IList<object>).Cast<string>();
                 mutedIds = new HashSet<string>(ids);
             }
-            //if (conv.TryGetValue("lm", out object lmo)) {
-            //    LastMessageAt = (DateTime)LCDecoder.Decode(lmo);
-            //}
+            if (conv.TryGetValue("msg", out object msgo)) {
+                if (conv.TryGetValue("bin", out object bino)) {
+                    string msg = msgo as string;
+                    bool bin = (bool)bino;
+                    if (bin) {
+                        byte[] bytes = Convert.FromBase64String(msg);
+                        LastMessage = LCIMBinaryMessage.Deserialize(bytes);
+                    } else {
+                        LastMessage = LCIMTypedMessage.Deserialize(msg);
+                    }
+                }
+                LastMessage.ConversationId = Id;
+                if (conv.TryGetValue("msg_mid", out object msgId)) {
+                    LastMessage.Id = msgId as string;
+                }
+                if (conv.TryGetValue("msg_from", out object msgFrom)) {
+                    LastMessage.FromClientId = msgFrom as string;
+                }
+                if (conv.TryGetValue("msg_timestamp", out object timestamp)) {
+                    LastMessage.SentTimestamp = (long)timestamp;
+                }
+            }
         }
 
         internal void MergeInfo(Dictionary<string, object> attr) {

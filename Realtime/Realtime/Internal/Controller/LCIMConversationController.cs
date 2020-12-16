@@ -355,6 +355,22 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     LCLogger.Error(e);
                 }
             }
+            int flag = 0;
+            if (query.Compact) {
+                flag += LCIMConversationQuery.CompactFlag;
+            }
+            if (query.WithLastMessageRefreshed) {
+                flag += LCIMConversationQuery.WithLastMessageFlag;
+            }
+            if (flag > 0) {
+                convMessage.Flag = flag;
+            }
+            convMessage.Skip = query.Condition.Skip;
+            convMessage.Limit = query.Condition.Limit;
+            string orders = query.Condition.BuildOrders();
+            if (!string.IsNullOrEmpty(orders)) {
+                convMessage.Sort = orders;
+            }
             command.ConvMessage = convMessage;
             GenericCommand response = await Connection.SendRequest(command);
             JsonObjectMessage results = response.ConvMessage.Results;

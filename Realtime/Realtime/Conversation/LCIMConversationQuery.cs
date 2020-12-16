@@ -5,11 +5,28 @@ using LeanCloud.Storage.Internal.Query;
 
 namespace LeanCloud.Realtime {
     public class LCIMConversationQuery {
+        internal const int CompactFlag = 0x1;
+        internal const int WithLastMessageFlag = 0x2;
+
         internal LCCompositionalCondition Condition {
             get; private set;
         }
 
         private readonly LCIMClient client;
+
+        /// <summary>
+        /// Ignore the members of conversation.
+        /// </summary>
+        public bool Compact {
+            get; set;
+        } = false;
+
+        /// <summary>
+        /// With the last message.
+        /// </summary>
+        public bool WithLastMessageRefreshed {
+            get; set;
+        } = false;
 
         public LCIMConversationQuery(LCIMClient client) {
             Condition = new LCCompositionalCondition();
@@ -248,10 +265,6 @@ namespace LeanCloud.Realtime {
         public LCIMConversationQuery Limit(int value) {
             Condition.Limit = value;
             return this;
-        }
-
-        public bool WithLastMessageRefreshed {
-            get; set;
         }
 
         /// <summary>

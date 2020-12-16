@@ -212,14 +212,17 @@ namespace LeanCloud.Storage.Internal.Query {
             if (conditionList != null && conditionList.Count > 0) {
                 dict["where"] = JsonConvert.SerializeObject(Encode());
             }
-            if (orderByList != null && orderByList.Count > 0) {
-                dict["order"] = string.Join(",", orderByList);
+            string order = BuildOrders();
+            if (!string.IsNullOrEmpty(order)) {
+                dict["order"] = order;
             }
-            if (includes != null && includes.Count > 0) {
-                dict["include"] = string.Join(",", includes);
+            string includes = BuildIncludes();
+            if (!string.IsNullOrEmpty(includes)) {
+                dict["include"] = includes;
             }
-            if (selectedKeys != null && selectedKeys.Count > 0) {
-                dict["keys"] = string.Join(",", selectedKeys);
+            string keys = BuildKeys();
+            if (!string.IsNullOrEmpty(keys)) {
+                dict["keys"] = keys;
             }
             if (IncludeACL) {
                 dict["returnACL"] = "true";
@@ -232,6 +235,27 @@ namespace LeanCloud.Storage.Internal.Query {
                 return null;
             }
             return JsonConvert.SerializeObject(Encode()); 
+        }
+
+        public string BuildOrders() {
+            if (orderByList != null && orderByList.Count > 0) {
+                return string.Join(",", orderByList);
+            }
+            return null;
+        }
+
+        public string BuildIncludes() {
+            if (includes != null && includes.Count > 0) {
+                return string.Join(",", includes);
+            }
+            return null;
+        }
+
+        public string BuildKeys() {
+            if (selectedKeys != null && selectedKeys.Count > 0) {
+                return string.Join(",", selectedKeys);
+            }
+            return null;
         }
     }
 }
