@@ -234,15 +234,15 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 message.MentionIdList.Contains(Client.Id);
             message.PatchedTimestamp = direct.PatchTimestamp;
             message.IsTransient = direct.Transient;
-            // 通知服务端已接收
-            if (!message.IsTransient) {
-                // 只有非暂态消息才需要发送 ack
-                _ = Ack(message.ConversationId, message.Id);
-            }
             // 获取对话
             LCIMConversation conversation = await Client.GetOrQueryConversation(direct.Cid);
             conversation.Unread++;
             conversation.LastMessage = message;
+            // 通知服务端已接收
+            if (!(conversation is LCIMChatRoom) && !message.IsTransient) {
+                // 只有非暂态消息才需要发送 ack
+                _ = Ack(message.ConversationId, message.Id);
+            }
             Client.OnMessage?.Invoke(conversation, message);
         }
 
