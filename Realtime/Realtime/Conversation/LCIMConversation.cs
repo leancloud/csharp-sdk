@@ -181,7 +181,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task Read() {
+        public virtual async Task Read() {
             if (LastMessage == null) {
                 return;
             }
