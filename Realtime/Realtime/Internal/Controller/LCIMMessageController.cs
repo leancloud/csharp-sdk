@@ -285,8 +285,16 @@ namespace LeanCloud.Realtime.Internal.Controller {
             LCIMConversation conversation = await Client.GetOrQueryConversation(convId);
             if (isRead) {
                 Client.OnMessageRead?.Invoke(conversation, msgId);
+                if (timestamp > conversation.LastReadTimestamp) {
+                    conversation.LastReadTimestamp = timestamp;
+                    Client.OnLastReadAtUpdated?.Invoke(conversation);
+                }
             } else {
                 Client.OnMessageDelivered?.Invoke(conversation, msgId);
+                if (timestamp > conversation.LastDeliveredTimestamp) {
+                    conversation.LastDeliveredTimestamp = timestamp;
+                    Client.OnLastDeliveredAtUpdated?.Invoke(conversation);
+                }
             }
         }
 

@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using LeanCloud.Storage.Internal.Query;
+using System.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace LeanCloud.Realtime {
     public class LCIMConversationQuery {
@@ -273,6 +276,16 @@ namespace LeanCloud.Realtime {
         /// <returns></returns>
         public async Task<ReadOnlyCollection<LCIMConversation>> Find() {
             return await client.ConversationController.Find(this);
+        }
+
+        /// <summary>
+        /// Retrieves the first conversation from the query.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<LCIMConversation> First() {
+            Limit(1);
+            ReadOnlyCollection<LCIMConversation> conversations = await Find();
+            return conversations?.First();
         }
     }
 }

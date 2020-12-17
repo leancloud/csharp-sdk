@@ -204,14 +204,14 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// Occurs when the last delivered message is updated.
         /// </summary>
-        public Action OnLastDeliveredAtUpdated {
+        public Action<LCIMConversation> OnLastDeliveredAtUpdated {
             get; set;
         }
 
         /// <summary>
-        /// Occurs when the last delivered message is updated.
+        /// Occurs when the last read message is updated.
         /// </summary>
-        public Action OnLastReadAtUpdated {
+        public Action<LCIMConversation> OnLastReadAtUpdated {
             get; set;
         }
 
