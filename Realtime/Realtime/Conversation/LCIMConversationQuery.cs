@@ -287,5 +287,18 @@ namespace LeanCloud.Realtime {
             ReadOnlyCollection<LCIMConversation> conversations = await Find();
             return conversations?.First();
         }
+
+        /// <summary>
+        /// Retrieves the conversation 
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <returns></returns>
+        public Task<LCIMConversation> Get(string convId) {
+            if (string.IsNullOrEmpty(convId)) {
+                throw new ArgumentNullException(nameof(convId));
+            }
+            WhereEqualTo("objectId", convId);
+            return First();
+        }
     }
 }
