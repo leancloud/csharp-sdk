@@ -289,7 +289,7 @@ namespace LeanCloud.Realtime {
         }
 
         /// <summary>
-        /// Retrieves the conversation 
+        /// Retrieves the conversation.
         /// </summary>
         /// <param name="convId"></param>
         /// <returns></returns>

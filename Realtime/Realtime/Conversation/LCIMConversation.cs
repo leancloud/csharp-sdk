@@ -179,7 +179,6 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// Mark the last message of this conversation as read.
         /// </summary>
-        /// <param name="message"></param>
         /// <returns></returns>
         public virtual async Task Read() {
             if (LastMessage == null) {
@@ -259,10 +258,13 @@ namespace LeanCloud.Realtime {
             }
         }
 
+
+
         /// <summary>
         /// Sends a message in this conversation.
         /// </summary>
         /// <param name="message">The message to send.</param>
+        /// <param name="options">The options of sending message.</param>
         /// <returns></returns>
         public async Task<LCIMMessage> Send(LCIMMessage message,
             LCIMMessageSendOptions options = null) {
@@ -456,7 +458,7 @@ namespace LeanCloud.Realtime {
         public async Task<ReadOnlyCollection<LCIMMessage>> QueryMessages(LCIMMessageQueryEndpoint start = null,
             LCIMMessageQueryEndpoint end = null,
             LCIMMessageQueryDirection direction = LCIMMessageQueryDirection.NewToOld,
-            int limit = 100,
+            int limit = 20,
             int messageType = 0) {
             return await Client.MessageController.QueryMessages(Id, start, end, direction, limit, messageType);
         }
