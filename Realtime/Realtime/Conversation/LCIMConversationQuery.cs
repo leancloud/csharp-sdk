@@ -2,14 +2,34 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using LeanCloud.Storage.Internal.Query;
+using System.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace LeanCloud.Realtime {
     public class LCIMConversationQuery {
+        internal const int CompactFlag = 0x1;
+        internal const int WithLastMessageFlag = 0x2;
+
         internal LCCompositionalCondition Condition {
             get; private set;
         }
 
         private readonly LCIMClient client;
+
+        /// <summary>
+        /// Ignore the members of conversation.
+        /// </summary>
+        public bool Compact {
+            get; set;
+        } = false;
+
+        /// <summary>
+        /// With the last message.
+        /// </summary>
+        public bool WithLastMessageRefreshed {
+            get; set;
+        } = false;
 
         public LCIMConversationQuery(LCIMClient client) {
             Condition = new LCCompositionalCondition();
@@ -250,16 +270,35 @@ namespace LeanCloud.Realtime {
             return this;
         }
 
-        public bool WithLastMessageRefreshed {
-            get; set;
-        }
-
         /// <summary>
         /// Retrieves a list of LCObjects matching this query.
         /// </summary>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<LCIMConversation>> Find() {
             return await client.ConversationController.Find(this);
+        }
+
+        /// <summary>
+        /// Retrieves the first conversation from the query.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<LCIMConversation> First() {
+            Limit(1);
+            ReadOnlyCollection<LCIMConversation> conversations = await Find();
+            return conversations?.First();
+        }
+
+        /// <summary>
+        /// Retrieves the conversation.
+        /// </summary>
+        /// <param name="convId"></param>
+        /// <returns></returns>
+        public Task<LCIMConversation> Get(string convId) {
+            if (string.IsNullOrEmpty(convId)) {
+                throw new ArgumentNullException(nameof(convId));
+            }
+            WhereEqualTo("objectId", convId);
+            return First();
         }
     }
 }

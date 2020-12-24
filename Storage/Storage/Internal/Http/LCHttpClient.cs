@@ -206,7 +206,7 @@ namespace LeanCloud.Storage.Internal.Http {
             }
             // 当前用户 Session Token
             LCUser currentUser = await LCUser.GetCurrent();
-            if (currentUser != null) {
+            if (!headers.Contains("X-LC-Session") && currentUser != null) {
                 headers.Add("X-LC-Session", currentUser.SessionToken);
             }
         }

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ReleaseVersion>0.4.2</ReleaseVersion>
+    <AssemblyName>Common</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -430,7 +430,7 @@ namespace LeanCloud.Storage {
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public static async Task RequestPasswordRestBySmsCode(string mobile) {
+        public static async Task RequestPasswordResetBySmsCode(string mobile) {
             if (string.IsNullOrEmpty(mobile)) {
                 throw new ArgumentNullException(nameof(mobile));
             }

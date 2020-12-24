@@ -346,20 +346,12 @@ namespace LeanCloud.Storage {
             return (int)ret["count"];
         }
 
-        public async Task<T> Get(string objectId) {
+        public Task<T> Get(string objectId) {
             if (string.IsNullOrEmpty(objectId)) {
                 throw new ArgumentNullException(nameof(objectId));
             }
             WhereEqualTo("objectId", objectId);
-            Limit(1);
-            ReadOnlyCollection<T> results = await Find();
-            if (results != null) {
-                if (results.Count == 0) {
-                    return null;
-                }
-                return results[0];
-            }
-            return null;
+            return First();
         }
 
         public async Task<ReadOnlyCollection<T>> Find() {

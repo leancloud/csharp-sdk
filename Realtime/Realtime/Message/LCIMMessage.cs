@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime {
     /// <summary>
@@ -124,6 +125,10 @@ namespace LeanCloud.Realtime {
         }
 
         internal LCIMMessage() {
+        }
+
+        internal virtual Task PrepareSend() {
+            return Task.CompletedTask;
         }
     }
 }

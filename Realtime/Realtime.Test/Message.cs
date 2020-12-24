@@ -32,8 +32,7 @@ namespace Realtime.Test {
 
         [SetUp]
         public async Task SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            Utils.SetUp();
             m1 = new LCIMClient("m1");
             m2 = new LCIMClient("m2");
             await m1.Open();
@@ -45,7 +44,7 @@ namespace Realtime.Test {
         public async Task TearDown() {
             await m1.Close();
             await m2.Close();
-            LCLogger.LogDelegate -= Utils.Print;
+            Utils.TearDown();
         }
 
         [Test]
@@ -76,16 +75,18 @@ namespace Realtime.Test {
             Assert.NotNull(textMessage.Id);
 
             LCFile image = new LCFile("hello", "../../../../../assets/hello.png");
-            await image.Save();
             LCIMImageMessage imageMessage = new LCIMImageMessage(image);
             await conversation.Send(imageMessage);
             Assert.NotNull(imageMessage.Id);
 
             LCFile file = new LCFile("apk", "../../../../../assets/test.apk");
-            await file.Save();
             LCIMFileMessage fileMessage = new LCIMFileMessage(file);
             await conversation.Send(fileMessage);
             Assert.NotNull(fileMessage.Id);
+
+            LCIMBinaryMessage binaryMessage = new LCIMBinaryMessage(System.Text.Encoding.UTF8.GetBytes("LeanCloud"));
+            await conversation.Send(binaryMessage);
+            Assert.NotNull(binaryMessage.Id);
 
             await tcs.Task;
         }
@@ -152,7 +153,7 @@ namespace Realtime.Test {
         [Test]
         [Order(4)]
         public async Task Query() {
-            ReadOnlyCollection<LCIMMessage> messages = await conversation.QueryMessages();
+            ReadOnlyCollection<LCIMMessage> messages = await conversation.QueryMessages(messageType: -6);
             Assert.Greater(messages.Count, 0);
             foreach (LCIMMessage message in messages) {
                 Assert.AreEqual(message.ConversationId, conversation.Id);

@@ -28,5 +28,9 @@ namespace LeanCloud.Realtime {
         public override Task<LCIMPartiallySuccessResult> AddMembers(IEnumerable<string> clientIds) {
             throw new Exception("Add members is not allowed in chat room.");
         }
+
+        public override Task Read() {
+            return Task.CompletedTask;
+        }
     }
 }

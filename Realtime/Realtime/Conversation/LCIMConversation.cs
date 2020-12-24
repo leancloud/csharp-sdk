@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.ObjectModel;
-using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
     /// <summary>
@@ -180,9 +179,8 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// Mark the last message of this conversation as read.
         /// </summary>
-        /// <param name="message"></param>
         /// <returns></returns>
-        public async Task Read() {
+        public virtual async Task Read() {
             if (LastMessage == null) {
                 return;
             }
@@ -260,10 +258,13 @@ namespace LeanCloud.Realtime {
             }
         }
 
+
+
         /// <summary>
         /// Sends a message in this conversation.
         /// </summary>
         /// <param name="message">The message to send.</param>
+        /// <param name="options">The options of sending message.</param>
         /// <returns></returns>
         public async Task<LCIMMessage> Send(LCIMMessage message,
             LCIMMessageSendOptions options = null) {
@@ -273,6 +274,7 @@ namespace LeanCloud.Realtime {
             if (options == null) {
                 options = LCIMMessageSendOptions.Default;
             }
+            await message.PrepareSend();
             await Client.MessageController.Send(Id, message, options);
             LastMessage = message;
             return message;
@@ -450,7 +452,7 @@ namespace LeanCloud.Realtime {
         /// <param name="start">Start message ID.</param>
         /// <param name="end">End message ID.</param>
         /// <param name="direction">Query direction (defaults to NewToOld).</param>
-        /// <param name="limit">Limits the number of returned results. Its default value is 20.</param>
+        /// <param name="limit">Limits the number of returned results. Its default value is 100.</param>
         /// <param name="messageType">The message type to query. The default value is 0 (text message).</param>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<LCIMMessage>> QueryMessages(LCIMMessageQueryEndpoint start = null,
@@ -467,6 +469,17 @@ namespace LeanCloud.Realtime {
         /// <returns></returns>
         public async Task FetchReciptTimestamps() {
             await Client.ConversationController.FetchReciptTimestamp(Id);
+        }
+
+        /// <summary>
+        /// Fetch conversation from server.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<LCIMConversation> Fetch() {
+            LCIMConversationQuery query = new LCIMConversationQuery(Client);
+            query.WhereEqualTo("objectId", Id);
+            await query.Find();
+            return this;
         }
 
         internal static bool IsTemporayConversation(string convId) {
@@ -503,9 +516,28 @@ namespace LeanCloud.Realtime {
                 IEnumerable<string> ids = (muo as IList<object>).Cast<string>();
                 mutedIds = new HashSet<string>(ids);
             }
-            //if (conv.TryGetValue("lm", out object lmo)) {
-            //    LastMessageAt = (DateTime)LCDecoder.Decode(lmo);
-            //}
+            if (conv.TryGetValue("msg", out object msgo)) {
+                if (conv.TryGetValue("bin", out object bino)) {
+                    string msg = msgo as string;
+                    bool bin = (bool)bino;
+                    if (bin) {
+                        byte[] bytes = Convert.FromBase64String(msg);
+                        LastMessage = LCIMBinaryMessage.Deserialize(bytes);
+                    } else {
+                        LastMessage = LCIMTypedMessage.Deserialize(msg);
+                    }
+                }
+                LastMessage.ConversationId = Id;
+                if (conv.TryGetValue("msg_mid", out object msgId)) {
+                    LastMessage.Id = msgId as string;
+                }
+                if (conv.TryGetValue("msg_from", out object msgFrom)) {
+                    LastMessage.FromClientId = msgFrom as string;
+                }
+                if (conv.TryGetValue("msg_timestamp", out object timestamp)) {
+                    LastMessage.SentTimestamp = (long)timestamp;
+                }
+            }
         }
 
         internal void MergeInfo(Dictionary<string, object> attr) {
