@@ -16,8 +16,7 @@ namespace Realtime.Test {
 
         [SetUp]
         public async Task SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            Utils.SetUp();
             c1 = new LCIMClient(Guid.NewGuid().ToString());
             await c1.Open();
             c2 = new LCIMClient(Guid.NewGuid().ToString());
@@ -32,7 +31,7 @@ namespace Realtime.Test {
             await c1.Close();
             await c2.Close();
             await lean.Close();
-            LCLogger.LogDelegate -= Utils.Print;
+            Utils.TearDown();
         }
 
         [Test]

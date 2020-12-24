@@ -10,15 +10,22 @@ using static NUnit.Framework.TestContext;
 
 namespace Realtime.Test {
     public class Client {
+        private const string USERNAME1 = "username1";
+        private const string PASSWORD1 = "password1";
+
+        private const string USERNAME2 = "username2";
+        private const string PASSWORD2 = "password2";
+
         [SetUp]
-        public void SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+        public async Task SetUp() {
+            Utils.SetUp();
+            await NewUser(USERNAME1, PASSWORD1);
+            await NewUser(USERNAME2, PASSWORD2);
         }
 
         [TearDown]
         public void TearDown() {
-            LCLogger.LogDelegate -= Utils.Print;
+            Utils.TearDown();
         }
 
         [Test]
@@ -34,12 +41,12 @@ namespace Realtime.Test {
 
         [Test]
         public async Task OpenAndCloseByLCUser() {
-            LCUser user = await LCUser.Login("hello", "world");
+            LCUser user = await LCUser.Login(USERNAME1, PASSWORD1);
             LCIMClient client = new LCIMClient(user);
             await client.Open();
 
 
-            LCUser game = await LCUser.Login("game", "play");
+            LCUser game = await LCUser.Login(USERNAME2, PASSWORD2);
             LCIMClient client2 = new LCIMClient(game);
             await client2.Open();
 
@@ -133,6 +140,22 @@ namespace Realtime.Test {
             await client.CreateTemporaryConversation(new string[] { "world" });
 
             await tcs.Task;
+        }
+
+        private async Task NewUser(string username, string password) {
+            try {
+                await LCUser.Login(username, password);
+            } catch (LCException e) {
+                if (e.Code == 211) {
+                    LCUser user1 = new LCUser {
+                        Username = username,
+                        Password = password
+                    };
+                    await user1.SignUp();
+                } else {
+                    throw e;
+                }
+            }
         }
     }
 }

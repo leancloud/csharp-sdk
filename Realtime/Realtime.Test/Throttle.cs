@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using LeanCloud;
 using LeanCloud.Realtime;
 using LeanCloud.Realtime.Internal.Protocol;
 
@@ -14,8 +13,7 @@ namespace Realtime.Test {
 
         [SetUp]
         public async Task SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            Utils.SetUp();
             c1 = new LCIMClient(Guid.NewGuid().ToString());
             c2 = new LCIMClient(Guid.NewGuid().ToString());
             await c1.Open();
@@ -28,7 +26,7 @@ namespace Realtime.Test {
         public async Task TearDown() {
             await c1.Close();
             await c2.Close();
-            LCLogger.LogDelegate -= Utils.Print;
+            Utils.TearDown();
         }
 
         [Test]
