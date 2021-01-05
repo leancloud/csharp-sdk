@@ -97,7 +97,7 @@ namespace LeanCloud.Storage {
 
         public static async Task<ReadOnlyCollection<LCStatistic>> UpdateStatistics(LCUser user,
             Dictionary<string, double> statistics,
-            bool overwrite = true) {
+            bool overwrite = false) {
             if (user == null) {
                 throw new ArgumentNullException(nameof(user));
             }
