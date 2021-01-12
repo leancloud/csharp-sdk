@@ -326,7 +326,7 @@ namespace LeanCloud.Storage {
             if (string.IsNullOrEmpty(platform)) {
                 throw new ArgumentNullException(nameof(platform));
             }
-            return LinkWithAuthData(platform, null);
+            return UnlinkWithAuthData(platform);
         }
 
         /// <summary>
@@ -523,11 +523,34 @@ namespace LeanCloud.Storage {
             return new LCQuery<LCUser>(CLASS_NAME);
         }
 
-        Task LinkWithAuthData(string authType, Dictionary<string, object> data) {
+        async Task LinkWithAuthData(string authType, Dictionary<string, object> data) {
+            Dictionary<string, object> oriAuthData = new Dictionary<string, object>(AuthData);
             AuthData = new Dictionary<string, object> {
                 { authType, data }
             };
-            return Save();
+            try {
+                await Save();
+                oriAuthData.Add(authType, data);
+                AuthData = oriAuthData;
+            } catch (Exception e) {
+                AuthData = oriAuthData;
+                throw e;
+            }
+        }
+
+        async Task UnlinkWithAuthData(string authType) {
+            Dictionary<string, object> oriAuthData = new Dictionary<string, object>(AuthData);
+            AuthData = new Dictionary<string, object> {
+                { authType, null }
+            };
+            try {
+                await Save();
+                oriAuthData.Remove(authType);
+                AuthData = oriAuthData;
+            } catch (Exception e) {
+                AuthData = oriAuthData;
+                throw e;
+            }
         }
 
         static async Task<LCUser> Login(Dictionary<string, object> data) {

@@ -32,5 +32,9 @@ namespace LeanCloud.Realtime {
         public override Task Read() {
             return Task.CompletedTask;
         }
+
+        public override Task FetchReciptTimestamps() {
+            return Task.CompletedTask;
+        }
     }
 }

@@ -346,12 +346,13 @@ namespace LeanCloud.Storage {
             return (int)ret["count"];
         }
 
-        public Task<T> Get(string objectId) {
+        public async Task<T> Get(string objectId) {
             if (string.IsNullOrEmpty(objectId)) {
                 throw new ArgumentNullException(nameof(objectId));
             }
-            WhereEqualTo("objectId", objectId);
-            return First();
+            string path = $"classes/{ClassName}/{objectId}";
+            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path);
+            return DecodeLCObject(response);
         }
 
         public async Task<ReadOnlyCollection<T>> Find() {
@@ -361,9 +362,7 @@ namespace LeanCloud.Storage {
             List<object> results = response["results"] as List<object>;
             List<T> list = new List<T>();
             foreach (object item in results) {
-                LCObjectData objectData = LCObjectData.Decode(item as Dictionary<string, object>);
-                T obj = LCObject.Create(ClassName) as T;
-                obj.Merge(objectData);
+                T obj = DecodeLCObject(item as Dictionary<string, object>);
                 list.Add(obj);
             }
             return list.AsReadOnly();
@@ -411,6 +410,13 @@ namespace LeanCloud.Storage {
             }
             compositionQuery.ClassName = className;
             return compositionQuery;
+        }
+
+        private T DecodeLCObject(Dictionary<string, object> data) {
+            LCObjectData objectData = LCObjectData.Decode(data);
+            T obj = LCObject.Create(ClassName) as T;
+            obj.Merge(objectData);
+            return obj;
         }
     }
 }

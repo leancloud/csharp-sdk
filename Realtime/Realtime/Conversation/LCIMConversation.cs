@@ -467,7 +467,7 @@ namespace LeanCloud.Realtime {
         /// Fetches receipt timestamp.
         /// </summary>
         /// <returns></returns>
-        public async Task FetchReciptTimestamps() {
+        public virtual async Task FetchReciptTimestamps() {
             await Client.ConversationController.FetchReciptTimestamp(Id);
         }
 

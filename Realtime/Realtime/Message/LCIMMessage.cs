@@ -120,8 +120,8 @@ namespace LeanCloud.Realtime {
         /// <summary>
         /// Indicates whether this message is transient.
         /// </summary>
-        public bool IsTransient {
-            get; internal set;
+        internal bool IsTransient {
+            get; set;
         }
 
         internal LCIMMessage() {

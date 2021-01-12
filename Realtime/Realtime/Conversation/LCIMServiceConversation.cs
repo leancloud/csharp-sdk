@@ -17,5 +17,9 @@ namespace LeanCloud.Realtime {
         public async Task<bool> CheckSubscription() {
             return await Client.ConversationController.CheckSubscription(Id);
         }
+
+        public override Task FetchReciptTimestamps() {
+            return Task.CompletedTask;
+        }
     }
 }
