@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections;
 using System.Collections.Generic;
 using LeanCloud.Storage.Internal.Object;
 
@@ -588,6 +589,104 @@ namespace LeanCloud.Storage {
                 { "code", code }
             };
             await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+        }
+
+        /// <summary>
+        /// Follows a user.
+        /// </summary>
+        /// <param name="targetId"></param>
+        /// <param name="attrs"></param>
+        /// <returns></returns>
+        public async Task Follow(string targetId, Dictionary<string, object> attrs = null) {
+            if (string.IsNullOrEmpty(targetId)) {
+                throw new ArgumentNullException(nameof(targetId));
+            }
+            string path = $"users/self/friendship/{targetId}";
+            await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: attrs);
+        }
+
+        /// <summary>
+        /// Unfollows a user.
+        /// </summary>
+        /// <param name="targetId"></param>
+        /// <returns></returns>
+        public async Task Unfollow(string targetId) {
+            if (string.IsNullOrEmpty(targetId)) {
+                throw new ArgumentNullException(nameof(targetId));
+            }
+            string path = $"users/self/friendship/{targetId}";
+            await LCApplication.HttpClient.Delete(path);
+        }
+
+        /// <summary>
+        /// Constructs a follower query.
+        /// </summary>
+        /// <returns></returns>
+        public LCQuery<LCObject> FollowerQuery() {
+            return new LCQuery<LCObject>("_Follower")
+                .WhereEqualTo("user", this)
+                .Include("follower");
+        }
+
+        /// <summary>
+        /// Constructs a followee query.
+        /// </summary>
+        /// <returns></returns>
+        public LCQuery<LCObject> FolloweeQuery() {
+            return new LCQuery<LCObject>("_Followee")
+                .WhereEqualTo("user", this)
+                .Include("followee");
+        }
+
+        public async Task<LCFollowersAndFollowees> GetFollowersAndFollowees(bool includeFollower = false,
+            bool includeFollowee = false, bool returnCount = false) {
+            Dictionary<string, object> queryParams = new Dictionary<string, object>();
+            if (returnCount) {
+                queryParams["count"] = 1;
+            }
+            if (includeFollower || includeFollowee) {
+                List<string> includes = new List<string>();
+                if (includeFollower) {
+                    includes.Add("follower");
+                }
+                if (includeFollowee) {
+                    includes.Add("followee");
+                }
+                queryParams["include"] = string.Join(",", includes);
+            }
+            string path = $"users/{ObjectId}/followersAndFollowees";
+            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path,
+                queryParams: queryParams);
+            LCFollowersAndFollowees result = new LCFollowersAndFollowees();
+            if (response.TryGetValue("followers", out object followersObj) &&
+                (followersObj is List<object> followers)) {
+                result.Followers = new List<LCObject>();
+                foreach (object followerObj in followers) {
+                    LCObjectData objectData = LCObjectData.Decode(followerObj as IDictionary);
+                    LCObject follower = new LCObject("_Follower");
+                    follower.Merge(objectData);
+                    result.Followers.Add(follower);
+                }
+            }
+            if (response.TryGetValue("followees", out object followeesObj) &&
+                (followeesObj is List<object> followees)) {
+                result.Followees = new List<LCObject>();
+                foreach (object followeeObj in followees) {
+                    LCObjectData objectData = LCObjectData.Decode(followeeObj as IDictionary);
+                    LCObject followee = new LCObject("_Followee");
+                    followee.Merge(objectData);
+                    result.Followees.Add(followee);
+                }
+            }
+            if (response.TryGetValue("followers_count", out object followersCountObj) &&
+                (followersCountObj is int followersCount)) {
+                result.FollowersCount = followersCount;
+            }
+            if (response.TryGetValue("followees_count", out object followeesCountObj) &&
+                (followeesCountObj is int followeesCount)) {
+                result.FolloweeCount = followeesCount;
+            }
+            return result;
         }
     }
 }
