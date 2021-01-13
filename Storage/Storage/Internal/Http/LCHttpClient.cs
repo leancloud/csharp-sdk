@@ -136,15 +136,25 @@ namespace LeanCloud.Storage.Internal.Http {
             throw HandleErrorResponse(response.StatusCode, resultString);
         }
 
-        public async Task Delete(string path) {
-            string url = await BuildUrl(path);
+        public async Task Delete(string path,
+            Dictionary<string, object> headers = null,
+            object data = null,
+            Dictionary<string, object> queryParams = null) {
+            string url = await BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Delete
             };
-            await FillHeaders(request.Headers);
+            await FillHeaders(request.Headers, headers);
 
-            LCHttpUtils.PrintRequest(client, request);
+            string content = null;
+            if (data != null) {
+                content = JsonConvert.SerializeObject(data);
+                StringContent requestContent = new StringContent(content);
+                requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                request.Content = requestContent;
+            }
+            LCHttpUtils.PrintRequest(client, request, content);
             HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             request.Dispose();
 
@@ -153,7 +163,7 @@ namespace LeanCloud.Storage.Internal.Http {
             LCHttpUtils.PrintResponse(response, resultString);
 
             if (response.IsSuccessStatusCode) {
-                Dictionary<string, object> ret = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString,
+                _ = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString,
                     LCJsonConverter.Default);
                 return;
             }

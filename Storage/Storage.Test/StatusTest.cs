@@ -86,6 +86,50 @@ namespace Storage.Test {
         }
 
         [Test]
+        [Order(3)]
+        public async Task Send() {
+            await LCUser.BecomeWithSessionToken(user1.SessionToken);
+
+            // 给粉丝发送状态
+            LCStatus status = new LCStatus {
+                Data = new Dictionary<string, object> {
+                    { "image", "xxx.jpg" },
+                    { "content", "hello, world" }
+                }
+            };
+            await LCStatus.SendToFollowers(status);
+
+            // 给某个用户发送私信
+            LCStatus privateStatus = new LCStatus {
+                Data = new Dictionary<string, object> {
+                    { "image", "xxx.jpg" },
+                    { "content", "hello, game" }
+                }
+            };
+            await LCStatus.SendPrivately(status, user2.ObjectId);
+        }
+
+        [Test]
+        [Order(4)]
+        public async Task Query() {
+            await LCUser.BecomeWithSessionToken(user2.SessionToken);
+
+            LCStatusCount statusCount = await LCStatus.GetCount(LCStatus.InboxTypeDefault);
+            Assert.Greater(statusCount.Total, 0);
+            LCStatusCount privateCount = await LCStatus.GetCount(LCStatus.InboxTypePrivate);
+            Assert.Greater(privateCount.Total, 0);
+
+            LCStatusQuery query = new LCStatusQuery(LCStatus.InboxTypeDefault);
+            ReadOnlyCollection<LCStatus> statuses = await query.Find();
+            foreach (LCStatus status in statuses) {
+                Assert.AreEqual((status["source"] as LCObject).ObjectId, user1.ObjectId);
+                await status.Delete();
+            }
+
+            await LCStatus.ResetUnreadCount(LCStatus.InboxTypePrivate);
+        }
+
+        [Test]
         [Order(5)]
         public async Task Unfollow() {
             await LCUser.BecomeWithSessionToken(user2.SessionToken);
