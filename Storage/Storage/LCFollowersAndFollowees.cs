@@ -14,7 +14,7 @@ namespace LeanCloud.Storage {
             get; internal set;
         }
 
-        public int FolloweeCount {
+        public int FolloweesCount {
             get; internal set;
         }
     }

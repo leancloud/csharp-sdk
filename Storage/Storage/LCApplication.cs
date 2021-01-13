@@ -61,6 +61,7 @@ namespace LeanCloud {
             LCObject.RegisterSubclass(LCUser.CLASS_NAME, () => new LCUser());
             LCObject.RegisterSubclass(LCRole.CLASS_NAME, () => new LCRole());
             LCObject.RegisterSubclass(LCFile.CLASS_NAME, () => new LCFile());
+            LCObject.RegisterSubclass(LCFriendshipRequest.CLASS_NAME, () => new LCFriendshipRequest());
 
             AppRouter = new LCAppRouter(appId, server);
 

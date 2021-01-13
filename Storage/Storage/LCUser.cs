@@ -684,7 +684,7 @@ namespace LeanCloud.Storage {
             }
             if (response.TryGetValue("followees_count", out object followeesCountObj) &&
                 (followeesCountObj is int followeesCount)) {
-                result.FolloweeCount = followeesCount;
+                result.FolloweesCount = followeesCount;
             }
             return result;
         }
