@@ -27,7 +27,8 @@ namespace Storage.Test {
             user.Password = "world";
             string email = $"{unixTime}@qq.com";
             user.Email = email;
-            string mobile = $"{unixTime / 100}";
+            Random random = new Random();
+            string mobile = $"151{random.Next(10000000, 99999999)}";
             user.Mobile = mobile;
             await user.SignUp();
 
@@ -73,7 +74,6 @@ namespace Storage.Test {
             LCObject account = new LCObject("Account");
             account["user"] = user;
             await account.Save();
-            Assert.AreEqual(user.ObjectId, "5e0d5c667d5774006a5c1177");
         }
 
         [Test]
@@ -240,7 +240,7 @@ namespace Storage.Test {
         [Test]
         public async Task VerifyCodeForUpdatingPhoneNumber() {
             await LCUser.Login("hello", "world");
-            await LCUser.VerifyCodeForUpdatingPhoneNumber("15101006007", "055595");
+            await LCUser.VerifyCodeForUpdatingPhoneNumber("15101006007", "969327");
         }
 
         [Test]

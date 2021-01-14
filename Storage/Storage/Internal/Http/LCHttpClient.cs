@@ -42,40 +42,42 @@ namespace LeanCloud.Storage.Internal.Http {
             md5 = MD5.Create();
         }
 
-        public async Task<T> Get<T>(string path,
+        public Task<T> Get<T>(string path,
             Dictionary<string, object> headers = null,
             Dictionary<string, object> queryParams = null) {
-            string url = await BuildUrl(path, queryParams);
-            HttpRequestMessage request = new HttpRequestMessage {
-                RequestUri = new Uri(url),
-                Method = HttpMethod.Get
-            };
-            await FillHeaders(request.Headers, headers);
-            
-            LCHttpUtils.PrintRequest(client, request);
-            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            request.Dispose();
-
-            string resultString = await response.Content.ReadAsStringAsync();
-            response.Dispose();
-            LCHttpUtils.PrintResponse(response, resultString);
-
-            if (response.IsSuccessStatusCode) {
-                T ret = JsonConvert.DeserializeObject<T>(resultString,
-                    LCJsonConverter.Default);
-                return ret;
-            }
-            throw HandleErrorResponse(response.StatusCode, resultString);
+            return Request<T>(path, HttpMethod.Get, headers, null, queryParams);
         }
 
-        public async Task<T> Post<T>(string path,
+        public Task<T> Post<T>(string path,
+            Dictionary<string, object> headers = null,
+            object data = null,
+            Dictionary<string, object> queryParams = null) {
+            return Request<T>(path, HttpMethod.Post, headers, data, queryParams);
+        }
+
+        public Task<T> Put<T>(string path,
+            Dictionary<string, object> headers = null,
+            object data = null,
+            Dictionary<string, object> queryParams = null) {
+            return Request<T>(path, HttpMethod.Put, headers, data, queryParams);
+        }
+
+        public Task Delete(string path,
+            Dictionary<string, object> headers = null,
+            object data = null,
+            Dictionary<string, object> queryParams = null) {
+            return Request<Dictionary<string, object>>(path, HttpMethod.Delete, headers, data, queryParams);
+        }
+
+        async Task<T> Request<T>(string path,
+            HttpMethod method,
             Dictionary<string, object> headers = null,
             object data = null,
             Dictionary<string, object> queryParams = null) {
             string url = await BuildUrl(path, queryParams);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),
-                Method = HttpMethod.Post,
+                Method = method,
             };
             await FillHeaders(request.Headers, headers);
 
@@ -98,74 +100,6 @@ namespace LeanCloud.Storage.Internal.Http {
                 T ret = JsonConvert.DeserializeObject<T>(resultString,
                     LCJsonConverter.Default);
                 return ret;
-            }
-            throw HandleErrorResponse(response.StatusCode, resultString);
-        }
-
-        public async Task<T> Put<T>(string path,
-            Dictionary<string, object> headers = null,
-            object data = null,
-            Dictionary<string, object> queryParams = null) {
-            string url = await BuildUrl(path, queryParams);
-            HttpRequestMessage request = new HttpRequestMessage {
-                RequestUri = new Uri(url),
-                Method = HttpMethod.Put,
-            };
-            await FillHeaders(request.Headers, headers);
-
-            string content = null;
-            if (data != null) {
-                content = JsonConvert.SerializeObject(data);
-                StringContent requestContent = new StringContent(content);
-                requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                request.Content = requestContent;
-            }
-            LCHttpUtils.PrintRequest(client, request, content);
-            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            request.Dispose();
-
-            string resultString = await response.Content.ReadAsStringAsync();
-            response.Dispose();
-            LCHttpUtils.PrintResponse(response, resultString);
-
-            if (response.IsSuccessStatusCode) {
-                T ret = JsonConvert.DeserializeObject<T>(resultString,
-                    LCJsonConverter.Default);
-                return ret;
-            }
-            throw HandleErrorResponse(response.StatusCode, resultString);
-        }
-
-        public async Task Delete(string path,
-            Dictionary<string, object> headers = null,
-            object data = null,
-            Dictionary<string, object> queryParams = null) {
-            string url = await BuildUrl(path, queryParams);
-            HttpRequestMessage request = new HttpRequestMessage {
-                RequestUri = new Uri(url),
-                Method = HttpMethod.Delete
-            };
-            await FillHeaders(request.Headers, headers);
-
-            string content = null;
-            if (data != null) {
-                content = JsonConvert.SerializeObject(data);
-                StringContent requestContent = new StringContent(content);
-                requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                request.Content = requestContent;
-            }
-            LCHttpUtils.PrintRequest(client, request, content);
-            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            request.Dispose();
-
-            string resultString = await response.Content.ReadAsStringAsync();
-            response.Dispose();
-            LCHttpUtils.PrintResponse(response, resultString);
-
-            if (response.IsSuccessStatusCode) {
-                _ = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString,
-                    LCJsonConverter.Default);
-                return;
             }
             throw HandleErrorResponse(response.StatusCode, resultString);
         }

@@ -112,6 +112,7 @@ namespace Storage.Test {
         [Test]
         [Order(4)]
         public async Task Query() {
+            await Task.Delay(5000);
             await LCUser.BecomeWithSessionToken(user2.SessionToken);
 
             LCStatusCount statusCount = await LCStatus.GetCount(LCStatus.InboxTypeDefault);
