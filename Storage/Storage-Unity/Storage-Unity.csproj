@@ -130,6 +130,24 @@
     <Compile Include="..\Storage\Leaderboard\LCRanking.cs">
       <Link>Leaderboard\LCRanking.cs</Link>
     </Compile>
+    <Compile Include="..\Storage\LCFollowersAndFollowees.cs">
+      <Link>LCFollowersAndFollowees.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCFriendship.cs">
+      <Link>LCFriendship.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCFriendshipRequest.cs">
+      <Link>LCFriendshipRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCStatus.cs">
+      <Link>LCStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCStatusCount.cs">
+      <Link>LCStatusCount.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\LCStatusQuery.cs">
+      <Link>LCStatusQuery.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
