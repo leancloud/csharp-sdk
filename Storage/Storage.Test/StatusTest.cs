@@ -106,7 +106,7 @@ namespace Storage.Test {
                     { "content", "hello, game" }
                 }
             };
-            await LCStatus.SendPrivately(status, user2.ObjectId);
+            await LCStatus.SendPrivately(privateStatus, user2.ObjectId);
         }
 
         [Test]

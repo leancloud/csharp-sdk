@@ -27,7 +27,7 @@ namespace LeanCloud.Storage {
             MaxId = 0;
         }
 
-        public async Task<ReadOnlyCollection<LCStatus>> Find() {
+        public new async Task<ReadOnlyCollection<LCStatus>> Find() {
             LCUser user = await LCUser.GetCurrent();
             if (user == null) {
                 throw new ArgumentNullException("current user");
