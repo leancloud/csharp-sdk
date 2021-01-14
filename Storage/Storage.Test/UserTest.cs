@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LeanCloud;
 using LeanCloud.Storage;
+using Newtonsoft.Json;
 
 namespace Storage.Test {
     public class UserTest {
@@ -26,7 +27,8 @@ namespace Storage.Test {
             user.Password = "world";
             string email = $"{unixTime}@qq.com";
             user.Email = email;
-            string mobile = $"{unixTime / 100}";
+            Random random = new Random();
+            string mobile = $"151{random.Next(10000000, 99999999)}";
             user.Mobile = mobile;
             await user.SignUp();
 
@@ -72,7 +74,6 @@ namespace Storage.Test {
             LCObject account = new LCObject("Account");
             account["user"] = user;
             await account.Save();
-            Assert.AreEqual(user.ObjectId, "5e0d5c667d5774006a5c1177");
         }
 
         [Test]
@@ -239,7 +240,36 @@ namespace Storage.Test {
         [Test]
         public async Task VerifyCodeForUpdatingPhoneNumber() {
             await LCUser.Login("hello", "world");
-            await LCUser.VerifyCodeForUpdatingPhoneNumber("15101006007", "055595");
+            await LCUser.VerifyCodeForUpdatingPhoneNumber("15101006007", "969327");
+        }
+
+        [Test]
+        public async Task AuthData() {
+            string uuid = Guid.NewGuid().ToString();
+            Dictionary<string, object> authData = new Dictionary<string, object> {
+                { "expires_in", 7200 },
+                { "openid", uuid },
+                { "access_token", uuid }
+            };
+            LCUser currentUser = await LCUser.LoginWithAuthData(authData, "weixin");
+            TestContext.WriteLine(currentUser.SessionToken);
+            Assert.NotNull(currentUser.SessionToken);
+            string userId = currentUser.ObjectId;
+            TestContext.WriteLine($"userId: {userId}");
+            TestContext.WriteLine(JsonConvert.SerializeObject(currentUser.AuthData));
+
+            try {
+                authData = new Dictionary<string, object> {
+                    { "expires_in", 7200 },
+                    { "openid", uuid },
+                    { "access_token", uuid }
+                };
+                await currentUser.AssociateAuthData(authData, "qq");
+                TestContext.WriteLine(JsonConvert.SerializeObject(currentUser.AuthData));
+            } catch (LCException e) {
+                TestContext.WriteLine($"{e.Code} : {e.Message}");
+                TestContext.WriteLine(JsonConvert.SerializeObject(currentUser.AuthData));
+            }
         }
     }
 }
