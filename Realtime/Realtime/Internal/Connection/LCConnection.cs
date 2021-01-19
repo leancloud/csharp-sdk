@@ -63,6 +63,8 @@ namespace LeanCloud.Realtime.Internal.Connection {
 
         // 共享这条连接的 IM Client
         private readonly Dictionary<string, LCIMClient> idToClients;
+        // 默认 Client id
+        private string defaultClientId;
 
         internal LCConnection(string id) {
             this.id = id;
@@ -149,6 +151,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         private void Disconnect() {
+            defaultClientId = null;
             state = State.Closed;
             heartBeat.Stop();
             _ = ws.Close();
@@ -189,7 +192,8 @@ namespace LeanCloud.Realtime.Internal.Connection {
                         Reset();
                     } else {
                         // 通知
-                        if (idToClients.TryGetValue(command.PeerId, out LCIMClient client)) {
+                        string peerId = command.HasPeerId ? command.PeerId : defaultClientId;
+                        if (idToClients.TryGetValue(peerId, out LCIMClient client)) {
                             // 通知具体客户端
                             client.HandleNotification(command);
                         }
@@ -260,6 +264,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
 
         internal void Register(LCIMClient client) {
             idToClients[client.Id] = client;
+            if (defaultClientId == null) {
+                defaultClientId = client.Id;
+            }
         }
 
         internal void UnRegister(LCIMClient client) {

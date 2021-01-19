@@ -21,7 +21,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
             SessionCommand session = await NewSessionCommand();
             session.R = !force;
-            session.ConfigBitmap = 0x2B;
+            session.ConfigBitmap = 0xAB;
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
             GenericCommand response = await Connection.SendRequest(request);
@@ -37,8 +37,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
             GenericCommand response = await Connection.SendRequest(request);
             if (response.Op == OpType.Opened) {
                 UpdateSession(response.SessionMessage);
+                Connection.Register(Client);
             } else if (response.Op == OpType.Closed) {
-                OnClosed(response.SessionMessage);
+                Connection.UnRegister(Client);
+                SessionCommand command = response.SessionMessage;
+                throw new LCException(command.Code, command.Reason);
             }
         }
 
@@ -113,21 +116,15 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         internal override void HandleNotification(GenericCommand notification) {
             switch (notification.Op) {
-                case OpType.Closed:
-                    OnClosed(notification.SessionMessage);
+                case OpType.Closed: {
+                        Connection.UnRegister(Client);
+                        SessionCommand command = notification.SessionMessage;
+                        Client.OnClose(command.Code, command.Reason);
+                    }
                     break;
                 default:
                     break;
             }
-        }
-
- 
-        private void OnClosed(SessionCommand session) {
-            int code = session.Code;
-            string reason = session.Reason;
-            string detail = session.Detail;
-            Connection.UnRegister(Client);
-            Client.OnClose?.Invoke(code, reason);
         }
 
         #endregion
