@@ -37,7 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\UnityLibs\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\Unity\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

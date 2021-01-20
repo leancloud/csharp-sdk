@@ -150,11 +150,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\UnityLibs\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\Common\Common-Unity\Common-Unity.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Common-Unity\Common-Unity.csproj" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Unity\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
