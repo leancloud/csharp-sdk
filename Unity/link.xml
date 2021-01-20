@@ -1,0 +1,6 @@
+<linker>
+  <assembly fullname="Common" preserve="all"/>
+  <assembly fullname="Storage" preserve="all"/>
+  <assembly fullname="Realtime" preserve="all"/>
+  <assembly fullname="LiveQuery" preserve="all"/>
+</linker>
