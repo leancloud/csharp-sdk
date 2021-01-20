@@ -6,7 +6,7 @@ addons:
   apt:
     update: true
 before_deploy:
-  - sh ./script/package.sh
+  - bash ./script/package.sh
 deploy:
   provider: releases
   api_key:
@@ -25,4 +25,4 @@ deploy:
 after_deploy:
   - sudo apt-get install doxygen
   - doxygen Doxyfile
-  - sh ./script/deploy.sh
+  - bash ./script/deploy.sh
