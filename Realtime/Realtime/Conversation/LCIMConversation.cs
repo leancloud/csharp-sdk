@@ -136,7 +136,10 @@ namespace LeanCloud.Realtime {
         /// <returns></returns>
         public object this[string key] {
             get {
-                return customProperties[key];
+                if (customProperties.TryGetValue(key, out object val)) {
+                    return val;
+                }
+                return null;
             }
             set {
                 customProperties[key] = value;
