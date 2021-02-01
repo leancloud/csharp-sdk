@@ -531,8 +531,8 @@ namespace LeanCloud.Storage {
             };
             try {
                 await Save();
-                oriAuthData.Add(authType, data);
-                AuthData = oriAuthData;
+                oriAuthData[authType] = data;
+                UpdateAuthData(oriAuthData);
             } catch (Exception e) {
                 AuthData = oriAuthData;
                 throw e;
@@ -547,11 +547,17 @@ namespace LeanCloud.Storage {
             try {
                 await Save();
                 oriAuthData.Remove(authType);
-                AuthData = oriAuthData;
+                UpdateAuthData(oriAuthData);
             } catch (Exception e) {
                 AuthData = oriAuthData;
                 throw e;
             }
+        }
+
+        private void UpdateAuthData(Dictionary<string, object> authData) {
+            LCObjectData objData = new LCObjectData();
+            objData.CustomPropertyDict["authData"] = authData;
+            Merge(objData);
         }
 
         static async Task<LCUser> Login(Dictionary<string, object> data) {
