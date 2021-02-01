@@ -136,9 +136,9 @@ namespace LeanCloud.LiveQuery.Internal {
             await client.Close();
         }
 
-        private void OnClientMessage(byte[] bytes) {
+        private void OnClientMessage(byte[] bytes, int length) {
             try {
-                string json = Encoding.UTF8.GetString(bytes);
+                string json = Encoding.UTF8.GetString(bytes, 0, length);
                 Dictionary<string, object> msg = JsonConvert.DeserializeObject<Dictionary<string, object>>(json,
                     LCJsonConverter.Default);
                 LCLogger.Debug($"{id} <= {json}");

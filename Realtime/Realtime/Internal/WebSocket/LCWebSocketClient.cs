@@ -6,13 +6,15 @@ using System.Text;
 namespace LeanCloud.Realtime.Internal.WebSocket {
     public class LCWebSocketClient {
         // .net standard 2.0 好像在拼合 Frame 时有 bug，所以将这个值调整大一些
-        private const int RECV_BUFFER_SIZE = 1024 * 5;
+        private const int SEND_BUFFER_SIZE = 1024 * 5;
+        private const int RECV_BUFFER_SIZE = 1024 * 8;
+        private const int MSG_BUFFER_SIZE = 1024 * 10;
 
         private const int CLOSE_TIMEOUT = 5000;
 
         private const int CONNECT_TIMEOUT = 10000;
 
-        public Action<byte[]> OnMessage;
+        public Action<byte[], int> OnMessage;
 
         public Action OnClose;
 
@@ -23,6 +25,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             LCLogger.Debug($"Connecting WebSocket: {server}");
             Task timeoutTask = Task.Delay(CONNECT_TIMEOUT);
             ws = new ClientWebSocket();
+            ws.Options.SetBuffer(RECV_BUFFER_SIZE, SEND_BUFFER_SIZE);
             if (!string.IsNullOrEmpty(subProtocol)) {
                 ws.Options.AddSubProtocol(subProtocol);
             }
@@ -78,10 +81,12 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         }
 
         private async Task StartReceive() {
-            byte[] buffer = new byte[RECV_BUFFER_SIZE];
+            byte[] recvBuffer = new byte[RECV_BUFFER_SIZE];
+            byte[] msgBuffer = new byte[MSG_BUFFER_SIZE];
+            int offset = 0;
             try {
                 while (ws.State == WebSocketState.Open) {
-                    WebSocketReceiveResult result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), default);
+                    WebSocketReceiveResult result = await ws.ReceiveAsync(new ArraySegment<byte>(recvBuffer), default);
                     if (result.MessageType == WebSocketMessageType.Close) {
                         LCLogger.Debug($"Receive Closed: {result.CloseStatus}");
                         if (ws.State == WebSocketState.CloseReceived) {
@@ -98,9 +103,18 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     } else {
                         // 拼合 WebSocket Message
                         int length = result.Count;
-                        byte[] data = new byte[length];
-                        Array.Copy(buffer, data, length);
-                        OnMessage?.Invoke(data);
+                        if (offset + length > msgBuffer.Length) {
+                            // 反序列化数组大小不够，则以 2x 扩充
+                            byte[] newBuffer = new byte[msgBuffer.Length * 2];
+                            Array.Copy(msgBuffer, newBuffer, msgBuffer.Length);
+                            msgBuffer = newBuffer;
+                        }
+                        Array.Copy(recvBuffer, 0, msgBuffer, offset, length);
+                        offset += length;
+                        if (result.EndOfMessage) {
+                            OnMessage?.Invoke(msgBuffer, offset);
+                            offset = 0;
+                        }
                     }
                 }
             } catch (Exception e) {
