@@ -126,7 +126,7 @@ namespace LeanCloud.Storage {
                     throw new ArgumentException("key should not start with '_'");
                 }
                 if (key == "objectId" || key == "createdAt" || key == "updatedAt" ||
-                    key == "className" || key == "ACL") {
+                    key == "className") {
                     throw new ArgumentException($"{key} is reserved by LeanCloud");
                 }
                 LCSetOperation setOp = new LCSetOperation(value);
