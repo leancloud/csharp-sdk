@@ -49,7 +49,7 @@ namespace Storage.Test {
             Assert.NotNull(current.ObjectId);
             Assert.IsFalse(current.EmailVerified);
             Assert.IsFalse(current.MobileVerified);
-            Assert.AreEqual(current.Mobile, "15101006008");
+            Assert.AreEqual(current.Mobile, "15101006007");
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace Storage.Test {
 
         [Test]
         public async Task RelateObject() {
-            LCUser user = await LCUser.LoginByMobilePhoneNumber("15101006007", "112358");
+            LCUser user = await LCUser.LoginByMobilePhoneNumber("15101006007", "world");
             LCObject account = new LCObject("Account");
             account["user"] = user;
             await account.Save();

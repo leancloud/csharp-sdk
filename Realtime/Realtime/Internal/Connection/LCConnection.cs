@@ -160,9 +160,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
             }
         }
 
-        private void OnMessage(byte[] bytes) {
+        private void OnMessage(byte[] bytes, int length) {
             try {
-                GenericCommand command = GenericCommand.Parser.ParseFrom(bytes);
+                GenericCommand command = GenericCommand.Parser.ParseFrom(bytes, 0, length);
                 LCLogger.Debug($"{id} <= {FormatCommand(command)}");
                 if (command.HasI) {
                     // 应答
