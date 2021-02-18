@@ -351,7 +351,14 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(objectId));
             }
             string path = $"classes/{ClassName}/{objectId}";
-            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path);
+            Dictionary<string, object> queryParams = null;
+            string includes = Condition.BuildIncludes();
+            if (!string.IsNullOrEmpty(includes)) {
+                queryParams = new Dictionary<string, object> {
+                    { "include", includes }
+                };
+            }
+            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path, queryParams: queryParams);
             return DecodeLCObject(response);
         }
 
