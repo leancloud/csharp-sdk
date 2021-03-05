@@ -16,7 +16,9 @@ namespace LeanCloud.Storage {
         /// <summary>
         /// Last synced data.
         /// </summary>
-        LCObjectData data;
+        public LCObjectData Data {
+            get;
+        }
 
         /// <summary>
         /// Estimated data.
@@ -33,25 +35,25 @@ namespace LeanCloud.Storage {
 
         public string ClassName {
             get {
-                return data.ClassName;
+                return Data.ClassName;
             }
         }
 
         public string ObjectId {
             get {
-                return data.ObjectId;
+                return Data.ObjectId;
             }
         }
 
         public DateTime CreatedAt {
             get {
-                return data.CreatedAt;
+                return Data.CreatedAt;
             }
         }
 
         public DateTime UpdatedAt {
             get {
-                return data.UpdatedAt;
+                return Data.UpdatedAt;
             }
         }
 
@@ -75,11 +77,11 @@ namespace LeanCloud.Storage {
             if (string.IsNullOrEmpty(className)) {
                 throw new ArgumentNullException(nameof(className));
             }
-            data = new LCObjectData();
+            Data = new LCObjectData();
             estimatedData = new Dictionary<string, object>();
             operationDict = new Dictionary<string, ILCOperation>();
 
-            data.ClassName = className;
+            Data.ClassName = className;
             isNew = true;
         }
 
@@ -88,7 +90,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(objectId));
             }
             LCObject obj = Create(className);
-            obj.data.ObjectId = objectId;
+            obj.Data.ObjectId = objectId;
             obj.isNew = false;
             return obj;
         }
@@ -454,7 +456,7 @@ namespace LeanCloud.Storage {
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
-            Dictionary<string, object> originalData = LCObjectData.Encode(data);
+            Dictionary<string, object> originalData = LCObjectData.Encode(Data);
             Dictionary<string, object> currentData = estimatedData.Union(originalData.Where(kv => !estimatedData.ContainsKey(kv.Key)))
                 .ToDictionary(k => k.Key, v => v.Value);
             return JsonConvert.SerializeObject(currentData);
@@ -490,17 +492,17 @@ namespace LeanCloud.Storage {
         }
 
         public void Merge(LCObjectData objectData) {
-            data.ClassName = objectData.ClassName ?? data.ClassName;
-            data.ObjectId = objectData.ObjectId ?? data.ObjectId;
-            data.CreatedAt = objectData.CreatedAt != null ? objectData.CreatedAt : data.CreatedAt;
-            data.UpdatedAt = objectData.UpdatedAt != null ? objectData.UpdatedAt : data.UpdatedAt;
+            Data.ClassName = objectData.ClassName ?? Data.ClassName;
+            Data.ObjectId = objectData.ObjectId ?? Data.ObjectId;
+            Data.CreatedAt = objectData.CreatedAt != null ? objectData.CreatedAt : Data.CreatedAt;
+            Data.UpdatedAt = objectData.UpdatedAt != null ? objectData.UpdatedAt : Data.UpdatedAt;
             // 先将本地的预估数据直接替换
-            data.CustomPropertyDict = estimatedData;
+            Data.CustomPropertyDict = estimatedData;
             // 再将服务端的数据覆盖
             foreach (KeyValuePair<string, object> kv in objectData.CustomPropertyDict) {
                 string key = kv.Key;
                 object value = kv.Value;
-                data.CustomPropertyDict[key] = value;
+                Data.CustomPropertyDict[key] = value;
             }
 
             // 最后重新生成预估数据，用于后续访问和操作
@@ -512,7 +514,7 @@ namespace LeanCloud.Storage {
 
         void RebuildEstimatedData() {
             estimatedData = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, object> kv in data.CustomPropertyDict) {
+            foreach (KeyValuePair<string, object> kv in Data.CustomPropertyDict) {
                 string key = kv.Key;
                 object value = kv.Value;
                 if (value is IList list) {

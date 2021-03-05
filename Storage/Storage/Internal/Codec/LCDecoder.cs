@@ -80,10 +80,10 @@ namespace LeanCloud.Storage.Internal.Codec {
                 string key = kv.Key;
                 Dictionary<string, object> access = kv.Value as Dictionary<string, object>;
                 if (access.TryGetValue("read", out object ra)) {
-                    acl.readAccess[key] = Convert.ToBoolean(ra);
+                    acl.ReadAccess[key] = Convert.ToBoolean(ra);
                 }
                 if (access.TryGetValue("write", out object wa)) {
-                    acl.writeAccess[key] = Convert.ToBoolean(wa);
+                    acl.WriteAccess[key] = Convert.ToBoolean(wa);
                 }
             }
             return acl;

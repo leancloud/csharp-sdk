@@ -84,19 +84,19 @@ namespace LeanCloud.Storage.Internal.Codec {
 
         public static object EncodeACL(LCACL acl) {
             HashSet<string> keys = new HashSet<string>();
-            if (acl.readAccess.Count > 0) {
-                keys.UnionWith(acl.readAccess.Keys);
+            if (acl.ReadAccess.Count > 0) {
+                keys.UnionWith(acl.ReadAccess.Keys);
             }
-            if (acl.writeAccess.Count > 0) {
-                keys.UnionWith(acl.writeAccess.Keys);
+            if (acl.WriteAccess.Count > 0) {
+                keys.UnionWith(acl.WriteAccess.Keys);
             }
             Dictionary<string, object> result = new Dictionary<string, object>();
             foreach (string key in keys) {
                 Dictionary<string, bool> access = new Dictionary<string, bool>();
-                if (acl.readAccess.TryGetValue(key, out bool ra)) {
+                if (acl.ReadAccess.TryGetValue(key, out bool ra)) {
                     access["read"] = ra;
                 }
-                if (acl.writeAccess.TryGetValue(key, out bool wa)) {
+                if (acl.WriteAccess.TryGetValue(key, out bool wa)) {
                     access["write"] = wa;
                 }
                 result[key] = access;
