@@ -65,10 +65,10 @@ namespace LeanCloud.Storage.Internal.Object {
             if (!string.IsNullOrEmpty(objectData.ObjectId)) {
                 dict["objectId"] = objectData.ObjectId;
             }
-            if (objectData.CreatedAt != null) {
+            if (!objectData.CreatedAt.Equals(default)) {
                 dict["createdAt"] = objectData.CreatedAt.ToUniversalTime();
             }
-            if (objectData.UpdatedAt != null) {
+            if (!objectData.UpdatedAt.Equals(default)) {
                 dict["updatedAt"] = objectData.UpdatedAt.ToUniversalTime();
             }
             if (objectData.CustomPropertyDict != null) {

@@ -15,7 +15,7 @@ namespace LeanCloud.Storage.Internal.Codec {
                         return DecodeBytes(dict);
                     } else if (type == "Object") {
                         return DecodeObject(dict);
-                    } else if (type == "Pointer") {
+                    } else if (type == "Pointer" || type == "Object") {
                         return DecodeObject(dict);
                     } else if (type == "Relation") {
                         return DecodeRelation(dict);

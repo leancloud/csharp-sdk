@@ -497,7 +497,7 @@ namespace LeanCloud.Storage {
             Data.CreatedAt = objectData.CreatedAt != null ? objectData.CreatedAt : Data.CreatedAt;
             Data.UpdatedAt = objectData.UpdatedAt != null ? objectData.UpdatedAt : Data.UpdatedAt;
             // 先将本地的预估数据直接替换
-            Data.CustomPropertyDict = estimatedData;
+            ApplyCustomProperties();
             // 再将服务端的数据覆盖
             foreach (KeyValuePair<string, object> kv in objectData.CustomPropertyDict) {
                 string key = kv.Key;
@@ -510,6 +510,10 @@ namespace LeanCloud.Storage {
             // 清空操作
             operationDict.Clear();
             isNew = false;
+        }
+
+        public void ApplyCustomProperties() {
+            Data.CustomPropertyDict = estimatedData;
         }
 
         void RebuildEstimatedData() {

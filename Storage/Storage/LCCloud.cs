@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using LeanCloud.Storage.Internal.Codec;
+using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
     /// <summary>
@@ -46,11 +47,38 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> headers = new Dictionary<string, object> {
                 { PRODUCTION_KEY, IsProduction ? 1 : 0 }
             };
-            object encodeParams = LCEncoder.Encode(parameters);
+            object encodeParams = Encode(parameters);
             Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path,
                 headers: headers,
                 data: encodeParams);
             return LCDecoder.Decode(response["result"]);
+        }
+
+        public static object Encode(object parameters) {
+            if (parameters is LCObject lcObj) {
+                return EncodeLCObject(lcObj);
+            } else if (parameters is IList<LCObject> list) {
+                List<object> l = new List<object>();
+                foreach (LCObject obj in list) {
+                    l.Add(EncodeLCObject(obj));
+                }
+                return l;
+            } else if (parameters is IDictionary<string, LCObject> dict) {
+                Dictionary<string, object> d = new Dictionary<string, object>();
+                foreach (KeyValuePair<string, LCObject> item in dict) {
+                    d[item.Key] = EncodeLCObject(item.Value);
+                }
+                return d;
+            }
+
+            return parameters;
+        }
+
+        static object EncodeLCObject(LCObject obj) {
+            obj.ApplyCustomProperties();
+            Dictionary<string, object> dict = LCObjectData.Encode(obj.Data);
+            dict["__type"] = "Object";
+            return dict;
         }
     }
 }
