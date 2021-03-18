@@ -12,7 +12,7 @@ namespace LeanCloud.Storage {
     /// <summary>
     /// LeanCloud Object
     /// </summary>
-    public class LCObject {
+    public partial class LCObject {
         /// <summary>
         /// Last synced data.
         /// </summary>

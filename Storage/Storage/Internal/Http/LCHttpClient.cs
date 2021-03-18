@@ -148,6 +148,11 @@ namespace LeanCloud.Storage.Internal.Http {
                 string sign = $"{hash},{timestamp}";
                 headers.Add("X-LC-Sign", sign);
             }
+            if (LCApplication.AdditionalHeaders.Count > 0) {
+                foreach (KeyValuePair<string, string> kv in LCApplication.AdditionalHeaders) {
+                    headers.Add(kv.Key, kv.Value);
+                }    
+            }
             // 当前用户 Session Token
             LCUser currentUser = await LCUser.GetCurrent();
             if (!headers.Contains("X-LC-Session") && currentUser != null) {
