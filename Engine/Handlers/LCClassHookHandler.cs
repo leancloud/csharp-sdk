@@ -30,6 +30,13 @@ namespace LeanCloud.Engine {
                 LCObject obj = LCObject.Create(className);
                 obj.Merge(objectData);
 
+                // 避免死循环
+                if (hookName.StartsWith("before")) {
+                    obj.DisableBeforeHook();
+                } else {
+                    obj.DisableAfterHook();
+                }
+
                 LCUser user = null;
                 if (dict.TryGetValue("user", out object userObj) &&
                     userObj != null) {

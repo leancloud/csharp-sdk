@@ -65,6 +65,7 @@ namespace LeanCloud.Engine {
             LCApplication.Initialize(Environment.GetEnvironmentVariable("LEANCLOUD_APP_ID"),
                 Environment.GetEnvironmentVariable("LEANCLOUD_APP_KEY"),
                 Environment.GetEnvironmentVariable("LEANCLOUD_API_SERVER"));
+            LCApplication.AddHeader(LCHookKeyName, Environment.GetEnvironmentVariable("LEANCLOUD_APP_HOOK_KEY"));
 
             Assembly assembly = Assembly.GetCallingAssembly();
             ClassHooks = assembly.GetTypes()
