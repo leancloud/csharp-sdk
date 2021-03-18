@@ -2,8 +2,8 @@
 
 namespace LeanCloud.Engine {
     public enum LCEngineUserHookType {
-        SMS,
-        Email,
+        OnSMSVerified,
+        OnEmailVerified,
         OnLogin
     }
 

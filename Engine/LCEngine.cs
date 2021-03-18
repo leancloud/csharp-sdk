@@ -96,9 +96,9 @@ namespace LeanCloud.Engine {
                 .ToDictionary(mi => {
                     LCEngineUserHookAttribute attr = mi.GetCustomAttribute<LCEngineUserHookAttribute>();
                     switch (attr.HookType) {
-                        case LCEngineUserHookType.SMS:
+                        case LCEngineUserHookType.OnSMSVerified:
                             return OnSMSVerified;
-                        case LCEngineUserHookType.Email:
+                        case LCEngineUserHookType.OnEmailVerified:
                             return OnEmailVerified;
                         case LCEngineUserHookType.OnLogin:
                             return OnLogin;

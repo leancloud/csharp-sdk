@@ -5,7 +5,7 @@ namespace LeanCloud.Engine {
         public static object HandlePing() {
             LCLogger.Debug("Ping ~~~");
             return new Dictionary<string, string> {
-                { "runtime", "dotnet" },
+                { "runtime", "dotnet-3.1" },
                 { "version", LCApplication.SDKVersion }
             };
         }
