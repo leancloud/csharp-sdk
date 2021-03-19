@@ -10,7 +10,7 @@ namespace LeanCloud.Engine {
         AfterDelete
     }
 
-    public class LCEngineObjectHookAttribute : Attribute {
+    public class LCEngineClassHookAttribute : Attribute {
         public string ClassName {
             get;
         }
@@ -19,7 +19,7 @@ namespace LeanCloud.Engine {
             get;
         }
 
-        public LCEngineObjectHookAttribute(string className, LCEngineObjectHookType hookType) {
+        public LCEngineClassHookAttribute(string className, LCEngineObjectHookType hookType) {
             ClassName = className;
             HookType = hookType;
         }

@@ -70,9 +70,9 @@ namespace LeanCloud.Engine {
             Assembly assembly = Assembly.GetCallingAssembly();
             ClassHooks = assembly.GetTypes()
                 .SelectMany(t => t.GetMethods())
-                .Where(m => m.GetCustomAttribute<LCEngineObjectHookAttribute>() != null)
+                .Where(m => m.GetCustomAttribute<LCEngineClassHookAttribute>() != null)
                 .ToDictionary(mi => {
-                    LCEngineObjectHookAttribute attr = mi.GetCustomAttribute<LCEngineObjectHookAttribute>();
+                    LCEngineClassHookAttribute attr = mi.GetCustomAttribute<LCEngineClassHookAttribute>();
                     switch (attr.HookType) {
                         case LCEngineObjectHookType.BeforeSave:
                             return $"{BeforeSave}{attr.ClassName}";
