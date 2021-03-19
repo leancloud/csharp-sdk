@@ -15,17 +15,6 @@ namespace LeanCloud.Storage {
     public partial class LCObject {
         internal const string IgnoreHooksKey = "__ignore_hooks";
 
-        internal HashSet<string> ignoreHooks;
-
-        internal HashSet<string> IgnoreHooks {
-            get {
-                if (ignoreHooks == null) {
-                    ignoreHooks = new HashSet<string>();
-                }
-                return ignoreHooks;
-            }
-        }
-
         public void DisableBeforeHook() {
             Ignore(
                 LCClassHook.BeforeSave,

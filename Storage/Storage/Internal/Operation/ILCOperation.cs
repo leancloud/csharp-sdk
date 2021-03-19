@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 
 namespace LeanCloud.Storage.Internal.Operation {
-    public interface ILCOperation {
+    internal interface ILCOperation {
         ILCOperation MergeWithPrevious(ILCOperation previousOp);
 
         object Encode();

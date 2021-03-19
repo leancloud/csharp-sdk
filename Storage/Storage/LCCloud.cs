@@ -76,7 +76,7 @@ namespace LeanCloud.Storage {
 
         static object EncodeLCObject(LCObject obj) {
             obj.ApplyCustomProperties();
-            Dictionary<string, object> dict = LCObjectData.Encode(obj.Data);
+            Dictionary<string, object> dict = LCObjectData.Encode(obj.data);
             dict["__type"] = "Object";
             return dict;
         }
