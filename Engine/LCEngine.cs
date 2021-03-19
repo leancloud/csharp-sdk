@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Primitives;
 using LeanCloud.Common;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LeanCloud.Engine {
     public class LCEngine {
+        public const string LCEngineCORS = "LCEngineCORS";
+
         const string LCMasterKeyName = "x-avoscloud-master-key";
         const string LCHookKeyName = "x-lc-hook-key";
 
@@ -41,11 +44,42 @@ namespace LeanCloud.Engine {
         const string ConversationRemoved = "_conversationRemoved";
         const string ConversationUpdate = "_conversationUpdate";
 
+        static readonly string[] LCEngineCORSMethods = new string[] {
+            "PUT",
+            "GET",
+            "POST",
+            "DELETE",
+            "OPTIONS"
+        };
+        static readonly string[] LCEngineCORSHeaders = new string[] {
+            "Content-Type",
+            "X-AVOSCloud-Application-Id",
+            "X-AVOSCloud-Application-Key",
+            "X-AVOSCloud-Application-Production",
+            "X-AVOSCloud-Client-Version",
+            "X-AVOSCloud-Request-Sign",
+            "X-AVOSCloud-Session-Token",
+            "X-AVOSCloud-Super-Key",
+            "X-LC-Hook-Key",
+            "X-LC-Id",
+            "X-LC-Key",
+            "X-LC-Prod",
+            "X-LC-Session",
+            "X-LC-Sign",
+            "X-LC-UA",
+            "X-Requested-With",
+            "X-Uluru-Application-Id",
+            "X-Uluru-Application-Key",
+            "X-Uluru-Application-Production",
+            "X-Uluru-Client-Version",
+            "X-Uluru-Session-Token"
+        };
+
         public static Dictionary<string, MethodInfo> Functions = new Dictionary<string, MethodInfo>();
         public static Dictionary<string, MethodInfo> ClassHooks = new Dictionary<string, MethodInfo>();
         public static Dictionary<string, MethodInfo> UserHooks = new Dictionary<string, MethodInfo>();
 
-        public static void Initialize() {
+        public static void Initialize(IServiceCollection services) {
             // 获取环境变量
             LCLogger.Debug("-------------------------------------------------");
             PrintEnvironmentVar("LEANCLOUD_APP_ID");
@@ -153,6 +187,14 @@ namespace LeanCloud.Engine {
                 .ForEach(item => {
                     Functions.TryAdd(item.Key, item.Value);
                 });
+
+            services.AddCors(options => {
+                options.AddPolicy(LCEngineCORS, builder => {
+                    builder.AllowAnyOrigin()
+                        .WithMethods(LCEngineCORSMethods)
+                        .WithHeaders(LCEngineCORSHeaders);
+                });
+            });
         }
 
         public static void PrintEnvironmentVar(string key) {
