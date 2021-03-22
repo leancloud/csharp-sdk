@@ -204,7 +204,10 @@ namespace LeanCloud.Engine {
 
         internal static async Task<object> Invoke(MethodInfo mi, object request) {
             try {
-                object[] ps = new object[] { request };
+                object[] ps = null;
+                if (mi.GetParameters().Length > 0) {
+                    ps = new object[] { request };
+                }
                 if (mi.ReturnType == typeof(Task) ||
                     (mi.ReturnType.IsGenericType && mi.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))) {
                     Task task = mi.Invoke(null, ps) as Task;
