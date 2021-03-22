@@ -14,18 +14,4 @@ namespace LeanCloud.Engine {
             FunctionName = funcName;
         }
     }
-
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
-    public class LCEngineFunctionParameterAttribute : Attribute {
-        public string ParameterName {
-            get;
-        }
-
-        public LCEngineFunctionParameterAttribute(string paramName) {
-            if (string.IsNullOrEmpty(paramName)) {
-                throw new ArgumentNullException(nameof(paramName));
-            }
-            ParameterName = paramName;
-        }
-    }
 }
