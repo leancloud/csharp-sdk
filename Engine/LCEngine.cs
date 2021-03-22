@@ -192,7 +192,8 @@ namespace LeanCloud.Engine {
                 options.AddPolicy(LCEngineCORS, builder => {
                     builder.AllowAnyOrigin()
                         .WithMethods(LCEngineCORSMethods)
-                        .WithHeaders(LCEngineCORSHeaders);
+                        .WithHeaders(LCEngineCORSHeaders)
+                        .SetPreflightMaxAge(TimeSpan.FromSeconds(86400));
                 });
             });
         }
