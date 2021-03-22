@@ -47,8 +47,8 @@ namespace LeanCloud.Engine {
                     object result = await LCEngine.Invoke(mi, req);
                     if (result != null) {
                         return new Dictionary<string, object> {
-                        { "result", result }
-                    };
+                            { "result", result }
+                        };
                     }
                 }
                 return default;

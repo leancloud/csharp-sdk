@@ -213,7 +213,14 @@ namespace LeanCloud.Engine {
                 }
                 return mi.Invoke(null, ps);
             } catch (TargetInvocationException e) {
-                throw e.InnerException;
+                Exception ex = e.InnerException;
+                if (ex is LCException lcEx) {
+                    throw new Exception(JsonConvert.SerializeObject(new Dictionary<string, object> {
+                        { "code", lcEx.Code },
+                        { "message", lcEx.Message }
+                    }));
+                }
+                throw ex;
             }
         }
 
