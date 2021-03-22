@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using LeanCloud.Storage.Internal.Operation;
 
 namespace LeanCloud.Storage {
@@ -42,6 +44,15 @@ namespace LeanCloud.Storage {
         private void Ignore(params string[] hooks) {
             LCIgnoreHookOperation op = new LCIgnoreHookOperation(hooks);
             ApplyOperation(IgnoreHooksKey, op);
+        }
+
+        public ReadOnlyCollection<string> UpdatedKeys {
+            get {
+                return (this["_updatedKeys"] as List<object>)
+                    .Cast<string>()
+                    .ToList()
+                    .AsReadOnly();
+            }
         }
     }
 }
