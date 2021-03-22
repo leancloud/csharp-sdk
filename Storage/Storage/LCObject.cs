@@ -349,18 +349,18 @@ namespace LeanCloud.Storage {
             return this;
         }
 
-        public static async Task<List<LCObject>> SaveAll(List<LCObject> objectList) {
-            if (objectList == null) {
-                throw new ArgumentNullException(nameof(objectList));
+        public static async Task<List<LCObject>> SaveAll(IEnumerable<LCObject> objects) {
+            if (objects == null) {
+                throw new ArgumentNullException(nameof(objects));
             }
-            foreach (LCObject obj in objectList) {
+            foreach (LCObject obj in objects) {
                 if (LCBatch.HasCircleReference(obj, new HashSet<LCObject>())) {
                     throw new ArgumentException("Found a circle dependency when save.");
                 }
             }
-            Stack<LCBatch> batches = LCBatch.BatchObjects(objectList, true);
+            Stack<LCBatch> batches = LCBatch.BatchObjects(objects, true);
             await SaveBatches(batches);
-            return objectList;
+            return objects.ToList();
         }
 
         public async Task Delete() {
@@ -371,12 +371,11 @@ namespace LeanCloud.Storage {
             await LCApplication.HttpClient.Delete(path);
         }
 
-        public static async Task DeleteAll(List<LCObject> objectList) {
-            if (objectList == null || objectList.Count == 0) {
-                throw new ArgumentNullException(nameof(objectList));
+        public static async Task DeleteAll(IEnumerable<LCObject> objects) {
+            if (objects == null || objects.Count() == 0) {
+                throw new ArgumentNullException(nameof(objects));
             }
-            IEnumerable<LCObject> objects = objectList.Where(item => item.ObjectId != null);
-            HashSet<LCObject> objectSet = new HashSet<LCObject>(objects);
+            HashSet<LCObject> objectSet = new HashSet<LCObject>(objects.Where(item => item.ObjectId != null));
             List<Dictionary<string, object>> requestList = objectSet.Select(item => {
                 string path = $"/{LCApplication.APIVersion}/classes/{item.ClassName}/{item.ObjectId}";
                 return new Dictionary<string, object> {
