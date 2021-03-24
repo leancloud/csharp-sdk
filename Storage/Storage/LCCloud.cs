@@ -36,6 +36,15 @@ namespace LeanCloud.Storage {
             return response;
         }
 
+        public static async Task<T> Run<T>(string name,
+            Dictionary<string, object> parameters = null) {
+            Dictionary<string, object> response = await Run(name, parameters);
+            if (response.TryGetValue("result", out object result)) {
+                return (T)result;
+            }
+            return default;
+        }
+
         /// <summary>
         /// Invokes a cloud function as a remote procedure call.
         /// </summary>

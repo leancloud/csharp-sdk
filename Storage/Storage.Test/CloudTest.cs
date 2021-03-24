@@ -29,6 +29,15 @@ namespace Storage.Test {
         }
 
         [Test]
+        public async Task RunAverageScore() {
+            float score = await LCCloud.Run<float>("averageStars", new Dictionary<string, object> {
+                { "movie", "夏洛特烦恼" }
+            });
+            TestContext.WriteLine($"score: {score}");
+            Assert.True(score.Equals(3.8f));
+        }
+
+        [Test]
         public async Task CallWithoutParams() {
             await LCCloud.Run("hello");
         }
