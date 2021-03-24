@@ -46,13 +46,15 @@ namespace LeanCloud.Storage {
             ApplyOperation(IgnoreHooksKey, op);
         }
 
-        public ReadOnlyCollection<string> UpdatedKeys {
-            get {
-                return (this["_updatedKeys"] as List<object>)
-                    .Cast<string>()
-                    .ToList()
-                    .AsReadOnly();
+        public ReadOnlyCollection<string> GetUpdatedKeys() {
+            if (this["_updatedKeys"] == null) {
+                return null;
             }
+
+            return (this["_updatedKeys"] as List<object>)
+                .Cast<string>()
+                .ToList()
+                .AsReadOnly();
         }
     }
 }

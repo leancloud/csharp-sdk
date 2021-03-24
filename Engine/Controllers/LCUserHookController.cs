@@ -24,10 +24,12 @@ namespace LeanCloud.Engine {
                 LCEngine.CheckHookKey(Request);
 
                 if (UserHooks.TryGetValue(LCEngine.OnSMSVerified, out MethodInfo mi)) {
+                    LCEngine.InitRequestContext(Request);
+
                     Dictionary<string, object> dict = LCEngine.Decode(body);
                     return await Invoke(mi, dict);
                 }
-                return default;
+                return body;
             } catch (Exception e) {
                 return StatusCode(500, e.Message);
             }
@@ -42,10 +44,12 @@ namespace LeanCloud.Engine {
                 LCEngine.CheckHookKey(Request);
 
                 if (UserHooks.TryGetValue(LCEngine.OnEmailVerified, out MethodInfo mi)) {
+                    LCEngine.InitRequestContext(Request);
+
                     Dictionary<string, object> dict = LCEngine.Decode(body);
                     return await Invoke(mi, dict);
                 }
-                return default;
+                return body;
             } catch (Exception e) {
                 return StatusCode(500, e.Message);
             }
@@ -60,10 +64,12 @@ namespace LeanCloud.Engine {
                 LCEngine.CheckHookKey(Request);
 
                 if (UserHooks.TryGetValue(LCEngine.OnLogin, out MethodInfo mi)) {
+                    LCEngine.InitRequestContext(Request);
+
                     Dictionary<string, object> dict = LCEngine.Decode(body);
                     return await Invoke(mi, dict);
                 }
-                return default;
+                return body;
             } catch (Exception e) {
                 return StatusCode(500, e.Message);
             }
@@ -73,14 +79,10 @@ namespace LeanCloud.Engine {
             LCObjectData objectData = LCObjectData.Decode(dict["object"] as Dictionary<string, object>);
             objectData.ClassName = "_User";
 
-            LCObject obj = LCObject.Create("_User");
-            obj.Merge(objectData);
+            LCObject user = LCObject.Create("_User");
+            user.Merge(objectData);
 
-            LCUserHookRequest req = new LCUserHookRequest {
-                CurrentUser = obj as LCUser
-            };
-
-            return await LCEngine.Invoke(mi, req) as LCObject;
+            return await LCEngine.Invoke(mi, new object[] { user }) as LCObject;
         }
     }
 }

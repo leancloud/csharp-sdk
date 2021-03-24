@@ -25,9 +25,9 @@ namespace LeanCloud.Engine {
 
                 string classHookName = GetClassHookName(className, hookName);
                 if (ClassHooks.TryGetValue(classHookName, out MethodInfo mi)) {
-                    Dictionary<string, object> dict = LCEngine.Decode(body);
+                    Dictionary<string, object> data = LCEngine.Decode(body);
 
-                    LCObjectData objectData = LCObjectData.Decode(dict["object"] as Dictionary<string, object>);
+                    LCObjectData objectData = LCObjectData.Decode(data["object"] as Dictionary<string, object>);
                     objectData.ClassName = className;
                     LCObject obj = LCObject.Create(className);
                     obj.Merge(objectData);
@@ -39,24 +39,22 @@ namespace LeanCloud.Engine {
                         obj.DisableAfterHook();
                     }
 
+                    LCEngine.InitRequestContext(Request);
+
                     LCUser user = null;
-                    if (dict.TryGetValue("user", out object userObj) &&
+                    if (data.TryGetValue("user", out object userObj) &&
                         userObj != null) {
                         user = new LCUser();
                         user.Merge(LCObjectData.Decode(userObj as Dictionary<string, object>));
+                        LCEngineRequestContext.CurrentUser = user;
                     }
 
-                    LCClassHookRequest req = new LCClassHookRequest {
-                        Object = obj,
-                        CurrentUser = user
-                    };
-
-                    LCObject result = await LCEngine.Invoke(mi, req) as LCObject;
+                    LCObject result = await LCEngine.Invoke(mi, new object[] { obj }) as LCObject;
                     if (result != null) {
                         return LCCloud.Encode(result);
                     }
                 }
-                return default;
+                return body;
             } catch (Exception e) {
                 return StatusCode(500, e.Message);
             }

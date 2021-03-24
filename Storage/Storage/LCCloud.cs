@@ -55,15 +55,23 @@ namespace LeanCloud.Storage {
         }
 
         public static object Encode(object parameters) {
+            if (parameters == null) {
+                return new Dictionary<string, object>();
+            }
+
             if (parameters is LCObject lcObj) {
                 return EncodeLCObject(lcObj);
-            } else if (parameters is IList<LCObject> list) {
+            }
+
+            if (parameters is IList<LCObject> list) {
                 List<object> l = new List<object>();
                 foreach (LCObject obj in list) {
                     l.Add(EncodeLCObject(obj));
                 }
                 return l;
-            } else if (parameters is IDictionary<string, LCObject> dict) {
+            }
+
+            if (parameters is IDictionary<string, LCObject> dict) {
                 Dictionary<string, object> d = new Dictionary<string, object>();
                 foreach (KeyValuePair<string, LCObject> item in dict) {
                     d[item.Key] = EncodeLCObject(item.Value);
@@ -75,9 +83,11 @@ namespace LeanCloud.Storage {
         }
 
         static object EncodeLCObject(LCObject obj) {
-            obj.ApplyCustomProperties();
             Dictionary<string, object> dict = LCObjectData.Encode(obj.data);
             dict["__type"] = "Object";
+            foreach (KeyValuePair<string, object> kv in obj.estimatedData) {
+                dict[kv.Key] = kv.Value;
+            }
             return dict;
         }
     }

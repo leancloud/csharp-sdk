@@ -7,8 +7,9 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Primitives;
-using LeanCloud.Common;
 using Microsoft.Extensions.DependencyInjection;
+using LeanCloud.Common;
+using LeanCloud.Storage;
 
 namespace LeanCloud.Engine {
     public class LCEngine {
@@ -202,6 +203,27 @@ namespace LeanCloud.Engine {
             LCLogger.Debug($"{key} : {Environment.GetEnvironmentVariable(key)}");
         }
 
+        internal static async Task<object> Invoke(MethodInfo mi, object[] parameters) {
+            try {
+                if (mi.ReturnType == typeof(Task) ||
+                    (mi.ReturnType.IsGenericType && mi.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))) {
+                    Task task = mi.Invoke(null, parameters) as Task;
+                    await task;
+                    return task.GetType().GetProperty("Result")?.GetValue(task);
+                }
+                return mi.Invoke(null, parameters);
+            } catch (TargetInvocationException e) {
+                Exception ex = e.InnerException;
+                if (ex is LCException lcEx) {
+                    throw new Exception(JsonConvert.SerializeObject(new Dictionary<string, object> {
+                        { "code", lcEx.Code },
+                        { "message", lcEx.Message }
+                    }));
+                }
+                throw ex;
+            }
+        }
+
         internal static async Task<object> Invoke(MethodInfo mi, object request) {
             try {
                 object[] ps = null;
@@ -232,6 +254,16 @@ namespace LeanCloud.Engine {
             Dictionary<string, object> dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(json,
                 LCJsonConverter.Default);
             return dict;
+        }
+
+        internal static void InitRequestContext(HttpRequest request) {
+            LCEngineRequestContext.Init();
+
+            LCEngineRequestContext.RemoteAddress = GetIP(request);
+
+            if (request.Headers.TryGetValue("x-lc-session", out StringValues session)) {
+                LCEngineRequestContext.SessionToken = session;
+            }
         }
 
         internal static string GetIP(HttpRequest request) {
