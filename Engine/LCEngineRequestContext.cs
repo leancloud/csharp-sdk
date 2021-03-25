@@ -5,9 +5,9 @@ using LeanCloud.Storage;
 
 namespace LeanCloud.Engine {
     public class LCEngineRequestContext {
-        public const string RemoteAddressKey = "remoteAddressKey";
-        public const string SessionTokenKey = "sessionToken";
-        public const string CurrentUserKey = "currentUser";
+        public const string RemoteAddressKey = "__remoteAddressKey";
+        public const string SessionTokenKey = "__sessionToken";
+        public const string CurrentUserKey = "__currentUser";
 
         private static ThreadLocal<Dictionary<string, object>> requestContext = new ThreadLocal<Dictionary<string, object>>();
 

@@ -20,6 +20,9 @@ namespace LeanCloud.Engine {
         }
 
         public LCEngineClassHookAttribute(string className, LCEngineObjectHookType hookType) {
+            if (string.IsNullOrEmpty(className)) {
+                throw new ArgumentNullException(nameof(className));
+            }
             ClassName = className;
             HookType = hookType;
         }
