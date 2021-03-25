@@ -6,7 +6,7 @@ OUTPUT_DIRECTORY = ./Doc/
 EXTRACT_ALL = yes
 EXTRACT_PRIVATE = no
 EXTRACT_STATIC = yes
-INPUT = ./Storage/Storage/ ./Realtime/Realtime/ ./LiveQuery/LiveQuery/
+INPUT = ./Storage/Storage/ ./Realtime/Realtime/ ./LiveQuery/LiveQuery/ ./Engine/
 #Do not add anything here unless you need to. Doxygen already covers all 
 #common formats like .c/.cc/.cxx/.c++/.cpp/.inl/.h/.hpp
 FILE_PATTERNS = 
