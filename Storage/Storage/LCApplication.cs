@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LeanCloud.Common;
 using LeanCloud.Storage;
 using LeanCloud.Storage.Internal.Http;
@@ -9,7 +10,7 @@ namespace LeanCloud {
     /// </summary>
     public class LCApplication {
         // SDK 版本号，用于 User-Agent 统计
-        internal const string SDKVersion = "0.6.4";
+        public const string SDKVersion = "0.6.4";
 
         // 接口版本号，用于接口版本管理
         internal const string APIVersion = "1.1";
@@ -42,6 +43,10 @@ namespace LeanCloud {
             get; set;
         }
 
+        internal static Dictionary<string, string> AdditionalHeaders {
+            get;
+        } = new Dictionary<string, string>();
+
         public static void Initialize(string appId,
             string appKey,
             string server = null,
@@ -67,6 +72,10 @@ namespace LeanCloud {
             AppRouter = new LCAppRouter(appId, server);
 
             HttpClient = new LCHttpClient(appId, appKey, server, SDKVersion, APIVersion);
+        }
+
+        public static void AddHeader(string key, string value) {
+            AdditionalHeaders.Add(key, value);
         }
     }
 }

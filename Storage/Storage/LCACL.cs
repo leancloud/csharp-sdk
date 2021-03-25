@@ -10,8 +10,13 @@ namespace LeanCloud.Storage {
 
         const string RoleKeyPrefix = "role:";
 
-        internal Dictionary<string, bool> readAccess = new Dictionary<string, bool>();
-        internal Dictionary<string, bool> writeAccess = new Dictionary<string, bool>();
+        public Dictionary<string, bool> ReadAccess {
+            get;
+        } = new Dictionary<string, bool>();
+
+        public Dictionary<string, bool> WriteAccess {
+            get;
+        } = new Dictionary<string, bool>();
 
         public static LCACL CreateWithOwner(LCUser owner) {
             if (owner == null) {
@@ -25,17 +30,17 @@ namespace LeanCloud.Storage {
 
         public bool PublicReadAccess {
             get {
-                return GetAccess(readAccess, PublicKey);
+                return GetAccess(ReadAccess, PublicKey);
             } set {
-                SetAccess(readAccess, PublicKey, value);
+                SetAccess(ReadAccess, PublicKey, value);
             }
         }
 
         public bool PublicWriteAccess {
             get {
-                return GetAccess(writeAccess, PublicKey);
+                return GetAccess(WriteAccess, PublicKey);
             } set {
-                SetAccess(writeAccess, PublicKey, value);
+                SetAccess(WriteAccess, PublicKey, value);
             }
         }
 
@@ -43,28 +48,28 @@ namespace LeanCloud.Storage {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }
-            return GetAccess(readAccess, userId);
+            return GetAccess(ReadAccess, userId);
         }
 
         public void SetUserIdReadAccess(string userId, bool value) {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }
-            SetAccess(readAccess, userId, value);
+            SetAccess(ReadAccess, userId, value);
         }
 
         public bool GetUserIdWriteAccess(string userId) {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }
-            return GetAccess(writeAccess, userId);
+            return GetAccess(WriteAccess, userId);
         }
 
         public void SetUserIdWriteAccess(string userId, bool value) {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }
-            SetAccess(writeAccess, userId, value);
+            SetAccess(WriteAccess, userId, value);
         }
 
         public bool GetUserReadAccess(LCUser user) {
@@ -100,7 +105,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(role));
             }
             string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
-            return GetAccess(readAccess, roleKey);
+            return GetAccess(ReadAccess, roleKey);
         }
 
         public void SetRoleReadAccess(LCRole role, bool value) {
@@ -108,7 +113,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(role));
             }
             string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
-            SetAccess(readAccess, roleKey, value);
+            SetAccess(ReadAccess, roleKey, value);
         }
 
         public bool GetRoleWriteAccess(LCRole role) {
@@ -116,7 +121,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(role));
             }
             string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
-            return GetAccess(writeAccess, roleKey);
+            return GetAccess(WriteAccess, roleKey);
         }
 
         public void SetRoleWriteAccess(LCRole role, bool value) {
@@ -124,7 +129,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(role));
             }
             string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
-            SetAccess(writeAccess, roleKey, value);
+            SetAccess(WriteAccess, roleKey, value);
         }
 
         bool GetAccess(Dictionary<string, bool> access, string key) {
