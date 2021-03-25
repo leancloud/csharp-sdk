@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ReleaseVersion>0.7.0</ReleaseVersion>
+    <ReleaseVersion>0.7.1</ReleaseVersion>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblyName>Realtime</AssemblyName>
   </PropertyGroup>
