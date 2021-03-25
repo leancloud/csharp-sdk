@@ -25,3 +25,6 @@ pack ./Realtime/Realtime-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-S
 # LiveQuery
 pack ./LiveQuery/LiveQuery/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-LiveQuery-Standard.zip
 pack ./LiveQuery/LiveQuery-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-LiveQuery-Unity.zip true
+
+# Engine
+pack ./Engine/bin/Release/netcoreapp3.1/ ./DLLs LeanCloud-SDK-Engine-Standard.zip
