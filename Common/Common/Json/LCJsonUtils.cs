@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using LC.Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace LeanCloud.Common {

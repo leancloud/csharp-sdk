@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 
 namespace LeanCloud.Realtime.Internal.Router {
     public class LCRTMServer {

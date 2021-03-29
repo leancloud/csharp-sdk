@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LeanCloud;
 using LeanCloud.Storage;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 
 namespace Storage.Test {
     public class UserTest {

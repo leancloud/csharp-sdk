@@ -8,9 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Internal\" />
     <Folder Include="Internal\Router\" />
     <Folder Include="Conversation\" />
@@ -25,5 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common\Common.csproj" />
     <ProjectReference Include="..\..\Storage\Storage\Storage.csproj" />
+    <ProjectReference Include="..\..\Libs\Google.Protobuf\LC.Google.Protobuf.csproj" />
   </ItemGroup>
 </Project>

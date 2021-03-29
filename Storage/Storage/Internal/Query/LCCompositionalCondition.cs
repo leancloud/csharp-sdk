@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage.Internal.Query {

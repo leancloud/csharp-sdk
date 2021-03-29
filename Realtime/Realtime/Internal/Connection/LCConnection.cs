@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Google.Protobuf;
+using LC.Google.Protobuf;
 using LeanCloud.Realtime.Internal.Router;
 using LeanCloud.Realtime.Internal.WebSocket;
 using LeanCloud.Realtime.Internal.Protocol;

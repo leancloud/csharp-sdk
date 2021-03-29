@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Common;

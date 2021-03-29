@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 using LeanCloud.Common;
