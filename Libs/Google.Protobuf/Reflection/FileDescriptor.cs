@@ -481,13 +481,10 @@ namespace LC.Google.Protobuf.Reflection
         /// dependencies must come before the descriptor which depends on them. (If A depends on B, and B
         /// depends on C, then the descriptors must be presented in the order C, B, A.) This is compatible
         /// with the order in which protoc provides descriptors to plugins.</param>
-        /// <param name="registry">The extension registry to use when parsing, or null if no extensions are required.</param>
         /// <returns>The file descriptors corresponding to <paramref name="descriptorData"/>.</returns>
-        public static IReadOnlyList<FileDescriptor> BuildFromByteStrings(IEnumerable<ByteString> descriptorData, ExtensionRegistry registry)
+        public static IReadOnlyList<FileDescriptor> BuildFromByteStrings(IEnumerable<ByteString> descriptorData)
         {
             ProtoPreconditions.CheckNotNull(descriptorData, nameof(descriptorData));
-
-            var parser = FileDescriptorProto.Parser.WithExtensionRegistry(registry);
 
             // TODO: See if we can build a single DescriptorPool instead of building lots of them.
             // This will all behave correctly, but it's less efficient than we'd like.
@@ -495,7 +492,7 @@ namespace LC.Google.Protobuf.Reflection
             var descriptorsByName = new Dictionary<string, FileDescriptor>();
             foreach (var data in descriptorData)
             {
-                var proto = parser.ParseFrom(data);
+                var proto = FileDescriptorProto.Parser.ParseFrom(data);
                 var dependencies = new List<FileDescriptor>();
                 foreach (var dependencyName in proto.Dependency)
                 {
@@ -520,18 +517,6 @@ namespace LC.Google.Protobuf.Reflection
             }
             return new ReadOnlyCollection<FileDescriptor>(descriptors);
         }
-
-        /// <summary>
-        /// Converts the given descriptor binary data into FileDescriptor objects.
-        /// Note: reflection using the returned FileDescriptors is not currently supported.
-        /// </summary>
-        /// <param name="descriptorData">The binary file descriptor proto data. Must not be null, and any
-        /// dependencies must come before the descriptor which depends on them. (If A depends on B, and B
-        /// depends on C, then the descriptors must be presented in the order C, B, A.) This is compatible
-        /// with the order in which protoc provides descriptors to plugins.</param>
-        /// <returns>The file descriptors corresponding to <paramref name="descriptorData"/>.</returns>
-        public static IReadOnlyList<FileDescriptor> BuildFromByteStrings(IEnumerable<ByteString> descriptorData) =>
-            BuildFromByteStrings(descriptorData, null);
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.

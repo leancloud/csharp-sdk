@@ -6,14 +6,9 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
 {
     internal class FieldFilter : PathFilter
     {
-        internal string? Name;
+        public string Name { get; set; }
 
-        public FieldFilter(string? name)
-        {
-            Name = name;
-        }
-
-        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken t in current)
             {
@@ -21,28 +16,28 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                 {
                     if (Name != null)
                     {
-                        JToken? v = o[Name];
+                        JToken v = o[Name];
 
                         if (v != null)
                         {
                             yield return v;
                         }
-                        else if (settings?.ErrorWhenNoMatch ?? false)
+                        else if (errorWhenNoMatch)
                         {
                             throw new JsonException("Property '{0}' does not exist on JObject.".FormatWith(CultureInfo.InvariantCulture, Name));
                         }
                     }
                     else
                     {
-                        foreach (KeyValuePair<string, JToken?> p in o)
+                        foreach (KeyValuePair<string, JToken> p in o)
                         {
-                            yield return p.Value!;
+                            yield return p.Value;
                         }
                     }
                 }
                 else
                 {
-                    if (settings?.ErrorWhenNoMatch ?? false)
+                    if (errorWhenNoMatch)
                     {
                         throw new JsonException("Property '{0}' not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, Name ?? "*", t.GetType().Name));
                     }

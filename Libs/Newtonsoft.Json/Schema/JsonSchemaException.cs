@@ -26,8 +26,6 @@
 using System;
 using System.Runtime.Serialization;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Schema
 {
     /// <summary>

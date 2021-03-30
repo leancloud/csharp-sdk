@@ -23,8 +23,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Bson
 {
     internal enum BsonType : sbyte

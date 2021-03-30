@@ -59,7 +59,7 @@ namespace LC.Google.Protobuf
 
         public int CalculateSize()
         {
-            return codec.CalculateUnconditionalSizeWithTag(field);
+            return codec.CalculateSizeWithTag(field);
         }
 
         public IExtensionValue Clone()

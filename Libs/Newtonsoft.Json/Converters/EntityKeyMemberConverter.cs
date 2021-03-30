@@ -28,7 +28,6 @@ using System;
 using LC.Newtonsoft.Json.Serialization;
 using System.Globalization;
 using LC.Newtonsoft.Json.Utilities;
-using System.Diagnostics;
 
 namespace LC.Newtonsoft.Json.Converters
 {
@@ -43,7 +42,7 @@ namespace LC.Newtonsoft.Json.Converters
         private const string TypePropertyName = "Type";
         private const string ValuePropertyName = "Value";
 
-        private static ReflectionObject? _reflectionObject;
+        private static ReflectionObject _reflectionObject;
 
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -51,23 +50,16 @@ namespace LC.Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if (value == null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
             EnsureReflectionObject(value.GetType());
-            MiscellaneousUtils.Assert(_reflectionObject != null);
 
-            DefaultContractResolver? resolver = serializer.ContractResolver as DefaultContractResolver;
+            DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
 
-            string keyName = (string)_reflectionObject.GetValue(value, KeyPropertyName)!;
-            object? keyValue = _reflectionObject.GetValue(value, ValuePropertyName);
+            string keyName = (string)_reflectionObject.GetValue(value, KeyPropertyName);
+            object keyValue = _reflectionObject.GetValue(value, ValuePropertyName);
 
-            Type? keyValueType = keyValue?.GetType();
+            Type keyValueType = keyValue?.GetType();
 
             writer.WriteStartObject();
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(KeyPropertyName) : KeyPropertyName);
@@ -79,7 +71,7 @@ namespace LC.Newtonsoft.Json.Converters
 
             if (keyValueType != null)
             {
-                if (JsonSerializerInternalWriter.TryConvertToString(keyValue!, keyValueType, out string? valueJson))
+                if (JsonSerializerInternalWriter.TryConvertToString(keyValue, keyValueType, out string valueJson))
                 {
                     writer.WriteValue(valueJson);
                 }
@@ -100,7 +92,7 @@ namespace LC.Newtonsoft.Json.Converters
         {
             reader.ReadAndAssert();
 
-            if (reader.TokenType != JsonToken.PropertyName || !string.Equals(reader.Value?.ToString(), propertyName, StringComparison.OrdinalIgnoreCase))
+            if (reader.TokenType != JsonToken.PropertyName || !string.Equals(reader.Value.ToString(), propertyName, StringComparison.OrdinalIgnoreCase))
             {
                 throw new JsonSerializationException("Expected JSON property '{0}'.".FormatWith(CultureInfo.InvariantCulture, propertyName));
             }
@@ -114,20 +106,19 @@ namespace LC.Newtonsoft.Json.Converters
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             EnsureReflectionObject(objectType);
-            MiscellaneousUtils.Assert(_reflectionObject != null);
 
-            object entityKeyMember = _reflectionObject.Creator!();
+            object entityKeyMember = _reflectionObject.Creator();
 
             ReadAndAssertProperty(reader, KeyPropertyName);
             reader.ReadAndAssert();
-            _reflectionObject.SetValue(entityKeyMember, KeyPropertyName, reader.Value?.ToString());
+            _reflectionObject.SetValue(entityKeyMember, KeyPropertyName, reader.Value.ToString());
 
             ReadAndAssertProperty(reader, TypePropertyName);
             reader.ReadAndAssert();
-            string? type = reader.Value?.ToString();
+            string type = reader.Value.ToString();
 
             Type t = Type.GetType(type);
 

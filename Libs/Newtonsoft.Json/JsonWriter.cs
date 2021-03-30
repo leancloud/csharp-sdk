@@ -62,7 +62,7 @@ namespace LC.Newtonsoft.Json
         // array that gives a new state based on the current state an the token being written
         private static readonly State[][] StateArray;
 
-        internal static readonly State[][] StateArrayTemplate = new[]
+        internal static readonly State[][] StateArrayTempate = new[]
         {
             //                                      Start                    PropertyName            ObjectStart         Object            ArrayStart              Array                   ConstructorStart        Constructor             Closed       Error
             //
@@ -78,9 +78,9 @@ namespace LC.Newtonsoft.Json
 
         internal static State[][] BuildStateArray()
         {
-            List<State[]> allStates = StateArrayTemplate.ToList();
-            State[] errorStates = StateArrayTemplate[0];
-            State[] valueStates = StateArrayTemplate[7];
+            List<State[]> allStates = StateArrayTempate.ToList();
+            State[] errorStates = StateArrayTempate[0];
+            State[] valueStates = StateArrayTempate[7];
 
             EnumInfo enumValuesAndNames = EnumUtils.GetEnumValuesAndNames(typeof(JsonToken));
 
@@ -116,7 +116,7 @@ namespace LC.Newtonsoft.Json
             StateArray = BuildStateArray();
         }
 
-        private List<JsonPosition>? _stack;
+        private List<JsonPosition> _stack;
         private JsonPosition _currentPosition;
         private State _currentState;
         private Formatting _formatting;
@@ -218,7 +218,7 @@ namespace LC.Newtonsoft.Json
 
                 JsonPosition? current = insideContainer ? (JsonPosition?)_currentPosition : null;
 
-                return JsonPosition.BuildPath(_stack!, current);
+                return JsonPosition.BuildPath(_stack, current);
             }
         }
 
@@ -226,8 +226,8 @@ namespace LC.Newtonsoft.Json
         private DateTimeZoneHandling _dateTimeZoneHandling;
         private StringEscapeHandling _stringEscapeHandling;
         private FloatFormatHandling _floatFormatHandling;
-        private string? _dateFormatString;
-        private CultureInfo? _culture;
+        private string _dateFormatString;
+        private CultureInfo _culture;
 
         /// <summary>
         /// Gets or sets a value indicating how JSON text output should be formatted.
@@ -325,7 +325,7 @@ namespace LC.Newtonsoft.Json
         /// <summary>
         /// Gets or sets how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text.
         /// </summary>
-        public string? DateFormatString
+        public string DateFormatString
         {
             get => _dateFormatString;
             set => _dateFormatString = value;
@@ -522,7 +522,7 @@ namespace LC.Newtonsoft.Json
         /// A value is only required for tokens that have an associated value, e.g. the <see cref="String"/> property name for <see cref="JsonToken.PropertyName"/>.
         /// <c>null</c> can be passed to the method for tokens that don't have a value, e.g. <see cref="JsonToken.StartObject"/>.
         /// </param>
-        public void WriteToken(JsonToken token, object? value)
+        public void WriteToken(JsonToken token, object value)
         {
             switch (token)
             {
@@ -579,9 +579,8 @@ namespace LC.Newtonsoft.Json
                     }
                     break;
                 case JsonToken.String:
-                    // Allow for a null string. This matches JTokenReader behavior which can read
-                    // a JsonToken.String with a null value.
-                    WriteValue(value?.ToString());
+                    ValidationUtils.ArgumentNotNull(value, nameof(value));
+                    WriteValue(value.ToString());
                     break;
                 case JsonToken.Boolean:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
@@ -626,7 +625,7 @@ namespace LC.Newtonsoft.Json
                     }
                     else
                     {
-                        WriteValue((byte[])value!);
+                        WriteValue((byte[])value);
                     }
                     break;
                 default:
@@ -650,7 +649,7 @@ namespace LC.Newtonsoft.Json
             do
             {
                 // write a JValue date when the constructor is for a date
-                if (writeDateConstructorAsDate && reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value?.ToString(), "Date", StringComparison.Ordinal))
+                if (writeDateConstructorAsDate && reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
                 {
                     WriteConstructorDate(reader);
                 }
@@ -667,17 +666,10 @@ namespace LC.Newtonsoft.Json
                 && writeChildren
                 && reader.Read());
 
-            if (IsWriteTokenIncomplete(reader, writeChildren, initialDepth))
+            if (initialDepth < CalculateWriteTokenFinalDepth(reader))
             {
                 throw JsonWriterException.Create(this, "Unexpected end when reading token.", null);
             }
-        }
-
-        private bool IsWriteTokenIncomplete(JsonReader reader, bool writeChildren, int initialDepth)
-        {
-            int finalDepth = CalculateWriteTokenFinalDepth(reader);
-            return initialDepth < finalDepth ||
-                (writeChildren && initialDepth == finalDepth && JsonTokenUtils.IsStartToken(reader.TokenType));
         }
 
         private int CalculateWriteTokenInitialDepth(JsonReader reader)
@@ -704,7 +696,7 @@ namespace LC.Newtonsoft.Json
 
         private void WriteConstructorDate(JsonReader reader)
         {
-            if (!JavaScriptUtils.TryGetDateFromConstructorJson(reader, out DateTime dateTime, out string? errorMessage))
+            if (!JavaScriptUtils.TryGetDateFromConstructorJson(reader, out DateTime dateTime, out string errorMessage))
             {
                 throw JsonWriterException.Create(this, errorMessage, null);
             }
@@ -795,7 +787,7 @@ namespace LC.Newtonsoft.Json
                 {
                     int currentLevel = top - i;
 
-                    if (_stack![currentLevel].Type == type)
+                    if (_stack[currentLevel].Type == type)
                     {
                         levelsToComplete = i + 2;
                         break;
@@ -917,7 +909,7 @@ namespace LC.Newtonsoft.Json
         /// Writes raw JSON without changing the writer's state.
         /// </summary>
         /// <param name="json">The raw JSON to write.</param>
-        public virtual void WriteRaw(string? json)
+        public virtual void WriteRaw(string json)
         {
             InternalWriteRaw();
         }
@@ -926,7 +918,7 @@ namespace LC.Newtonsoft.Json
         /// Writes raw JSON where a value is expected and updates the writer's state.
         /// </summary>
         /// <param name="json">The raw JSON to write.</param>
-        public virtual void WriteRawValue(string? json)
+        public virtual void WriteRawValue(string json)
         {
             // hack. want writer to change state as if a value had been written
             UpdateScopeWithFinishedValue();
@@ -938,7 +930,7 @@ namespace LC.Newtonsoft.Json
         /// Writes a <see cref="String"/> value.
         /// </summary>
         /// <param name="value">The <see cref="String"/> value to write.</param>
-        public virtual void WriteValue(string? value)
+        public virtual void WriteValue(string value)
         {
             InternalWriteValue(JsonToken.String);
         }
@@ -1384,7 +1376,7 @@ namespace LC.Newtonsoft.Json
         /// Writes a <see cref="Byte"/>[] value.
         /// </summary>
         /// <param name="value">The <see cref="Byte"/>[] value to write.</param>
-        public virtual void WriteValue(byte[]? value)
+        public virtual void WriteValue(byte[] value)
         {
             if (value == null)
             {
@@ -1400,7 +1392,7 @@ namespace LC.Newtonsoft.Json
         /// Writes a <see cref="Uri"/> value.
         /// </summary>
         /// <param name="value">The <see cref="Uri"/> value to write.</param>
-        public virtual void WriteValue(Uri? value)
+        public virtual void WriteValue(Uri value)
         {
             if (value == null)
             {
@@ -1417,7 +1409,7 @@ namespace LC.Newtonsoft.Json
         /// An error will raised if the value cannot be written as a single JSON token.
         /// </summary>
         /// <param name="value">The <see cref="Object"/> value to write.</param>
-        public virtual void WriteValue(object? value)
+        public virtual void WriteValue(object value)
         {
             if (value == null)
             {
@@ -1443,7 +1435,7 @@ namespace LC.Newtonsoft.Json
         /// Writes a comment <c>/*...*/</c> containing the specified text.
         /// </summary>
         /// <param name="text">Text to place inside the comment.</param>
-        public virtual void WriteComment(string? text)
+        public virtual void WriteComment(string text)
         {
             InternalWriteComment();
         }

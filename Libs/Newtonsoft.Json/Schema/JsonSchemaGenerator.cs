@@ -37,8 +37,6 @@ using System.Linq;
 
 #endif
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Schema
 {
     /// <summary>
@@ -175,7 +173,7 @@ namespace LC.Newtonsoft.Json.Schema
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
-            if (!StringUtils.IsNullOrEmpty(containerAttribute?.Title))
+            if (!string.IsNullOrEmpty(containerAttribute?.Title))
             {
                 return containerAttribute.Title;
             }
@@ -187,7 +185,7 @@ namespace LC.Newtonsoft.Json.Schema
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
-            if (!StringUtils.IsNullOrEmpty(containerAttribute?.Description))
+            if (!string.IsNullOrEmpty(containerAttribute?.Description))
             {
                 return containerAttribute.Description;
             }
@@ -204,7 +202,7 @@ namespace LC.Newtonsoft.Json.Schema
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
-            if (!StringUtils.IsNullOrEmpty(containerAttribute?.Id))
+            if (!string.IsNullOrEmpty(containerAttribute?.Id))
             {
                 return containerAttribute.Id;
             }
@@ -232,7 +230,7 @@ namespace LC.Newtonsoft.Json.Schema
             string resolvedId = GetTypeId(type, false);
             string explicitId = GetTypeId(type, true);
 
-            if (!StringUtils.IsNullOrEmpty(resolvedId))
+            if (!string.IsNullOrEmpty(resolvedId))
             {
                 JsonSchema resolvedSchema = _resolver.GetSchema(resolvedId);
                 if (resolvedSchema != null)

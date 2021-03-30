@@ -31,7 +31,6 @@ using System.Globalization;
 using System.Reflection;
 using LC.Newtonsoft.Json.Utilities;
 using System.Collections;
-using System.Diagnostics;
 #if !HAVE_LINQ
 using LC.Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -50,7 +49,7 @@ namespace LC.Newtonsoft.Json.Serialization
         /// Gets the <see cref="System.Type"/> of the collection items.
         /// </summary>
         /// <value>The <see cref="System.Type"/> of the collection items.</value>
-        public Type? CollectionItemType { get; }
+        public Type CollectionItemType { get; }
 
         /// <summary>
         /// Gets a value indicating whether the collection type is a multidimensional array.
@@ -58,26 +57,26 @@ namespace LC.Newtonsoft.Json.Serialization
         /// <value><c>true</c> if the collection type is a multidimensional array; otherwise, <c>false</c>.</value>
         public bool IsMultidimensionalArray { get; }
 
-        private readonly Type? _genericCollectionDefinitionType;
+        private readonly Type _genericCollectionDefinitionType;
 
-        private Type? _genericWrapperType;
-        private ObjectConstructor<object>? _genericWrapperCreator;
-        private Func<object>? _genericTemporaryCollectionCreator;
+        private Type _genericWrapperType;
+        private ObjectConstructor<object> _genericWrapperCreator;
+        private Func<object> _genericTemporaryCollectionCreator;
 
         internal bool IsArray { get; }
         internal bool ShouldCreateWrapper { get; }
         internal bool CanDeserialize { get; private set; }
 
-        private readonly ConstructorInfo? _parameterizedConstructor;
+        private readonly ConstructorInfo _parameterizedConstructor;
 
-        private ObjectConstructor<object>? _parameterizedCreator;
-        private ObjectConstructor<object>? _overrideCreator;
+        private ObjectConstructor<object> _parameterizedCreator;
+        private ObjectConstructor<object> _overrideCreator;
 
-        internal ObjectConstructor<object>? ParameterizedCreator
+        internal ObjectConstructor<object> ParameterizedCreator
         {
             get
             {
-                if (_parameterizedCreator == null && _parameterizedConstructor != null)
+                if (_parameterizedCreator == null)
                 {
                     _parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(_parameterizedConstructor);
                 }
@@ -90,7 +89,7 @@ namespace LC.Newtonsoft.Json.Serialization
         /// Gets or sets the function used to create the object. When set this function will override <see cref="JsonContract.DefaultCreator"/>.
         /// </summary>
         /// <value>The function used to create the object.</value>
-        public ObjectConstructor<object>? OverrideCreator
+        public ObjectConstructor<object> OverrideCreator
         {
             get => _overrideCreator;
             set
@@ -117,14 +116,11 @@ namespace LC.Newtonsoft.Json.Serialization
             : base(underlyingType)
         {
             ContractType = JsonContractType.Array;
-
-            // netcoreapp3.0 uses EmptyPartition for empty enumerable. Treat as an empty array.
-            IsArray = CreatedType.IsArray ||
-                (NonNullableUnderlyingType.IsGenericType() && NonNullableUnderlyingType.GetGenericTypeDefinition().FullName == "System.Linq.EmptyPartition`1");
+            IsArray = CreatedType.IsArray;
 
             bool canDeserialize;
 
-            Type? tempCollectionType;
+            Type tempCollectionType;
             if (IsArray)
             {
                 CollectionItemType = ReflectionUtils.GetCollectionItemType(UnderlyingType);
@@ -132,7 +128,7 @@ namespace LC.Newtonsoft.Json.Serialization
                 _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
 
                 canDeserialize = true;
-                IsMultidimensionalArray = (CreatedType.IsArray && UnderlyingType.GetArrayRank() > 1);
+                IsMultidimensionalArray = (IsArray && UnderlyingType.GetArrayRank() > 1);
             }
             else if (typeof(IList).IsAssignableFrom(NonNullableUnderlyingType))
             {
@@ -255,12 +251,11 @@ namespace LC.Newtonsoft.Json.Serialization
             }
 #endif
 
-            if (CollectionItemType != null &&
-                ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(
+            if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(
                 NonNullableUnderlyingType,
                 CollectionItemType,
-                out Type? immutableCreatedType,
-                out ObjectConstructor<object>? immutableParameterizedCreator))
+                out Type immutableCreatedType,
+                out ObjectConstructor<object> immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;
                 _parameterizedCreator = immutableParameterizedCreator;
@@ -273,8 +268,6 @@ namespace LC.Newtonsoft.Json.Serialization
         {
             if (_genericWrapperCreator == null)
             {
-                MiscellaneousUtils.Assert(_genericCollectionDefinitionType != null);
-
                 _genericWrapperType = typeof(CollectionWrapper<>).MakeGenericType(CollectionItemType);
 
                 Type constructorArgument;
@@ -318,7 +311,7 @@ namespace LC.Newtonsoft.Json.Serialization
             if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpListTypeName)
             {
                 FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                _parameterizedCreator = FSharpUtils.Instance.CreateSeq(CollectionItemType!);
+                _parameterizedCreator = FSharpUtils.CreateSeq(CollectionItemType);
             }
         }
 #endif

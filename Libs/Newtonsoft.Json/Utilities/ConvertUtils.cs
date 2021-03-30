@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 #if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
@@ -37,7 +36,6 @@ using System.Text.RegularExpressions;
 #endif
 using LC.Newtonsoft.Json.Serialization;
 using System.Reflection;
-using System.Diagnostics.CodeAnalysis;
 #if !HAVE_LINQ
 using LC.Newtonsoft.Json.Utilities.LinqBridge;
 #endif
@@ -96,14 +94,8 @@ namespace LC.Newtonsoft.Json.Utilities
 
     internal class TypeInformation
     {
-        public Type Type { get; }
-        public PrimitiveTypeCode TypeCode { get; }
-
-        public TypeInformation(Type type, PrimitiveTypeCode typeCode)
-        {
-            Type = type;
-            TypeCode = typeCode;
-        }
+        public Type Type { get; set; }
+        public PrimitiveTypeCode TypeCode { get; set; }
     }
 
     internal enum ParseResult
@@ -171,25 +163,25 @@ namespace LC.Newtonsoft.Json.Utilities
         private static readonly TypeInformation[] PrimitiveTypeCodes =
         {
             // need all of these. lookup against the index with TypeCode value
-            new TypeInformation(typeof(object), PrimitiveTypeCode.Empty), 
-            new TypeInformation(typeof(object), PrimitiveTypeCode.Object), 
-            new TypeInformation(typeof(object), PrimitiveTypeCode.DBNull), 
-            new TypeInformation(typeof(bool), PrimitiveTypeCode.Boolean), 
-            new TypeInformation(typeof(char), PrimitiveTypeCode.Char), 
-            new TypeInformation(typeof(sbyte), PrimitiveTypeCode.SByte), 
-            new TypeInformation(typeof(byte), PrimitiveTypeCode.Byte), 
-            new TypeInformation(typeof(short), PrimitiveTypeCode.Int16), 
-            new TypeInformation(typeof(ushort), PrimitiveTypeCode.UInt16), 
-            new TypeInformation(typeof(int), PrimitiveTypeCode.Int32), 
-            new TypeInformation(typeof(uint), PrimitiveTypeCode.UInt32), 
-            new TypeInformation(typeof(long), PrimitiveTypeCode.Int64), 
-            new TypeInformation(typeof(ulong), PrimitiveTypeCode.UInt64), 
-            new TypeInformation(typeof(float), PrimitiveTypeCode.Single), 
-            new TypeInformation(typeof(double), PrimitiveTypeCode.Double), 
-            new TypeInformation(typeof(decimal), PrimitiveTypeCode.Decimal), 
-            new TypeInformation(typeof(DateTime), PrimitiveTypeCode.DateTime), 
-            new TypeInformation(typeof(object), PrimitiveTypeCode.Empty), // no 17 in TypeCode for some reason
-            new TypeInformation(typeof(string), PrimitiveTypeCode.String)
+            new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Empty },
+            new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Object },
+            new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.DBNull },
+            new TypeInformation { Type = typeof(bool), TypeCode = PrimitiveTypeCode.Boolean },
+            new TypeInformation { Type = typeof(char), TypeCode = PrimitiveTypeCode.Char },
+            new TypeInformation { Type = typeof(sbyte), TypeCode = PrimitiveTypeCode.SByte },
+            new TypeInformation { Type = typeof(byte), TypeCode = PrimitiveTypeCode.Byte },
+            new TypeInformation { Type = typeof(short), TypeCode = PrimitiveTypeCode.Int16 },
+            new TypeInformation { Type = typeof(ushort), TypeCode = PrimitiveTypeCode.UInt16 },
+            new TypeInformation { Type = typeof(int), TypeCode = PrimitiveTypeCode.Int32 },
+            new TypeInformation { Type = typeof(uint), TypeCode = PrimitiveTypeCode.UInt32 },
+            new TypeInformation { Type = typeof(long), TypeCode = PrimitiveTypeCode.Int64 },
+            new TypeInformation { Type = typeof(ulong), TypeCode = PrimitiveTypeCode.UInt64 },
+            new TypeInformation { Type = typeof(float), TypeCode = PrimitiveTypeCode.Single },
+            new TypeInformation { Type = typeof(double), TypeCode = PrimitiveTypeCode.Double },
+            new TypeInformation { Type = typeof(decimal), TypeCode = PrimitiveTypeCode.Decimal },
+            new TypeInformation { Type = typeof(DateTime), TypeCode = PrimitiveTypeCode.DateTime },
+            new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Empty }, // no 17 in TypeCode for some reason
+            new TypeInformation { Type = typeof(string), TypeCode = PrimitiveTypeCode.String }
         };
 #endif
 
@@ -256,10 +248,10 @@ namespace LC.Newtonsoft.Json.Utilities
 #endif
         }
 
-        private static readonly ThreadSafeStore<StructMultiKey<Type, Type>, Func<object?, object?>?> CastConverters =
-            new ThreadSafeStore<StructMultiKey<Type, Type>, Func<object?, object?>?>(CreateCastConverter);
+        private static readonly ThreadSafeStore<StructMultiKey<Type, Type>, Func<object, object>> CastConverters =
+            new ThreadSafeStore<StructMultiKey<Type, Type>, Func<object, object>>(CreateCastConverter);
 
-        private static Func<object?, object?>? CreateCastConverter(StructMultiKey<Type, Type> t)
+        private static Func<object, object> CreateCastConverter(StructMultiKey<Type, Type> t)
         {
             Type initialType = t.Value1;
             Type targetType = t.Value2;
@@ -271,7 +263,7 @@ namespace LC.Newtonsoft.Json.Utilities
                 return null;
             }
 
-            MethodCall<object?, object?> call = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object?>(castMethodInfo);
+            MethodCall<object, object> call = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(castMethodInfo);
 
             return o => call(null, o);
         }
@@ -371,10 +363,10 @@ namespace LC.Newtonsoft.Json.Utilities
 
         public static object Convert(object initialValue, CultureInfo culture, Type targetType)
         {
-            switch (TryConvertInternal(initialValue, culture, targetType, out object? value))
+            switch (TryConvertInternal(initialValue, culture, targetType, out object value))
             {
                 case ConvertResult.Success:
-                    return value!;
+                    return value;
                 case ConvertResult.CannotConvertNull:
                     throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialValue.GetType(), targetType));
                 case ConvertResult.NotInstantiableType:
@@ -386,7 +378,7 @@ namespace LC.Newtonsoft.Json.Utilities
             }
         }
 
-        private static bool TryConvert(object? initialValue, CultureInfo culture, Type targetType, out object? value)
+        private static bool TryConvert(object initialValue, CultureInfo culture, Type targetType, out object value)
         {
             try
             {
@@ -405,7 +397,7 @@ namespace LC.Newtonsoft.Json.Utilities
             }
         }
 
-        private static ConvertResult TryConvertInternal(object? initialValue, CultureInfo culture, Type targetType, out object? value)
+        private static ConvertResult TryConvertInternal(object initialValue, CultureInfo culture, Type targetType, out object value)
         {
             if (initialValue == null)
             {
@@ -490,7 +482,7 @@ namespace LC.Newtonsoft.Json.Utilities
                 }
                 if (targetType == typeof(Version))
                 {
-                    if (VersionTryParse(s, out Version? result))
+                    if (VersionTryParse(s, out Version result))
                     {
                         value = result;
                         return ConvertResult.Success;
@@ -575,7 +567,7 @@ namespace LC.Newtonsoft.Json.Utilities
         /// The converted type. If conversion was unsuccessful, the initial value
         /// is returned if assignable to the target type.
         /// </returns>
-        public static object? ConvertOrCast(object? initialValue, CultureInfo culture, Type targetType)
+        public static object ConvertOrCast(object initialValue, CultureInfo culture, Type targetType)
         {
             if (targetType == typeof(object))
             {
@@ -587,27 +579,27 @@ namespace LC.Newtonsoft.Json.Utilities
                 return null;
             }
 
-            if (TryConvert(initialValue, culture, targetType, out object? convertedValue))
+            if (TryConvert(initialValue, culture, targetType, out object convertedValue))
             {
                 return convertedValue;
             }
 
-            return EnsureTypeAssignable(initialValue, ReflectionUtils.GetObjectType(initialValue)!, targetType);
+            return EnsureTypeAssignable(initialValue, ReflectionUtils.GetObjectType(initialValue), targetType);
         }
 #endregion
 
-        private static object? EnsureTypeAssignable(object? value, Type initialType, Type targetType)
+        private static object EnsureTypeAssignable(object value, Type initialType, Type targetType)
         {
+            Type valueType = value?.GetType();
+
             if (value != null)
             {
-                Type valueType = value.GetType();
-
                 if (targetType.IsAssignableFrom(valueType))
                 {
                     return value;
                 }
 
-                Func<object?, object?>? castConverter = CastConverters.Get(new StructMultiKey<Type, Type>(valueType, targetType));
+                Func<object, object> castConverter = CastConverters.Get(new StructMultiKey<Type, Type>(valueType, targetType));
                 if (castConverter != null)
                 {
                     return castConverter(value);
@@ -624,7 +616,7 @@ namespace LC.Newtonsoft.Json.Utilities
             throw new ArgumentException("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType?.ToString() ?? "{null}", targetType));
         }
 
-        public static bool VersionTryParse(string input, [NotNullWhen(true)]out Version? result)
+        public static bool VersionTryParse(string input, out Version result)
         {
 #if HAVE_VERSION_TRY_PARSE
             return Version.TryParse(input, out result);

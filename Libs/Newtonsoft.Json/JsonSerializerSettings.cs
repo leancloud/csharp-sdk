@@ -61,7 +61,6 @@ namespace LC.Newtonsoft.Json
         internal static readonly CultureInfo DefaultCulture;
         internal const bool DefaultCheckAdditionalContent = false;
         internal const string DefaultDateFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
-        internal const int DefaultMaxDepth = 64;
 
         internal Formatting? _formatting;
         internal DateFormatHandling? _dateFormatHandling;
@@ -70,11 +69,11 @@ namespace LC.Newtonsoft.Json
         internal FloatFormatHandling? _floatFormatHandling;
         internal FloatParseHandling? _floatParseHandling;
         internal StringEscapeHandling? _stringEscapeHandling;
-        internal CultureInfo? _culture;
+        internal CultureInfo _culture;
         internal bool? _checkAdditionalContent;
         internal int? _maxDepth;
         internal bool _maxDepthSet;
-        internal string? _dateFormatString;
+        internal string _dateFormatString;
         internal bool _dateFormatStringSet;
         internal TypeNameAssemblyFormatHandling? _typeNameAssemblyFormatHandling;
         internal DefaultValueHandling? _defaultValueHandling;
@@ -226,27 +225,27 @@ namespace LC.Newtonsoft.Json
         /// serializing .NET objects to JSON and vice versa.
         /// </summary>
         /// <value>The contract resolver.</value>
-        public IContractResolver? ContractResolver { get; set; }
+        public IContractResolver ContractResolver { get; set; }
 
         /// <summary>
         /// Gets or sets the equality comparer used by the serializer when comparing references.
         /// </summary>
         /// <value>The equality comparer.</value>
-        public IEqualityComparer? EqualityComparer { get; set; }
+        public IEqualityComparer EqualityComparer { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
         /// </summary>
         /// <value>The reference resolver.</value>
         [Obsolete("ReferenceResolver property is obsolete. Use the ReferenceResolverProvider property to set the IReferenceResolver: settings.ReferenceResolverProvider = () => resolver")]
-        public IReferenceResolver? ReferenceResolver
+        public IReferenceResolver ReferenceResolver
         {
             get => ReferenceResolverProvider?.Invoke();
             set
             {
                 ReferenceResolverProvider = (value != null)
                     ? () => value
-                    : (Func<IReferenceResolver?>?)null;
+                    : (Func<IReferenceResolver>)null;
             }
         }
 
@@ -254,20 +253,20 @@ namespace LC.Newtonsoft.Json
         /// Gets or sets a function that creates the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
         /// </summary>
         /// <value>A function that creates the <see cref="IReferenceResolver"/> used by the serializer when resolving references.</value>
-        public Func<IReferenceResolver?>? ReferenceResolverProvider { get; set; }
+        public Func<IReferenceResolver> ReferenceResolverProvider { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="ITraceWriter"/> used by the serializer when writing trace messages.
         /// </summary>
         /// <value>The trace writer.</value>
-        public ITraceWriter? TraceWriter { get; set; }
+        public ITraceWriter TraceWriter { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="SerializationBinder"/> used by the serializer when resolving type names.
         /// </summary>
         /// <value>The binder.</value>
         [Obsolete("Binder is obsolete. Use SerializationBinder instead.")]
-        public SerializationBinder? Binder
+        public SerializationBinder Binder
         {
             get
             {
@@ -290,13 +289,13 @@ namespace LC.Newtonsoft.Json
         /// Gets or sets the <see cref="ISerializationBinder"/> used by the serializer when resolving type names.
         /// </summary>
         /// <value>The binder.</value>
-        public ISerializationBinder? SerializationBinder { get; set; }
+        public ISerializationBinder SerializationBinder { get; set; }
 
         /// <summary>
         /// Gets or sets the error handler called during serialization and deserialization.
         /// </summary>
         /// <value>The error handler called during serialization and deserialization.</value>
-        public EventHandler<ErrorEventArgs>? Error { get; set; }
+        public EventHandler<ErrorEventArgs> Error { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="StreamingContext"/> used by the serializer when invoking serialization callback methods.
@@ -326,11 +325,11 @@ namespace LC.Newtonsoft.Json
         /// <summary>
         /// Gets or sets the maximum depth allowed when reading JSON. Reading past this depth will throw a <see cref="JsonReaderException"/>.
         /// A null value means there is no maximum.
-        /// The default value is <c>128</c>.
+        /// The default value is <c>null</c>.
         /// </summary>
         public int? MaxDepth
         {
-            get => _maxDepthSet ? _maxDepth : DefaultMaxDepth;
+            get => _maxDepth;
             set
             {
                 if (value <= 0)

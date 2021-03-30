@@ -30,8 +30,6 @@ using LC.Newtonsoft.Json.Linq;
 using LC.Newtonsoft.Json.Utilities;
 using System.Globalization;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Schema
 {
     /// <summary>

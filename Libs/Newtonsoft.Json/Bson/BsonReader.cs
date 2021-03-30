@@ -32,8 +32,6 @@ using LC.Newtonsoft.Json.Serialization;
 using LC.Newtonsoft.Json.Utilities;
 using LC.Newtonsoft.Json.Linq;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Bson
 {
     /// <summary>

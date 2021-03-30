@@ -29,8 +29,6 @@ using System.IO;
 using System.Text;
 using LC.Newtonsoft.Json.Utilities;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Bson
 {
     internal class BsonBinaryWriter

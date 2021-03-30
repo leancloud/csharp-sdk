@@ -35,8 +35,6 @@ using System.Diagnostics;
 using System.Globalization;
 using LC.Newtonsoft.Json.Serialization;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Utilities.LinqBridge
 {
   /// <summary>
@@ -377,7 +375,7 @@ namespace LC.Newtonsoft.Json.Utilities.LinqBridge
       Func<TSource> empty)
     {
       CheckNotNull(source, "source");
-      MiscellaneousUtils.Assert(empty != null);
+      Debug.Assert(empty != null);
 
       var list = source as IList<TSource>; // optimized case for lists
       if (list != null)
@@ -1364,7 +1362,7 @@ namespace LC.Newtonsoft.Json.Utilities.LinqBridge
       Func<TSource, TSource, bool> lesser)
     {
       CheckNotNull(source, "source");
-      MiscellaneousUtils.Assert(lesser != null);
+      Debug.Assert(lesser != null);
 
       return source.Aggregate((a, item) => lesser(a, item) ? a : item);
     }
@@ -1378,7 +1376,7 @@ namespace LC.Newtonsoft.Json.Utilities.LinqBridge
       TSource? seed, Func<TSource?, TSource?, bool> lesser) where TSource : struct
     {
       CheckNotNull(source, "source");
-      MiscellaneousUtils.Assert(lesser != null);
+      Debug.Assert(lesser != null);
 
       return source.Aggregate(seed, (a, item) => lesser(a, item) ? a : item);
       //  == MinMaxImpl(Repeat<TSource?>(null, 1).Concat(source), lesser);
@@ -1442,7 +1440,7 @@ namespace LC.Newtonsoft.Json.Utilities.LinqBridge
 
     private static IEnumerable<T> Renumerable<T>(this IEnumerator<T> e)
     {
-      MiscellaneousUtils.Assert(e != null);
+      Debug.Assert(e != null);
 
       do
       {

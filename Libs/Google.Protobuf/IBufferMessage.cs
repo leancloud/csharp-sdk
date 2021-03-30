@@ -32,6 +32,7 @@
 
 namespace LC.Google.Protobuf
 {
+#if GOOGLE_PROTOBUF_SUPPORT_SYSTEM_MEMORY
     /// <summary>
     /// Interface for a Protocol Buffers message, supporting
     /// parsing from <see cref="ParseContext"/> and writing to <see cref="WriteContext"/>.
@@ -50,4 +51,5 @@ namespace LC.Google.Protobuf
         /// </summary>        
         void InternalWriteTo(ref WriteContext ctx);
     }
+#endif
 }

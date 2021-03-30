@@ -32,8 +32,6 @@ using System.Linq;
 
 #endif
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Schema
 {
     /// <summary>

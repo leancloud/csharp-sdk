@@ -5,14 +5,9 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
 {
     internal class QueryScanFilter : PathFilter
     {
-        internal QueryExpression Expression;
+        public QueryExpression Expression { get; set; }
 
-        public QueryScanFilter(QueryExpression expression)
-        {
-            Expression = expression;
-        }
-
-        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken t in current)
             {
@@ -20,7 +15,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                 {
                     foreach (JToken d in c.DescendantsAndSelf())
                     {
-                        if (Expression.IsMatch(root, d, settings))
+                        if (Expression.IsMatch(root, d))
                         {
                             yield return d;
                         }
@@ -28,7 +23,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                 }
                 else
                 {
-                    if (Expression.IsMatch(root, t, settings))
+                    if (Expression.IsMatch(root, t))
                     {
                         yield return t;
                     }

@@ -28,8 +28,6 @@ using LC.Newtonsoft.Json.Bson;
 using System.Globalization;
 using LC.Newtonsoft.Json.Utilities;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Converters
 {
     /// <summary>

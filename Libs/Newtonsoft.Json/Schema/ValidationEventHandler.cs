@@ -25,8 +25,6 @@
 
 using System;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Schema
 {
     /// <summary>

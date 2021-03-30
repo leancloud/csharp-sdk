@@ -28,8 +28,6 @@ using System.Collections.Generic;
 using LC.Newtonsoft.Json.Linq;
 using LC.Newtonsoft.Json.Utilities;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Schema
 {
     /// <summary>

@@ -130,7 +130,7 @@ namespace LC.Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        protected bool Equals(NamingStrategy? other)
+        protected bool Equals(NamingStrategy other)
         {
             if (other == null)
             {

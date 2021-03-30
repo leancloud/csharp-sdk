@@ -31,8 +31,6 @@ using System.Threading.Tasks;
 #endif
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Diagnostics.CodeAnalysis;
 #if !HAVE_LINQ
 using LC.Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -43,7 +41,7 @@ namespace LC.Newtonsoft.Json.Utilities
 {
     internal static class BufferUtils
     {
-        public static char[] RentBuffer(IArrayPool<char>? bufferPool, int minSize)
+        public static char[] RentBuffer(IArrayPool<char> bufferPool, int minSize)
         {
             if (bufferPool == null)
             {
@@ -54,12 +52,12 @@ namespace LC.Newtonsoft.Json.Utilities
             return buffer;
         }
 
-        public static void ReturnBuffer(IArrayPool<char>? bufferPool, char[]? buffer)
+        public static void ReturnBuffer(IArrayPool<char> bufferPool, char[] buffer)
         {
             bufferPool?.Return(buffer);
         }
 
-        public static char[] EnsureBufferSize(IArrayPool<char>? bufferPool, int size, char[]? buffer)
+        public static char[] EnsureBufferSize(IArrayPool<char> bufferPool, int size, char[] buffer)
         {
             if (bufferPool == null)
             {
@@ -125,16 +123,15 @@ namespace LC.Newtonsoft.Json.Utilities
             return SingleQuoteCharEscapeFlags;
         }
 
-        public static bool ShouldEscapeJavaScriptString(string? s, bool[] charEscapeFlags)
+        public static bool ShouldEscapeJavaScriptString(string s, bool[] charEscapeFlags)
         {
             if (s == null)
             {
                 return false;
             }
 
-            for (int i = 0; i < s.Length; i++)
+            foreach (char c in s)
             {
-                char c = s[i];
                 if (c >= charEscapeFlags.Length || charEscapeFlags[c])
                 {
                     return true;
@@ -144,8 +141,8 @@ namespace LC.Newtonsoft.Json.Utilities
             return false;
         }
 
-        public static void WriteEscapedJavaScriptString(TextWriter writer, string? s, char delimiter, bool appendDelimiters,
-            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, IArrayPool<char>? bufferPool, ref char[]? writeBuffer)
+        public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters,
+            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, IArrayPool<char> bufferPool, ref char[] writeBuffer)
         {
             // leading delimiter
             if (appendDelimiters)
@@ -153,7 +150,7 @@ namespace LC.Newtonsoft.Json.Utilities
                 writer.Write(delimiter);
             }
 
-            if (!StringUtils.IsNullOrEmpty(s))
+            if (!string.IsNullOrEmpty(s))
             {
                 int lastWritePosition = FirstCharToEscape(s, charEscapeFlags, stringEscapeHandling);
                 if (lastWritePosition == -1)
@@ -184,7 +181,7 @@ namespace LC.Newtonsoft.Json.Utilities
                             continue;
                         }
 
-                        string? escapedValue;
+                        string escapedValue;
 
                         switch (c)
                         {
@@ -233,7 +230,7 @@ namespace LC.Newtonsoft.Json.Utilities
                                             writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, UnicodeTextLength, writeBuffer);
                                         }
 
-                                        StringUtils.ToCharAsUnicode(c, writeBuffer!);
+                                        StringUtils.ToCharAsUnicode(c, writeBuffer);
 
                                         // slightly hacky but it saves multiple conditions in if test
                                         escapedValue = EscapedUnicodeText;
@@ -266,7 +263,7 @@ namespace LC.Newtonsoft.Json.Utilities
                                 // copy it over when creating new buffer
                                 if (isEscapedUnicodeText)
                                 {
-                                    MiscellaneousUtils.Assert(writeBuffer != null, "Write buffer should never be null because it is set when the escaped unicode text is encountered.");
+                                    Debug.Assert(writeBuffer != null, "Write buffer should never be null because it is set when the escaped unicode text is encountered.");
 
                                     Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
                                 }
@@ -293,7 +290,7 @@ namespace LC.Newtonsoft.Json.Utilities
                         }
                     }
 
-                    MiscellaneousUtils.Assert(lastWritePosition != 0);
+                    Debug.Assert(lastWritePosition != 0);
                     length = s.Length - lastWritePosition;
                     if (length > 0)
                     {
@@ -317,13 +314,13 @@ namespace LC.Newtonsoft.Json.Utilities
             }
         }
 
-        public static string ToEscapedJavaScriptString(string? value, char delimiter, bool appendDelimiters, StringEscapeHandling stringEscapeHandling)
+        public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters, StringEscapeHandling stringEscapeHandling)
         {
             bool[] charEscapeFlags = GetCharEscapeFlags(stringEscapeHandling, delimiter);
 
             using (StringWriter w = StringUtils.CreateStringWriter(value?.Length ?? 16))
             {
-                char[]? buffer = null;
+                char[] buffer = null;
                 WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, charEscapeFlags, stringEscapeHandling, null, ref buffer);
                 return w.ToString();
             }
@@ -374,7 +371,7 @@ namespace LC.Newtonsoft.Json.Utilities
                 return WriteEscapedJavaScriptStringWithDelimitersAsync(writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
             }
 
-            if (StringUtils.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(s))
             {
                 return cancellationToken.CancelIfRequestedAsync() ?? AsyncUtils.CompletedTask;
             }
@@ -391,7 +388,7 @@ namespace LC.Newtonsoft.Json.Utilities
                 return WriteEscapedJavaScriptStringWithDelimitersAsync(task, writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
             }
 
-            if (!StringUtils.IsNullOrEmpty(s))
+            if (!string.IsNullOrEmpty(s))
             {
                 task = WriteEscapedJavaScriptStringWithoutDelimitersAsync(writer, s, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
                 if (task.IsCompletedSucessfully())
@@ -409,7 +406,7 @@ namespace LC.Newtonsoft.Json.Utilities
         {
             await task.ConfigureAwait(false);
 
-            if (!StringUtils.IsNullOrEmpty(s))
+            if (!string.IsNullOrEmpty(s))
             {
                 await WriteEscapedJavaScriptStringWithoutDelimitersAsync(writer, s, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken).ConfigureAwait(false);
             }
@@ -453,7 +450,7 @@ namespace LC.Newtonsoft.Json.Utilities
 
             int length;
             bool isEscapedUnicodeText = false;
-            string? escapedValue = null;
+            string escapedValue = null;
 
             for (int i = lastWritePosition; i < s.Length; i++)
             {
@@ -542,7 +539,7 @@ namespace LC.Newtonsoft.Json.Utilities
                 lastWritePosition = i + 1;
                 if (!isEscapedUnicodeText)
                 {
-                    await writer.WriteAsync(escapedValue!, cancellationToken).ConfigureAwait(false);
+                    await writer.WriteAsync(escapedValue, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -568,7 +565,7 @@ namespace LC.Newtonsoft.Json.Utilities
         }
 #endif
 
-        public static bool TryGetDateFromConstructorJson(JsonReader reader, out DateTime dateTime, [NotNullWhen(false)]out string? errorMessage)
+        public static bool TryGetDateFromConstructorJson(JsonReader reader, out DateTime dateTime, out string errorMessage)
         {
             dateTime = default;
             errorMessage = null;
@@ -629,7 +626,7 @@ namespace LC.Newtonsoft.Json.Utilities
             return true;
         }
 
-        private static bool TryGetDateConstructorValue(JsonReader reader, out long? integer, [NotNullWhen(false)] out string? errorMessage)
+        private static bool TryGetDateConstructorValue(JsonReader reader, out long? integer, out string errorMessage)
         {
             integer = null;
             errorMessage = null;
@@ -649,7 +646,7 @@ namespace LC.Newtonsoft.Json.Utilities
                 return false;
             }
 
-            integer = (long)reader.Value!;
+            integer = (long)reader.Value;
             return true;
         }
     }

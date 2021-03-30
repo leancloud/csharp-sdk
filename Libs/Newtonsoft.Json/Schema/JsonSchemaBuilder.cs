@@ -35,8 +35,6 @@ using System.Globalization;
 using LC.Newtonsoft.Json.Utilities;
 using LC.Newtonsoft.Json.Linq;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Schema
 {
     [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
@@ -221,7 +219,7 @@ namespace LC.Newtonsoft.Json.Schema
             }
 
             string location = token.Path.Replace(".", "/").Replace("[", "/").Replace("]", string.Empty);
-            if (!StringUtils.IsNullOrEmpty(location))
+            if (!string.IsNullOrEmpty(location))
             {
                 location = "/" + location;
             }

@@ -26,8 +26,6 @@
 using System;
 using LC.Newtonsoft.Json.Utilities;
 
-#nullable disable
-
 namespace LC.Newtonsoft.Json.Bson
 {
     /// <summary>

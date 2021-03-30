@@ -11,7 +11,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
         public int? End { get; set; }
         public int? Step { get; set; }
 
-        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             if (Step == 0)
             {
@@ -56,7 +56,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                     }
                     else
                     {
-                        if (settings?.ErrorWhenNoMatch ?? false)
+                        if (errorWhenNoMatch)
                         {
                             throw new JsonException("Array slice of {0} to {1} returned no results.".FormatWith(CultureInfo.InvariantCulture,
                                 Start != null ? Start.GetValueOrDefault().ToString(CultureInfo.InvariantCulture) : "*",
@@ -66,7 +66,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                 }
                 else
                 {
-                    if (settings?.ErrorWhenNoMatch ?? false)
+                    if (errorWhenNoMatch)
                     {
                         throw new JsonException("Array slice is not valid on {0}.".FormatWith(CultureInfo.InvariantCulture, t.GetType().Name));
                     }

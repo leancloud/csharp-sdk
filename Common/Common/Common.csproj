@@ -13,8 +13,6 @@
     <Folder Include="Exception\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libs\Newtonsoft.Json\LC.Newtonsoft.Json.csproj">
-      <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Libs\Newtonsoft.Json\LC.Newtonsoft.Json.csproj" />
   </ItemGroup>
 </Project>

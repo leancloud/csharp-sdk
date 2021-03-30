@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
 #if !HAVE_LINQ
 using LC.Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -46,32 +45,27 @@ namespace LC.Newtonsoft.Json.Utilities
         public const char LineFeed = '\n';
         public const char Tab = '\t';
 
-        public static bool IsNullOrEmpty([NotNullWhen(false)] string? value)
+        public static string FormatWith(this string format, IFormatProvider provider, object arg0)
         {
-            return string.IsNullOrEmpty(value);
+            return format.FormatWith(provider, new[] { arg0 });
         }
 
-        public static string FormatWith(this string format, IFormatProvider provider, object? arg0)
+        public static string FormatWith(this string format, IFormatProvider provider, object arg0, object arg1)
         {
-            return format.FormatWith(provider, new object?[] { arg0 });
+            return format.FormatWith(provider, new[] { arg0, arg1 });
         }
 
-        public static string FormatWith(this string format, IFormatProvider provider, object? arg0, object? arg1)
+        public static string FormatWith(this string format, IFormatProvider provider, object arg0, object arg1, object arg2)
         {
-            return format.FormatWith(provider, new object?[] { arg0, arg1 });
+            return format.FormatWith(provider, new[] { arg0, arg1, arg2 });
         }
 
-        public static string FormatWith(this string format, IFormatProvider provider, object? arg0, object? arg1, object? arg2)
+        public static string FormatWith(this string format, IFormatProvider provider, object arg0, object arg1, object arg2, object arg3)
         {
-            return format.FormatWith(provider, new object?[] { arg0, arg1, arg2 });
+            return format.FormatWith(provider, new[] { arg0, arg1, arg2, arg3 });
         }
 
-        public static string FormatWith(this string format, IFormatProvider provider, object? arg0, object? arg1, object? arg2, object? arg3)
-        {
-            return format.FormatWith(provider, new object?[] { arg0, arg1, arg2, arg3 });
-        }
-
-        private static string FormatWith(this string format, IFormatProvider provider, params object?[] args)
+        private static string FormatWith(this string format, IFormatProvider provider, params object[] args)
         {
             // leave this a private to force code to use an explicit overload
             // avoids stack memory being reserved for the object array
@@ -154,7 +148,7 @@ namespace LC.Newtonsoft.Json.Utilities
 
         public static string ToCamelCase(string s)
         {
-            if (StringUtils.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
+            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
             {
                 return s;
             }
@@ -195,7 +189,7 @@ namespace LC.Newtonsoft.Json.Utilities
 
         private static char ToLower(char c)
         {
-#if HAVE_CHAR_TO_LOWER_WITH_CULTURE
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
             c = char.ToLower(c, CultureInfo.InvariantCulture);
 #else
             c = char.ToLowerInvariant(c);
@@ -203,11 +197,7 @@ namespace LC.Newtonsoft.Json.Utilities
             return c;
         }
 
-        public static string ToSnakeCase(string s) => ToSeparatedCase(s, '_');
-
-        public static string ToKebabCase(string s) => ToSeparatedCase(s, '-');
-
-        private enum SeparatedCaseState
+        internal enum SnakeCaseState
         {
             Start,
             Lower,
@@ -215,43 +205,43 @@ namespace LC.Newtonsoft.Json.Utilities
             NewWord
         }
 
-        private static string ToSeparatedCase(string s, char separator)
+        public static string ToSnakeCase(string s)
         {
-            if (StringUtils.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(s))
             {
                 return s;
             }
 
             StringBuilder sb = new StringBuilder();
-            SeparatedCaseState state = SeparatedCaseState.Start;
+            SnakeCaseState state = SnakeCaseState.Start;
 
             for (int i = 0; i < s.Length; i++)
             {
                 if (s[i] == ' ')
                 {
-                    if (state != SeparatedCaseState.Start)
+                    if (state != SnakeCaseState.Start)
                     {
-                        state = SeparatedCaseState.NewWord;
+                        state = SnakeCaseState.NewWord;
                     }
                 }
                 else if (char.IsUpper(s[i]))
                 {
                     switch (state)
                     {
-                        case SeparatedCaseState.Upper:
+                        case SnakeCaseState.Upper:
                             bool hasNext = (i + 1 < s.Length);
                             if (i > 0 && hasNext)
                             {
                                 char nextChar = s[i + 1];
-                                if (!char.IsUpper(nextChar) && nextChar != separator)
+                                if (!char.IsUpper(nextChar) && nextChar != '_')
                                 {
-                                    sb.Append(separator);
+                                    sb.Append('_');
                                 }
                             }
                             break;
-                        case SeparatedCaseState.Lower:
-                        case SeparatedCaseState.NewWord:
-                            sb.Append(separator);
+                        case SnakeCaseState.Lower:
+                        case SnakeCaseState.NewWord:
+                            sb.Append('_');
                             break;
                     }
 
@@ -263,22 +253,22 @@ namespace LC.Newtonsoft.Json.Utilities
 #endif
                     sb.Append(c);
 
-                    state = SeparatedCaseState.Upper;
+                    state = SnakeCaseState.Upper;
                 }
-                else if (s[i] == separator)
+                else if (s[i] == '_')
                 {
-                    sb.Append(separator);
-                    state = SeparatedCaseState.Start;
+                    sb.Append('_');
+                    state = SnakeCaseState.Start;
                 }
                 else
                 {
-                    if (state == SeparatedCaseState.NewWord)
+                    if (state == SnakeCaseState.NewWord)
                     {
-                        sb.Append(separator);
+                        sb.Append('_');
                     }
 
                     sb.Append(s[i]);
-                    state = SeparatedCaseState.Lower;
+                    state = SnakeCaseState.Lower;
                 }
             }
 

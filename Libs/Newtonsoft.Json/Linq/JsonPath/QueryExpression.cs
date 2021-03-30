@@ -32,39 +32,28 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
 
     internal abstract class QueryExpression
     {
-        internal QueryOperator Operator;
+        public QueryOperator Operator { get; set; }
 
-        public QueryExpression(QueryOperator @operator)
-        {
-            Operator = @operator;
-        }
-
-        // For unit tests
-        public bool IsMatch(JToken root, JToken t)
-        {
-            return IsMatch(root, t, null);
-        }
-
-        public abstract bool IsMatch(JToken root, JToken t, JsonSelectSettings? settings);
+        public abstract bool IsMatch(JToken root, JToken t);
     }
 
     internal class CompositeExpression : QueryExpression
     {
         public List<QueryExpression> Expressions { get; set; }
 
-        public CompositeExpression(QueryOperator @operator) : base(@operator)
+        public CompositeExpression()
         {
             Expressions = new List<QueryExpression>();
         }
 
-        public override bool IsMatch(JToken root, JToken t, JsonSelectSettings? settings)
+        public override bool IsMatch(JToken root, JToken t)
         {
             switch (Operator)
             {
                 case QueryOperator.And:
                     foreach (QueryExpression e in Expressions)
                     {
-                        if (!e.IsMatch(root, t, settings))
+                        if (!e.IsMatch(root, t))
                         {
                             return false;
                         }
@@ -73,7 +62,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                 case QueryOperator.Or:
                     foreach (QueryExpression e in Expressions)
                     {
-                        if (e.IsMatch(root, t, settings))
+                        if (e.IsMatch(root, t))
                         {
                             return true;
                         }
@@ -87,16 +76,10 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
 
     internal class BooleanQueryExpression : QueryExpression
     {
-        public readonly object Left;
-        public readonly object? Right;
+        public object Left { get; set; }
+        public object Right { get; set; }
 
-        public BooleanQueryExpression(QueryOperator @operator, object left, object? right) : base(@operator)
-        {
-            Left = left;
-            Right = right;
-        }
-
-        private IEnumerable<JToken> GetResult(JToken root, JToken t, object? o)
+        private IEnumerable<JToken> GetResult(JToken root, JToken t, object o)
         {
             if (o is JToken resultToken)
             {
@@ -105,13 +88,13 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
 
             if (o is List<PathFilter> pathFilters)
             {
-                return JPath.Evaluate(pathFilters, root, t, null);
+                return JPath.Evaluate(pathFilters, root, t, false);
             }
 
             return CollectionUtils.ArrayEmpty<JToken>();
         }
 
-        public override bool IsMatch(JToken root, JToken t, JsonSelectSettings? settings)
+        public override bool IsMatch(JToken root, JToken t)
         {
             if (Operator == QueryOperator.Exists)
             {
@@ -130,7 +113,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                         JToken leftResult = leftResults.Current;
                         foreach (JToken rightResult in rightResults)
                         {
-                            if (MatchTokens(leftResult, rightResult, settings))
+                            if (MatchTokens(leftResult, rightResult))
                             {
                                 return true;
                             }
@@ -142,14 +125,14 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
             return false;
         }
 
-        private bool MatchTokens(JToken leftResult, JToken rightResult, JsonSelectSettings? settings)
+        private bool MatchTokens(JToken leftResult, JToken rightResult)
         {
             if (leftResult is JValue leftValue && rightResult is JValue rightValue)
             {
                 switch (Operator)
                 {
                     case QueryOperator.RegexEquals:
-                        if (RegexEquals(leftValue, rightValue, settings))
+                        if (RegexEquals(leftValue, rightValue))
                         {
                             return true;
                         }
@@ -221,25 +204,20 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
             return false;
         }
 
-        private static bool RegexEquals(JValue input, JValue pattern, JsonSelectSettings? settings)
+        private static bool RegexEquals(JValue input, JValue pattern)
         {
             if (input.Type != JTokenType.String || pattern.Type != JTokenType.String)
             {
                 return false;
             }
 
-            string regexText = (string)pattern.Value!;
+            string regexText = (string)pattern.Value;
             int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
 
             string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
             string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
 
-#if HAVE_REGEX_TIMEOUTS
-            TimeSpan timeout = settings?.RegexMatchTimeout ?? Regex.InfiniteMatchTimeout;
-            return Regex.IsMatch((string)input.Value!, patternText, MiscellaneousUtils.GetRegexOptions(optionsText), timeout);
-#else
-            return Regex.IsMatch((string)input.Value!, patternText, MiscellaneousUtils.GetRegexOptions(optionsText));
-#endif
+            return Regex.IsMatch((string)input.Value, patternText, MiscellaneousUtils.GetRegexOptions(optionsText));
         }
 
         internal static bool EqualsWithStringCoercion(JValue value, JValue queryValue)
@@ -262,7 +240,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                 return false;
             }
 
-            string queryValueString = (string)queryValue.Value!;
+            string queryValueString = (string)queryValue.Value;
 
             string currentValueString;
 
@@ -280,21 +258,21 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                         else
 #endif
                         {
-                            DateTimeUtils.WriteDateTimeString(writer, (DateTime)value.Value!, DateFormatHandling.IsoDateFormat, null, CultureInfo.InvariantCulture);
+                            DateTimeUtils.WriteDateTimeString(writer, (DateTime)value.Value, DateFormatHandling.IsoDateFormat, null, CultureInfo.InvariantCulture);
                         }
 
                         currentValueString = writer.ToString();
                     }
                     break;
                 case JTokenType.Bytes:
-                    currentValueString = Convert.ToBase64String((byte[])value.Value!);
+                    currentValueString = Convert.ToBase64String((byte[])value.Value);
                     break;
                 case JTokenType.Guid:
                 case JTokenType.TimeSpan:
-                    currentValueString = value.Value!.ToString();
+                    currentValueString = value.Value.ToString();
                     break;
                 case JTokenType.Uri:
-                    currentValueString = ((Uri)value.Value!).OriginalString;
+                    currentValueString = ((Uri)value.Value).OriginalString;
                     break;
                 default:
                     return false;
@@ -305,8 +283,8 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
 
         internal static bool EqualsWithStrictMatch(JValue value, JValue queryValue)
         {
-            MiscellaneousUtils.Assert(value != null);
-            MiscellaneousUtils.Assert(queryValue != null);
+            Debug.Assert(value != null);
+            Debug.Assert(queryValue != null);
 
             // Handle comparing an integer with a float
             // e.g. Comparing 1 and 1.0

@@ -4,14 +4,9 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
 {
     internal class ScanFilter : PathFilter
     {
-        internal string? Name;
+        public string Name { get; set; }
 
-        public ScanFilter(string? name)
-        {
-            Name = name;
-        }
-
-        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken c in current)
             {
@@ -20,11 +15,11 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                     yield return c;
                 }
 
-                JToken? value = c;
+                JToken value = c;
 
                 while (true)
                 {
-                    JContainer? container = value as JContainer;
+                    JContainer container = value as JContainer;
 
                     value = GetNextScanValue(c, container, value);
                     if (value == null)
