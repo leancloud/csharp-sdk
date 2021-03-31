@@ -587,7 +587,7 @@ namespace LC.Newtonsoft.Json
         /// A JSON string representation of the object.
         /// </returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object? value, JsonSerializerSettings? settings)
+        public static string SerializeObject(object? value, JsonSerializerSettings settings)
         {
             return SerializeObject(value, null, settings);
         }
@@ -715,7 +715,7 @@ namespace LC.Newtonsoft.Json
         /// <param name="value">The JSON to deserialize.</param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static T? DeserializeObject<T>(string value)
+        public static T DeserializeObject<T>(string value)
         {
             return DeserializeObject<T>(value, (JsonSerializerSettings?)null);
         }
@@ -732,7 +732,7 @@ namespace LC.Newtonsoft.Json
         /// <param name="anonymousTypeObject">The anonymous type object.</param>
         /// <returns>The deserialized anonymous type from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static T? DeserializeAnonymousType<T>(string value, T anonymousTypeObject)
+        public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject)
         {
             return DeserializeObject<T>(value);
         }
@@ -753,7 +753,7 @@ namespace LC.Newtonsoft.Json
         /// </param>
         /// <returns>The deserialized anonymous type from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static T? DeserializeAnonymousType<T>(string value, T anonymousTypeObject, JsonSerializerSettings settings)
+        public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject, JsonSerializerSettings settings)
         {
             return DeserializeObject<T>(value, settings);
         }
@@ -766,9 +766,12 @@ namespace LC.Newtonsoft.Json
         /// <param name="converters">Converters to use while deserializing.</param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static T? DeserializeObject<T>(string value, params JsonConverter[] converters)
+        [return: MaybeNull]
+        public static T DeserializeObject<T>(string value, params JsonConverter[] converters)
         {
-            return (T?)DeserializeObject(value, typeof(T), converters);
+#pragma warning disable CS8601 // Possible null reference assignment.
+            return (T)DeserializeObject(value, typeof(T), converters);
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
         /// <summary>
@@ -782,9 +785,12 @@ namespace LC.Newtonsoft.Json
         /// </param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static T? DeserializeObject<T>(string value, JsonSerializerSettings? settings)
+        [return: MaybeNull]
+        public static T DeserializeObject<T>(string value, JsonSerializerSettings? settings)
         {
-            return (T?)DeserializeObject(value, typeof(T), settings);
+#pragma warning disable CS8601 // Possible null reference assignment.
+            return (T)DeserializeObject(value, typeof(T), settings);
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
         /// <summary>

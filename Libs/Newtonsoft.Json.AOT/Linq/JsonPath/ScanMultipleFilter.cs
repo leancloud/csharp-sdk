@@ -11,7 +11,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
             _names = names;
         }
 
-        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken c in current)
             {

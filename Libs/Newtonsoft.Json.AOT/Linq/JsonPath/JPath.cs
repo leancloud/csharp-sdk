@@ -874,17 +874,17 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
             }
         }
 
-        internal IEnumerable<JToken> Evaluate(JToken root, JToken t, JsonSelectSettings? settings)
+        internal IEnumerable<JToken> Evaluate(JToken root, JToken t, bool errorWhenNoMatch)
         {
-            return Evaluate(Filters, root, t, settings);
+            return Evaluate(Filters, root, t, errorWhenNoMatch);
         }
 
-        internal static IEnumerable<JToken> Evaluate(List<PathFilter> filters, JToken root, JToken t, JsonSelectSettings? settings)
+        internal static IEnumerable<JToken> Evaluate(List<PathFilter> filters, JToken root, JToken t, bool errorWhenNoMatch)
         {
             IEnumerable<JToken> current = new[] { t };
             foreach (PathFilter filter in filters)
             {
-                current = filter.ExecuteFilter(root, current, settings);
+                current = filter.ExecuteFilter(root, current, errorWhenNoMatch);
             }
 
             return current;

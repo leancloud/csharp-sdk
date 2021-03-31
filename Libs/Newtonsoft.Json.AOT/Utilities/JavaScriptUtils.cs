@@ -629,7 +629,7 @@ namespace LC.Newtonsoft.Json.Utilities
             return true;
         }
 
-        private static bool TryGetDateConstructorValue(JsonReader reader, out long? integer, [NotNullWhen(false)] out string? errorMessage)
+        private static bool TryGetDateConstructorValue(JsonReader reader, out long? integer, out string? errorMessage)
         {
             integer = null;
             errorMessage = null;

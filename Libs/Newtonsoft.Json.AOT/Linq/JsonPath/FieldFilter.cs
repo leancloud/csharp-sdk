@@ -13,7 +13,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
             Name = name;
         }
 
-        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken t in current)
             {
@@ -27,7 +27,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                         {
                             yield return v;
                         }
-                        else if (settings?.ErrorWhenNoMatch ?? false)
+                        else if (errorWhenNoMatch)
                         {
                             throw new JsonException("Property '{0}' does not exist on JObject.".FormatWith(CultureInfo.InvariantCulture, Name));
                         }
@@ -42,7 +42,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
                 }
                 else
                 {
-                    if (settings?.ErrorWhenNoMatch ?? false)
+                    if (errorWhenNoMatch)
                     {
                         throw new JsonException("Property '{0}' not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, Name ?? "*", t.GetType().Name));
                     }

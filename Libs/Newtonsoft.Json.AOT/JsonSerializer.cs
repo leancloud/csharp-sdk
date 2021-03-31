@@ -514,7 +514,7 @@ namespace LC.Newtonsoft.Json
         /// <summary>
         /// Gets or sets the maximum depth allowed when reading JSON. Reading past this depth will throw a <see cref="JsonReaderException"/>.
         /// A null value means there is no maximum.
-        /// The default value is <c>128</c>.
+        /// The default value is <c>null</c>.
         /// </summary>
         public virtual int? MaxDepth
         {
@@ -865,9 +865,12 @@ namespace LC.Newtonsoft.Json
         /// <typeparam name="T">The type of the object to deserialize.</typeparam>
         /// <returns>The instance of <typeparamref name="T"/> being deserialized.</returns>
         [DebuggerStepThrough]
-        public T? Deserialize<T>(JsonReader reader)
+        [return: MaybeNull]
+        public T Deserialize<T>(JsonReader reader)
         {
-            return (T?)Deserialize(reader, typeof(T));
+#pragma warning disable CS8601 // Possible null reference assignment.
+            return (T)Deserialize(reader, typeof(T));
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
         /// <summary>

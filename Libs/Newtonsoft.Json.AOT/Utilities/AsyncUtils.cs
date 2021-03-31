@@ -61,9 +61,9 @@ namespace LC.Newtonsoft.Json.Utilities
         public static Task<T> FromCanceled<T>(this CancellationToken cancellationToken)
         {
             MiscellaneousUtils.Assert(cancellationToken.IsCancellationRequested);
-#pragma warning disable CS8603 // Possible null reference return.
+#pragma warning disable CS8653 // A default expression introduces a null value for a type parameter.
             return new Task<T>(() => default, cancellationToken);
-#pragma warning restore CS8603 // Possible null reference return.
+#pragma warning restore CS8653 // A default expression introduces a null value for a type parameter.
         }
 
         // Task.Delay(0) is optimised as a cached task within the framework, and indeed

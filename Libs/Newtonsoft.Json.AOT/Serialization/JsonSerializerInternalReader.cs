@@ -238,15 +238,6 @@ namespace LC.Newtonsoft.Json.Serialization
                 token = writer.Token;
             }
 
-            if (contract != null && token != null)
-            {
-                if (!contract.UnderlyingType.IsAssignableFrom(token.GetType()))
-                {
-                    throw JsonSerializationException.Create(reader, "Deserialized JSON type '{0}' is not compatible with expected type '{1}'."
-                        .FormatWith(CultureInfo.InvariantCulture, token.GetType().FullName, contract.UnderlyingType.FullName));
-                }
-            }
-
             return token;
         }
 
@@ -598,7 +589,7 @@ namespace LC.Newtonsoft.Json.Serialization
             throw JsonSerializationException.Create(reader, message);
         }
 
-        private bool ReadMetadataPropertiesToken(JTokenReader reader, ref Type? objectType, ref JsonContract? contract, JsonProperty? member, JsonContainerContract? containerContract, JsonProperty? containerMember, object? existingValue, out object? newValue, out string? id)
+        private bool ReadMetadataPropertiesToken(JTokenReader reader, ref Type? objectType, ref JsonContract? contract, JsonProperty? member, JsonContainerContract? containerContract, JsonProperty? containerMember, object? existingValue, [NotNullWhen(true)]out object? newValue, out string? id)
         {
             id = null;
             newValue = null;
@@ -967,11 +958,7 @@ namespace LC.Newtonsoft.Json.Serialization
                         {
                             if (value is string s)
                             {
-                                return EnumUtils.ParseEnum(
-                                    contract.NonNullableUnderlyingType,
-                                    null,
-                                    s,
-                                    false);
+                                return EnumUtils.ParseEnum(contract.NonNullableUnderlyingType, null, s, false);
                             }
                             if (ConvertUtils.IsInteger(primitiveContract.TypeCode))
                             {
@@ -1400,7 +1387,7 @@ namespace LC.Newtonsoft.Json.Serialization
                                     {
                                         keyValue = DateTimeUtils.TryParseDateTime(keyValue.ToString(), reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out DateTime dt)
                                             ? dt
-                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType)!;
+                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract!, contract.DictionaryKeyType)!;
                                         break;
                                     }
 #if HAVE_DATE_TIME_OFFSET
@@ -1409,14 +1396,12 @@ namespace LC.Newtonsoft.Json.Serialization
                                     {
                                         keyValue = DateTimeUtils.TryParseDateTimeOffset(keyValue.ToString(), reader.DateFormatString, reader.Culture, out DateTimeOffset dt)
                                             ? dt
-                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType)!;
+                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract!, contract.DictionaryKeyType)!;
                                         break;
                                     }
 #endif
                                     default:
-                                        keyValue = contract.KeyContract != null && contract.KeyContract.IsEnum
-                                            ? EnumUtils.ParseEnum(contract.KeyContract.NonNullableUnderlyingType, (Serializer._contractResolver as DefaultContractResolver)?.NamingStrategy, keyValue.ToString(), false)
-                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType)!;
+                                        keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract!, contract.DictionaryKeyType)!;
                                         break;
                                 }
                             }
@@ -2216,33 +2201,30 @@ namespace LC.Newtonsoft.Json.Serialization
                         propertyValues.Add(creatorPropertyContext);
 
                         JsonProperty? property = creatorPropertyContext.ConstructorProperty ?? creatorPropertyContext.Property;
-                        if (property != null)
+                        if (property != null && !property.Ignored)
                         {
-                            if (!property.Ignored)
+                            if (property.PropertyContract == null)
                             {
-                                if (property.PropertyContract == null)
-                                {
-                                    property.PropertyContract = GetContractSafe(property.PropertyType);
-                                }
-
-                                JsonConverter? propertyConverter = GetConverter(property.PropertyContract, property.Converter, contract, containerProperty);
-
-                                if (!reader.ReadForType(property.PropertyContract, propertyConverter != null))
-                                {
-                                    throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
-                                }
-
-                                if (propertyConverter != null && propertyConverter.CanRead)
-                                {
-                                    creatorPropertyContext.Value = DeserializeConvertable(propertyConverter, reader, property.PropertyType!, null);
-                                }
-                                else
-                                {
-                                    creatorPropertyContext.Value = CreateValueInternal(reader, property.PropertyType, property.PropertyContract, property, contract, containerProperty, null);
-                                }
-                                
-                                continue;
+                                property.PropertyContract = GetContractSafe(property.PropertyType);
                             }
+
+                            JsonConverter? propertyConverter = GetConverter(property.PropertyContract, property.Converter, contract, containerProperty);
+
+                            if (!reader.ReadForType(property.PropertyContract, propertyConverter != null))
+                            {
+                                throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+                            }
+
+                            if (propertyConverter != null && propertyConverter.CanRead)
+                            {
+                                creatorPropertyContext.Value = DeserializeConvertable(propertyConverter, reader, property.PropertyType!, null);
+                            }
+                            else
+                            {
+                                creatorPropertyContext.Value = CreateValueInternal(reader, property.PropertyType, property.PropertyContract, property, contract, containerProperty, null);
+                            }
+
+                            continue;
                         }
                         else
                         {

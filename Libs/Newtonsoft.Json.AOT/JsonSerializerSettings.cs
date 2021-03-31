@@ -61,7 +61,6 @@ namespace LC.Newtonsoft.Json
         internal static readonly CultureInfo DefaultCulture;
         internal const bool DefaultCheckAdditionalContent = false;
         internal const string DefaultDateFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
-        internal const int DefaultMaxDepth = 64;
 
         internal Formatting? _formatting;
         internal DateFormatHandling? _dateFormatHandling;
@@ -326,11 +325,11 @@ namespace LC.Newtonsoft.Json
         /// <summary>
         /// Gets or sets the maximum depth allowed when reading JSON. Reading past this depth will throw a <see cref="JsonReaderException"/>.
         /// A null value means there is no maximum.
-        /// The default value is <c>128</c>.
+        /// The default value is <c>null</c>.
         /// </summary>
         public int? MaxDepth
         {
-            get => _maxDepthSet ? _maxDepth : DefaultMaxDepth;
+            get => _maxDepth;
             set
             {
                 if (value <= 0)

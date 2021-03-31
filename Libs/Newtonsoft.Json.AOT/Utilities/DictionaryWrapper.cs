@@ -166,9 +166,7 @@ namespace LC.Newtonsoft.Json.Utilities
             }
         }
 
-#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
-        public bool TryGetValue(TKey key, out TValue? value)
-#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+        public bool TryGetValue(TKey key, [MaybeNull]out TValue value)
         {
             if (_dictionary != null)
             {
@@ -492,12 +490,8 @@ namespace LC.Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    // Consider changing this code to call GenericDictionary.Remove when value is null.
-                    //
 #pragma warning disable CS8601 // Possible null reference assignment.
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                     GenericDictionary[(TKey)key] = (TValue)value;
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8601 // Possible null reference assignment.
                 }
             }

@@ -114,11 +114,9 @@ namespace LC.Newtonsoft.Json.Linq
             int i = 0;
             foreach (JToken child in other)
             {
-                TryAddInternal(i, child, false);
+                AddInternal(i, child, false);
                 i++;
             }
-
-            CopyAnnotations(this, other);
         }
 
         internal void CheckReentrancy()
@@ -275,7 +273,7 @@ namespace LC.Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="IEnumerable{T}"/> containing the child values of this <see cref="JToken"/>, in document order.
         /// </returns>
-        public override IEnumerable<T?> Values<T>() where T : default
+        public override IEnumerable<T> Values<T>()
         {
             return ChildrenTokens.Convert<JToken, T>();
         }
@@ -318,7 +316,7 @@ namespace LC.Newtonsoft.Json.Linq
             }
         }
 
-        internal bool IsMultiContent([NotNullWhen(true)]object? content)
+        internal bool IsMultiContent([NotNull]object? content)
         {
             return (content is IEnumerable && !(content is string) && !(content is JToken) && !(content is byte[]));
         }
@@ -349,7 +347,7 @@ namespace LC.Newtonsoft.Json.Linq
 
         internal abstract int IndexOfItem(JToken? item);
 
-        internal virtual bool InsertItem(int index, JToken? item, bool skipParentCheck)
+        internal virtual void InsertItem(int index, JToken? item, bool skipParentCheck)
         {
             IList<JToken> children = ChildrenTokens;
 
@@ -396,8 +394,6 @@ namespace LC.Newtonsoft.Json.Linq
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
             }
 #endif
-
-            return true;
         }
 
         internal virtual void RemoveItemAt(int index)
@@ -635,17 +631,12 @@ namespace LC.Newtonsoft.Json.Linq
         /// <param name="content">The content to be added.</param>
         public virtual void Add(object? content)
         {
-            TryAddInternal(ChildrenTokens.Count, content, false);
-        }
-
-        internal bool TryAdd(object? content)
-        {
-            return TryAddInternal(ChildrenTokens.Count, content, false);
+            AddInternal(ChildrenTokens.Count, content, false);
         }
 
         internal void AddAndSkipParentCheck(JToken token)
         {
-            TryAddInternal(ChildrenTokens.Count, token, true);
+            AddInternal(ChildrenTokens.Count, token, true);
         }
 
         /// <summary>
@@ -654,10 +645,10 @@ namespace LC.Newtonsoft.Json.Linq
         /// <param name="content">The content to be added.</param>
         public void AddFirst(object? content)
         {
-            TryAddInternal(0, content, false);
+            AddInternal(0, content, false);
         }
 
-        internal bool TryAddInternal(int index, object? content, bool skipParentCheck)
+        internal void AddInternal(int index, object? content, bool skipParentCheck)
         {
             if (IsMultiContent(content))
             {
@@ -666,17 +657,15 @@ namespace LC.Newtonsoft.Json.Linq
                 int multiIndex = index;
                 foreach (object c in enumerable)
                 {
-                    TryAddInternal(multiIndex, c, skipParentCheck);
+                    AddInternal(multiIndex, c, skipParentCheck);
                     multiIndex++;
                 }
-
-                return true;
             }
             else
             {
                 JToken item = CreateFromContent(content);
 
-                return InsertItem(index, item, skipParentCheck);
+                InsertItem(index, item, skipParentCheck);
             }
         }
 

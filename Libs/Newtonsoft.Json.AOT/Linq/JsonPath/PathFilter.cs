@@ -6,15 +6,15 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
 {
     internal abstract class PathFilter
     {
-        public abstract IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings);
+        public abstract IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch);
 
-        protected static JToken? GetTokenIndex(JToken t, JsonSelectSettings? settings, int index)
+        protected static JToken? GetTokenIndex(JToken t, bool errorWhenNoMatch, int index)
         {
             if (t is JArray a)
             {
                 if (a.Count <= index)
                 {
-                    if (settings?.ErrorWhenNoMatch ?? false)
+                    if (errorWhenNoMatch)
                     {
                         throw new JsonException("Index {0} outside the bounds of JArray.".FormatWith(CultureInfo.InvariantCulture, index));
                     }
@@ -28,7 +28,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
             {
                 if (c.Count <= index)
                 {
-                    if (settings?.ErrorWhenNoMatch ?? false)
+                    if (errorWhenNoMatch)
                     {
                         throw new JsonException("Index {0} outside the bounds of JConstructor.".FormatWith(CultureInfo.InvariantCulture, index));
                     }
@@ -40,7 +40,7 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
             }
             else
             {
-                if (settings?.ErrorWhenNoMatch ?? false)
+                if (errorWhenNoMatch)
                 {
                     throw new JsonException("Index {0} not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, index, t.GetType().Name));
                 }

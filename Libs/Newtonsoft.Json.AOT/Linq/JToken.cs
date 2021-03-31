@@ -240,7 +240,7 @@ namespace LC.Newtonsoft.Json.Linq
             }
 
             int index = _parent.IndexOfItem(this);
-            _parent.TryAddInternal(index + 1, content, false);
+            _parent.AddInternal(index + 1, content, false);
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace LC.Newtonsoft.Json.Linq
             }
 
             int index = _parent.IndexOfItem(this);
-            _parent.TryAddInternal(index, content, false);
+            _parent.AddInternal(index, content, false);
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace LC.Newtonsoft.Json.Linq
         /// <typeparam name="T">The type to convert the token to.</typeparam>
         /// <param name="key">The token key.</param>
         /// <returns>The converted token value.</returns>
-        public virtual T? Value<T>(object key)
+        public virtual T Value<T>(object key)
         {
             JToken? token = this[key];
 
@@ -378,7 +378,7 @@ namespace LC.Newtonsoft.Json.Linq
         /// </summary>
         /// <typeparam name="T">The type to convert the values to.</typeparam>
         /// <returns>A <see cref="IEnumerable{T}"/> containing the child values of this <see cref="JToken"/>, in document order.</returns>
-        public virtual IEnumerable<T?> Values<T>()
+        public virtual IEnumerable<T> Values<T>()
         {
             throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
         }
@@ -485,7 +485,7 @@ namespace LC.Newtonsoft.Json.Linq
             return (Array.IndexOf(validTypes, o.Type) != -1) || (nullable && (o.Type == JTokenType.Null || o.Type == JTokenType.Undefined));
         }
 
-        #region Cast from operators
+#region Cast from operators
         /// <summary>
         /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Boolean"/>.
         /// </summary>
@@ -1497,9 +1497,9 @@ namespace LC.Newtonsoft.Json.Linq
             return ConvertUtils.ToBigInteger(v.Value);
         }
 #endif
-        #endregion
+#endregion
 
-        #region Cast to operators
+#region Cast to operators
         /// <summary>
         /// Performs an implicit conversion from <see cref="Boolean"/> to <see cref="JToken"/>.
         /// </summary>
@@ -1863,7 +1863,7 @@ namespace LC.Newtonsoft.Json.Linq
         {
             return new JValue(value);
         }
-        #endregion
+#endregion
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -1929,9 +1929,12 @@ namespace LC.Newtonsoft.Json.Linq
         /// </summary>
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <returns>The new object created from the JSON value.</returns>
-        public T? ToObject<T>()
+        [return: MaybeNull]
+        public T ToObject<T>()
         {
-            return (T?)ToObject(typeof(T));
+#pragma warning disable CS8601 // Possible null reference assignment.
+            return (T)ToObject(typeof(T));
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
         /// <summary>
@@ -2062,9 +2065,12 @@ namespace LC.Newtonsoft.Json.Linq
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when creating the object.</param>
         /// <returns>The new object created from the JSON value.</returns>
-        public T? ToObject<T>(JsonSerializer jsonSerializer)
+        [return: MaybeNull]
+        public T ToObject<T>(JsonSerializer jsonSerializer)
         {
-            return (T?)ToObject(typeof(T), jsonSerializer);
+#pragma warning disable CS8601 // Possible null reference assignment.
+            return (T)ToObject(typeof(T), jsonSerializer);
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
         /// <summary>
@@ -2307,7 +2313,7 @@ namespace LC.Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/>, or <c>null</c>.</returns>
         public JToken? SelectToken(string path)
         {
-            return SelectToken(path, settings: null);
+            return SelectToken(path, false);
         }
 
         /// <summary>
@@ -2320,27 +2326,10 @@ namespace LC.Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/>.</returns>
         public JToken? SelectToken(string path, bool errorWhenNoMatch)
         {
-            JsonSelectSettings? settings = errorWhenNoMatch
-                ? new JsonSelectSettings { ErrorWhenNoMatch = true }
-                : null;
-
-            return SelectToken(path, settings);
-        }
-
-        /// <summary>
-        /// Selects a <see cref="JToken"/> using a JSONPath expression. Selects the token that matches the object path.
-        /// </summary>
-        /// <param name="path">
-        /// A <see cref="String"/> that contains a JSONPath expression.
-        /// </param>
-        /// <param name="settings">The <see cref="JsonSelectSettings"/> used to select tokens.</param>
-        /// <returns>A <see cref="JToken"/>.</returns>
-        public JToken? SelectToken(string path, JsonSelectSettings? settings)
-        {
             JPath p = new JPath(path);
 
             JToken? token = null;
-            foreach (JToken t in p.Evaluate(this, this, settings))
+            foreach (JToken t in p.Evaluate(this, this, errorWhenNoMatch))
             {
                 if (token != null)
                 {
@@ -2362,7 +2351,7 @@ namespace LC.Newtonsoft.Json.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path)
         {
-            return SelectTokens(path, settings: null);
+            return SelectTokens(path, false);
         }
 
         /// <summary>
@@ -2375,25 +2364,8 @@ namespace LC.Newtonsoft.Json.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path, bool errorWhenNoMatch)
         {
-            JsonSelectSettings? settings = errorWhenNoMatch
-                ? new JsonSelectSettings { ErrorWhenNoMatch = true }
-                : null;
-
-            return SelectTokens(path, settings);
-        }
-
-        /// <summary>
-        /// Selects a collection of elements using a JSONPath expression.
-        /// </summary>
-        /// <param name="path">
-        /// A <see cref="String"/> that contains a JSONPath expression.
-        /// </param>
-        /// <param name="settings">The <see cref="JsonSelectSettings"/> used to select tokens.</param>
-        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
-        public IEnumerable<JToken> SelectTokens(string path, JsonSelectSettings? settings)
-        {
-            var p = new JPath(path);
-            return p.Evaluate(this, this, settings);
+            JPath p = new JPath(path);
+            return p.Evaluate(this, this, errorWhenNoMatch);
         }
 
 #if HAVE_DYNAMIC
@@ -2732,18 +2704,6 @@ namespace LC.Newtonsoft.Json.Linq
                         _annotations = null;
                     }
                 }
-            }
-        }
-
-        internal void CopyAnnotations(JToken target, JToken source)
-        {
-            if (source._annotations is object[] annotations)
-            {
-                target._annotations = annotations.ToArray();
-            }
-            else
-            {
-                target._annotations = source._annotations;
             }
         }
     }

@@ -62,7 +62,7 @@ namespace LC.Newtonsoft.Json
         // array that gives a new state based on the current state an the token being written
         private static readonly State[][] StateArray;
 
-        internal static readonly State[][] StateArrayTemplate = new[]
+        internal static readonly State[][] StateArrayTempate = new[]
         {
             //                                      Start                    PropertyName            ObjectStart         Object            ArrayStart              Array                   ConstructorStart        Constructor             Closed       Error
             //
@@ -78,9 +78,9 @@ namespace LC.Newtonsoft.Json
 
         internal static State[][] BuildStateArray()
         {
-            List<State[]> allStates = StateArrayTemplate.ToList();
-            State[] errorStates = StateArrayTemplate[0];
-            State[] valueStates = StateArrayTemplate[7];
+            List<State[]> allStates = StateArrayTempate.ToList();
+            State[] errorStates = StateArrayTempate[0];
+            State[] valueStates = StateArrayTempate[7];
 
             EnumInfo enumValuesAndNames = EnumUtils.GetEnumValuesAndNames(typeof(JsonToken));
 
@@ -579,9 +579,8 @@ namespace LC.Newtonsoft.Json
                     }
                     break;
                 case JsonToken.String:
-                    // Allow for a null string. This matches JTokenReader behavior which can read
-                    // a JsonToken.String with a null value.
-                    WriteValue(value?.ToString());
+                    ValidationUtils.ArgumentNotNull(value, nameof(value));
+                    WriteValue(value.ToString());
                     break;
                 case JsonToken.Boolean:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));

@@ -12,13 +12,13 @@ namespace LC.Newtonsoft.Json.Linq.JsonPath
             Expression = expression;
         }
 
-        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken t in current)
             {
                 foreach (JToken v in t)
                 {
-                    if (Expression.IsMatch(root, v, settings))
+                    if (Expression.IsMatch(root, v))
                     {
                         yield return v;
                     }
