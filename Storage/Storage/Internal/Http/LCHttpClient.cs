@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Security.Cryptography;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 using LeanCloud.Common;
 
 namespace LeanCloud.Storage.Internal.Http {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 
 namespace LeanCloud.Common {
     public class LCJsonConverter : JsonConverter {

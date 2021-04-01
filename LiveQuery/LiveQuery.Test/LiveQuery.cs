@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 using LeanCloud;
 using LeanCloud.Storage;
 using LeanCloud.LiveQuery;

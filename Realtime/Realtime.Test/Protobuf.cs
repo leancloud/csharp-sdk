@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using LeanCloud.Realtime.Internal.Protocol;
-using Google.Protobuf;
+using LC.Google.Protobuf;
 
 namespace Realtime.Test {
     public class Protobuf {

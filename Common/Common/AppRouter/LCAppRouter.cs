@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 
 namespace LeanCloud.Common {
     public class LCAppRouter {

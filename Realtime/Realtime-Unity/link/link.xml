@@ -1,5 +1,0 @@
-<linker>
-    <assembly fullname="LeanCloud" preserve="all"/>
-    <assembly fullname="LeanCloud.Storage" preserve="all"/>
-    <assembly fullname="LeanCloud.Realtime" preserve="all"/>
-</linker>

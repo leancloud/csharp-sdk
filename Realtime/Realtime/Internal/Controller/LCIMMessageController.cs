@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
-using Newtonsoft.Json;
-using Google.Protobuf;
+using LC.Newtonsoft.Json;
+using LC.Google.Protobuf;
 using LeanCloud.Realtime.Internal.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Controller {

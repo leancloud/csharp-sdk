@@ -16,15 +16,15 @@ pack() {
 
 # Storage
 pack ./Storage/Storage/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-Storage-Standard.zip
-pack ./Storage/Storage-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-Storage-Unity.zip true
+pack ./Storage/Storage.AOT/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-Storage-Unity.zip true
 
 # Realtime
 pack ./Realtime/Realtime/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-Realtime-Standard.zip
-pack ./Realtime/Realtime-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-Realtime-Unity.zip true
+pack ./Realtime/Realtime.AOT/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-Realtime-Unity.zip true
 
 # LiveQuery
 pack ./LiveQuery/LiveQuery/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-LiveQuery-Standard.zip
-pack ./LiveQuery/LiveQuery-Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-LiveQuery-Unity.zip true
+pack ./LiveQuery/LiveQuery.AOT/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-LiveQuery-Unity.zip true
 
 # Engine
 pack ./Engine/bin/Release/netcoreapp3.1/ ./DLLs LeanCloud-SDK-Engine-Standard.zip

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 using LeanCloud.Storage.Internal.Object;
 using LeanCloud.Storage.Internal.Operation;
 using LeanCloud.Storage.Internal.Codec;

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Net.Http;
 using LeanCloud.Common;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 
 namespace LeanCloud.Realtime.Internal.Router {
 

@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ReleaseVersion>0.7.1</ReleaseVersion>
+    <AssemblyName>Common</AssemblyName>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libs\Newtonsoft.Json.AOT\LC.Newtonsoft.Json.AOT.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Common\Common.csproj">
+      <Link>Common\Common.csproj</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Common\AppRouter\LCAppServer.cs">
+      <Link>Common\AppRouter\LCAppServer.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\AppRouter\LCAppRouter.cs">
+      <Link>Common\AppRouter\LCAppRouter.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Json\LCJsonConverter.cs">
+      <Link>Common\Json\LCJsonConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Json\LCJsonUtils.cs">
+      <Link>Common\Json\LCJsonUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Http\LCHttpUtils.cs">
+      <Link>Common\Http\LCHttpUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Task\LCTaskExtensions.cs">
+      <Link>Common\Task\LCTaskExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Log\LCLogger.cs">
+      <Link>Common\Log\LCLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Log\LCLogLevel.cs">
+      <Link>Common\Log\LCLogLevel.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Exception\LCException.cs">
+      <Link>Common\Exception\LCException.cs</Link>
+    </Compile>
+  </ItemGroup>
+</Project>

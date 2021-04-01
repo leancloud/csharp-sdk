@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Storage.Internal.Object;
-using Newtonsoft.Json;
+using LC.Newtonsoft.Json;
 
 namespace LeanCloud.Storage {
     public class LCStatus : LCObject {
