@@ -83,7 +83,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 signature = await Client.SignatureFactory.CreateConnectSignature(Client.Id);
             }
             if (signature == null && !string.IsNullOrEmpty(Client.SessionToken)) {
-                Dictionary<string, object> ret = await LCApplication.HttpClient.Post<Dictionary<string, object>>("rtm/sign", data: new Dictionary<string, object> {
+                Dictionary<string, object> ret = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("rtm/sign", data: new Dictionary<string, object> {
                     { "session_token", Client.SessionToken }
                 });
                 signature = new LCIMSignature {

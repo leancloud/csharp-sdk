@@ -56,7 +56,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
             // 发送 ping 包
             GenericCommand command = new GenericCommand {
                 Cmd = CommandType.Echo,
-                AppId = LCApplication.AppId,
+                AppId = LCInternalApplication.AppId,
                 PeerId = connection.id
             };
             try {
