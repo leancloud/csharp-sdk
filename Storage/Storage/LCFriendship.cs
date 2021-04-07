@@ -19,7 +19,7 @@ namespace LeanCloud.Storage {
             if (attributes != null) {
                 data["friendship"] = attributes;
             }
-            await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         public static async Task AcceptRequest(LCFriendshipRequest request, Dictionary<string, object> attributes = null) {
@@ -33,7 +33,7 @@ namespace LeanCloud.Storage {
                     { "friendship", attributes }
                 };
             }
-            await LCApplication.HttpClient.Put<Dictionary<string, object>>(path, data: data);
+            await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>(path, data: data);
         }
 
         public static async Task DeclineRequest(LCFriendshipRequest request) {
@@ -41,7 +41,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(request));
             }
             string path = $"users/friendshipRequests/{request.ObjectId}/decline";
-            await LCApplication.HttpClient.Put<Dictionary<string, object>>(path);
+            await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>(path);
         }
     }
 }

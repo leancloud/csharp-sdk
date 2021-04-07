@@ -41,7 +41,7 @@ namespace LeanCloud.Storage {
                 { "maxId", MaxId },
                 { "limit", Condition.Limit }
             };
-            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>("subscribe/statuses",
+            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>("subscribe/statuses",
                 queryParams: queryParams);
             List<object> results = response["results"] as List<object>;
             List<LCStatus> statuses = new List<LCStatus>();

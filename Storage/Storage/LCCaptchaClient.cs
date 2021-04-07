@@ -33,7 +33,7 @@ namespace LeanCloud.Storage {
                 { "width", width },
                 { "height", height }
             };
-            Dictionary<string, object> response = await LCApplication.HttpClient.Get<Dictionary<string, object>>(path, queryParams: queryParams);
+            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>(path, queryParams: queryParams);
             return new LCCapture {
                 Url = response["captcha_url"] as string,
                 Token = response["captcha_token"] as string
@@ -60,7 +60,7 @@ namespace LeanCloud.Storage {
                 { "captcha_code", code },
                 { "captcha_token", token }
             };
-            await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
     }
 }

@@ -8,9 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Class1.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Internal\" />
     <Folder Include="Internal\Codec\" />
     <Folder Include="Internal\File\" />
@@ -19,8 +16,10 @@
     <Folder Include="Internal\Operation\" />
     <Folder Include="Internal\Query\" />
     <Folder Include="Leaderboard\" />
+    <Folder Include="Internal\Storage\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Common\Common.csproj" />
+    <ProjectReference Include="..\..\Common\Common\Common.csproj">
+    </ProjectReference>
   </ItemGroup>
 </Project>

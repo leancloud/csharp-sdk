@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using LeanCloud.Common;
 using LeanCloud.Storage;
 using LeanCloud.Storage.Internal.Http;
+using LeanCloud.Storage.Internal.Storage;
 
 namespace LeanCloud {
     /// <summary>
     /// LeanCloud Application
     /// </summary>
-    public class LCApplication {
+    public class LCInternalApplication {
         // SDK 版本号，用于 User-Agent 统计
         public const string SDKVersion = "0.7.2";
 
@@ -40,6 +41,10 @@ namespace LeanCloud {
         }
 
         public static bool UseMasterKey {
+            get; set;
+        }
+
+        public static StorageController StorageController {
             get; set;
         }
 

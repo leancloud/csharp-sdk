@@ -92,12 +92,12 @@ namespace LeanCloud.Storage {
                     }
                     LCObjectData objectData = LCObjectData.Decode(uploadToken);
                     Merge(objectData);
-                    _ = LCApplication.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
+                    _ = LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
                         { "result", true },
                         { "token", token }
                     });
                 } catch (Exception e) {
-                    _ = LCApplication.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
+                    _ = LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
                         { "result", false },
                         { "token", token }
                     });
@@ -112,7 +112,7 @@ namespace LeanCloud.Storage {
                 return;
             }
             string path = $"files/{ObjectId}";
-            await LCApplication.HttpClient.Delete(path);
+            await LCInternalApplication.HttpClient.Delete(path);
         }
 
         public string GetThumbnailUrl(int width, int height, int quality = 100, bool scaleToFit = true, string format = "png") {
@@ -128,7 +128,7 @@ namespace LeanCloud.Storage {
                 { "mime_type", MimeType },
                 { "metaData", MetaData }
             };
-            return await LCApplication.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
+            return await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
         }
 
         public static LCQuery<LCFile> GetQuery() {
