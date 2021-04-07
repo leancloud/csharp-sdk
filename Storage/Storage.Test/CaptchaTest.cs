@@ -9,13 +9,12 @@ namespace Storage.Test {
     public class CaptchaTest {
         [SetUp]
         public void SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            LCApplication.Initialize(Utils.AppId, Utils.AppKey, Utils.AppServer);
+            Utils.SetUp();
         }
 
         [TearDown]
         public void TearDown() {
-            LCLogger.LogDelegate -= Utils.Print;
+            Utils.TearDown();
         }
 
         //[Test]

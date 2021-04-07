@@ -10,13 +10,12 @@ namespace Storage.Test {
     public class UserTest {
         [SetUp]
         public void SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            Utils.SetUp();   
         }
 
         [TearDown]
         public void TearDown() {
-            LCLogger.LogDelegate -= Utils.Print;
+            Utils.TearDown();
         }
 
         [Test]
@@ -31,7 +30,7 @@ namespace Storage.Test {
             string mobile = $"151{random.Next(10000000, 99999999)}";
             user.Mobile = mobile;
             await user.SignUp();
-
+            
             TestContext.WriteLine(user.Username);
             TestContext.WriteLine(user.Password);
 
@@ -48,7 +47,7 @@ namespace Storage.Test {
             LCUser current = await LCUser.GetCurrent();
             Assert.NotNull(current.ObjectId);
             Assert.IsFalse(current.EmailVerified);
-            Assert.IsFalse(current.MobileVerified);
+            Assert.IsFalse(!current.MobileVerified);
             Assert.AreEqual(current.Mobile, "15101006007");
         }
 

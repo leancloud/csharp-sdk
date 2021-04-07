@@ -43,19 +43,19 @@ namespace Realtime.Test {
             }
         }
 
-        [Test]
-        public async Task QueryCompact() {
-            string memberId = "m1";
-            LCIMConversationQuery query = new LCIMConversationQuery(client)
-                .WhereEqualTo("m", memberId);
-            query.Compact = true;
-            ReadOnlyCollection<LCIMConversation> conversations = await query.Find();
-            foreach (LCIMConversation conversation in conversations) {
-                Assert.True(conversation.MemberIds.Count == 0);
-                await conversation.Fetch();
-                Assert.True(conversation.MemberIds.Count > 0);
-            }
-        }
+        //[Test]
+        //public async Task QueryCompact() {
+        //    string memberId = "m1";
+        //    LCIMConversationQuery query = new LCIMConversationQuery(client)
+        //        .WhereEqualTo("m", memberId);
+        //    query.Compact = true;
+        //    ReadOnlyCollection<LCIMConversation> conversations = await query.Find();
+        //    foreach (LCIMConversation conversation in conversations) {
+        //        Assert.True(conversation.MemberIds.Count == 0);
+        //        await conversation.Fetch();
+        //        Assert.True(conversation.MemberIds.Count > 0);
+        //    }
+        //}
 
         [Test]
         public async Task QueryWithLastMessage() {

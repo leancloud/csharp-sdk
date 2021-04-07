@@ -2,7 +2,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using LeanCloud;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
@@ -10,13 +9,12 @@ namespace Storage.Test {
     public class RoleTest {
         [SetUp]
         public void SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            Utils.SetUp();
         }
 
         [TearDown]
         public void TearDown() {
-            LCLogger.LogDelegate -= Utils.Print;
+            Utils.TearDown();
         }
 
         [Test]

@@ -12,13 +12,12 @@ namespace Storage.Test {
 
         [SetUp]
         public void SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+            Utils.SetUp();
         }
 
         [TearDown]
         public void TearDown() {
-            LCLogger.LogDelegate -= Utils.Print;
+            Utils.TearDown();
         }
 
         [Test]
@@ -72,7 +71,7 @@ namespace Storage.Test {
 
         [Test]
         public async Task AWS() {
-            LCApplication.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r");
+            LCInternalApplication.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r");
             LCFile file = new LCFile("avatar", AvatarFilePath);
             await file.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");
