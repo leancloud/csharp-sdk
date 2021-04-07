@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <ReleaseVersion>0.7.2</ReleaseVersion>
-    <AssemblyName>Storage.Unity</AssemblyName>
+    <AssemblyName>LiveQuery.Unity</AssemblyName>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LiveQuery.AOT\LiveQuery.AOT.csproj" />
-    <ProjectReference Include="..\..\Storage\Storage.Unity\Storage.Unity.csproj" />
+    <ProjectReference Include="..\..\Realtime\Realtime.Unity\Realtime.Unity.csproj" />
   </ItemGroup>
 </Project>
