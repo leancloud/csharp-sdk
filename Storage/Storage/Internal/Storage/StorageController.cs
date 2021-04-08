@@ -50,13 +50,15 @@ namespace LeanCloud.Storage.Internal.Storage {
             return null;
         }
 
-        public void Delete(string filename) {
+        public Task Delete(string filename) {
             if (storage == null) {
-                return;
+                return Task.CompletedTask;
             }
 
             string path = GetFileFullPath(filename);
-            IOFile.Delete(path);
+            return Task.Run(() => {
+                IOFile.Delete(path);
+            });
         }
 
         private string GetFileFullPath(string filename) {

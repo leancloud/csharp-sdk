@@ -89,7 +89,7 @@ namespace LeanCloud.Storage {
                     currentUser = ParseObject(data) as LCUser;
                 } catch (Exception e) {
                     LCLogger.Error(e);
-                    LCInternalApplication.StorageController.Delete(USER_DATA);
+                    await LCInternalApplication.StorageController.Delete(USER_DATA);
                 }
             }
             return currentUser;
@@ -513,8 +513,7 @@ namespace LeanCloud.Storage {
         public static Task Logout() {
             currentUser = null;
             // 清理持久化数据
-            LCInternalApplication.StorageController.Delete(USER_DATA);
-            return Task.FromResult<object>(null);
+            return LCInternalApplication.StorageController.Delete(USER_DATA);
         }
 
         /// <summary>
