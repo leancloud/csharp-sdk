@@ -7,6 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\LiveQuery\LiveQuery\LiveQuery.csproj" />
+    <ProjectReference Include="..\..\LiveQuery\LiveQuery.Standard\LiveQuery.Standard.csproj" />
   </ItemGroup>
 </Project>

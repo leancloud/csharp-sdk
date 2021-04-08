@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Realtime\Realtime\Realtime.csproj" />
+    <ProjectReference Include="..\Realtime\Realtime.csproj" />
+    <ProjectReference Include="..\..\Storage\Storage.Standard\Storage.Standard.csproj" />
   </ItemGroup>
 </Project>

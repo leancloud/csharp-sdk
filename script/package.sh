@@ -9,6 +9,7 @@ pack() {
     rsync -avz $path $dir
     if [ $copyLink == true ] ; then
         cp ./Unity/link.xml $dir
+        rm $dir/UnityEngine.dll
     fi
     zip -r $output $dir
     rm -r $dir

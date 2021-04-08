@@ -24,5 +24,14 @@ namespace Storage.Test {
                     break;
             }
         }
+
+        internal static void SetUp() {
+            LCLogger.LogDelegate += Print;
+            LCApplication.Initialize(AppId, AppKey, AppServer);
+        }
+
+        internal static void TearDown() {
+            LCLogger.LogDelegate -= Print;
+        }
     }
 }

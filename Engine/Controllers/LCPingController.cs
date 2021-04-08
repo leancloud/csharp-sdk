@@ -14,7 +14,7 @@ namespace LeanCloud.Engine {
 
             return new Dictionary<string, string> {
                 { "runtime", $"dotnet-{Environment.Version}" },
-                { "version", LCApplication.SDKVersion }
+                { "version", LCInternalApplication.SDKVersion }
             };
         }
     }

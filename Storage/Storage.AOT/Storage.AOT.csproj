@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ReleaseVersion>0.7.1</ReleaseVersion>
+    <ReleaseVersion>0.7.2</ReleaseVersion>
     <AssemblyName>Storage</AssemblyName>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
@@ -41,8 +41,8 @@
     <Compile Include="..\Storage\LCStatus.cs">
       <Link>Storage\LCStatus.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCApplication.cs">
-      <Link>Storage\LCApplication.cs</Link>
+    <Compile Include="..\Storage\LCInternalApplication.cs">
+      <Link>Storage\LCInternalApplication.cs</Link>
     </Compile>
     <Compile Include="..\Storage\LCUser.cs">
       <Link>Storage\LCUser.cs</Link>
@@ -157,6 +157,12 @@
     </Compile>
     <Compile Include="..\Storage\Internal\Query\LCCompositionalCondition.cs">
       <Link>Storage\Internal\Query\LCCompositionalCondition.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Storage\StorageController.cs">
+      <Link>Storage\Internal\Storage\StorageController.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\Storage\IStorage.cs">
+      <Link>Storage\Internal\Storage\IStorage.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

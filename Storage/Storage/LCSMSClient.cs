@@ -43,7 +43,7 @@ namespace LeanCloud.Storage {
                     data[kv.Key] = kv.Value;
                 }
             }
-            await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace LeanCloud.Storage {
                 { "mobilePhoneNumber", mobile },
                 { "smsType", "voice" }
             };
-            await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         public static async Task VerifyMobilePhone(string mobile, string code) {
@@ -65,7 +65,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LCApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
     }
 }

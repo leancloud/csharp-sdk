@@ -120,7 +120,7 @@ namespace LeanCloud.Storage.Internal.Http {
         }
 
         async Task<string> BuildUrl(string path, Dictionary<string, object> queryParams = null) {
-            string apiServer = await LCApplication.AppRouter.GetApiServer();
+            string apiServer = await LCInternalApplication.AppRouter.GetApiServer();
             string url = $"{apiServer}/{apiVersion}/{path}";
             if (queryParams != null) {
                 IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
@@ -137,9 +137,9 @@ namespace LeanCloud.Storage.Internal.Http {
                     headers.Add(kv.Key, kv.Value.ToString());
                 }
             }
-            if (LCApplication.UseMasterKey && !string.IsNullOrEmpty(LCApplication.MasterKey)) {
+            if (LCInternalApplication.UseMasterKey && !string.IsNullOrEmpty(LCInternalApplication.MasterKey)) {
                 // Master Key
-                headers.Add("X-LC-Key", $"{LCApplication.MasterKey},master");
+                headers.Add("X-LC-Key", $"{LCInternalApplication.MasterKey},master");
             } else {
                 // 签名
                 long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -148,8 +148,8 @@ namespace LeanCloud.Storage.Internal.Http {
                 string sign = $"{hash},{timestamp}";
                 headers.Add("X-LC-Sign", sign);
             }
-            if (LCApplication.AdditionalHeaders.Count > 0) {
-                foreach (KeyValuePair<string, string> kv in LCApplication.AdditionalHeaders) {
+            if (LCInternalApplication.AdditionalHeaders.Count > 0) {
+                foreach (KeyValuePair<string, string> kv in LCInternalApplication.AdditionalHeaders) {
                     headers.Add(kv.Key, kv.Value);
                 }    
             }

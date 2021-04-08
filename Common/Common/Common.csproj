@@ -12,7 +12,9 @@
     <Folder Include="Task\" />
     <Folder Include="Exception\" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\Newtonsoft.Json\LC.Newtonsoft.Json.csproj" />
   </ItemGroup>
+
 </Project>

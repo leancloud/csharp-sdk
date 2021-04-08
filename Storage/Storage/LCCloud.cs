@@ -30,7 +30,7 @@ namespace LeanCloud.Storage {
                 { PRODUCTION_KEY, IsProduction ? 1 : 0 }
             };
             object encodeParams = LCEncoder.Encode(parameters);
-            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path,
+            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path,
                 headers: headers,
                 data: encodeParams);
             return response;
@@ -57,7 +57,7 @@ namespace LeanCloud.Storage {
                 { PRODUCTION_KEY, IsProduction ? 1 : 0 }
             };
             object encodeParams = Encode(parameters);
-            Dictionary<string, object> response = await LCApplication.HttpClient.Post<Dictionary<string, object>>(path,
+            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path,
                 headers: headers,
                 data: encodeParams);
             return LCDecoder.Decode(response["result"]);
