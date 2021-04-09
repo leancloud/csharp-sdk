@@ -27,6 +27,8 @@ namespace LeanCloud.Common {
 
         private Dictionary<string, Func<Task<string>>> runtimeHeaderTasks = new Dictionary<string, Func<Task<string>>>();
 
+        private Dictionary<string, string> additionalHeaders = new Dictionary<string, string>();
+
         public LCHttpClient(string appId, string appKey, string server, string sdkVersion, string apiVersion) {
             this.appId = appId;
             this.appKey = appKey;
@@ -44,13 +46,23 @@ namespace LeanCloud.Common {
         }
 
         public void AddRuntimeHeaderTask(string key, Func<Task<string>> task) {
-            if (key == null) {
+            if (string.IsNullOrEmpty(key)) {
                 return;
             }
             if (task == null) {
                 return;
             }
             runtimeHeaderTasks[key] = task;
+        }
+
+        public void AddAddtionalHeader(string key, string value) {
+            if (string.IsNullOrEmpty(key)) {
+                return;
+            }
+            if (string.IsNullOrEmpty(value)) {
+                return;
+            }
+            additionalHeaders[key] = value;
         }
 
         public Task<T> Get<T>(string path,
@@ -141,10 +153,10 @@ namespace LeanCloud.Common {
             return url;
         }
 
-        async Task FillHeaders(HttpRequestHeaders headers, Dictionary<string, object> additionalHeaders = null) {
+        async Task FillHeaders(HttpRequestHeaders headers, Dictionary<string, object> reqHeaders = null) {
             // 额外 headers
-            if (additionalHeaders != null) {
-                foreach (KeyValuePair<string, object> kv in additionalHeaders) {
+            if (reqHeaders != null) {
+                foreach (KeyValuePair<string, object> kv in reqHeaders) {
                     headers.Add(kv.Key, kv.Value.ToString());
                 }
             }
@@ -159,8 +171,8 @@ namespace LeanCloud.Common {
                 string sign = $"{hash},{timestamp}";
                 headers.Add("X-LC-Sign", sign);
             }
-            if (LCCore.AdditionalHeaders.Count > 0) {
-                foreach (KeyValuePair<string, string> kv in LCCore.AdditionalHeaders) {
+            if (additionalHeaders.Count > 0) {
+                foreach (KeyValuePair<string, string> kv in additionalHeaders) {
                     headers.Add(kv.Key, kv.Value);
                 }    
             }

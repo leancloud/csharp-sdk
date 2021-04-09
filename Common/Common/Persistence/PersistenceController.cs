@@ -19,8 +19,6 @@ namespace LeanCloud.Common {
             }
 
             string path = GetFileFullPath(filename);
-            LCLogger.Debug($"WRITE: {path}");
-            LCLogger.Debug($"WRITE: {text}");
             using (FileStream fs = IOFile.OpenWrite(path)) {
                 byte[] buffer = Encoding.UTF8.GetBytes(text);
                 await fs.WriteAsync(buffer, 0, buffer.Length);
@@ -33,7 +31,6 @@ namespace LeanCloud.Common {
             }
 
             string path = GetFileFullPath(filename);
-            LCLogger.Debug($"READ: {path}");
             if (IOFile.Exists(path)) {
                 string text;
                 using (FileStream fs = IOFile.OpenRead(path)) {
@@ -41,7 +38,6 @@ namespace LeanCloud.Common {
                     await fs.ReadAsync(buffer, 0, (int)fs.Length);
                     text = Encoding.UTF8.GetString(buffer);
                 }
-                LCLogger.Debug($"READ: {text}");
                 return text;
             }
             return null;

@@ -44,10 +44,6 @@ namespace LeanCloud.Common {
             get; set;
         }
 
-        internal static Dictionary<string, string> AdditionalHeaders {
-            get;
-        } = new Dictionary<string, string>();
-
         public static void Initialize(string appId,
             string appKey,
             string server = null,
@@ -66,10 +62,6 @@ namespace LeanCloud.Common {
             AppRouter = new LCAppRouter(appId, server);
 
             HttpClient = new LCHttpClient(appId, appKey, server, SDKVersion, APIVersion);
-        }
-
-        public static void AddHeader(string key, string value) {
-            AdditionalHeaders.Add(key, value);
         }
     }
 }
