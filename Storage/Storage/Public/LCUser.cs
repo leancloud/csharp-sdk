@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
@@ -83,13 +84,13 @@ namespace LeanCloud.Storage {
                 return currentUser;
             }
 
-            string data = await LCInternalApplication.StorageController.ReadText(USER_DATA);
+            string data = await LCCore.PersistenceController.ReadText(USER_DATA);
             if (!string.IsNullOrEmpty(data)) {
                 try {
                     currentUser = ParseObject(data) as LCUser;
                 } catch (Exception e) {
                     LCLogger.Error(e);
-                    await LCInternalApplication.StorageController.Delete(USER_DATA);
+                    await LCCore.PersistenceController.Delete(USER_DATA);
                 }
             }
             return currentUser;
@@ -137,7 +138,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("requestLoginSmsCode", data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>("requestLoginSmsCode", data: data);
         }
 
         /// <summary>
@@ -157,7 +158,7 @@ namespace LeanCloud.Storage {
                 { "mobilePhoneNumber", mobile },
                 { "smsCode", code }
             };
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("usersByMobilePhone", data: data);
+            Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>("usersByMobilePhone", data: data);
             LCObjectData objectData = LCObjectData.Decode(response);
             currentUser = new LCUser(objectData);
 
@@ -370,7 +371,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "email", email }
             };
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("requestEmailVerify", data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>("requestEmailVerify", data: data);
         }
 
         /// <summary>
@@ -385,7 +386,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("requestMobilePhoneVerify", data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>("requestMobilePhoneVerify", data: data);
         }
 
         /// <summary>
@@ -405,7 +406,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         /// <summary>
@@ -420,7 +421,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> headers = new Dictionary<string, object> {
                 { "X-LC-Session", sessionToken }
             };
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>("users/me",
+            Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>("users/me",
                 headers: headers);
             LCObjectData objectData = LCObjectData.Decode(response);
             currentUser = new LCUser(objectData);
@@ -439,7 +440,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "email", email }
             };
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("requestPasswordReset",
+            await LCCore.HttpClient.Post<Dictionary<string, object>>("requestPasswordReset",
                 data: data);
         }
 
@@ -455,7 +456,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("requestPasswordResetBySmsCode",
+            await LCCore.HttpClient.Post<Dictionary<string, object>>("requestPasswordResetBySmsCode",
                 data: data);
         }
 
@@ -480,7 +481,7 @@ namespace LeanCloud.Storage {
                 { "mobilePhoneNumber", mobile },
                 { "password", newPassword }
             };
-            await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>($"resetPasswordBySmsCode/{code}",
+            await LCCore.HttpClient.Put<Dictionary<string, object>>($"resetPasswordBySmsCode/{code}",
                 data: data);
         }
 
@@ -501,7 +502,7 @@ namespace LeanCloud.Storage {
                 { "old_password", oldPassword },
                 { "new_password", newPassword }
             };
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>(
+            Dictionary<string, object> response = await LCCore.HttpClient.Put<Dictionary<string, object>>(
                 $"users/{ObjectId}/updatePassword", data:data);
             LCObjectData objectData = LCObjectData.Decode(response);
             Merge(objectData);
@@ -513,7 +514,7 @@ namespace LeanCloud.Storage {
         public static Task Logout() {
             currentUser = null;
             // 清理持久化数据
-            return LCInternalApplication.StorageController.Delete(USER_DATA);
+            return LCCore.PersistenceController.Delete(USER_DATA);
         }
 
         /// <summary>
@@ -525,7 +526,7 @@ namespace LeanCloud.Storage {
                 return false;
             }
             try {
-                await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>("users/me");
+                await LCCore.HttpClient.Get<Dictionary<string, object>>("users/me");
                 return true;
             } catch (Exception) {
                 return false;
@@ -578,7 +579,7 @@ namespace LeanCloud.Storage {
         }
 
         static async Task<LCUser> Login(Dictionary<string, object> data) {
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("login", data: data);
+            Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>("login", data: data);
             LCObjectData objectData = LCObjectData.Decode(response);
             currentUser = new LCUser(objectData);
 
@@ -592,7 +593,7 @@ namespace LeanCloud.Storage {
                 { authType, data }
             };
             string path = failOnNotExist ? "users?failOnNotExist=true" : "users";
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: new Dictionary<string, object> {
+            Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: new Dictionary<string, object> {
                 { "authData", authData }
             });
             LCObjectData objectData = LCObjectData.Decode(response);
@@ -612,7 +613,7 @@ namespace LeanCloud.Storage {
         private static async Task SaveToLocal() {
             try {
                 string json = currentUser.ToString();
-                await LCInternalApplication.StorageController.WriteText(USER_DATA, json);
+                await LCCore.PersistenceController.WriteText(USER_DATA, json);
             } catch (Exception e) {
                 LCLogger.Error(e.Message);
             }
@@ -634,7 +635,7 @@ namespace LeanCloud.Storage {
             if (!string.IsNullOrEmpty(captchaToken)) {
                 data["validate_token"] = captchaToken;
             }
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         /// <summary>
@@ -649,7 +650,7 @@ namespace LeanCloud.Storage {
                 { "mobilePhoneNumber", mobile },
                 { "code", code }
             };
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         /// <summary>
@@ -663,7 +664,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(targetId));
             }
             string path = $"users/self/friendship/{targetId}";
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: attrs);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: attrs);
         }
 
         /// <summary>
@@ -676,7 +677,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(targetId));
             }
             string path = $"users/self/friendship/{targetId}";
-            await LCInternalApplication.HttpClient.Delete(path);
+            await LCCore.HttpClient.Delete(path);
         }
 
         /// <summary>
@@ -716,7 +717,7 @@ namespace LeanCloud.Storage {
                 queryParams["include"] = string.Join(",", includes);
             }
             string path = $"users/{ObjectId}/followersAndFollowees";
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>(path,
+            Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>(path,
                 queryParams: queryParams);
             LCFollowersAndFollowees result = new LCFollowersAndFollowees();
             if (response.TryGetValue("followers", out object followersObj) &&

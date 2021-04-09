@@ -8,9 +8,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Security.Cryptography;
 using LC.Newtonsoft.Json;
-using LeanCloud.Common;
 
-namespace LeanCloud.Storage.Internal.Http {
+namespace LeanCloud.Common {
     public class LCHttpClient {
         private readonly string appId;
 
@@ -26,6 +25,8 @@ namespace LeanCloud.Storage.Internal.Http {
 
         readonly MD5 md5;
 
+        private Dictionary<string, Func<Task<string>>> runtimeHeaderTasks = new Dictionary<string, Func<Task<string>>>();
+
         public LCHttpClient(string appId, string appKey, string server, string sdkVersion, string apiVersion) {
             this.appId = appId;
             this.appKey = appKey;
@@ -40,6 +41,16 @@ namespace LeanCloud.Storage.Internal.Http {
             client.DefaultRequestHeaders.Add("X-LC-Id", appId);
 
             md5 = MD5.Create();
+        }
+
+        public void AddRuntimeHeaderTask(string key, Func<Task<string>> task) {
+            if (key == null) {
+                return;
+            }
+            if (task == null) {
+                return;
+            }
+            runtimeHeaderTasks[key] = task;
         }
 
         public Task<T> Get<T>(string path,
@@ -120,7 +131,7 @@ namespace LeanCloud.Storage.Internal.Http {
         }
 
         async Task<string> BuildUrl(string path, Dictionary<string, object> queryParams = null) {
-            string apiServer = await LCInternalApplication.AppRouter.GetApiServer();
+            string apiServer = await LCCore.AppRouter.GetApiServer();
             string url = $"{apiServer}/{apiVersion}/{path}";
             if (queryParams != null) {
                 IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
@@ -137,9 +148,9 @@ namespace LeanCloud.Storage.Internal.Http {
                     headers.Add(kv.Key, kv.Value.ToString());
                 }
             }
-            if (LCInternalApplication.UseMasterKey && !string.IsNullOrEmpty(LCInternalApplication.MasterKey)) {
+            if (LCCore.UseMasterKey && !string.IsNullOrEmpty(LCCore.MasterKey)) {
                 // Master Key
-                headers.Add("X-LC-Key", $"{LCInternalApplication.MasterKey},master");
+                headers.Add("X-LC-Key", $"{LCCore.MasterKey},master");
             } else {
                 // 签名
                 long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -148,15 +159,21 @@ namespace LeanCloud.Storage.Internal.Http {
                 string sign = $"{hash},{timestamp}";
                 headers.Add("X-LC-Sign", sign);
             }
-            if (LCInternalApplication.AdditionalHeaders.Count > 0) {
-                foreach (KeyValuePair<string, string> kv in LCInternalApplication.AdditionalHeaders) {
+            if (LCCore.AdditionalHeaders.Count > 0) {
+                foreach (KeyValuePair<string, string> kv in LCCore.AdditionalHeaders) {
                     headers.Add(kv.Key, kv.Value);
                 }    
             }
-            // 当前用户 Session Token
-            LCUser currentUser = await LCUser.GetCurrent();
-            if (!headers.Contains("X-LC-Session") && currentUser != null) {
-                headers.Add("X-LC-Session", currentUser.SessionToken);
+            // 服务额外 headers
+            foreach (KeyValuePair<string, Func<Task<string>>> kv in runtimeHeaderTasks) {
+                if (headers.Contains(kv.Key)) {
+                    continue;
+                }
+                string value = await kv.Value.Invoke();
+                if (value == null) {
+                    continue;
+                }
+                headers.Add(kv.Key, value);
             }
         }
 

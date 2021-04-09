@@ -15,13 +15,13 @@ namespace Storage.Test {
         [SetUp]
         public void SetUp() {
             LCApplication.Initialize(Utils.AppId, Utils.AppKey, Utils.AppServer, Utils.MasterKey);
-            LCInternalApplication.UseMasterKey = true;
+            LCApplication.UseMasterKey = true;
             leaderboardName = $"Leaderboard_{DateTimeOffset.Now.DayOfYear}";
         }
 
         [TearDown]
         public void TearDown() {
-            LCInternalApplication.UseMasterKey = false;
+            LCApplication.UseMasterKey = false;
             Utils.TearDown();
         }
 

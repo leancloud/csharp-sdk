@@ -12,83 +12,83 @@
     <ProjectReference Include="..\..\Libs\Google.Protobuf\LC.Google.Protobuf.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Realtime\LCIMClient.cs">
-      <Link>Realtime\LCIMClient.cs</Link>
+    <Compile Include="..\Realtime\Public\LCIMClient.cs">
+      <Link>Realtime\Public\LCIMClient.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\LCRealtime.cs">
-      <Link>Realtime\LCRealtime.cs</Link>
+    <Compile Include="..\Realtime\Public\LCRealtime.cs">
+      <Link>Realtime\Public\LCRealtime.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Result\LCIMOperationFailure.cs">
-      <Link>Realtime\Result\LCIMOperationFailure.cs</Link>
+    <Compile Include="..\Realtime\Public\Result\LCIMOperationFailure.cs">
+      <Link>Realtime\Public\Result\LCIMOperationFailure.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Result\LCIMPageResult.cs">
-      <Link>Realtime\Result\LCIMPageResult.cs</Link>
+    <Compile Include="..\Realtime\Public\Result\LCIMPageResult.cs">
+      <Link>Realtime\Public\Result\LCIMPageResult.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Result\LCIMPartiallySuccessResult.cs">
-      <Link>Realtime\Result\LCIMPartiallySuccessResult.cs</Link>
+    <Compile Include="..\Realtime\Public\Result\LCIMPartiallySuccessResult.cs">
+      <Link>Realtime\Public\Result\LCIMPartiallySuccessResult.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Signature\LCIMSignature.cs">
-      <Link>Realtime\Signature\LCIMSignature.cs</Link>
+    <Compile Include="..\Realtime\Public\Signature\LCIMSignature.cs">
+      <Link>Realtime\Public\Signature\LCIMSignature.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Signature\ILCIMSignatureFactory.cs">
-      <Link>Realtime\Signature\ILCIMSignatureFactory.cs</Link>
+    <Compile Include="..\Realtime\Public\Signature\ILCIMSignatureFactory.cs">
+      <Link>Realtime\Public\Signature\ILCIMSignatureFactory.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Signature\LCIMSignatureAction.cs">
-      <Link>Realtime\Signature\LCIMSignatureAction.cs</Link>
+    <Compile Include="..\Realtime\Public\Signature\LCIMSignatureAction.cs">
+      <Link>Realtime\Public\Signature\LCIMSignatureAction.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMVideoMessage.cs">
-      <Link>Realtime\Message\LCIMVideoMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMVideoMessage.cs">
+      <Link>Realtime\Public\Message\LCIMVideoMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMMessageSendOptions.cs">
-      <Link>Realtime\Message\LCIMMessageSendOptions.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMMessageSendOptions.cs">
+      <Link>Realtime\Public\Message\LCIMMessageSendOptions.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMBinaryMessage.cs">
-      <Link>Realtime\Message\LCIMBinaryMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMBinaryMessage.cs">
+      <Link>Realtime\Public\Message\LCIMBinaryMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMFileMessage.cs">
-      <Link>Realtime\Message\LCIMFileMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMFileMessage.cs">
+      <Link>Realtime\Public\Message\LCIMFileMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMRecalledMessage.cs">
-      <Link>Realtime\Message\LCIMRecalledMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMRecalledMessage.cs">
+      <Link>Realtime\Public\Message\LCIMRecalledMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMMessage.cs">
-      <Link>Realtime\Message\LCIMMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMMessage.cs">
+      <Link>Realtime\Public\Message\LCIMMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMTextMessage.cs">
-      <Link>Realtime\Message\LCIMTextMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMTextMessage.cs">
+      <Link>Realtime\Public\Message\LCIMTextMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMImageMessage.cs">
-      <Link>Realtime\Message\LCIMImageMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMImageMessage.cs">
+      <Link>Realtime\Public\Message\LCIMImageMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMAudioMessage.cs">
-      <Link>Realtime\Message\LCIMAudioMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMAudioMessage.cs">
+      <Link>Realtime\Public\Message\LCIMAudioMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMLocationMessage.cs">
-      <Link>Realtime\Message\LCIMLocationMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMLocationMessage.cs">
+      <Link>Realtime\Public\Message\LCIMLocationMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Message\LCIMTypedMessage.cs">
-      <Link>Realtime\Message\LCIMTypedMessage.cs</Link>
+    <Compile Include="..\Realtime\Public\Message\LCIMTypedMessage.cs">
+      <Link>Realtime\Public\Message\LCIMTypedMessage.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Conversation\LCIMConversation.cs">
-      <Link>Realtime\Conversation\LCIMConversation.cs</Link>
+    <Compile Include="..\Realtime\Public\Conversation\LCIMConversation.cs">
+      <Link>Realtime\Public\Conversation\LCIMConversation.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Conversation\LCIMServiceConversation.cs">
-      <Link>Realtime\Conversation\LCIMServiceConversation.cs</Link>
+    <Compile Include="..\Realtime\Public\Conversation\LCIMServiceConversation.cs">
+      <Link>Realtime\Public\Conversation\LCIMServiceConversation.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Conversation\LCIMConversationMemberInfo.cs">
-      <Link>Realtime\Conversation\LCIMConversationMemberInfo.cs</Link>
+    <Compile Include="..\Realtime\Public\Conversation\LCIMConversationMemberInfo.cs">
+      <Link>Realtime\Public\Conversation\LCIMConversationMemberInfo.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Conversation\LCIMConversationQuery.cs">
-      <Link>Realtime\Conversation\LCIMConversationQuery.cs</Link>
+    <Compile Include="..\Realtime\Public\Conversation\LCIMConversationQuery.cs">
+      <Link>Realtime\Public\Conversation\LCIMConversationQuery.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Conversation\LCIMChatRoom.cs">
-      <Link>Realtime\Conversation\LCIMChatRoom.cs</Link>
+    <Compile Include="..\Realtime\Public\Conversation\LCIMChatRoom.cs">
+      <Link>Realtime\Public\Conversation\LCIMChatRoom.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Conversation\LCIMMessageQueryOptions.cs">
-      <Link>Realtime\Conversation\LCIMMessageQueryOptions.cs</Link>
+    <Compile Include="..\Realtime\Public\Conversation\LCIMMessageQueryOptions.cs">
+      <Link>Realtime\Public\Conversation\LCIMMessageQueryOptions.cs</Link>
     </Compile>
-    <Compile Include="..\Realtime\Conversation\LCIMTemporaryConversation.cs">
-      <Link>Realtime\Conversation\LCIMTemporaryConversation.cs</Link>
+    <Compile Include="..\Realtime\Public\Conversation\LCIMTemporaryConversation.cs">
+      <Link>Realtime\Public\Conversation\LCIMTemporaryConversation.cs</Link>
     </Compile>
     <Compile Include="..\Realtime\Internal\WebSocket\LCWebSocketClient.cs">
       <Link>Realtime\Internal\WebSocket\LCWebSocketClient.cs</Link>
@@ -120,10 +120,5 @@
     <Compile Include="..\Realtime\Internal\Router\LCRTMRouter.cs">
       <Link>Realtime\Internal\Router\LCRTMRouter.cs</Link>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Realtime\Realtime.csproj">
-      <Link>Realtime\Realtime.csproj</Link>
-    </None>
   </ItemGroup>
 </Project>

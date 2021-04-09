@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LeanCloud.Common;
 using LeanCloud.Storage.Internal.File;
 using LeanCloud.Storage.Internal.Object;
 
@@ -92,12 +93,12 @@ namespace LeanCloud.Storage {
                     }
                     LCObjectData objectData = LCObjectData.Decode(uploadToken);
                     Merge(objectData);
-                    _ = LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
+                    _ = LCCore.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
                         { "result", true },
                         { "token", token }
                     });
                 } catch (Exception e) {
-                    _ = LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
+                    _ = LCCore.HttpClient.Post<Dictionary<string, object>>("fileCallback", data: new Dictionary<string, object> {
                         { "result", false },
                         { "token", token }
                     });
@@ -112,7 +113,7 @@ namespace LeanCloud.Storage {
                 return;
             }
             string path = $"files/{ObjectId}";
-            await LCInternalApplication.HttpClient.Delete(path);
+            await LCCore.HttpClient.Delete(path);
         }
 
         public string GetThumbnailUrl(int width, int height, int quality = 100, bool scaleToFit = true, string format = "png") {
@@ -128,7 +129,7 @@ namespace LeanCloud.Storage {
                 { "mime_type", MimeType },
                 { "metaData", MetaData }
             };
-            return await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
+            return await LCCore.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
         }
 
         public static LCQuery<LCFile> GetQuery() {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LC.Newtonsoft.Json;
+using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Object;
 using LeanCloud.Storage.Internal.Operation;
 using LeanCloud.Storage.Internal.Codec;
@@ -304,7 +305,7 @@ namespace LeanCloud.Storage {
                     { "requests", LCEncoder.Encode(requestList) }
                 };
 
-                List<Dictionary<string, object>> results = await LCInternalApplication.HttpClient.Post<List<Dictionary<string, object>>>("batch", data: data);
+                List<Dictionary<string, object>> results = await LCCore.HttpClient.Post<List<Dictionary<string, object>>>("batch", data: data);
                 List<LCObjectData> resultList = results.Select(item => {
                     if (item.TryGetValue("error", out object error)) {
                         Dictionary<string, object> err = error as Dictionary<string, object>;
@@ -342,8 +343,8 @@ namespace LeanCloud.Storage {
                 queryParams["where"] = query.BuildWhere();
             }
             Dictionary<string, object> response = ObjectId == null ?
-                await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams) :
-                await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams);
+                await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams) :
+                await LCCore.HttpClient.Put<Dictionary<string, object>>(path, data: LCEncoder.Encode(operationDict) as Dictionary<string, object>, queryParams: queryParams);
             LCObjectData data = LCObjectData.Decode(response);
             Merge(data);
             return this;
@@ -368,7 +369,7 @@ namespace LeanCloud.Storage {
                 return;
             }
             string path = $"classes/{ClassName}/{ObjectId}";
-            await LCInternalApplication.HttpClient.Delete(path);
+            await LCCore.HttpClient.Delete(path);
         }
 
         public static async Task DeleteAll(IEnumerable<LCObject> objects) {
@@ -377,7 +378,7 @@ namespace LeanCloud.Storage {
             }
             HashSet<LCObject> objectSet = new HashSet<LCObject>(objects.Where(item => item.ObjectId != null));
             List<Dictionary<string, object>> requestList = objectSet.Select(item => {
-                string path = $"/{LCInternalApplication.APIVersion}/classes/{item.ClassName}/{item.ObjectId}";
+                string path = $"/{LCCore.APIVersion}/classes/{item.ClassName}/{item.ObjectId}";
                 return new Dictionary<string, object> {
                     { "path", path },
                     { "method", "DELETE" }
@@ -386,7 +387,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "requests", LCEncoder.Encode(requestList) }
             };
-            await LCInternalApplication.HttpClient.Post<List<object>>("batch", data: data);
+            await LCCore.HttpClient.Post<List<object>>("batch", data: data);
         }
 
         public async Task<LCObject> Fetch(IEnumerable<string> keys = null, IEnumerable<string> includes = null) {
@@ -398,7 +399,7 @@ namespace LeanCloud.Storage {
                 queryParams["include"] = string.Join(",", includes);
             }
             string path = $"classes/{ClassName}/{ObjectId}";
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>(path, queryParams: queryParams);
+            Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>(path, queryParams: queryParams);
             LCObjectData objectData = LCObjectData.Decode(response);
             Merge(objectData);
             return this;
@@ -411,7 +412,7 @@ namespace LeanCloud.Storage {
 
             IEnumerable<LCObject> uniqueObjects = objects.Where(item => item.ObjectId != null);
             List<Dictionary<string, object>> requestList = uniqueObjects.Select(item => {
-                string path = $"/{LCInternalApplication.APIVersion}/classes/{item.ClassName}/{item.ObjectId}";
+                string path = $"/{LCCore.APIVersion}/classes/{item.ClassName}/{item.ObjectId}";
                 return new Dictionary<string, object> {
                     { "path", path },
                     { "method", "GET" }
@@ -421,7 +422,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "requests", LCEncoder.Encode(requestList) }
             };
-            List<Dictionary<string, object>> results = await LCInternalApplication.HttpClient.Post<List<Dictionary<string, object>>>("batch",
+            List<Dictionary<string, object>> results = await LCCore.HttpClient.Post<List<Dictionary<string, object>>>("batch",
                 data: data);
             Dictionary<string, LCObjectData> dict = new Dictionary<string, LCObjectData>();
             foreach (Dictionary<string, object> item in results) {

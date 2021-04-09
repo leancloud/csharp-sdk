@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
+using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Storage.Internal.Object;
 
@@ -30,7 +31,7 @@ namespace LeanCloud.Storage {
                 { PRODUCTION_KEY, IsProduction ? 1 : 0 }
             };
             object encodeParams = LCEncoder.Encode(parameters);
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path,
+            Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>(path,
                 headers: headers,
                 data: encodeParams);
             return response;
@@ -57,7 +58,7 @@ namespace LeanCloud.Storage {
                 { PRODUCTION_KEY, IsProduction ? 1 : 0 }
             };
             object encodeParams = Encode(parameters);
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path,
+            Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>(path,
                 headers: headers,
                 data: encodeParams);
             return LCDecoder.Decode(response["result"]);

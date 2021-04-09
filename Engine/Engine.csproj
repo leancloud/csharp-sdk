@@ -14,6 +14,9 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <Folder Include="Public\" />
+    <Folder Include="Public\Attributes\" />
+    <Folder Include="Internal\" />
+    <Folder Include="Internal\Controllers\" />
   </ItemGroup>
 </Project>

@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Reflection;
-using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
 
 using IOFile = System.IO.File;
 
-namespace LeanCloud.Storage.Internal.Storage {
-    public class StorageController {
-        private readonly IStorage storage;
+namespace LeanCloud.Common {
+    public class PersistenceController {
+        private readonly IPersistence persistence;
 
-        public StorageController(IStorage storage) {
-            this.storage = storage;
+        public PersistenceController(IPersistence persistence) {
+            this.persistence = persistence;
         }
 
         public async Task WriteText(string filename, string text) {
-            if (storage == null) {
+            if (persistence == null) {
                 return;
             }
 
@@ -31,7 +28,7 @@ namespace LeanCloud.Storage.Internal.Storage {
         }
 
         public async Task<string> ReadText(string filename) {
-            if (storage == null) {
+            if (persistence == null) {
                 return null;
             }
 
@@ -51,7 +48,7 @@ namespace LeanCloud.Storage.Internal.Storage {
         }
 
         public Task Delete(string filename) {
-            if (storage == null) {
+            if (persistence == null) {
                 return Task.CompletedTask;
             }
 
@@ -62,10 +59,10 @@ namespace LeanCloud.Storage.Internal.Storage {
         }
 
         private string GetFileFullPath(string filename) {
-            if (storage == null) {
+            if (persistence == null) {
                 throw new Exception("no IStrorage.");
             }
-            return Path.Combine(storage.GetStoragePath(), filename);
+            return Path.Combine(persistence.GetPersistencePath(), filename);
         }
     }
 }

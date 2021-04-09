@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
@@ -68,7 +69,7 @@ namespace LeanCloud.Storage {
                 { "updateStrategy", updateStrategy.ToString().ToLower() },
             };
             string path = "leaderboard/leaderboards";
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path,
+            Dictionary<string, object> result = await LCCore.HttpClient.Post<Dictionary<string, object>>(path,
                 data:data);
             LCLeaderboard leaderboard = new LCLeaderboard();
             leaderboard.Merge(result);
@@ -112,7 +113,7 @@ namespace LeanCloud.Storage {
             if (overwrite) {
                 path = $"{path}?overwrite=1";
             }
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path,
+            Dictionary<string, object> result = await LCCore.HttpClient.Post<Dictionary<string, object>>(path,
                 data: data);
             if (result.TryGetValue("results", out object results) &&
                 results is List<object> list) {
@@ -137,7 +138,7 @@ namespace LeanCloud.Storage {
                 string names = string.Join(",", statisticNames);
                 path = $"{path}?statistics={names}";
             }
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>(path);
+            Dictionary<string, object> result = await LCCore.HttpClient.Get<Dictionary<string, object>>(path);
             if (result.TryGetValue("results", out object results) &&
                 results is List<object> list) {
                 List<LCStatistic> statistics = new List<LCStatistic>();
@@ -161,7 +162,7 @@ namespace LeanCloud.Storage {
             }
             string names = string.Join(",", statisticNames);
             string path = $"leaderboard/users/{user.ObjectId}/statistics?statistics={names}";
-            await LCInternalApplication.HttpClient.Delete(path);
+            await LCCore.HttpClient.Delete(path);
         }
 
         /// <summary>
@@ -179,7 +180,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentOutOfRangeException(nameof(limit));
             }
             string path = $"leaderboard/leaderboards/{StatisticName}/archives?skip={skip}&limit={limit}";
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>(path);
+            Dictionary<string, object> result = await LCCore.HttpClient.Get<Dictionary<string, object>>(path);
             if (result.TryGetValue("results", out object results) &&
                 results is List<object> list) {
                 List<LCLeaderboardArchive> archives = new List<LCLeaderboardArchive>();
@@ -235,7 +236,7 @@ namespace LeanCloud.Storage {
                 string statistics = string.Join(",", includeStatistics);
                 path = $"{path}&includeStatistics={statistics}";
             }
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>(path);
+            Dictionary<string, object> result = await LCCore.HttpClient.Get<Dictionary<string, object>>(path);
             if (result.TryGetValue("results", out object results) &&
                 results is List<object> list) {
                 List<LCRanking> rankings = new List<LCRanking>();
@@ -254,7 +255,7 @@ namespace LeanCloud.Storage {
                 { "updateStrategy", updateStrategy.ToString().ToLower() }
             };
             string path = $"leaderboard/leaderboards/{StatisticName}";
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>(path,
+            Dictionary<string, object> result = await LCCore.HttpClient.Put<Dictionary<string, object>>(path,
                 data: data);
             if (result.TryGetValue("updateStrategy", out object strategy) &&
                 Enum.TryParse(strategy as string, true, out LCLeaderboardUpdateStrategy s)) {
@@ -269,7 +270,7 @@ namespace LeanCloud.Storage {
                 { "versionChangeInterval", versionChangeInterval.ToString().ToLower() }
             };
             string path = $"leaderboard/leaderboards/{StatisticName}";
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>(path,
+            Dictionary<string, object> result = await LCCore.HttpClient.Put<Dictionary<string, object>>(path,
                 data: data);
             if (result.TryGetValue("versionChangeInterval", out object interval) &&
                 Enum.TryParse(interval as string, true, out LCLeaderboardVersionChangeInterval i)) {
@@ -284,7 +285,7 @@ namespace LeanCloud.Storage {
         /// <returns></returns>
         public async Task<LCLeaderboard> Fetch() {
             string path = $"leaderboard/leaderboards/{StatisticName}";
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>(path);
+            Dictionary<string, object> result = await LCCore.HttpClient.Get<Dictionary<string, object>>(path);
             Merge(result);
             return this;
         }
@@ -295,7 +296,7 @@ namespace LeanCloud.Storage {
         /// <returns></returns>
         public async Task<LCLeaderboard> Reset() {
             string path = $"leaderboard/leaderboards/{StatisticName}/incrementVersion";
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>(path);
+            Dictionary<string, object> result = await LCCore.HttpClient.Put<Dictionary<string, object>>(path);
             Merge(result);
             return this;
         }
@@ -306,7 +307,7 @@ namespace LeanCloud.Storage {
         /// <returns></returns>
         public async Task Destroy() {
             string path = $"leaderboard/leaderboards/{StatisticName}";
-            await LCInternalApplication.HttpClient.Delete(path);
+            await LCCore.HttpClient.Delete(path);
         }
 
         private void Merge(Dictionary<string, object> data) {

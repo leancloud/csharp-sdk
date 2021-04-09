@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using LeanCloud.Common;
-using LeanCloud.Storage;
-using LeanCloud.Storage.Internal.Http;
-using LeanCloud.Storage.Internal.Storage;
 
-namespace LeanCloud {
+namespace LeanCloud.Common {
     /// <summary>
     /// LeanCloud Application
     /// </summary>
-    public class LCInternalApplication {
+    public class LCCore {
         // SDK 版本号，用于 User-Agent 统计
         public const string SDKVersion = "0.7.3";
 
         // 接口版本号，用于接口版本管理
-        internal const string APIVersion = "1.1";
+        public const string APIVersion = "1.1";
 
         public static string AppId {
             get; private set;
@@ -44,7 +40,7 @@ namespace LeanCloud {
             get; set;
         }
 
-        public static StorageController StorageController {
+        public static PersistenceController PersistenceController {
             get; set;
         }
 
@@ -66,13 +62,6 @@ namespace LeanCloud {
             AppId = appId;
             AppKey = appKey;
             MasterKey = masterKey;
-
-            // 注册 LeanCloud 内部子类化类型
-            LCObject.RegisterSubclass(LCUser.CLASS_NAME, () => new LCUser());
-            LCObject.RegisterSubclass(LCRole.CLASS_NAME, () => new LCRole());
-            LCObject.RegisterSubclass(LCFile.CLASS_NAME, () => new LCFile());
-            LCObject.RegisterSubclass(LCStatus.CLASS_NAME, () => new LCStatus());
-            LCObject.RegisterSubclass(LCFriendshipRequest.CLASS_NAME, () => new LCFriendshipRequest());
 
             AppRouter = new LCAppRouter(appId, server);
 

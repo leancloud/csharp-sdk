@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LeanCloud.Common;
 using LeanCloud.Realtime.Internal.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Controller {
@@ -83,7 +84,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 signature = await Client.SignatureFactory.CreateConnectSignature(Client.Id);
             }
             if (signature == null && !string.IsNullOrEmpty(Client.SessionToken)) {
-                Dictionary<string, object> ret = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("rtm/sign", data: new Dictionary<string, object> {
+                Dictionary<string, object> ret = await LCCore.HttpClient.Post<Dictionary<string, object>>("rtm/sign", data: new Dictionary<string, object> {
                     { "session_token", Client.SessionToken }
                 });
                 signature = new LCIMSignature {

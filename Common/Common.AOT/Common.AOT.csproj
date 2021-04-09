@@ -11,11 +11,9 @@
     <ProjectReference Include="..\..\Libs\Newtonsoft.Json.AOT\LC.Newtonsoft.Json.AOT.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Common\Common.csproj">
-      <Link>Common\Common.csproj</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="..\Common\LCCore.cs">
+      <Link>Common\LCCore.cs</Link>
+    </Compile>
     <Compile Include="..\Common\AppRouter\LCAppServer.cs">
       <Link>Common\AppRouter\LCAppServer.cs</Link>
     </Compile>
@@ -31,8 +29,14 @@
     <Compile Include="..\Common\Http\LCHttpUtils.cs">
       <Link>Common\Http\LCHttpUtils.cs</Link>
     </Compile>
-    <Compile Include="..\Common\Task\LCTaskExtensions.cs">
-      <Link>Common\Task\LCTaskExtensions.cs</Link>
+    <Compile Include="..\Common\Http\LCHttpClient.cs">
+      <Link>Common\Http\LCHttpClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Persistence\PersistenceController.cs">
+      <Link>Common\Persistence\PersistenceController.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Persistence\IPersistence.cs">
+      <Link>Common\Persistence\IPersistence.cs</Link>
     </Compile>
     <Compile Include="..\Common\Log\LCLogger.cs">
       <Link>Common\Log\LCLogger.cs</Link>

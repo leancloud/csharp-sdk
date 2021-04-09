@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LeanCloud.Common;
 
 namespace LeanCloud.Storage {
     /// <summary>
@@ -43,7 +44,7 @@ namespace LeanCloud.Storage {
                     data[kv.Key] = kv.Value;
                 }
             }
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace LeanCloud.Storage {
                 { "mobilePhoneNumber", mobile },
                 { "smsType", "voice" }
             };
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         public static async Task VerifyMobilePhone(string mobile, string code) {
@@ -65,7 +66,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "mobilePhoneNumber", mobile }
             };
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
     }
 }

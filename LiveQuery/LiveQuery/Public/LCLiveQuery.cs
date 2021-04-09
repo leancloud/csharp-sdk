@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using LeanCloud.Common;
 using LeanCloud.Storage;
 using LeanCloud.Storage.Internal.Object;
 using LeanCloud.LiveQuery.Internal;
@@ -80,7 +81,7 @@ namespace LeanCloud.LiveQuery {
                 data.Add("sessionToken", user.SessionToken);
             }
             string path = "LiveQuery/subscribe";
-            Dictionary<string, object> result = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path,
+            Dictionary<string, object> result = await LCCore.HttpClient.Post<Dictionary<string, object>>(path,
                 data: data);
             if (result.TryGetValue("query_id", out object id)) {
                 Id = id as string;
@@ -95,7 +96,7 @@ namespace LeanCloud.LiveQuery {
                 { "query_id", Id }
             };
             string path = "LiveQuery/unsubscribe";
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path,
+            await LCCore.HttpClient.Post<Dictionary<string, object>>(path,
                 data: data);
             // 移除
             liveQueries.Remove(Id);
@@ -104,7 +105,7 @@ namespace LeanCloud.LiveQuery {
         private static async Task Login() {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "cmd", "login" },
-                { "appId", LCInternalApplication.AppId },
+                { "appId", LCCore.AppId },
                 { "installationId", DeviceId },
                 { "clientTs", DateTimeOffset.Now.ToUnixTimeMilliseconds() },
                 { "service", 1 }

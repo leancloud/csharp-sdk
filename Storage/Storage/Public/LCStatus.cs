@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Storage.Internal.Object;
 using LC.Newtonsoft.Json;
@@ -109,7 +110,7 @@ namespace LeanCloud.Storage {
                 }
                 formData["query"] = queryData;
             }
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("statuses",
+            Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>("statuses",
                 data: formData);
             LCObjectData objectData = LCObjectData.Decode(response);
             Merge(objectData);
@@ -125,14 +126,14 @@ namespace LeanCloud.Storage {
 
             LCUser source = (Data[SourceKey] ?? this[SourceKey]) as LCUser;
             if (source != null && source.ObjectId == user.ObjectId) {
-                await LCInternalApplication.HttpClient.Delete($"statuses/{ObjectId}");
+                await LCCore.HttpClient.Delete($"statuses/{ObjectId}");
             } else {
                 Dictionary<string, object> data = new Dictionary<string, object> {
                     { OwnerKey, JsonConvert.SerializeObject(LCEncoder.Encode(user)) },
                     { InboxTypeKey, InboxType },
                     { MessageIdKey, MessageId }
                 };
-                await LCInternalApplication.HttpClient.Delete("subscribe/statuses/inbox", queryParams: data);
+                await LCCore.HttpClient.Delete("subscribe/statuses/inbox", queryParams: data);
             }
         }
 
@@ -148,7 +149,7 @@ namespace LeanCloud.Storage {
             if (!string.IsNullOrEmpty(inboxType)) {
                 queryParams[InboxTypeKey] = inboxType;
             }
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>("subscribe/statuses/count",
+            Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>("subscribe/statuses/count",
                 queryParams: queryParams);
             LCStatusCount statusCount = new LCStatusCount {
                 Total = (int)response["total"],
@@ -169,7 +170,7 @@ namespace LeanCloud.Storage {
             if (!string.IsNullOrEmpty(inboxType)) {
                 queryParams[InboxTypeKey] = inboxType;
             }
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>("subscribe/statuses/resetUnreadCount",
+            await LCCore.HttpClient.Post<Dictionary<string, object>>("subscribe/statuses/resetUnreadCount",
                 queryParams:queryParams);
         }
     }

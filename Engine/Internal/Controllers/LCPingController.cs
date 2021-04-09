@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
+using LeanCloud.Common;
 
 namespace LeanCloud.Engine {
     [ApiController]
@@ -14,7 +15,7 @@ namespace LeanCloud.Engine {
 
             return new Dictionary<string, string> {
                 { "runtime", $"dotnet-{Environment.Version}" },
-                { "version", LCInternalApplication.SDKVersion }
+                { "version", LCCore.SDKVersion }
             };
         }
     }

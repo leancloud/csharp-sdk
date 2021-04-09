@@ -48,8 +48,12 @@ namespace Storage.Test {
             Assert.NotNull(result.ObjectId);
 
             await LCUser.Logout();
-            result = await query.Get(account.ObjectId);
-            Assert.IsNull(result);
+
+            try {
+                await query.Get(account.ObjectId);
+            } catch (LCException e) {
+                Assert.AreEqual(e.Code, 403);
+            }
         }
 
         [Test]

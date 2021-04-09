@@ -11,77 +11,77 @@
     <ProjectReference Include="..\..\Common\Common.AOT\Common.AOT.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Storage\LCCloud.cs">
-      <Link>Storage\LCCloud.cs</Link>
+    <Compile Include="..\Storage\Public\LCCloud.cs">
+      <Link>Storage\Public\LCCloud.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCQuery.cs">
-      <Link>Storage\LCQuery.cs</Link>
+    <Compile Include="..\Storage\Public\LCQuery.cs">
+      <Link>Storage\Public\LCQuery.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCFile.cs">
-      <Link>Storage\LCFile.cs</Link>
+    <Compile Include="..\Storage\Public\LCFile.cs">
+      <Link>Storage\Public\LCFile.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCACL.cs">
-      <Link>Storage\LCACL.cs</Link>
+    <Compile Include="..\Storage\Public\LCACL.cs">
+      <Link>Storage\Public\LCACL.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCCaptchaClient.cs">
-      <Link>Storage\LCCaptchaClient.cs</Link>
+    <Compile Include="..\Storage\Public\LCCaptchaClient.cs">
+      <Link>Storage\Public\LCCaptchaClient.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCStatusQuery.cs">
-      <Link>Storage\LCStatusQuery.cs</Link>
+    <Compile Include="..\Storage\Public\LCStatusQuery.cs">
+      <Link>Storage\Public\LCStatusQuery.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCHookObject.cs">
-      <Link>Storage\LCHookObject.cs</Link>
+    <Compile Include="..\Storage\Public\LCHookObject.cs">
+      <Link>Storage\Public\LCHookObject.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCFriendshipRequest.cs">
-      <Link>Storage\LCFriendshipRequest.cs</Link>
+    <Compile Include="..\Storage\Public\LCFriendshipRequest.cs">
+      <Link>Storage\Public\LCFriendshipRequest.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCFriendship.cs">
-      <Link>Storage\LCFriendship.cs</Link>
+    <Compile Include="..\Storage\Public\LCFriendship.cs">
+      <Link>Storage\Public\LCFriendship.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCStatus.cs">
-      <Link>Storage\LCStatus.cs</Link>
+    <Compile Include="..\Storage\Public\LCStatus.cs">
+      <Link>Storage\Public\LCStatus.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCInternalApplication.cs">
-      <Link>Storage\LCInternalApplication.cs</Link>
+    <Compile Include="..\Storage\Public\LCUser.cs">
+      <Link>Storage\Public\LCUser.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCUser.cs">
-      <Link>Storage\LCUser.cs</Link>
+    <Compile Include="..\Storage\Public\LCObject.cs">
+      <Link>Storage\Public\LCObject.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCObject.cs">
-      <Link>Storage\LCObject.cs</Link>
+    <Compile Include="..\Storage\Public\LCSMSClient.cs">
+      <Link>Storage\Public\LCSMSClient.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCSMSClient.cs">
-      <Link>Storage\LCSMSClient.cs</Link>
+    <Compile Include="..\Storage\Public\LCRelation.cs">
+      <Link>Storage\Public\LCRelation.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCRelation.cs">
-      <Link>Storage\LCRelation.cs</Link>
+    <Compile Include="..\Storage\Public\LCGeoPoint.cs">
+      <Link>Storage\Public\LCGeoPoint.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCGeoPoint.cs">
-      <Link>Storage\LCGeoPoint.cs</Link>
+    <Compile Include="..\Storage\Public\LCStorage.cs">
+      <Link>Storage\Public\LCStorage.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCUserAuthDataLoginOption.cs">
-      <Link>Storage\LCUserAuthDataLoginOption.cs</Link>
+    <Compile Include="..\Storage\Public\LCUserAuthDataLoginOption.cs">
+      <Link>Storage\Public\LCUserAuthDataLoginOption.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCRole.cs">
-      <Link>Storage\LCRole.cs</Link>
+    <Compile Include="..\Storage\Public\LCRole.cs">
+      <Link>Storage\Public\LCRole.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCFollowersAndFollowees.cs">
-      <Link>Storage\LCFollowersAndFollowees.cs</Link>
+    <Compile Include="..\Storage\Public\LCFollowersAndFollowees.cs">
+      <Link>Storage\Public\LCFollowersAndFollowees.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\LCStatusCount.cs">
-      <Link>Storage\LCStatusCount.cs</Link>
+    <Compile Include="..\Storage\Public\LCStatusCount.cs">
+      <Link>Storage\Public\LCStatusCount.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\Leaderboard\LCLeaderboardArchive.cs">
-      <Link>Storage\Leaderboard\LCLeaderboardArchive.cs</Link>
+    <Compile Include="..\Storage\Public\Leaderboard\LCLeaderboardArchive.cs">
+      <Link>Storage\Public\Leaderboard\LCLeaderboardArchive.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\Leaderboard\LCStatistic.cs">
-      <Link>Storage\Leaderboard\LCStatistic.cs</Link>
+    <Compile Include="..\Storage\Public\Leaderboard\LCStatistic.cs">
+      <Link>Storage\Public\Leaderboard\LCStatistic.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\Leaderboard\LCLeaderboard.cs">
-      <Link>Storage\Leaderboard\LCLeaderboard.cs</Link>
+    <Compile Include="..\Storage\Public\Leaderboard\LCLeaderboard.cs">
+      <Link>Storage\Public\Leaderboard\LCLeaderboard.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\Leaderboard\LCRanking.cs">
-      <Link>Storage\Leaderboard\LCRanking.cs</Link>
+    <Compile Include="..\Storage\Public\Leaderboard\LCRanking.cs">
+      <Link>Storage\Public\Leaderboard\LCRanking.cs</Link>
     </Compile>
     <Compile Include="..\Storage\Internal\Operation\LCNumberOperation.cs">
       <Link>Storage\Internal\Operation\LCNumberOperation.cs</Link>
@@ -140,9 +140,6 @@
     <Compile Include="..\Storage\Internal\Object\LCObjectData.cs">
       <Link>Storage\Internal\Object\LCObjectData.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\Internal\Http\LCHttpClient.cs">
-      <Link>Storage\Internal\Http\LCHttpClient.cs</Link>
-    </Compile>
     <Compile Include="..\Storage\Internal\Query\LCEqualCondition.cs">
       <Link>Storage\Internal\Query\LCEqualCondition.cs</Link>
     </Compile>
@@ -158,16 +155,5 @@
     <Compile Include="..\Storage\Internal\Query\LCCompositionalCondition.cs">
       <Link>Storage\Internal\Query\LCCompositionalCondition.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\Internal\Storage\StorageController.cs">
-      <Link>Storage\Internal\Storage\StorageController.cs</Link>
-    </Compile>
-    <Compile Include="..\Storage\Internal\Storage\IStorage.cs">
-      <Link>Storage\Internal\Storage\IStorage.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Storage\Storage.csproj">
-      <Link>Storage\Storage.csproj</Link>
-    </None>
   </ItemGroup>
 </Project>

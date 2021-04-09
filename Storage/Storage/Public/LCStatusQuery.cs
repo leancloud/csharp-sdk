@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using LC.Newtonsoft.Json;
+using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Storage.Internal.Object;
 
@@ -41,7 +42,7 @@ namespace LeanCloud.Storage {
                 { "maxId", MaxId },
                 { "limit", Condition.Limit }
             };
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>("subscribe/statuses",
+            Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>("subscribe/statuses",
                 queryParams: queryParams);
             List<object> results = response["results"] as List<object>;
             List<LCStatus> statuses = new List<LCStatus>();

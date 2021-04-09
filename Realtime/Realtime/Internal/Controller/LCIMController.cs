@@ -1,4 +1,5 @@
-﻿using LeanCloud.Realtime.Internal.Protocol;
+﻿using LeanCloud.Common;
+using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime.Internal.Controller {
@@ -15,7 +16,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
 
         protected LCConnection Connection {
             get {
-                return LCRealtime.GetConnection(LCInternalApplication.AppId);
+                return LCRealtime.GetConnection(LCCore.AppId);
             }
         }
 
@@ -28,7 +29,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
         protected GenericCommand NewCommand(CommandType cmd) {
             return new GenericCommand {
                 Cmd = cmd,
-                AppId = LCInternalApplication.AppId,
+                AppId = LCCore.AppId,
                 PeerId = Client.Id,
             };
         }

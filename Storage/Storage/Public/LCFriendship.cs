@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
@@ -19,7 +20,7 @@ namespace LeanCloud.Storage {
             if (attributes != null) {
                 data["friendship"] = attributes;
             }
-            await LCInternalApplication.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
         public static async Task AcceptRequest(LCFriendshipRequest request, Dictionary<string, object> attributes = null) {
@@ -33,7 +34,7 @@ namespace LeanCloud.Storage {
                     { "friendship", attributes }
                 };
             }
-            await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>(path, data: data);
+            await LCCore.HttpClient.Put<Dictionary<string, object>>(path, data: data);
         }
 
         public static async Task DeclineRequest(LCFriendshipRequest request) {
@@ -41,7 +42,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(request));
             }
             string path = $"users/friendshipRequests/{request.ObjectId}/decline";
-            await LCInternalApplication.HttpClient.Put<Dictionary<string, object>>(path);
+            await LCCore.HttpClient.Put<Dictionary<string, object>>(path);
         }
     }
 }

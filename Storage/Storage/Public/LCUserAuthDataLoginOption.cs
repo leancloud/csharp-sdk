@@ -1,7 +1,7 @@
-﻿/// <summary>
-/// LCUser UnionID login parameters.
-/// </summary>
-namespace LeanCloud.Storage {
+﻿namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCUser UnionID login parameters.
+    /// </summary>
     public class LCUserAuthDataLoginOption {
         /// <summary>
         /// The platform of the UnionID.
