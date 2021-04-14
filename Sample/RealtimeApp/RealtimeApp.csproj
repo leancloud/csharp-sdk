@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Realtime\Realtime.Standard\Realtime.Standard.csproj" />
+    <ProjectReference Include="..\..\Realtime\Realtime\Realtime.csproj" />
+    <ProjectReference Include="..\..\Storage\Storage.Standard\Storage.Standard.csproj" />
   </ItemGroup>
 </Project>
