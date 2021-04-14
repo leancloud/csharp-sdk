@@ -1,31 +1,48 @@
 #!/bin/sh
 
+prefix=LeanCloud-SDK
+
+storage=Storage
+realtime=Realtime
+livequery=LiveQuery
+
+standard=Standard
+aot=AOT
+unity=Unity
+
+releasePath=bin/Release/netstandard2.0
+
+standardReleasePath=./$storage/$storage.$standard/$releasePath
+unityReleasePath=./$storage/$storage.$unity/$releasePath
+
+echo $standardReleasePath/$storage.$standard.dll
+
 pack() {
     local path=$1;
     local dir=$2;
     local output=$3;
-    local copyLink=$4;
+    local platform=$4;
     mkdir $dir
     rsync -avz $path $dir
-    if [ $copyLink == true ] ; then
+    if [[ $platform == standard ]] ; then
+        cp $standardReleasePath/$storage.$standard.dll $dir
+        cp $standardReleasePath/$storage.$standard.pdb $dir
+    elif [[ $platform == unity ]] ; then
+        cp $unityReleasePath/$storage.$unity.dll $dir
+        cp $unityReleasePath/$storage.$unity.pdb $dir
         cp ./Unity/link.xml $dir
-        rm $dir/UnityEngine.dll
     fi
     zip -r $output $dir
     rm -r $dir
 }
 
 # Storage
-pack ./Storage/Storage.Standard/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-Storage-Standard.zip
-pack ./Storage/Storage.Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-Storage-Unity.zip true
+pack ./$storage/$storage/$releasePath/ ./DLLs $prefix-$storage-$standard.zip standard
+pack ./$storage/$storage.$aot/$releasePath/ ./Plugins $prefix-$storage-$unity.zip unity
 
 # Realtime
-pack ./Realtime/Realtime.Standard/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-Realtime-Standard.zip
-pack ./Realtime/Realtime.Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-Realtime-Unity.zip true
-
-# LiveQuery
-pack ./LiveQuery/LiveQuery.Standard/bin/Release/netstandard2.0/ ./DLLs LeanCloud-SDK-LiveQuery-Standard.zip
-pack ./LiveQuery/LiveQuery.Unity/bin/Release/netstandard2.0/ ./Plugins LeanCloud-SDK-LiveQuery-Unity.zip true
+pack ./$livequery/$livequery/$releasePath/ ./DLLs $prefix-$realtime-$standard.zip standard
+pack ./$livequery/$livequery.$aot/$releasePath/ ./Plugins $prefix-$realtime-$unity.zip unity
 
 # Engine
 pack ./Engine/bin/Release/netcoreapp3.1/ ./DLLs LeanCloud-SDK-Engine-Standard.zip

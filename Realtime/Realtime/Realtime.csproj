@@ -10,14 +10,15 @@
   <ItemGroup>
     <Folder Include="Internal\" />
     <Folder Include="Internal\Router\" />
-    <Folder Include="Conversation\" />
-    <Folder Include="Message\" />
     <Folder Include="Internal\WebSocket\" />
-    <Folder Include="Signature\" />
     <Folder Include="Internal\Controller\" />
     <Folder Include="Internal\Connection\" />
     <Folder Include="Internal\Protocol\" />
-    <Folder Include="Result\" />
+    <Folder Include="Public\" />
+    <Folder Include="Public\Conversation\" />
+    <Folder Include="Public\Message\" />
+    <Folder Include="Public\Result\" />
+    <Folder Include="Public\Signature\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common\Common.csproj" />

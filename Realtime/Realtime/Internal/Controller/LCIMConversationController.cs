@@ -284,7 +284,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 { "client_id", Client.Id },
                 { "cid", convId }
             };
-            Dictionary<string, object> response = await LCInternalApplication.HttpClient.Get<Dictionary<string, object>>(path,
+            Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>(path,
                 headers: headers, queryParams: queryParams);
             List<object> results = response["results"] as List<object>;
             return results.Select(item => {
@@ -341,7 +341,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             GenericCommand command = new GenericCommand {
                 Cmd = CommandType.Conv,
                 Op = OpType.Query,
-                AppId = LCInternalApplication.AppId,
+                AppId = LCCore.AppId,
                 PeerId = Client.Id,
             };
             ConvCommand convMessage = new ConvCommand();

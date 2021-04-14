@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using LeanCloud.Common;
 using LeanCloud.Realtime.Internal.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Connection {
@@ -56,7 +57,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
             // 发送 ping 包
             GenericCommand command = new GenericCommand {
                 Cmd = CommandType.Echo,
-                AppId = LCInternalApplication.AppId,
+                AppId = LCCore.AppId,
                 PeerId = connection.id
             };
             try {

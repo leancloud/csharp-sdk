@@ -11,22 +11,17 @@
     <ProjectReference Include="..\..\Realtime\Realtime.AOT\Realtime.AOT.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\LiveQuery\LiveQuery.csproj">
-      <Link>LiveQuery\LiveQuery.csproj</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\LiveQuery\LCLiveQuery.cs">
-      <Link>LiveQuery\LCLiveQuery.cs</Link>
-    </Compile>
-    <Compile Include="..\LiveQuery\LCQueryExtension.cs">
-      <Link>LiveQuery\LCQueryExtension.cs</Link>
-    </Compile>
     <Compile Include="..\LiveQuery\Internal\LCLiveQueryHeartBeat.cs">
       <Link>LiveQuery\Internal\LCLiveQueryHeartBeat.cs</Link>
     </Compile>
     <Compile Include="..\LiveQuery\Internal\LCLiveQueryConnection.cs">
       <Link>LiveQuery\Internal\LCLiveQueryConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\LiveQuery\Public\LCLiveQuery.cs">
+      <Link>LiveQuery\Public\LCLiveQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\LiveQuery\Public\LCQueryExtension.cs">
+      <Link>LiveQuery\Public\LCQueryExtension.cs</Link>
     </Compile>
   </ItemGroup>
 </Project>

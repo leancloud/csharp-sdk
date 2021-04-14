@@ -9,8 +9,8 @@
   <ItemGroup>
     <Folder Include="Log\" />
     <Folder Include="Http\" />
-    <Folder Include="Task\" />
     <Folder Include="Exception\" />
+    <Folder Include="Persistence\" />
   </ItemGroup>
 
   <ItemGroup>

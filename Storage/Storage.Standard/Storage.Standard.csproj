@@ -11,4 +11,7 @@
     <ProjectReference Include="..\Storage\Storage.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Public\" />
+  </ItemGroup>
 </Project>

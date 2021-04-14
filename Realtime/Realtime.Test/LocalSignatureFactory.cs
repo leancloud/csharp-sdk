@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using LeanCloud.Realtime;
-using LeanCloud;
+using LeanCloud.Common;
 
 namespace Realtime.Test {
     public class LocalSignatureFactory : ILCIMSignatureFactory {
@@ -14,7 +14,7 @@ namespace Realtime.Test {
         public Task<LCIMSignature> CreateConnectSignature(string clientId) {
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string nonce = NewNonce();
-            string signature = GenerateSignature(LCInternalApplication.AppId, clientId, string.Empty, timestamp.ToString(), nonce);
+            string signature = GenerateSignature(LCCore.AppId, clientId, string.Empty, timestamp.ToString(), nonce);
             return Task.FromResult(new LCIMSignature {
                 Signature = signature,
                 Timestamp = timestamp,
@@ -31,7 +31,7 @@ namespace Realtime.Test {
             }
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string nonce = NewNonce();
-            string signature = GenerateSignature(LCInternalApplication.AppId, clientId, sortedMemberIds, timestamp.ToString(), nonce);
+            string signature = GenerateSignature(LCCore.AppId, clientId, sortedMemberIds, timestamp.ToString(), nonce);
             return Task.FromResult(new LCIMSignature {
                 Signature = signature,
                 Timestamp = timestamp,
@@ -48,7 +48,7 @@ namespace Realtime.Test {
             }
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string nonce = NewNonce();
-            string signature = GenerateSignature(LCInternalApplication.AppId, clientId, conversationId, sortedMemberIds, timestamp.ToString(), nonce, action);
+            string signature = GenerateSignature(LCCore.AppId, clientId, conversationId, sortedMemberIds, timestamp.ToString(), nonce, action);
             return Task.FromResult(new LCIMSignature {
                 Signature = signature,
                 Timestamp = timestamp,
@@ -65,7 +65,7 @@ namespace Realtime.Test {
             }
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
             string nonce = NewNonce();
-            string signature = GenerateSignature(LCInternalApplication.AppId, clientId, conversationId, sortedMemberIds, timestamp.ToString(), nonce, action);
+            string signature = GenerateSignature(LCCore.AppId, clientId, conversationId, sortedMemberIds, timestamp.ToString(), nonce, action);
             return Task.FromResult(new LCIMSignature {
                 Signature = signature,
                 Timestamp = timestamp,

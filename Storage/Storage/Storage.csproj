@@ -11,12 +11,11 @@
     <Folder Include="Internal\" />
     <Folder Include="Internal\Codec\" />
     <Folder Include="Internal\File\" />
-    <Folder Include="Internal\Http\" />
     <Folder Include="Internal\Object\" />
     <Folder Include="Internal\Operation\" />
     <Folder Include="Internal\Query\" />
-    <Folder Include="Leaderboard\" />
-    <Folder Include="Internal\Storage\" />
+    <Folder Include="Public\" />
+    <Folder Include="Public\Leaderboard\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common\Common.csproj">
