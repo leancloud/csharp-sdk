@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ReleaseVersion>0.7.3</ReleaseVersion>
+    <ReleaseVersion>0.7.4</ReleaseVersion>
     <AssemblyName>LiveQuery</AssemblyName>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
