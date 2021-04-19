@@ -5,7 +5,9 @@
     public class LCRole : LCObject {
         public const string CLASS_NAME = "_Role";
 
-
+        /// <summary>
+        /// The name of LCRole.
+        /// </summary>
         public string Name {
             get {
                 return this["name"] as string;
@@ -40,9 +42,18 @@
             }
         }
 
+        /// <summary>
+        /// Constructs a LCRole.
+        /// </summary>
         public LCRole() : base(CLASS_NAME) {
         }
 
+        /// <summary>
+        /// Constructs a LCRole with a name and a LCACL.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="acl"></param>
+        /// <returns></returns>
         public static LCRole Create(string name, LCACL acl) {
             LCRole role = new LCRole() {
                 Name = name,

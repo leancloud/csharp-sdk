@@ -1,5 +1,4 @@
-﻿using System;
-using LeanCloud.Common;
+﻿using LeanCloud.Common;
 
 namespace LeanCloud.Storage {
     public class LCStorage {

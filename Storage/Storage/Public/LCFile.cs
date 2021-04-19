@@ -7,9 +7,15 @@ using LeanCloud.Storage.Internal.File;
 using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCFile is a local representation of a file that is saved to LeanCloud.
+    /// </summary>
     public class LCFile : LCObject {
         public const string CLASS_NAME = "_File";
 
+        /// <summary>
+        /// Gets the name of the file.
+        /// </summary>
         public string Name {
             get {
                 return this["name"] as string;
@@ -18,6 +24,9 @@ namespace LeanCloud.Storage {
             }
         }
 
+        /// <summary>
+        /// Gets the MIME type of the file.
+        /// </summary>
         public string MimeType {
             get {
                 return this["mime_type"] as string;
@@ -26,6 +35,9 @@ namespace LeanCloud.Storage {
             }
         }
 
+        /// <summary>
+        /// Gets the url of the file.
+        /// </summary>
         public string Url {
             get {
                 return this["url"] as string;
@@ -34,6 +46,9 @@ namespace LeanCloud.Storage {
             }
         }
 
+        /// <summary>
+        /// Gets the metadata of the file.
+        /// </summary>
         public Dictionary<string, object> MetaData {
             get {
                 return this["metaData"] as Dictionary<string, object>;
@@ -44,30 +59,58 @@ namespace LeanCloud.Storage {
 
         readonly Stream stream;
 
+        /// <summary>
+        /// Creates a new file.
+        /// </summary>
         public LCFile() : base(CLASS_NAME) {
             MetaData = new Dictionary<string, object>();
         }
 
+        /// <summary>
+        /// Creates a new file from a byte array and a name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="bytes"></param>
         public LCFile(string name, byte[] bytes) : this() {
             Name = name;
             stream = new MemoryStream(bytes);
         }
 
+        /// <summary>
+        /// Creates a new file from a local file and a name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="path"></param>
         public LCFile(string name, string path) : this() {
             Name = name;
             MimeType = LCMimeTypeMap.GetMimeType(path);
             stream = new FileStream(path, FileMode.Open);
         }
 
+        /// <summary>
+        /// Creates a new file from an url and a name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="url"></param>
         public LCFile(string name, Uri url) : this() {
             Name = name;
             Url = url.AbsoluteUri;
         }
 
+        /// <summary>
+        /// Add metadata.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void AddMetaData(string key, object value) {
             MetaData[key] = value;
         }
 
+        /// <summary>
+        /// Saves the file to LeanCloud.
+        /// </summary>
+        /// <param name="onProgress"></param>
+        /// <returns></returns>
         public async Task<LCFile> Save(Action<long, long> onProgress = null) {
             if (!string.IsNullOrEmpty(Url)) {
                 // 外链方式
@@ -108,6 +151,10 @@ namespace LeanCloud.Storage {
             return this;
         }
 
+        /// <summary>
+        /// Deletes the file from LeanCloud.
+        /// </summary>
+        /// <returns></returns>
         public new async Task Delete() {
             if (string.IsNullOrEmpty(ObjectId)) {
                 return;
@@ -116,6 +163,15 @@ namespace LeanCloud.Storage {
             await LCCore.HttpClient.Delete(path);
         }
 
+        /// <summary>
+        /// Gets the thumbnail url of image file.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="quality"></param>
+        /// <param name="scaleToFit"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
         public string GetThumbnailUrl(int width, int height, int quality = 100, bool scaleToFit = true, string format = "png") {
             int mode = scaleToFit ? 2 : 1;
             return $"{Url}?imageView/{mode}/w/{width}/h/{height}/q/{quality}/format/{format}";
@@ -132,6 +188,10 @@ namespace LeanCloud.Storage {
             return await LCCore.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
         }
 
+        /// <summary>
+        /// Gets LCQuery of LCFile.
+        /// </summary>
+        /// <returns></returns>
         public static LCQuery<LCFile> GetQuery() {
             return new LCQuery<LCFile>(CLASS_NAME);
         }

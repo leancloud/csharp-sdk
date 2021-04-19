@@ -5,7 +5,16 @@ using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCFriendship contains static functions that handle the friendship of LeanCloud.
+    /// </summary>
     public static class LCFriendship {
+        /// <summary>
+        /// Requests to add friend.
+        /// </summary>
+        /// <param name="userId">The user id to add.</param>
+        /// <param name="attributes">The additional attributes for the friendship.</param>
+        /// <returns></returns>
         public static async Task Request(string userId, Dictionary<string, object> attributes = null) {
             LCUser user = await LCUser.GetCurrent();
             if (user == null) {
@@ -23,6 +32,12 @@ namespace LeanCloud.Storage {
             await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
+        /// <summary>
+        /// Accepts the request of add friend.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="attributes">The additional attributes for the friendship.</param>
+        /// <returns></returns>
         public static async Task AcceptRequest(LCFriendshipRequest request, Dictionary<string, object> attributes = null) {
             if (request == null) {
                 throw new ArgumentNullException(nameof(request));
@@ -37,6 +52,11 @@ namespace LeanCloud.Storage {
             await LCCore.HttpClient.Put<Dictionary<string, object>>(path, data: data);
         }
 
+        /// <summary>
+        /// Declines the request of add friend.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
         public static async Task DeclineRequest(LCFriendshipRequest request) {
             if (request == null) {
                 throw new ArgumentNullException(nameof(request));

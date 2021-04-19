@@ -1,26 +1,49 @@
 ﻿using System;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCGeoPoint represents a latitude and longitude point that may be associated
+    /// with a key in a LCObject or used as a reference point for queries.
+    /// </summary>
     public class LCGeoPoint {
+        /// <summary>
+        /// Gets the latitude of the LCGeoPoint.
+        /// </summary>
         public double Latitude {
             get;
         }
 
+        /// <summary>
+        /// Gets the longitude of the LCGeoPoint.
+        /// </summary>
         public double Longitude {
             get;
         }
 
+        /// <summary>
+        /// Constructs a LCGeoPoint with the specified latitude and longitude.
+        /// </summary>
+        /// <param name="latitude"></param>
+        /// <param name="longtitude"></param>
         public LCGeoPoint(double latitude, double longtitude) {
             Latitude = latitude;
             Longitude = longtitude;
         }
 
+        /// <summary>
+        /// The original LCGeoPoint.
+        /// </summary>
         public static LCGeoPoint Origin {
             get {
                 return new LCGeoPoint(0, 0);
             }
         }
 
+        /// <summary>
+        /// Calculate the distance in kilometer between this point and another GeoPoint.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public double KilometersTo(LCGeoPoint point) {
             if (point == null) {
                 throw new ArgumentNullException(nameof(point));
@@ -28,6 +51,11 @@ namespace LeanCloud.Storage {
             return RadiansTo(point) * 6371.0;
         }
 
+        /// <summary>
+        /// Calculate the distance in mile between this point and another GeoPoint.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public double MilesTo(LCGeoPoint point) {
             if (point == null) {
                 throw new ArgumentNullException(nameof(point));
@@ -35,6 +63,11 @@ namespace LeanCloud.Storage {
             return RadiansTo(point) * 3958.8;
         }
 
+        /// <summary>
+        /// Calculate the distance in radians between this point and another GeoPoint.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public double RadiansTo(LCGeoPoint point) {
             if (point == null) {
                 throw new ArgumentNullException(nameof(point));

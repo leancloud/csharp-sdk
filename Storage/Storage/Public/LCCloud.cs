@@ -37,6 +37,13 @@ namespace LeanCloud.Storage {
             return response;
         }
 
+        /// <summary>
+        /// Invokes a cloud function.
+        /// </summary>
+        /// <typeparam name="T">The type of return value.</typeparam>
+        /// <param name="name">Cloud function name.</param>
+        /// <param name="parameters">Parameters of cloud function.</param>
+        /// <returns></returns>
         public static async Task<T> Run<T>(string name,
             Dictionary<string, object> parameters = null) {
             Dictionary<string, object> response = await Run(name, parameters);

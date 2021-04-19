@@ -7,6 +7,9 @@ using LeanCloud.Storage.Internal.Object;
 using LC.Newtonsoft.Json;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCStatus is a local representation of a status in LeanCloud.
+    /// </summary>
     public class LCStatus : LCObject {
         public const string CLASS_NAME = "_Status";
 
@@ -22,25 +25,42 @@ namespace LeanCloud.Storage {
         public const string OwnerKey = "owner";
         public const string MessageIdKey = "messageId";
 
+        /// <summary>
+        /// The id of this status.
+        /// </summary>
         public int MessageId {
             get; internal set;
         }
 
+        /// <summary>
+        /// The inboxType of this status.
+        /// </summary>
         public string InboxType {
             get; internal set;
         }
 
         private LCQuery query;
 
+        /// <summary>
+        /// The data of this status.
+        /// </summary>
         public Dictionary<string, object> Data {
             get; set;
         }
 
+        /// <summary>
+        /// Constructs a LCStatus.
+        /// </summary>
         public LCStatus() : base(CLASS_NAME) {
             InboxType = InboxTypeDefault;
             Data = new Dictionary<string, object>();
         }
 
+        /// <summary>
+        /// Sends the status to the followers of this user.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public static async Task<LCStatus> SendToFollowers(LCStatus status) {
             if (status == null) {
                 throw new ArgumentNullException(nameof(status));
@@ -62,6 +82,12 @@ namespace LeanCloud.Storage {
             return await status.Send();
         }
 
+        /// <summary>
+        /// Sends the status to the user with targetId privatedly.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="targetId"></param>
+        /// <returns></returns>
         public static async Task<LCStatus> SendPrivately(LCStatus status, string targetId) {
             if (status == null) {
                 throw new ArgumentNullException(nameof(status));
@@ -84,6 +110,10 @@ namespace LeanCloud.Storage {
             return await status.Send();
         }
 
+        /// <summary>
+        /// Send this status.
+        /// </summary>
+        /// <returns></returns>
         public async Task<LCStatus> Send() {
             LCUser user = await LCUser.GetCurrent();
             if (user == null) {
@@ -118,6 +148,10 @@ namespace LeanCloud.Storage {
             return this;
         }
 
+        /// <summary>
+        /// Deletes this status.
+        /// </summary>
+        /// <returns></returns>
         public new async Task Delete() {
             LCUser user = await LCUser.GetCurrent();
             if (user == null) {
@@ -137,6 +171,11 @@ namespace LeanCloud.Storage {
             }
         }
 
+        /// <summary>
+        /// Gets the count of the status with inboxType.
+        /// </summary>
+        /// <param name="inboxType"></param>
+        /// <returns></returns>
         public static async Task<LCStatusCount> GetCount(string inboxType) {
             LCUser user = await LCUser.GetCurrent();
             if (user == null) {
@@ -158,6 +197,11 @@ namespace LeanCloud.Storage {
             return statusCount;
         }
 
+        /// <summary>
+        /// Reset the count of the status to be zero.
+        /// </summary>
+        /// <param name="inboxType"></param>
+        /// <returns></returns>
         public static async Task ResetUnreadCount(string inboxType = null) {
             LCUser user = await LCUser.GetCurrent();
             if (user == null) {

@@ -61,6 +61,12 @@ namespace LeanCloud.Storage {
             await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
         }
 
+        /// <summary>
+        /// Verifies the mobile number with the verification code.
+        /// </summary>
+        /// <param name="mobile"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public static async Task VerifyMobilePhone(string mobile, string code) {
             string path = $"verifySmsCode/{code}";
             Dictionary<string, object> data = new Dictionary<string, object> {
