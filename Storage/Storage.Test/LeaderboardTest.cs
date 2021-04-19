@@ -14,6 +14,7 @@ namespace Storage.Test {
 
         [SetUp]
         public void SetUp() {
+            LCLogger.LogDelegate += Utils.Print;
             LCApplication.Initialize(Utils.AppId, Utils.AppKey, Utils.AppServer, Utils.MasterKey);
             LCApplication.UseMasterKey = true;
             leaderboardName = $"Leaderboard_{DateTimeOffset.Now.DayOfYear}";
