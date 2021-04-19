@@ -26,35 +26,68 @@ namespace LeanCloud.Storage {
         Month
     }
 
+    /// <summary>
+    /// LCLeaderboard represents LeanCloud leaderboard and contains static functions
+    /// that handle the statistic.
+    /// </summary>
     public class LCLeaderboard {
+        /// <summary>
+        /// The name of statistic.
+        /// </summary>
         public string StatisticName {
             get; private set;
         }
 
+        /// <summary>
+        /// The order of this leaderboard.
+        /// </summary>
         public LCLeaderboardOrder Order {
             get; private set;
         }
 
+        /// <summary>
+        /// The update strategy of this leaderboard.
+        /// </summary>
         public LCLeaderboardUpdateStrategy UpdateStrategy {
             get; private set;
         }
 
+        /// <summary>
+        /// The interval of the version that the leaderboard resets.
+        /// </summary>
         public LCLeaderboardVersionChangeInterval VersionChangeInterval {
             get; private set;
         }
 
+        /// <summary>
+        /// The version of this leaderboard.
+        /// </summary>
         public int Version {
             get; private set;
         }
 
+        /// <summary>
+        /// The next time that the leaderboard resets.
+        /// </summary>
         public DateTime NextResetAt {
             get; private set;
         }
 
+        /// <summary>
+        /// The time that the leaderboard created.
+        /// </summary>
         public DateTime CreatedAt {
             get; private set;
         }
 
+        /// <summary>
+        /// Creates a LCLeaderboard with a statistic name.
+        /// </summary>
+        /// <param name="statisticName"></param>
+        /// <param name="order"></param>
+        /// <param name="updateStrategy"></param>
+        /// <param name="versionChangeInterval"></param>
+        /// <returns></returns>
         public static async Task<LCLeaderboard> CreateLeaderboard(string statisticName,
             LCLeaderboardOrder order = LCLeaderboardOrder.Descending,
             LCLeaderboardUpdateStrategy updateStrategy = LCLeaderboardUpdateStrategy.Better,
@@ -90,12 +123,23 @@ namespace LeanCloud.Storage {
             };
         }
 
+        /// <summary>
+        /// Gets the LCLeaderboard with the given name.
+        /// </summary>
+        /// <param name="statisticName"></param>
+        /// <returns></returns>
         public static Task<LCLeaderboard> GetLeaderboard(string statisticName) {
             LCLeaderboard leaderboard = CreateWithoutData(statisticName);
             return leaderboard.Fetch();
         }
 
-
+        /// <summary>
+        /// Updates the statistic of the user.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="statistics"></param>
+        /// <param name="overwrite"></param>
+        /// <returns></returns>
         public static async Task<ReadOnlyCollection<LCStatistic>> UpdateStatistics(LCUser user,
             Dictionary<string, double> statistics,
             bool overwrite = false) {
@@ -127,7 +171,12 @@ namespace LeanCloud.Storage {
             return null;
         }
 
-
+        /// <summary>
+        /// Gets the statistics of the user.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="statisticNames"></param>
+        /// <returns></returns>
         public static async Task<ReadOnlyCollection<LCStatistic>> GetStatistics(LCUser user,
             IEnumerable<string> statisticNames = null) {
             if (user == null) {
@@ -151,7 +200,12 @@ namespace LeanCloud.Storage {
             return null;
         }
 
- 
+        /// <summary>
+        /// Deletes the statistics of the user with the given name.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="statisticNames"></param>
+        /// <returns></returns>
         public static async Task DeleteStatistics(LCUser user,
             IEnumerable<string> statisticNames) {
             if (user == null) {
@@ -195,7 +249,15 @@ namespace LeanCloud.Storage {
             return null;
         }
 
-
+        /// <summary>
+        /// Gets the rankings.
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="skip"></param>
+        /// <param name="limit"></param>
+        /// <param name="selectUserKeys"></param>
+        /// <param name="includeStatistics"></param>
+        /// <returns></returns>
         public Task<ReadOnlyCollection<LCRanking>> GetResults(int version = -1,
             int skip = 0,
             int limit = 10,
@@ -204,7 +266,15 @@ namespace LeanCloud.Storage {
             return GetResults(null, version, skip, limit, selectUserKeys, includeStatistics);
         }
 
-
+        /// <summary>
+        /// Get the rankings that around the currently logged in user.
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="skip"></param>
+        /// <param name="limit"></param>
+        /// <param name="selectUserKeys"></param>
+        /// <param name="includeStatistics"></param>
+        /// <returns></returns>
         public async Task<ReadOnlyCollection<LCRanking>> GetResultsAroundUser(int version = -1,
             int skip = 0,
             int limit = 10,
@@ -214,6 +284,16 @@ namespace LeanCloud.Storage {
             return await GetResults(user, version, skip, limit, selectUserKeys, includeStatistics);
         }
 
+        /// <summary>
+        /// Gets the rankings of the user.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="version"></param>
+        /// <param name="skip"></param>
+        /// <param name="limit"></param>
+        /// <param name="selectUserKeys"></param>
+        /// <param name="includeStatistics"></param>
+        /// <returns></returns>
         private async Task<ReadOnlyCollection<LCRanking>> GetResults(LCUser user,
             int version,
             int skip,
@@ -249,7 +329,11 @@ namespace LeanCloud.Storage {
             return null;
         }
 
-
+        /// <summary>
+        /// Updates the update strategy of this LCLeaderboard.
+        /// </summary>
+        /// <param name="updateStrategy"></param>
+        /// <returns></returns>
         public async Task<LCLeaderboard> UpdateUpdateStrategy(LCLeaderboardUpdateStrategy updateStrategy) {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "updateStrategy", updateStrategy.ToString().ToLower() }
@@ -264,7 +348,11 @@ namespace LeanCloud.Storage {
             return this;
         }
 
-
+        /// <summary>
+        /// Updates the interval of the version that this LCLeaderboard changes.
+        /// </summary>
+        /// <param name="versionChangeInterval"></param>
+        /// <returns></returns>
         public async Task<LCLeaderboard> UpdateVersionChangeInterval(LCLeaderboardVersionChangeInterval versionChangeInterval) {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "versionChangeInterval", versionChangeInterval.ToString().ToLower() }

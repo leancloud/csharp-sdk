@@ -2,15 +2,27 @@
 using System.Collections.Generic;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCStatistic represents the statistic of LeanCloud leaderboard.
+    /// </summary>
     public class LCStatistic {
+        /// <summary>
+        /// The name of this LCStatistic.
+        /// </summary>
         public string Name {
             get; private set;
         }
 
+        /// <summary>
+        /// The value of this LCStatistic.
+        /// </summary>
         public double Value {
             get; private set;
         }
 
+        /// <summary>
+        /// The version of this LCStatistic.
+        /// </summary>
         public int Version {
             get; internal set;
         }
