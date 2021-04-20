@@ -2,6 +2,9 @@
 using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCRealtime contains static functions that handle the global connection.
+    /// </summary>
     public class LCRealtime {
         /// <summary>
         /// Every application uses a connection.

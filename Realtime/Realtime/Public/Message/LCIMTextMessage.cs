@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMTextMessage is a local representation of text message in LeanCloud.
+    /// </summary>
     public class LCIMTextMessage : LCIMTypedMessage {
         public string Text {
             get; set;

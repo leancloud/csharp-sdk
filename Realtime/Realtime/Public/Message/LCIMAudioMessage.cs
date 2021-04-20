@@ -2,6 +2,9 @@
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMAudioMessage is a local representation of audio message in LeanCloud.
+    /// </summary>
     public class LCIMAudioMessage : LCIMFileMessage {
         public double Duration {
             get; private set;
