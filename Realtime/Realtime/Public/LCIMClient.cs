@@ -8,7 +8,9 @@ using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
 
 namespace LeanCloud.Realtime {
-
+    /// <summary>
+    /// LCIMClient is a local representation of realtime client in LeanCloud.
+    /// </summary>
     public class LCIMClient {
         /// <summary>
         /// Conversation cache
