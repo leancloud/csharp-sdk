@@ -1,9 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Engine {
+    /// <summary>
+    /// LCEngineRequestContext provides the context of engine request.
+    /// </summary>
     public class LCEngineRequestContext {
         public const string RemoteAddressKey = "__remoteAddressKey";
         public const string SessionTokenKey = "__sessionToken";
@@ -31,7 +33,10 @@ namespace LeanCloud.Engine {
             }
             return requestContext.Value[key];
         }
-        
+
+        /// <summary>
+        /// The remote address of this request.
+        /// </summary>
         public static string RemoteAddress {
             get {
                 object remoteAddress = Get(RemoteAddressKey);
@@ -45,6 +50,9 @@ namespace LeanCloud.Engine {
             }
         }
 
+        /// <summary>
+        /// The session token of this request.
+        /// </summary>
         public static string SessionToken {
             get {
                 object sessionToken = Get(SessionTokenKey);
@@ -58,6 +66,9 @@ namespace LeanCloud.Engine {
             }
         }
 
+        /// <summary>
+        /// The user of this request.
+        /// </summary>
         public static LCUser CurrentUser {
             get {
                 object currentUser = Get(CurrentUserKey);

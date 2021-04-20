@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using LeanCloud.Common;
 
 namespace LeanCloud.Engine {
+    /// <summary>
+    /// LCEngine provides the initialization of Engine in LeanCloud.
+    /// </summary>
     public class LCEngine {
         public const string LCEngineCORS = "LCEngineCORS";
 
@@ -79,6 +82,10 @@ namespace LeanCloud.Engine {
         public static Dictionary<string, MethodInfo> ClassHooks = new Dictionary<string, MethodInfo>();
         public static Dictionary<string, MethodInfo> UserHooks = new Dictionary<string, MethodInfo>();
 
+        /// <summary>
+        /// Initializes the engine with the given services.
+        /// </summary>
+        /// <param name="services"></param>
         public static void Initialize(IServiceCollection services) {
             // 获取环境变量
             LCLogger.Debug("-------------------------------------------------");
@@ -198,7 +205,7 @@ namespace LeanCloud.Engine {
             });
         }
 
-        public static void PrintEnvironmentVar(string key) {
+        private static void PrintEnvironmentVar(string key) {
             LCLogger.Debug($"{key} : {Environment.GetEnvironmentVariable(key)}");
         }
 
@@ -293,7 +300,7 @@ namespace LeanCloud.Engine {
             }
         }
 
-        public static object GetFunctions(HttpRequest request) {
+        internal static object GetFunctions(HttpRequest request) {
             CheckMasterKey(request);
 
             List<string> functions = new List<string>();

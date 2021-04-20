@@ -10,6 +10,10 @@ namespace LeanCloud.Engine {
         AfterDelete
     }
 
+    /// <summary>
+    /// LCEngineClassHookAttribute is an attribute that hooks class in engine.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class LCEngineClassHookAttribute : Attribute {
         public string ClassName {
             get;

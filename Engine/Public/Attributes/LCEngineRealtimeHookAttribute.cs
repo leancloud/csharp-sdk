@@ -20,6 +20,10 @@ namespace LeanCloud.Engine {
         ClientOffline,
     }
 
+    /// <summary>
+    /// LCEngineRealtimeHookAttribute is an attribute that hooks realtime in engine.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class LCEngineRealtimeHookAttribute : Attribute {
         public LCEngineRealtimeHookType HookType {
             get;
