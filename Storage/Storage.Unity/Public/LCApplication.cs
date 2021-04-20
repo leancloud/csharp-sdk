@@ -1,5 +1,5 @@
 ﻿using LeanCloud.Common;
-using LeanCloud.Storage;
+using LeanCloud.Storage.Internal;
 using LeanCloud.Storage.Internal.Persistence;
 
 namespace LeanCloud {

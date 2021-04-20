@@ -56,9 +56,6 @@
     <Compile Include="..\Storage\Public\LCGeoPoint.cs">
       <Link>Storage\Public\LCGeoPoint.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\Public\LCStorage.cs">
-      <Link>Storage\Public\LCStorage.cs</Link>
-    </Compile>
     <Compile Include="..\Storage\Public\LCUserAuthDataLoginOption.cs">
       <Link>Storage\Public\LCUserAuthDataLoginOption.cs</Link>
     </Compile>
@@ -154,6 +151,9 @@
     </Compile>
     <Compile Include="..\Storage\Internal\Query\LCCompositionalCondition.cs">
       <Link>Storage\Internal\Query\LCCompositionalCondition.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Internal\LCStorage.cs">
+      <Link>Storage\Internal\LCStorage.cs</Link>
     </Compile>
   </ItemGroup>
 </Project>
