@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// 
+    /// ILCIMSignatureFactory is an interface that creates the signature of realtime.
     /// </summary>
     public interface ILCIMSignatureFactory {
         Task<LCIMSignature> CreateConnectSignature(string clientId);
