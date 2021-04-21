@@ -14,7 +14,7 @@ namespace LeanCloud.Storage {
     /// </summary>
     public class LCStatusQuery : LCQuery<LCStatus> {
         /// <summary>
-        /// The inboxType for query.
+        /// The inbox type for query.
         /// </summary>
         public string InboxType {
             get; set;
