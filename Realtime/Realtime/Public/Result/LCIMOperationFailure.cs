@@ -2,7 +2,7 @@
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// LCIMOperationFailure is the result that handles the operation of conversation.
+    /// LCIMOperationFailure is the failed result of a conversation operation.
     /// </summary>
     public class LCIMOperationFailure {
         public int Code {
