@@ -191,7 +191,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Get whether the given role are allowed to write this object.
+        /// Detects whether the given role are allowed to write this object.
         /// </summary>
         /// <param name="role">The role to check.</param>
         /// <returns></returns>
