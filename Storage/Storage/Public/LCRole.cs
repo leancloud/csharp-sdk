@@ -6,7 +6,7 @@
         public const string CLASS_NAME = "_Role";
 
         /// <summary>
-        /// The name of LCRole.
+        /// The name of a LCRole.
         /// </summary>
         public string Name {
             get {
