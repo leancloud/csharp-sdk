@@ -21,7 +21,7 @@ namespace LeanCloud.Storage {
         internal const string IgnoreHooksKey = "__ignore_hooks";
 
         /// <summary>
-        /// Disable to hook before saving / updating / deleting LCObject.
+        /// Disable hooks before saving / updating / deleting LCObject.
         /// </summary>
         public void DisableBeforeHook() {
             Ignore(
