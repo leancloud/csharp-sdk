@@ -36,7 +36,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Gets or sets whether the public is allowed to read this object.
+        /// Gets or sets whether everyone is allowed to read this object.
         /// </summary>
         public bool PublicReadAccess {
             get {
