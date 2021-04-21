@@ -45,7 +45,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Gets the first time of this object was saved the server.
+        /// Gets the creation time of this object in the cloud.
         /// </summary>
         public DateTime CreatedAt {
             get {
