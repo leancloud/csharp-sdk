@@ -198,7 +198,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Reset the count of the status to be zero.
+        /// Resets the count of the status to be zero.
         /// </summary>
         /// <param name="inboxType"></param>
         /// <returns></returns>
