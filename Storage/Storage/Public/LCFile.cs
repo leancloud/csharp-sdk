@@ -77,7 +77,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Creates a new file from a local file and a name.
+        /// Creates a new file from a local file.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="path"></param>
