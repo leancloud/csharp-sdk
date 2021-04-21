@@ -367,7 +367,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Saves this object to the server.
+        /// Saves this object to the cloud.
         /// </summary>
         /// <param name="fetchWhenSave">Whether or not fetch data when saved.</param>
         /// <param name="query">The condition for saving.</param>
