@@ -79,5 +79,27 @@ namespace Storage.Test {
             TestContext.WriteLine(file.ObjectId);
             Assert.NotNull(file.ObjectId);
         }
+
+        [Test]
+        public async Task FileACL() {
+            LCUser user = await LCUser.LoginAnonymously();
+
+            LCFile file = new LCFile("avatar", AvatarFilePath);
+            LCACL acl = new LCACL();
+            acl.SetUserReadAccess(user, true);
+            file.ACL = acl;
+            await file.Save();
+
+            LCQuery<LCFile> query = LCFile.GetQuery();
+            LCFile avatar = await query.Get(file.ObjectId);
+            Assert.NotNull(avatar.ObjectId);
+
+            await LCUser.LoginAnonymously();
+            try {
+                LCFile forbiddenAvatar = await query.Get(file.ObjectId);
+            } catch (LCException e) {
+                Assert.AreEqual(e.Code, 403);
+            }
+        }
     }
 }
