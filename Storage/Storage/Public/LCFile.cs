@@ -99,7 +99,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Add metadata.
+        /// Adds metadata.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
