@@ -34,7 +34,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Gets the object id. An object id is assigned as son as an object is
+        /// Gets the object id. An object id is assigned as soon as an object is
         /// saved to the server. The combination of a <see cref="ClassName"/> and
         /// an <see cref="ObjectId"/> uniquely identifies an object in your application.
         /// </summary>
