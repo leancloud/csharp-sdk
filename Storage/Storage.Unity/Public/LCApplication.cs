@@ -9,8 +9,8 @@ namespace LeanCloud {
     /// </summary>
     public class LCApplication {
         /// <summary>
-        /// Whether or not ths SDK using master key.
-        /// Default is false.
+        /// Uses the master key or not.
+        /// The default is false.
         /// </summary>
         public static bool UseMasterKey {
             get => LCCore.UseMasterKey;
