@@ -83,7 +83,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Sends the status to the user with targetId privatedly.
+        /// Sends the status to the user with targetId in private.
         /// </summary>
         /// <param name="status"></param>
         /// <param name="targetId"></param>
