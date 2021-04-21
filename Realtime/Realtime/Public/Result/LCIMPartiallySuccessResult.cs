@@ -2,7 +2,7 @@
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// LCIMPartiallySuccessResult is the result that handles the operation of conversation.
+    /// LCIMPartiallySuccessResult is the partially successful result of a conversation operation.
     /// </summary>
     public class LCIMPartiallySuccessResult {
         public List<string> SuccessfulClientIdList {
