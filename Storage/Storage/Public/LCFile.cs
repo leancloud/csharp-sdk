@@ -88,7 +88,8 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Creates a new file from an url and a name.
+        /// Creates a new external file from an url.
+        /// The file content is saved externally, not copied to LeanCloud.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="url"></param>
