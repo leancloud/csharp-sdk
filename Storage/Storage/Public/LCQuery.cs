@@ -390,7 +390,7 @@ namespace LeanCloud.Storage {
 
         /// <summary>
         /// Constructs a LCObject whose id is already known by fetching data
-        /// from the server.
+        /// from the cloud.
         /// </summary>
         /// <param name="objectId"></param>
         /// <returns></returns>
