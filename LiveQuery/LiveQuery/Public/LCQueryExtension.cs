@@ -3,7 +3,7 @@ using LeanCloud.Storage;
 
 namespace LeanCloud.LiveQuery {
     /// <summary>
-    /// LCQueryExtension is the extension of query for live query.
+    /// LCQueryExtension is the extension of a LCQuery.
     /// </summary>
     public static class LCQueryExtension {
         /// <summary>
