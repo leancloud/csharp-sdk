@@ -7,7 +7,7 @@ namespace LeanCloud.LiveQuery {
     /// </summary>
     public static class LCQueryExtension {
         /// <summary>
-        /// Subscribes this LCQuery to live query.
+        /// Subscribes a LCQuery.
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
