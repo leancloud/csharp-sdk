@@ -138,7 +138,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Gets whether the given user is *explicitly* allowed to write this
+        /// Detects whether the given user is *explicitly* allowed to write this
         /// object. Even if this returns false, the user may still be able to write
         /// it if <see cref="PublicReadAccess"/> is true or a role that the user
         /// belongs to has write access.
