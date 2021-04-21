@@ -111,7 +111,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Send this status.
+        /// Sends this status.
         /// </summary>
         /// <returns></returns>
         public async Task<LCStatus> Send() {
