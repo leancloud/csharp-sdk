@@ -8,7 +8,7 @@ using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// LCFile is a local representation of a file that is saved to LeanCloud.
+    /// LCFile is a local representation of a LeanCloud file.
     /// </summary>
     public class LCFile : LCObject {
         public const string CLASS_NAME = "_File";
