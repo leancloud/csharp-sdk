@@ -83,7 +83,7 @@ namespace LeanCloud.Storage {
         static LCUser currentUser;
 
         /// <summary>
-        /// Gets the currently logged in LCUser with a valid session, either from
+        /// Gets the currently logged in LCUser with a valid session, from
         /// memory or disk if necessary.
         /// </summary>
         /// <returns></returns>
