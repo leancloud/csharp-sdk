@@ -2,8 +2,7 @@
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// LCIMMessageQueryEndpoint is the parameter that controls the limitation
-    /// of querying messages.
+    /// LCIMMessageQueryEndpoint limits the query results.
     /// </summary>
     public class LCIMMessageQueryEndpoint {
         public string MessageId {
