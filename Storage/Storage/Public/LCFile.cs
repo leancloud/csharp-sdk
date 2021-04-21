@@ -67,7 +67,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Creates a new file from a byte array and a name.
+        /// Creates a new file from a byte array.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="bytes"></param>
