@@ -2,7 +2,7 @@
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// LCIMPageResult represents the results of query.
+    /// LCIMPageResult represents the query results.
     /// </summary>
     public class LCIMPageResult {
         public ReadOnlyCollection<string> Results {
