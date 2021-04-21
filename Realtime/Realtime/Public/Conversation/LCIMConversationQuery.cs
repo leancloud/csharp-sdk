@@ -7,7 +7,7 @@ using System;
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// LCIMConversationQuery is the query for conversation.
+    /// LCIMConversationQuery is the query for conversations.
     /// </summary>
     public class LCIMConversationQuery {
         internal const int CompactFlag = 0x1;
