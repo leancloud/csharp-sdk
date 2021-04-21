@@ -6,8 +6,7 @@ using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// LCCloud contains static functions that call the cloud functions of Engine
-    /// in LeanCloud.
+    /// LCCloud contains static functions that call LeanEngine cloud functions.
     /// </summary>
     public static class LCCloud {
         private const string PRODUCTION_KEY = "X-LC-Prod";
