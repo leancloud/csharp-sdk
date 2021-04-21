@@ -9,7 +9,13 @@ using LeanCloud.Storage.Internal.Query;
 using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// The LCQuery class defines a query that is used to fetch LCObjects.
+    /// </summary>
     public class LCQuery {
+        /// <summary>
+        /// The classname of this query.
+        /// </summary>
         public string ClassName {
             get; internal set;
         }
@@ -18,6 +24,10 @@ namespace LeanCloud.Storage {
             get; internal set;
         }
 
+        /// <summary>
+        /// Constructs a LCQuery for class.
+        /// </summary>
+        /// <param name="className"></param>
         public LCQuery(string className) {
             ClassName = className;
             Condition = new LCCompositionalCondition();
@@ -172,16 +182,35 @@ namespace LeanCloud.Storage {
             return this;
         }
 
+        /// <summary>
+        /// The value corresponding to key is near the point.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public LCQuery<T> WhereNear(string key, LCGeoPoint point) {
             Condition.WhereNear(key, point);
             return this;
         }
 
+        /// <summary>
+        /// The value corresponding to key is in the given rectangular geographic bounding box.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="southwest"></param>
+        /// <param name="northeast"></param>
+        /// <returns></returns>
         public LCQuery<T> WhereWithinGeoBox(string key, LCGeoPoint southwest, LCGeoPoint northeast) {
             Condition.WhereWithinGeoBox(key, southwest, northeast);
             return this;
         }
 
+        /// <summary>
+        ///  The value corresponding to key is related to the parent.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public LCQuery<T> WhereRelatedTo(LCObject parent, string key) {
             Condition.WhereRelatedTo(parent, key);
             return this;
@@ -255,13 +284,21 @@ namespace LeanCloud.Storage {
             return this;
         }
 
-
+        /// <summary>
+        /// Sorts the results in ascending order by the given key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public LCQuery<T> OrderByAscending(string key) {
             Condition.OrderByAscending(key);
             return this;
         }
 
-
+        /// <summary>
+        /// Sorts the results in descending order by the given key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public LCQuery<T> OrderByDescending(string key) {
             Condition.OrderByDescending(key);
             return this;
@@ -338,6 +375,10 @@ namespace LeanCloud.Storage {
             return this;
         }
 
+        /// <summary>
+        /// Counts the number of objects that match this query.
+        /// </summary>
+        /// <returns></returns>
         public async Task<int> Count() {
             string path = $"classes/{ClassName}";
             Dictionary<string, object> parameters = BuildParams();
@@ -347,6 +388,12 @@ namespace LeanCloud.Storage {
             return (int)ret["count"];
         }
 
+        /// <summary>
+        /// Constructs a LCObject whose id is already known by fetching data
+        /// from the cloud.
+        /// </summary>
+        /// <param name="objectId"></param>
+        /// <returns></returns>
         public async Task<T> Get(string objectId) {
             if (string.IsNullOrEmpty(objectId)) {
                 throw new ArgumentNullException(nameof(objectId));
@@ -363,6 +410,10 @@ namespace LeanCloud.Storage {
             return DecodeLCObject(response);
         }
 
+        /// <summary>
+        /// Retrieves a list of LCObjects that satisfy the query from Server.
+        /// </summary>
+        /// <returns></returns>
         public async Task<ReadOnlyCollection<T>> Find() {
             string path = $"classes/{ClassName}";
             Dictionary<string, object> parameters = BuildParams();
@@ -376,6 +427,10 @@ namespace LeanCloud.Storage {
             return list.AsReadOnly();
         }
 
+        /// <summary>
+        /// Retrieves at most one LCObject that satisfies this query.
+        /// </summary>
+        /// <returns></returns>
         public async Task<T> First() {
             Limit(1);
             ReadOnlyCollection<T> results = await Find();
@@ -385,6 +440,11 @@ namespace LeanCloud.Storage {
             return null;
         }
 
+        /// <summary>
+        /// Constructs a query that is the and of the given queries.
+        /// </summary>
+        /// <param name="queries"></param>
+        /// <returns></returns>
         public static LCQuery<T> And(IEnumerable<LCQuery<T>> queries) {
             if (queries == null || queries.Count() < 1) {
                 throw new ArgumentNullException(nameof(queries));
@@ -402,6 +462,11 @@ namespace LeanCloud.Storage {
             return compositionQuery;
         }
 
+        /// <summary>
+        /// Constructs a query that is the or of the given queries.
+        /// </summary>
+        /// <param name="queries"></param>
+        /// <returns></returns>
         public static LCQuery<T> Or(IEnumerable<LCQuery<T>> queries) {
             if (queries == null || queries.Count() < 1) {
                 throw new ArgumentNullException(nameof(queries));

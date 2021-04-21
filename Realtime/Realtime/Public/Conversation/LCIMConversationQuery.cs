@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using LeanCloud.Storage.Internal.Query;
 using System.Linq;
-using System.Collections.Generic;
 using System;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMConversationQuery is the query for conversations.
+    /// </summary>
     public class LCIMConversationQuery {
         internal const int CompactFlag = 0x1;
         internal const int WithLastMessageFlag = 0x2;

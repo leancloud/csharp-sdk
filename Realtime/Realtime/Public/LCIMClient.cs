@@ -8,7 +8,9 @@ using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Controller;
 
 namespace LeanCloud.Realtime {
-
+    /// <summary>
+    /// LCIMClient is a local representation of realtime client in LeanCloud.
+    /// </summary>
     public class LCIMClient {
         /// <summary>
         /// Conversation cache
@@ -29,6 +31,9 @@ namespace LeanCloud.Realtime {
             get; private set;
         }
 
+        /// <summary>
+        /// Device Id
+        /// </summary>
         public string DeviceId {
             get; private set;
         }
@@ -235,6 +240,13 @@ namespace LeanCloud.Realtime {
 
         #region 接口
 
+        /// <summary>
+        /// Constructs a LCIMClient with client id.
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="tag"></param>
+        /// <param name="deviceId"></param>
+        /// <param name="signatureFactory"></param>
         public LCIMClient(string clientId,
             string tag = null,
             string deviceId = null,
@@ -245,6 +257,13 @@ namespace LeanCloud.Realtime {
             SetUpClient(clientId, tag, deviceId, signatureFactory);
         }
 
+        /// <summary>
+        /// Constructs a LCIMClient with a LCUser.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="tag"></param>
+        /// <param name="deviceId"></param>
+        /// <param name="signatureFactory"></param>
         public LCIMClient(LCUser user,
             string tag = null,
             string deviceId = null,

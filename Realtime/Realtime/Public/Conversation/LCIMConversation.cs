@@ -6,7 +6,8 @@ using System.Collections.ObjectModel;
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// Conversation
+    /// LCIMConversation is a local representation of general conversation
+    /// in LeanCloud.
     /// </summary>
     public class LCIMConversation {
         /// <summary>

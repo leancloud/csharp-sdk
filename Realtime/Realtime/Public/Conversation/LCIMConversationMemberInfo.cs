@@ -1,4 +1,7 @@
 ﻿namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMConversationMemberInfo represents the member info of the conversation.
+    /// </summary>
     public class LCIMConversationMemberInfo {
         public const string Owner = "Owner";
 

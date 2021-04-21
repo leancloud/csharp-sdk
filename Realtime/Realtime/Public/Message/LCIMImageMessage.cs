@@ -2,6 +2,9 @@
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMImageMessage is a local representation of image message in LeanCloud.
+    /// </summary>
     public class LCIMImageMessage : LCIMFileMessage {
         public int Width {
             get; private set;

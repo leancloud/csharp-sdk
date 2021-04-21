@@ -9,25 +9,45 @@ using LeanCloud.Storage.Internal.Codec;
 using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCStatusQuery is the query of LCStatus.
+    /// </summary>
     public class LCStatusQuery : LCQuery<LCStatus> {
+        /// <summary>
+        /// The inbox type for query.
+        /// </summary>
         public string InboxType {
             get; set;
         }
 
+        /// <summary>
+        /// The since id for the query.
+        /// </summary>
         public int SinceId {
             get; set;
         }
 
+        /// <summary>
+        /// The max id for the query.
+        /// </summary>
         public int MaxId {
             get; set;
         }
 
+        /// <summary>
+        /// Constructs a LCStatusQuery with inboxType.
+        /// </summary>
+        /// <param name="inboxType"></param>
         public LCStatusQuery(string inboxType = LCStatus.InboxTypeDefault) : base("_Status") {
             InboxType = inboxType;
             SinceId = 0;
             MaxId = 0;
         }
 
+        /// <summary>
+        /// Retrieves a list of LCStatus that satisfy the query from the cloud.
+        /// </summary>
+        /// <returns></returns>
         public new async Task<ReadOnlyCollection<LCStatus>> Find() {
             LCUser user = await LCUser.GetCurrent();
             if (user == null) {

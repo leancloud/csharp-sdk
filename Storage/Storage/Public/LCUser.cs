@@ -6,6 +6,9 @@ using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCUser represents a user for a LeanCloud application.
+    /// </summary>
     public class LCUser : LCObject {
         public const string CLASS_NAME = "_User";
 
@@ -79,6 +82,11 @@ namespace LeanCloud.Storage {
 
         static LCUser currentUser;
 
+        /// <summary>
+        /// Gets the currently logged in LCUser with a valid session, from
+        /// memory or disk if necessary.
+        /// </summary>
+        /// <returns></returns>
         public static async Task<LCUser> GetCurrent() {
             if (currentUser != null) {
                 return currentUser;
@@ -700,6 +708,13 @@ namespace LeanCloud.Storage {
                 .Include("followee");
         }
 
+        /// <summary>
+        /// Gets the followers and followees of the currently logged in user.
+        /// </summary>
+        /// <param name="includeFollower"></param>
+        /// <param name="includeFollowee"></param>
+        /// <param name="returnCount"></param>
+        /// <returns></returns>
         public async Task<LCFollowersAndFollowees> GetFollowersAndFollowees(bool includeFollower = false,
             bool includeFollowee = false, bool returnCount = false) {
             Dictionary<string, object> queryParams = new Dictionary<string, object>();

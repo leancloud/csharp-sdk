@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMLocationMessage is a local representation of location message in LeanCloud.
+    /// </summary>
     public class LCIMLocationMessage : LCIMTextMessage {
         public LCGeoPoint Location {
             get; set;

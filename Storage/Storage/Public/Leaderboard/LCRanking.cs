@@ -4,19 +4,34 @@ using System.Collections.ObjectModel;
 using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCRanking represents the rankings of LCLeaderboard. 
+    /// </summary>
     public class LCRanking {
+        /// <summary>
+        /// The ranking.
+        /// </summary>
         public int Rank {
             get; private set;
         }
 
+        /// <summary>
+        /// The user of this LCRanking.
+        /// </summary>
         public LCUser User {
             get; private set;
         }
 
+        /// <summary>
+        /// The statistic name of this LCRanking.
+        /// </summary>
         public string StatisticName {
             get; private set;
         }
 
+        /// <summary>
+        /// The value of this LCRanking.
+        /// </summary>
         public double Value {
             get; private set;
         }

@@ -1,7 +1,6 @@
-﻿using System;
-using LeanCloud.Common;
+﻿using LeanCloud.Common;
 
-namespace LeanCloud.Storage {
+namespace LeanCloud.Storage.Internal {
     public class LCStorage {
         private const string SessionHeaderKey = "X-LC-Session";
 

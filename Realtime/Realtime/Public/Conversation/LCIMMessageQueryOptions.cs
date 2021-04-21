@@ -1,6 +1,9 @@
 ﻿using System;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMMessageQueryEndpoint limits the query results.
+    /// </summary>
     public class LCIMMessageQueryEndpoint {
         public string MessageId {
             get; set;

@@ -2,6 +2,10 @@
 using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMServiceConversation is a local representation of service conversation
+    /// in LeanCloud.
+    /// </summary>
     public class LCIMServiceConversation : LCIMConversation {
         public LCIMServiceConversation(LCIMClient client) : base(client) {
         }

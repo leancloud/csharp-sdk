@@ -2,6 +2,9 @@
 using LeanCloud.Storage;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMVideoMessage is a local representation of video message in LeanCloud.
+    /// </summary>
     public class LCIMVideoMessage : LCIMFileMessage {
         public int Width {
             get; private set;

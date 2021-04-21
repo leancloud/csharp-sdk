@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime {
     /// <summary>
-    /// Chatroom
+    /// LCIMChatRoom is a local representation of chatroom in LeanCloud.
     /// </summary>
     public class LCIMChatRoom : LCIMConversation {
         public LCIMChatRoom(LCIMClient client) :
@@ -25,14 +25,29 @@ namespace LeanCloud.Realtime {
             return await Client.ConversationController.GetOnlineMembers(Id, limit);
         }
 
+        /// <summary>
+        /// Adds members to this conversation.
+        /// </summary>
+        /// <param name="clientIds"></param>
+        /// <returns></returns>
         public override Task<LCIMPartiallySuccessResult> AddMembers(IEnumerable<string> clientIds) {
             throw new Exception("Add members is not allowed in chat room.");
         }
 
+        /// <summary>
+        /// Flags the read status of this conversation.
+        /// But it is an no-op in LCIMChatRoom.
+        /// </summary>
+        /// <returns></returns>
         public override Task Read() {
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Fetchs the recipt timestamps of this conversation.
+        /// But it is an no-op in LCIMChatRoom.
+        /// </summary>
+        /// <returns></returns>
         public override Task FetchReciptTimestamps() {
             return Task.CompletedTask;
         }

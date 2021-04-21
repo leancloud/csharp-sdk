@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMOperationFailure is the failed result of a conversation operation.
+    /// </summary>
     public class LCIMOperationFailure {
         public int Code {
             get; set;

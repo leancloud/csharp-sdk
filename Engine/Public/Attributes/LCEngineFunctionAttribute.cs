@@ -1,6 +1,9 @@
 ﻿using System;
 
 namespace LeanCloud.Engine {
+    /// <summary>
+    /// LCEngineFunctionAttribute is an attribute of cloud function in engine.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class LCEngineFunctionAttribute : Attribute {
         public string FunctionName {

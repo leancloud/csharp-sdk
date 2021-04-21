@@ -5,6 +5,9 @@ using System.Linq;
 using LeanCloud.Storage.Internal.Operation;
 
 namespace LeanCloud.Storage {
+    /// <summary>
+    /// LCClassHook represents the hooks for saving / updating / deleting LCObject.
+    /// </summary>
     public static class LCClassHook {
         public const string BeforeSave = "beforeSave";
         public const string AfterSave = "afterSave";
@@ -17,6 +20,9 @@ namespace LeanCloud.Storage {
     public partial class LCObject {
         internal const string IgnoreHooksKey = "__ignore_hooks";
 
+        /// <summary>
+        /// Disable hooks before saving / updating / deleting LCObject.
+        /// </summary>
         public void DisableBeforeHook() {
             Ignore(
                 LCClassHook.BeforeSave,
@@ -24,6 +30,9 @@ namespace LeanCloud.Storage {
                 LCClassHook.BeforeDelete);
         }
 
+        /// <summary>
+        /// Disable hooks after saving / updating / deleting LCObject.
+        /// </summary>
         public void DisableAfterHook() {
             Ignore(
                 LCClassHook.AfterSave,
@@ -31,6 +40,10 @@ namespace LeanCloud.Storage {
                 LCClassHook.AfterDelete);
         }
 
+        /// <summary>
+        /// Ignores the hook for this LCObject.
+        /// </summary>
+        /// <param name="hookName"></param>
         public void IgnoreHook(string hookName) {
             if (hookName != LCClassHook.BeforeSave && hookName != LCClassHook.AfterSave &&
                 hookName != LCClassHook.BeforeUpdate && hookName != LCClassHook.AfterUpdate &&
@@ -46,6 +59,10 @@ namespace LeanCloud.Storage {
             ApplyOperation(IgnoreHooksKey, op);
         }
 
+        /// <summary>
+        /// Gets the updated keys of this LCObject.
+        /// </summary>
+        /// <returns></returns>
         public ReadOnlyCollection<string> GetUpdatedKeys() {
             if (this["_updatedKeys"] == null) {
                 return null;

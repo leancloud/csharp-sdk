@@ -5,6 +5,9 @@ using LeanCloud.Storage;
 using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMFileMessage is a local representation of file message in LeanCloud.
+    /// </summary>
     public class LCIMFileMessage : LCIMTextMessage {
         public LCFile File {
             get; set;

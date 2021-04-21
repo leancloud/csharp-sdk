@@ -1,6 +1,10 @@
 ﻿using System;
 
 namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMTemporaryConversation is a local representation of temporary conversation
+    /// in LeanCloud.
+    /// </summary>
     public class LCIMTemporaryConversation : LCIMConversation {
         public DateTime ExpiredAt {
             get;

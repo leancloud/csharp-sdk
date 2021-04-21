@@ -11,51 +11,60 @@ using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// LeanCloud Object
+    /// The LCObject is a local representation of data that can be saved and
+    /// retrieved from the LeanCloud.
     /// </summary>
     public partial class LCObject {
-        /// <summary>
-        /// Last synced data.
-        /// </summary>
         internal LCObjectData data;
 
-        /// <summary>
-        /// Estimated data.
-        /// </summary>
         internal Dictionary<string, object> estimatedData;
 
-        /// <summary>
-        /// Operations.
-        /// </summary>
         internal Dictionary<string, ILCOperation> operationDict;
 
         static readonly Dictionary<Type, LCSubclassInfo> subclassTypeDict = new Dictionary<Type, LCSubclassInfo>();
         static readonly Dictionary<string, LCSubclassInfo> subclassNameDict = new Dictionary<string, LCSubclassInfo>();
 
+        /// <summary>
+        /// Gets the class name for the LCObject.
+        /// </summary>
         public string ClassName {
             get {
                 return data.ClassName;
             }
         }
 
+        /// <summary>
+        /// Gets the object id. An object id is assigned as soon as an object is
+        /// saved to the server. The combination of a <see cref="ClassName"/> and
+        /// an <see cref="ObjectId"/> uniquely identifies an object in your application.
+        /// </summary>
         public string ObjectId {
             get {
                 return data.ObjectId;
             }
         }
 
+        /// <summary>
+        /// Gets the creation time of this object in the cloud.
+        /// </summary>
         public DateTime CreatedAt {
             get {
                 return data.CreatedAt;
             }
         }
 
+        /// <summary>
+        /// Gets the latest update time of this object in the cloud.
+        /// </summary>
         public DateTime UpdatedAt {
             get {
                 return data.UpdatedAt;
             }
         }
 
+        /// <summary>
+        /// Gets or sets the LCACL governing this object.
+        /// </summary>
         public LCACL ACL {
             get {
                 return this["ACL"] as LCACL ;
@@ -72,6 +81,12 @@ namespace LeanCloud.Storage {
             }
         }
 
+        /// <summary>
+        /// Constructs a new LCObject with no data in it. A LCObject constructed
+        /// in this way will not have an ObjectedId and will not persist in the cloud
+        /// until <see cref="Save(bool, LCQuery{LCObject}))"/> is called.
+        /// </summary>
+        /// <param name="className">The className for the LCObject.</param>
         public LCObject(string className) {
             if (string.IsNullOrEmpty(className)) {
                 throw new ArgumentNullException(nameof(className));
@@ -84,6 +99,12 @@ namespace LeanCloud.Storage {
             isNew = true;
         }
 
+        /// <summary>
+        /// Creates a reference to an existing LCObject.
+        /// </summary>
+        /// <param name="className">The className for the LCObject.</param>
+        /// <param name="objectId">The object id for the LCObject.</param>
+        /// <returns></returns>
         public static LCObject CreateWithoutData(string className, string objectId) {
             if (string.IsNullOrEmpty(objectId)) {
                 throw new ArgumentNullException(nameof(objectId));
@@ -94,6 +115,11 @@ namespace LeanCloud.Storage {
             return obj;
         }
 
+        /// <summary>
+        /// Creates a new LCObject.
+        /// </summary>
+        /// <param name="className">The className for the LCObject.</param>
+        /// <returns></returns>
         public static LCObject Create(string className) {
             if (subclassNameDict.TryGetValue(className, out LCSubclassInfo subclassInfo)) {
                 return subclassInfo.Constructor.Invoke();
@@ -108,6 +134,12 @@ namespace LeanCloud.Storage {
             return null;
         }
 
+        /// <summary>
+        /// Gets or sets a value on the object. It is forbidden to name keys
+        /// with a leading underscore ('_').
+        /// </summary>
+        /// <param name="key">The name of a key.</param>
+        /// <returns></returns>
         public object this[string key] {
             get {
                 if (estimatedData.TryGetValue(key, out object value)) {
@@ -148,6 +180,11 @@ namespace LeanCloud.Storage {
         }
 
 
+        /// <summary>
+        /// Creates a <see cref="LCRelation{T}"/> value for a key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void AddRelation(string key, LCObject value) {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
@@ -159,6 +196,11 @@ namespace LeanCloud.Storage {
             ApplyOperation(key, op);
         }
 
+        /// <summary>
+        /// Removes a <see cref="LCRelation{T}"/> value for a key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void RemoveRelation(string key, LCObject value) {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
@@ -324,6 +366,12 @@ namespace LeanCloud.Storage {
             }
         }
 
+        /// <summary>
+        /// Saves this object to the cloud.
+        /// </summary>
+        /// <param name="fetchWhenSave">Whether or not fetch data when saved.</param>
+        /// <param name="query">The condition for saving.</param>
+        /// <returns></returns>
         public async Task<LCObject> Save(bool fetchWhenSave = false, LCQuery<LCObject> query = null) {
             if (LCBatch.HasCircleReference(this, new HashSet<LCObject>())) {
                 throw new ArgumentException("Found a circle dependency when save.");
@@ -350,6 +398,11 @@ namespace LeanCloud.Storage {
             return this;
         }
 
+        /// <summary>
+        /// Saves each object in the provided list.
+        /// </summary>
+        /// <param name="objects">The objects to save.</param>
+        /// <returns></returns>
         public static async Task<List<LCObject>> SaveAll(IEnumerable<LCObject> objects) {
             if (objects == null) {
                 throw new ArgumentNullException(nameof(objects));
@@ -364,6 +417,10 @@ namespace LeanCloud.Storage {
             return objects.ToList();
         }
 
+        /// <summary>
+        /// Deletes this object in the cloud.
+        /// </summary>
+        /// <returns></returns>
         public async Task Delete() {
             if (ObjectId == null) {
                 return;
@@ -372,6 +429,11 @@ namespace LeanCloud.Storage {
             await LCCore.HttpClient.Delete(path);
         }
 
+        /// <summary>
+        /// Deletes each object in the provided list.
+        /// </summary>
+        /// <param name="objects"></param>
+        /// <returns></returns>
         public static async Task DeleteAll(IEnumerable<LCObject> objects) {
             if (objects == null || objects.Count() == 0) {
                 throw new ArgumentNullException(nameof(objects));
@@ -390,6 +452,12 @@ namespace LeanCloud.Storage {
             await LCCore.HttpClient.Post<List<object>>("batch", data: data);
         }
 
+        /// <summary>
+        /// Fetches this object from the cloud.
+        /// </summary>
+        /// <param name="keys">The keys for fetching.</param>
+        /// <param name="includes">The include keys for fetching.</param>
+        /// <returns></returns>
         public async Task<LCObject> Fetch(IEnumerable<string> keys = null, IEnumerable<string> includes = null) {
             Dictionary<string, object> queryParams = new Dictionary<string, object>();
             if (keys != null) {
@@ -405,6 +473,11 @@ namespace LeanCloud.Storage {
             return this;
         }
 
+        /// <summary>
+        /// Fetches all of the objects in the provided list.
+        /// </summary>
+        /// <param name="objects">The objects for fetching.</param>
+        /// <returns></returns>
         public static async Task<IEnumerable<LCObject>> FetchAll(IEnumerable<LCObject> objects) {
             if (objects == null || objects.Count() == 0) {
                 throw new ArgumentNullException(nameof(objects));
@@ -442,6 +515,13 @@ namespace LeanCloud.Storage {
             return objects;
         }
 
+        /// <summary>
+        /// Registers a custom subclass type with LeanCloud SDK, enabling strong-typing
+        /// of those LCObjects whenever they appear.
+        /// </summary>
+        /// <typeparam name="T">The LCObject subclass type to register.</typeparam>
+        /// <param name="className">The className on server.</param>
+        /// <param name="constructor">The constructor for creating an object.</param>
         public static void RegisterSubclass<T>(string className, Func<T> constructor) where T : LCObject {
             Type classType = typeof(T);
             LCSubclassInfo subclassInfo = new LCSubclassInfo(className, classType, constructor);

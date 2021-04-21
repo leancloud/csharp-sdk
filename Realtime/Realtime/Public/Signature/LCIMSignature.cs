@@ -1,4 +1,7 @@
 ﻿namespace LeanCloud.Realtime {
+    /// <summary>
+    /// LCIMSignature represents a LCRealtime signature.
+    /// </summary>
     public class LCIMSignature {
         public string Signature {
             get; set;

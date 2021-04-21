@@ -1,5 +1,5 @@
 ﻿using LeanCloud.Common;
-using LeanCloud.Storage;
+using LeanCloud.Storage.Internal;
 
 namespace LeanCloud {
     public class LCApplication {

@@ -6,7 +6,7 @@ using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// LeanEngine
+    /// LCCloud contains static functions that call LeanEngine cloud functions.
     /// </summary>
     public static class LCCloud {
         private const string PRODUCTION_KEY = "X-LC-Prod";
@@ -37,6 +37,13 @@ namespace LeanCloud.Storage {
             return response;
         }
 
+        /// <summary>
+        /// Invokes a cloud function.
+        /// </summary>
+        /// <typeparam name="T">The type of return value.</typeparam>
+        /// <param name="name">Cloud function name.</param>
+        /// <param name="parameters">Parameters of the cloud function.</param>
+        /// <returns></returns>
         public static async Task<T> Run<T>(string name,
             Dictionary<string, object> parameters = null) {
             Dictionary<string, object> response = await Run(name, parameters);
