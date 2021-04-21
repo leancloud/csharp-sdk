@@ -453,7 +453,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Fetches this object from server.
+        /// Fetches this object from the cloud.
         /// </summary>
         /// <param name="keys">The keys for fetching.</param>
         /// <param name="includes">The include keys for fetching.</param>
