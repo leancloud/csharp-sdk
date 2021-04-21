@@ -36,7 +36,7 @@ namespace LeanCloud.Realtime {
 
         /// <summary>
         /// Flags the read status of this conversation.
-        /// But it's nothing to do in LCIMChatRoom.
+        /// But it is an no-op in LCIMChatRoom.
         /// </summary>
         /// <returns></returns>
         public override Task Read() {
