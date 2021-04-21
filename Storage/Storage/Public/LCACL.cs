@@ -58,7 +58,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Gets whether the given user id is *explicitly* allowed to read this
+        /// Detects whether the given user id is *explicitly* allowed to read this
         /// object. Even if this returns false, the user may still be able to read
         /// it if <see cref="PublicReadAccess"/> is true or a role that the user
         /// belongs to has read access.
