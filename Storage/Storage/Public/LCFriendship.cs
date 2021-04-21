@@ -6,7 +6,7 @@ using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// LCFriendship contains static functions that handle the friendship of LeanCloud.
+    /// LCFriendship contains static functions that handle LCFriendship.
     /// </summary>
     public static class LCFriendship {
         /// <summary>
