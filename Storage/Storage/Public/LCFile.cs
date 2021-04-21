@@ -165,7 +165,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Gets the thumbnail url of image file.
+        /// Gets the thumbnail url of an image file.
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
