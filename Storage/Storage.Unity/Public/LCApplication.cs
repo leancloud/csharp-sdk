@@ -24,7 +24,7 @@ namespace LeanCloud {
         /// </summary>
         /// <param name="appId">The application id provided in LeanCloud dashboard.</param>
         /// <param name="appKey">The application key provided in LeanCloud dashboard.</param>
-        /// <param name="server">The server url bound by yourself.</param>
+        /// <param name="server">The server url, typically consist of your own domain.</param>
         /// <param name="masterKey">The application master key provided in LeanCloud dashboard.</param>
         public static void Initialize(string appId,
             string appKey,
