@@ -2,7 +2,7 @@
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// LCFollowersAndFollowees is a result that contains followers and followees.
+    /// LCFollowersAndFollowees contains followers and followees.
     /// </summary>
     public class LCFollowersAndFollowees {
         /// <summary>
