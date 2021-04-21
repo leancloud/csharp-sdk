@@ -33,7 +33,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Accepts the request of add friend.
+        /// Accepts a friend request.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="attributes">The additional attributes for the friendship.</param>
