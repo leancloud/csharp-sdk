@@ -45,7 +45,7 @@ namespace LeanCloud.Realtime {
 
         /// <summary>
         /// Fetchs the recipt timestamps of this conversation.
-        /// But it's nothing to do in LCIMChatRoom.
+        /// But it is an no-op in LCIMChatRoom.
         /// </summary>
         /// <returns></returns>
         public override Task FetchReciptTimestamps() {
