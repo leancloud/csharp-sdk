@@ -10,7 +10,7 @@ using LeanCloud.LiveQuery.Internal;
 
 namespace LeanCloud.LiveQuery {
     /// <summary>
-    /// LCLiveQuery provides the live query in LeanCloud.
+    /// LeanCloud LiveQuery.
     /// </summary>
     public class LCLiveQuery {
         /// <summary>
