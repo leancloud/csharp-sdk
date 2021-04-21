@@ -418,7 +418,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Deletes this object on the server.
+        /// Deletes this object in the cloud.
         /// </summary>
         /// <returns></returns>
         public async Task Delete() {
