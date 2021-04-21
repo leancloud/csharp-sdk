@@ -54,7 +54,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Gets the last time of this object was updated the server.
+        /// Gets the latest update time of this object in the cloud.
         /// </summary>
         public DateTime UpdatedAt {
             get {
