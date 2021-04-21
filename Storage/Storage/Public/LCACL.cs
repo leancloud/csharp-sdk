@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace LeanCloud.Storage {
     /// <summary>
     /// LCACL is used to control which users and roles can access or modify
-    /// a particular object. Each LCObject can have its own LCObject.
+    /// a particular object. Each LCObject can have its own LCACL.
     /// </summary>
     public class LCACL {
         const string PublicKey = "*";
