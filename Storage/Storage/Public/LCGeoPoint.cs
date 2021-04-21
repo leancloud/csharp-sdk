@@ -52,7 +52,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Calculate the distance in mile between this point and another GeoPoint.
+        /// Calculate the distance in miles between this point and another GeoPoint.
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
