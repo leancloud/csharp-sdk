@@ -83,7 +83,7 @@ namespace LeanCloud.Storage {
 
         /// <summary>
         /// Constructs a new LCObject with no data in it. A LCObject constructed
-        /// in this way will not have an ObjectedId and will not persist to database
+        /// in this way will not have an ObjectedId and will not persist in the cloud
         /// until <see cref="Save(bool, LCQuery{LCObject}))"/> is called.
         /// </summary>
         /// <param name="className">The className for the LCObject.</param>
