@@ -21,7 +21,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// The id since the query.
+        /// The since id for the query.
         /// </summary>
         public int SinceId {
             get; set;
