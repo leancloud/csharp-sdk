@@ -31,7 +31,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Disable to hook after saving / updating / deleting LCObject.
+        /// Disable hooks after saving / updating / deleting LCObject.
         /// </summary>
         public void DisableAfterHook() {
             Ignore(
