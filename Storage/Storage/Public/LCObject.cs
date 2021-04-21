@@ -138,7 +138,7 @@ namespace LeanCloud.Storage {
         /// Gets or sets a value on the object. It is forbidden to name keys
         /// with a leading underscore ('_').
         /// </summary>
-        /// <param name="key">The value for key.</param>
+        /// <param name="key">The name of a key.</param>
         /// <returns></returns>
         public object this[string key] {
             get {
