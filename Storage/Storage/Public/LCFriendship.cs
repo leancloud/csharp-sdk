@@ -10,7 +10,7 @@ namespace LeanCloud.Storage {
     /// </summary>
     public static class LCFriendship {
         /// <summary>
-        /// Requests to add friend.
+        /// Requests to add a friend.
         /// </summary>
         /// <param name="userId">The user id to add.</param>
         /// <param name="attributes">The additional attributes for the friendship.</param>
