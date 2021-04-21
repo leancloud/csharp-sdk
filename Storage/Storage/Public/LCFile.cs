@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LeanCloud.Common;
 using LeanCloud.Storage.Internal.File;
 using LeanCloud.Storage.Internal.Object;
+using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
     public class LCFile : LCObject {
@@ -124,11 +125,13 @@ namespace LeanCloud.Storage {
         async Task<Dictionary<string, object>> GetUploadToken() {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "name", Name },
-                { "key", Guid.NewGuid().ToString() },
                 { "__type", "File" },
                 { "mime_type", MimeType },
                 { "metaData", MetaData }
             };
+            if (ACL != null) {
+                data["ACL"] = LCEncoder.EncodeACL(ACL);
+            }
             return await LCCore.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
         }
 
