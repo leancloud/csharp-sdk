@@ -2,7 +2,7 @@
 
 namespace LeanCloud.Storage {
     /// <summary>
-    /// LCGeoPoint represents a latitude and longitude point that may be associated
+    /// LCGeoPoint represents a geographic location that may be associated
     /// with a key in a LCObject or used as a reference point for queries.
     /// </summary>
     public class LCGeoPoint {
