@@ -9,6 +9,7 @@ LeanCloud C# SDK，基于 .Net Standard 2.0 标准开发，包括服务如下：
 - 排行榜
 - 即时通讯
 - Live Query
+- 云引擎
 
 参考：[Unity Demo](https://github.com/leancloud/CSharp-SDK-Unity-Demo)
 
@@ -279,6 +280,10 @@ userLiveQuery.OnLogin = (user) => {
     WriteLine($"login: {user}");
 };
 ```
+
+## 云引擎
+
+[脚手架工程](https://github.com/leancloud/dotnet-core-getting-started)
 
 ## 文档
 
