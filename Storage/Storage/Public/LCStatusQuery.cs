@@ -45,7 +45,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Retrieves a list of LCStatus that satisfy the query from Server.
+        /// Retrieves a list of LCStatus that satisfy the query from the cloud.
         /// </summary>
         /// <returns></returns>
         public new async Task<ReadOnlyCollection<LCStatus>> Find() {
