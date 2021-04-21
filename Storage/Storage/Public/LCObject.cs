@@ -100,8 +100,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Creates a reference to an existing LCObject for use in creating
-        /// associations between LCObjects.
+        /// Creates a reference to an existing LCObject.
         /// </summary>
         /// <param name="className">The className for the LCObject.</param>
         /// <param name="objectId">The object id for the LCObject.</param>
