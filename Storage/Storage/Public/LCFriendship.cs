@@ -53,7 +53,7 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Declines the request of add friend.
+        /// Declines a friend request.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns></returns>
