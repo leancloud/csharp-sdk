@@ -12,7 +12,7 @@ using LeanCloud.Common;
 
 namespace LeanCloud.Engine {
     /// <summary>
-    /// LCEngine provides the initialization of Engine in LeanCloud.
+    /// LCEngine provides the initialization of LeanEngine.
     /// </summary>
     public class LCEngine {
         public const string LCEngineCORS = "LCEngineCORS";
