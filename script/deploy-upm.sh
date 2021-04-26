@@ -85,7 +85,12 @@ deploy() {
 }
 
 if [[ !($version =~ $VERSION_REGEX) ]]; then
-  echo 'invalid version'
+  echo 'Invalid version'
+  exit
+fi
+
+if !(test -f $UNITY_PATH); then
+  echo 'Unity does NOT exist.'
   exit
 fi
 
