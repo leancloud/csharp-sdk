@@ -15,7 +15,20 @@ LeanCloud C# SDK，基于 .Net Standard 2.0 标准开发，包括服务如下：
 
 ## 安装
 
+### 直接导入
+
 从 [Release](https://github.com/leancloud/csharp-sdk/releases) 下载指定版本 SDK，暂不支持 Nuget 方式。
+
+### UPM
+
+在 Unity 项目的 Packages/manifest.json 中添加依赖项
+
+```json
+"dependencies": {
+  "com.leancloud.storage": "https://github.com/leancloud/csharp-sdk-upm.git#storage-0.7.5",
+  "com.leancloud.realtime": "https://github.com/leancloud/csharp-sdk-upm.git#realtime-0.7.5"
+}
+```
 
 ## 编译
 
