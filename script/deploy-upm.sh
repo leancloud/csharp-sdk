@@ -6,7 +6,7 @@ version=$1
 STORAGE_RELEASE_URL="https://github.com/leancloud/csharp-sdk/releases/download/$version/LeanCloud-SDK-Storage-Unity.zip"
 REALTIME_RELEASE_URL="https://github.com/leancloud/csharp-sdk/releases/download/$version/LeanCloud-SDK-Realtime-Unity.zip"
 
-REPO_GIT_URL="git@github.com:leancloud/csharp-sdk.git"
+REPO_GIT_URL="git@github.com:leancloud/csharp-sdk-upm.git"
 
 UNITY_PATH="/Applications/Unity/Hub/Editor/2020.3.5f1c1/Unity.app/Contents/MacOS/Unity"
 
@@ -49,7 +49,7 @@ package() {
 # 生成 .meta 文件并 push 到 GitHub
 deploy() {
   upmPath=$1
-  tagPrefix=$1
+  tagPrefix=$2
 
   # 创建 Unity 工程
   unityProject=./Unity/UnityProject
@@ -96,6 +96,8 @@ fi
 
 upmStoragePath="upm-storage"
 upmRealtimePath="upm-realtime"
+storageTag="storage"
+realtimeTag="realtime"
 
 mkdir $upmStorage && mkdir $upmRealtime
 
@@ -107,5 +109,5 @@ diff $upmStoragePath/Plugins $upmRealtimePath/Plugins
 package ./Unity/storage.package.json $upmStoragePath
 package ./Unity/realtime.package.json $upmRealtimePath
 
-deploy $upmStoragePath
-deploy $upmRealtimePath
+deploy $upmStoragePath $storageTag
+deploy $upmRealtimePath $realtimeTag
