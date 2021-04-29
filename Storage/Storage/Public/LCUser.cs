@@ -550,7 +550,7 @@ namespace LeanCloud.Storage {
         }
 
         async Task LinkWithAuthData(string authType, Dictionary<string, object> data) {
-            Dictionary<string, object> oriAuthData = new Dictionary<string, object>(AuthData);
+            Dictionary<string, object> oriAuthData = new Dictionary<string, object>(AuthData ?? new Dictionary<string, object>());
             AuthData = new Dictionary<string, object> {
                 { authType, data }
             };
