@@ -5,17 +5,7 @@ using System.Threading.Tasks;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class QueryTest {
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
-        }
-
+    public class QueryTest : BaseTest {
         [Test]
         public async Task BaseQuery() {
             LCQuery<LCObject> query = new LCQuery<LCObject>("Hello");
@@ -80,19 +70,30 @@ namespace Storage.Test {
 
         [Test]
         public async Task Include() {
+            Hello hello = new Hello {
+                World = new World {
+                    Content = "7788"
+                }
+            };
+            await hello.Save();
+
             LCQuery<LCObject> query = new LCQuery<LCObject>("Hello");
             query.Include("objectValue");
-            LCObject hello = await query.Get("5e0d55aedd3c13006a53cd87");
-            LCObject world = hello["objectValue"] as LCObject;
-            TestContext.WriteLine(world["content"]);
-            Assert.AreEqual(world["content"], "7788");
+            Hello queryHello = (await query.Get(hello.ObjectId)) as Hello;
+            World world = queryHello.World;
+            TestContext.WriteLine(world.Content);
+            Assert.AreEqual(world.Content, "7788");
         }
 
         [Test]
         public async Task Get() {
+            Account account = new Account {
+                Balance = 1024
+            };
+            await account.Save();
             LCQuery<LCObject> query = new LCQuery<LCObject>("Account");
-            LCObject account = await query.Get("5e0d9f7fd4b56c008e5d048a");
-            Assert.AreEqual(account["balance"], 400);
+            Account newAccount = (await query.Get(account.ObjectId)) as Account;
+            Assert.AreEqual(newAccount.Balance, 1024);
         }
 
         [Test]
@@ -143,13 +144,19 @@ namespace Storage.Test {
 
         [Test]
         public async Task WhereObjectEquals() {
+            World world = new World();
+            Hello hello = new Hello {
+                World = world
+            };
+            await hello.Save();
+
             LCQuery<LCObject> worldQuery = new LCQuery<LCObject>("World");
-            LCObject world = await worldQuery.Get("5e0d55ae21460d006a1ec931");
+            LCObject queryWorld = await worldQuery.Get(world.ObjectId);
             LCQuery<LCObject> helloQuery = new LCQuery<LCObject>("Hello");
-            helloQuery.WhereEqualTo("objectValue", world);
-            LCObject hello = await helloQuery.First();
-            TestContext.WriteLine(hello.ObjectId);
-            Assert.AreEqual(hello.ObjectId, "5e0d55aedd3c13006a53cd87");
+            helloQuery.WhereEqualTo("objectValue", queryWorld);
+            LCObject queryHello = await helloQuery.First();
+            TestContext.WriteLine(queryHello.ObjectId);
+            Assert.AreEqual(queryHello.ObjectId, hello.ObjectId);
         }
 
         [Test]

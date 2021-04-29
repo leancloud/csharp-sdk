@@ -5,23 +5,13 @@ using System.Threading.Tasks;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    [TestFixture]
-    public class RoleTest {
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
-        }
-
+    public class RoleTest : BaseTest {
         [Test]
         public async Task NewRole() {
-            LCUser currentUser = await LCUser.Login("game", "play");
-            LCACL acl = new LCACL();
-            acl.PublicReadAccess = true;
+            LCUser currentUser = await LCUser.Login(TestPhone, TestPhone);
+            LCACL acl = new LCACL {
+                PublicReadAccess = true
+            };
             acl.SetUserWriteAccess(currentUser, true);
             string name = $"role_{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
             LCRole role = LCRole.Create(name, acl);

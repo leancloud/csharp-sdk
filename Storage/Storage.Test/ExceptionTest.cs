@@ -2,7 +2,7 @@
 using LeanCloud;
 
 namespace Storage.Test {
-    public class ExceptionTest {
+    public class ExceptionTest : BaseTest {
         [Test]
         public void LeanCloudException() {
             try {

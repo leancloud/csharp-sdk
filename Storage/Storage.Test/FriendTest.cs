@@ -8,7 +8,7 @@ using LeanCloud;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class FriendTest {
+    public class FriendTest : BaseTest {
         async Task<LCUser> SignUp() {
             LCUser user = new LCUser {
                 Username = Guid.NewGuid().ToString(),
@@ -35,16 +35,6 @@ namespace Storage.Test {
 
         private LCUser user1;
         private LCUser user2;
-
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
-        }
 
         [Test]
         [Order(0)]

@@ -9,21 +9,21 @@ using LeanCloud.Storage;
 using static NUnit.Framework.TestContext;
 
 namespace Storage.Test {
-    public class LeaderboardTest {
+    public class LeaderboardTest : BaseTest {
         private string leaderboardName;
 
         [SetUp]
-        public void SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            LCApplication.Initialize(Utils.AppId, Utils.AppKey, Utils.AppServer, Utils.MasterKey);
+        public override void SetUp() {
+            base.SetUp();
+            LCApplication.Initialize(AppId, AppKey, AppServer, MasterKey);
             LCApplication.UseMasterKey = true;
             leaderboardName = $"Leaderboard_{DateTimeOffset.Now.DayOfYear}";
         }
 
         [TearDown]
-        public void TearDown() {
+        public override void TearDown() {
+            base.TearDown();
             LCApplication.UseMasterKey = false;
-            Utils.TearDown();
         }
 
         [Test]

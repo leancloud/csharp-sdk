@@ -1,22 +1,11 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
-using LeanCloud;
 using LeanCloud.Storage;
 
 using static NUnit.Framework.TestContext;
 
 namespace Storage.Test {
-    public class CaptchaTest {
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
-        }
-
+    public class CaptchaTest : BaseTest {
         //[Test]
         public async Task Request() {
             LCCapture captcha = await LCCaptchaClient.RequestCaptcha();

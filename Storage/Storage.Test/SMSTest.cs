@@ -4,20 +4,10 @@ using System.Threading.Tasks;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class SMSTest {
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
-        }
-
+    public class SMSTest : BaseTest {
         //[Test]
         public async Task RequestSMS() {
-            await LCSMSClient.RequestSMSCode("15101006007",
+            await LCSMSClient.RequestSMSCode(TestPhone,
                 template: "test_template",
                 signature: "flutter-test",
                 variables: new Dictionary<string, object> {
@@ -27,12 +17,12 @@ namespace Storage.Test {
 
         //[Test]
         public async Task RequestVoice() {
-            await LCSMSClient.RequestVoiceCode("+8615101006007");
+            await LCSMSClient.RequestVoiceCode(TestPhone);
         }
 
-        //[Test]
+        [Test]
         public async Task Verify() {
-            await LCSMSClient.VerifyMobilePhone("15101006007", "");
+            await LCSMSClient.VerifyMobilePhone(TestPhone, TestSMSCode);
         }
     }
 }
