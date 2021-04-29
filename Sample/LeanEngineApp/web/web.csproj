@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ReleaseVersion>0.1.0</ReleaseVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Storage">
+      <HintPath>Libs\Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="Engine">
+      <HintPath>Libs\Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Storage.Standard">
+      <HintPath>Libs\Storage.Standard.dll</HintPath>
+    </Reference>
+    <Reference Include="Common">
+      <HintPath>Libs\Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Libs\Storage.pdb" />
+    <None Remove="Libs\Storage.pdb" />
+    <None Remove="Libs\Engine.dll" />
+    <None Remove="Libs\Engine.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Libs\Storage.deps.json" />
+    <Content Remove="Libs\Storage.deps.json" />
+    <Content Remove="Libs\Storage.deps.json" />
+    <Content Remove="Libs\Engine.deps.json" />
+    <Content Remove="Libs\Engine.deps.json" />
+    <Content Remove="Libs\Engine.deps.json" />
+    <Content Remove="Libs\Engine.deps.json" />
+    <Content Remove="Libs\Engine.deps.json" />
+  </ItemGroup>
+</Project>
