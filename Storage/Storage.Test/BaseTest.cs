@@ -57,8 +57,8 @@ namespace Storage.Test {
             LCLogger.LogDelegate += Print;
             LCApplication.Initialize(AppId, AppKey, AppServer);
             LCObject.RegisterSubclass("Account", () => new Account());
-            LCObject.RegisterSubclass<Hello>("Hello", () => new Hello());
-            LCObject.RegisterSubclass<World>("World", () => new World());
+            LCObject.RegisterSubclass("Hello", () => new Hello());
+            LCObject.RegisterSubclass("World", () => new World());
         }
 
         [TearDown]

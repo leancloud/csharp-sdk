@@ -23,9 +23,9 @@ namespace Storage.Test {
                 { "k2", true },
                 { "k3", "haha" }
             };
-            LCObject nestedObj = new LCObject("World");
-            nestedObj["content"] = "7788";
-            @object["objectValue"] = nestedObj;
+            World nestedObj = new World();
+            nestedObj.Content = "7788";
+            @object.World = nestedObj;
             @object["pointerList"] = new List<object> { new LCObject("World"), nestedObj };
             await @object.Save();
 

@@ -157,9 +157,10 @@ namespace Storage.Test {
         [Test]
         [Order(10)]
         public async Task UpdatePassword() {
-            LCUser currentUser = await LCUser.Login("hello", "world");
-            await currentUser.UpdatePassword("world", "newWorld");
-            await currentUser.UpdatePassword("newWorld", "world");
+            LCUser currentUser = await LCUser.Login(TestPhone, TestPhone);
+            string newPassword = "newpassword";
+            await currentUser.UpdatePassword(TestPhone, newPassword);
+            await currentUser.UpdatePassword(newPassword, TestPhone);
         }
 
         [Test]

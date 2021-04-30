@@ -18,7 +18,6 @@ namespace Storage.Test {
                 PublicWriteAccess = false
             };
             account.Balance = 1024;
-            account["balance"] = 1024;
             await account.Save();
             Assert.IsFalse(account.ACL.PublicReadAccess);
             Assert.IsFalse(account.ACL.PublicWriteAccess);
