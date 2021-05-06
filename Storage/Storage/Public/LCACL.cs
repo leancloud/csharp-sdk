@@ -173,7 +173,7 @@ namespace LeanCloud.Storage {
             if (role == null) {
                 throw new ArgumentNullException(nameof(role));
             }
-            string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
+            string roleKey = $"{RoleKeyPrefix}{role.Name}";
             return GetAccess(ReadAccess, roleKey);
         }
 
@@ -186,7 +186,7 @@ namespace LeanCloud.Storage {
             if (role == null) {
                 throw new ArgumentNullException(nameof(role));
             }
-            string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
+            string roleKey = $"{RoleKeyPrefix}{role.Name}";
             SetAccess(ReadAccess, roleKey, value);
         }
 
@@ -199,7 +199,7 @@ namespace LeanCloud.Storage {
             if (role == null) {
                 throw new ArgumentNullException(nameof(role));
             }
-            string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
+            string roleKey = $"{RoleKeyPrefix}{role.Name}";
             return GetAccess(WriteAccess, roleKey);
         }
 
@@ -212,7 +212,7 @@ namespace LeanCloud.Storage {
             if (role == null) {
                 throw new ArgumentNullException(nameof(role));
             }
-            string roleKey = $"{RoleKeyPrefix}{role.ObjectId}";
+            string roleKey = $"{RoleKeyPrefix}{role.Name}";
             SetAccess(WriteAccess, roleKey, value);
         }
 

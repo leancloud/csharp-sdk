@@ -6,37 +6,31 @@ using LeanCloud;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class FileTest {
+    public class FileTest : BaseTest {
         static readonly string AvatarFilePath = "../../../../../assets/hello.png";
         static readonly string APKFilePath = "../../../../../assets/test.apk";
 
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
+        private LCFile avatar;
 
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
+        [Test]
+        [Order(0)]
+        public async Task SaveFromPath() {
+            avatar = new LCFile("avatar", AvatarFilePath);
+            await avatar.Save((count, total) => {
+                TestContext.WriteLine($"progress: {count}/{total}");
+            });
+            TestContext.WriteLine(avatar.ObjectId);
+            Assert.NotNull(avatar.ObjectId);
         }
 
         [Test]
+        [Order(1)]
         public async Task QueryFile() {
             LCQuery<LCFile> query = LCFile.GetQuery();
-            LCFile file = await query.Get("5e0dbfa0562071008e21c142");
+            LCFile file = await query.Get(avatar.ObjectId);
             Assert.NotNull(file.Url);
             TestContext.WriteLine(file.Url);
             TestContext.WriteLine(file.GetThumbnailUrl(32, 32));
-        }
-
-        [Test]
-        public async Task SaveFromPath() {
-            LCFile file = new LCFile("avatar", AvatarFilePath);
-            await file.Save((count, total) => {
-                TestContext.WriteLine($"progress: {count}/{total}");
-            });
-            TestContext.WriteLine(file.ObjectId);
-            Assert.NotNull(file.ObjectId);
         }
 
         [Test]
@@ -70,17 +64,6 @@ namespace Storage.Test {
         }
 
         [Test]
-        public async Task AWS() {
-            LCApplication.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r");
-            LCFile file = new LCFile("avatar", AvatarFilePath);
-            await file.Save((count, total) => {
-                TestContext.WriteLine($"progress: {count}/{total}");
-            });
-            TestContext.WriteLine(file.ObjectId);
-            Assert.NotNull(file.ObjectId);
-        }
-
-        [Test]
         public async Task FileACL() {
             LCUser user = await LCUser.LoginAnonymously();
 
@@ -101,5 +84,16 @@ namespace Storage.Test {
                 Assert.AreEqual(e.Code, 403);
             }
         }
+
+        //[Test]
+        //public async Task AWS() {
+        //    LCApplication.Initialize("UlCpyvLm8aMzQsW6KnP6W3Wt-MdYXbMMI", "PyCTYoNoxCVoKKg394PBeS4r");
+        //    LCFile file = new LCFile("avatar", AvatarFilePath);
+        //    await file.Save((count, total) => {
+        //        TestContext.WriteLine($"progress: {count}/{total}");
+        //    });
+        //    TestContext.WriteLine(file.ObjectId);
+        //    Assert.NotNull(file.ObjectId);
+        //}
     }
 }

@@ -4,39 +4,31 @@ using System.Threading.Tasks;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class OperationTest {
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
-        }
-
+    public class OperationTest : BaseTest {
         [Test]
         public async Task Increment() {
-            LCQuery<LCObject> query = new LCQuery<LCObject>("Account");
-            LCObject account = await query.Get("5e154a5143c257006fbff63f");
-            TestContext.WriteLine(account["balance"]);
-            int balance = (int)account["balance"];
+            Account account = new Account {
+                Balance = 10
+            };
+            await account.Save();
+            TestContext.WriteLine(account.Balance);
             account.Increment("balance", 100);
             await account.Save();
-            TestContext.WriteLine(account["balance"]);
-            Assert.AreEqual((int)account["balance"], balance + 100);
+            TestContext.WriteLine(account.Balance);
+            Assert.AreEqual(account.Balance, 110);
         }
 
         [Test]
         public async Task Decrement() {
-            LCQuery<LCObject> query = new LCQuery<LCObject>("Account");
-            LCObject account = await query.Get("5e154a5143c257006fbff63f");
-            TestContext.WriteLine(account["balance"]);
-            int balance = (int)account["balance"];
+            Account account = new Account {
+                Balance = 100
+            };
+            await account.Save();
+            TestContext.WriteLine(account.Balance);
             account.Increment("balance", -10);
             await account.Save();
-            TestContext.WriteLine(account["balance"]);
-            Assert.AreEqual((int)account["balance"], balance - 10);
+            TestContext.WriteLine(account.Balance);
+            Assert.AreEqual(account.Balance, 90);
         }
 
         [Test]

@@ -1,0 +1,75 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "Engine/1.0.0": {
+        "dependencies": {
+          "Storage.Standard": "1.0.0"
+        },
+        "runtime": {
+          "Engine.dll": {}
+        }
+      },
+      "Common/1.0.0": {
+        "dependencies": {
+          "LC.Newtonsoft.Json": "11.0.1-beta2"
+        },
+        "runtime": {
+          "Common.dll": {}
+        }
+      },
+      "LC.Newtonsoft.Json/11.0.1-beta2": {
+        "runtime": {
+          "LC.Newtonsoft.Json.dll": {}
+        }
+      },
+      "Storage/1.0.0": {
+        "dependencies": {
+          "Common": "1.0.0"
+        },
+        "runtime": {
+          "Storage.dll": {}
+        }
+      },
+      "Storage.Standard/1.0.0": {
+        "dependencies": {
+          "Storage": "1.0.0"
+        },
+        "runtime": {
+          "Storage.Standard.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Common/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "LC.Newtonsoft.Json/11.0.1-beta2": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Storage/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Storage.Standard/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

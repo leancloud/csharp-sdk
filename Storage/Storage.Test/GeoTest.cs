@@ -2,7 +2,7 @@
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class GeoTest {
+    public class GeoTest : BaseTest {
         [Test]
         public void Calculate() {
             LCGeoPoint p1 = new LCGeoPoint(20.0059, 110.3665);

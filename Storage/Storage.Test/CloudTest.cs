@@ -2,83 +2,60 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using LeanCloud;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class CloudTest {
-        [SetUp]
-        public void SetUp() {
-            LCLogger.LogDelegate += Utils.Print;
-            //LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
-            LCApplication.Initialize("8ijVI3gBAnPGynW0rVfh5gHP-gzGzoHsz", "265r8JSHhNYpV0qIJBvUWrQY", "https://8ijvi3gb.lc-cn-n1-shared.com");
-        }
-
-        [TearDown]
-        public void TearDown() {
-            LCLogger.LogDelegate -= Utils.Print;
+    public class CloudTest : BaseTest {
+        [Test]
+        public async Task Ping() {
+            Dictionary<string, object> response = await LCCloud.Run("ping");
+            TestContext.WriteLine(response["result"]);
+            Assert.AreEqual(response["result"], "pong");
         }
 
         [Test]
-        public async Task Call() {
-            Dictionary<string, object> response = await LCCloud.Run("hello", parameters: new Dictionary<string, object> {
+        public async Task Hello() {
+            string result = await LCCloud.Run<string>("hello", new Dictionary<string, object> {
                 { "name", "world" }
             });
-            TestContext.WriteLine(response["result"]);
-            Assert.AreEqual(response["result"], "Hello, world!");
+            TestContext.WriteLine(result);
+            Assert.AreEqual(result, "hello, world");
         }
 
         [Test]
-        public async Task RunAverageScore() {
-            float score = await LCCloud.Run<float>("averageStars", new Dictionary<string, object> {
-                { "movie", "夏洛特烦恼" }
+        public async Task GetObject() {
+            LCObject hello = new LCObject("Hello");
+            await hello.Save();
+            object reponse = await LCCloud.RPC("getObject", new Dictionary<string, object> {
+                { "className", "Hello" },
+                { "id", hello.ObjectId }
             });
-            TestContext.WriteLine($"score: {score}");
-            Assert.True(score.Equals(3.8f));
+            LCObject obj = reponse as LCObject;
+            Assert.AreEqual(obj.ObjectId, hello.ObjectId);
         }
 
         [Test]
-        public async Task CallWithoutParams() {
-            await LCCloud.Run("hello");
-        }
-
-        [Test]
-        public async Task RPC() {
-            List<object> result = await LCCloud.RPC("getTycoonList") as List<object>;
-            IEnumerable<LCObject> tycoonList = result.Cast<LCObject>();
-            foreach (LCObject item in tycoonList) {
-                TestContext.WriteLine(item.ObjectId);
-                Assert.NotNull(item.ObjectId);
+        public async Task GetObjects() {
+            object response = await LCCloud.RPC("getObjects");
+            List<object> list = response as List<object>;
+            IEnumerable<LCObject> objects = list.Cast<LCObject>();
+            TestContext.WriteLine(objects.Count());
+            Assert.Greater(objects.Count(), 0);
+            foreach (LCObject obj in objects) {
+                int balance = (int)obj["balance"];
+                Assert.Greater(balance, 100);
             }
         }
 
         [Test]
-        public async Task RPCObject() {
-            LCQuery<LCObject> query = new LCQuery<LCObject>("Todo");
-            LCObject todo = await query.Get("6052cd87b725a143ea83dbf8");
-            object result = await LCCloud.RPC("getTodo", todo);
-            LCObject obj = result as LCObject;
-            TestContext.WriteLine(obj.ToString());
-        }
-
-        [Test]
-        public async Task RPCObjects() {
-            Dictionary<string, object> parameters = new Dictionary<string, object> {
-                { "limit", 20 }
-            };
-            List<object> result = await LCCloud.RPC("getTodos", parameters) as List<object>;
-            IEnumerable<LCObject> todos = result.Cast<LCObject>();
-            foreach (LCObject todo in todos) {
-                TestContext.WriteLine(todo.ObjectId);
-            }
-        }
-
-        [Test]
-        public async Task RPCObjectMap() {
-            Dictionary<string, object> result = await LCCloud.RPC("getTodoMap") as Dictionary<string, object>;
-            foreach (KeyValuePair<string, object> kv in result) {
-                LCObject todo = kv.Value as LCObject;
-                TestContext.WriteLine(todo.ObjectId);
+        public async Task GetObjectMap() {
+            object response = await LCCloud.RPC("getObjectMap");
+            Dictionary<string, object> dict = response as Dictionary<string, object>;
+            TestContext.WriteLine(dict.Count);
+            Assert.Greater(dict.Count, 0);
+            foreach (KeyValuePair<string, object> kv in dict) {
+                LCObject obj = kv.Value as LCObject;
+                Assert.AreEqual(kv.Key, obj.ObjectId);
             }
         }
     }

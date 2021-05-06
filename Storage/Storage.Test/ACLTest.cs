@@ -1,46 +1,40 @@
 ﻿using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System;
 using LeanCloud;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class ACLTest {
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
-        }
+    public class ACLTest : BaseTest {
+        private Account account;
 
         [Test]
+        [Order(0)]
         public async Task PrivateReadAndWrite() {
-            LCObject account = new LCObject("Account");
-            LCACL acl = new LCACL();
-            acl.PublicReadAccess = false;
-            acl.PublicWriteAccess = false;
-            account.ACL = acl;
-            account["balance"] = 1024;
+            Account account = new Account();
+            account.ACL = new LCACL {
+                PublicReadAccess = false,
+                PublicWriteAccess = false
+            };
+            account.Balance = 1024;
             await account.Save();
-            Assert.IsFalse(acl.PublicReadAccess);
-            Assert.IsFalse(acl.PublicWriteAccess);
+            Assert.IsFalse(account.ACL.PublicReadAccess);
+            Assert.IsFalse(account.ACL.PublicWriteAccess);
         }
 
         [Test]
+        [Order(1)]
         public async Task UserReadAndWrite() {
-            await LCUser.Login("hello", "world");
-            LCObject account = new LCObject("Account");
+            await LCUser.Login(TestPhone, TestPhone);
+            account = new Account();
             LCUser currentUser = await LCUser.GetCurrent();
-            LCACL acl = LCACL.CreateWithOwner(currentUser);
-            account.ACL = acl;
-            account["balance"] = 512;
+            account.ACL = LCACL.CreateWithOwner(currentUser);
+            account.Balance = 512;
             await account.Save();
 
-            Assert.IsTrue(acl.GetUserReadAccess(currentUser));
-            Assert.IsTrue(acl.GetUserWriteAccess(currentUser));
+            Assert.IsTrue(account.ACL.GetUserReadAccess(currentUser));
+            Assert.IsTrue(account.ACL.GetUserWriteAccess(currentUser));
 
             LCQuery<LCObject> query = new LCQuery<LCObject>("Account");
             LCObject result = await query.Get(account.ObjectId);
@@ -57,29 +51,39 @@ namespace Storage.Test {
         }
 
         [Test]
+        [Order(2)]
         public async Task RoleReadAndWrite() {
-            LCQuery<LCRole> query = LCRole.GetQuery();
-            LCRole owner = await query.Get("5e1440cbfc36ed006add1b8d");
-            LCObject account = new LCObject("Account");
+            LCUser currentUser = await LCUser.Login(TestPhone, TestPhone);
+            string name = $"role_{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+            LCACL roleACL = new LCACL();
+            roleACL.SetUserReadAccess(currentUser, true);
+            roleACL.SetUserWriteAccess(currentUser, true);
+            LCRole role = LCRole.Create(name, roleACL);
+            role.AddRelation("users", currentUser);
+            await role.Save();
+
+            account = new Account();
             LCACL acl = new LCACL();
-            acl.SetRoleReadAccess(owner, true);
-            acl.SetRoleWriteAccess(owner, true);
+            acl.SetRoleReadAccess(role, true);
+            acl.SetRoleWriteAccess(role, true);
             account.ACL = acl;
             await account.Save();
-            Assert.IsTrue(acl.GetRoleReadAccess(owner));
-            Assert.IsTrue(acl.GetRoleWriteAccess(owner));
+            Assert.IsTrue(acl.GetRoleReadAccess(role));
+            Assert.IsTrue(acl.GetRoleWriteAccess(role));
         }
 
         [Test]
+        [Order(3)]
         public async Task Query() {
-            await LCUser.Login("game", "play");
+            await LCUser.Login(TestPhone, TestPhone);
             LCQuery<LCObject> query = new LCQuery<LCObject>("Account");
-            LCObject account = await query.Get("5e144525dd3c13006a8f8de2");
-            TestContext.WriteLine(account.ObjectId);
-            Assert.NotNull(account.ObjectId);
+            Account queryAccount = (await query.Get(account.ObjectId)) as Account;
+            TestContext.WriteLine(queryAccount.ObjectId);
+            Assert.NotNull(queryAccount.ObjectId);
         }
 
         [Test]
+        [Order(4)]
         public async Task Serialization() {
             await LCUser.Login("hello", "world");
             LCQuery<LCObject> query = new LCQuery<LCObject>("Account") {

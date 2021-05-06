@@ -6,20 +6,10 @@ using System.Collections.ObjectModel;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class StatusTest {
+    public class StatusTest : BaseTest {
         private LCUser user1;
         private LCUser user2;
         private LCUser user3;
-
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
-        }
 
         [Test]
         [Order(0)]

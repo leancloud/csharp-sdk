@@ -4,23 +4,18 @@ using System.Collections.ObjectModel;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
-    public class RelationTest {
-        [SetUp]
-        public void SetUp() {
-            Utils.SetUp();
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
-        }
+    public class RelationTest : BaseTest {
+        private LCObject parent;
+        private LCObject c1;
+        private LCObject c2;
 
         [Test]
+        [Order(0)]
         public async Task AddAndRemove() {
-            LCObject parent = new LCObject("Parent");
-            LCObject c1 = new LCObject("Child");
+            parent = new LCObject("Parent");
+            c1 = new LCObject("Child");
             parent.AddRelation("children", c1);
-            LCObject c2 = new LCObject("Child");
+            c2 = new LCObject("Child");
             parent.AddRelation("children", c2);
             await parent.Save();
 
@@ -40,10 +35,11 @@ namespace Storage.Test {
         }
 
         [Test]
+        [Order(1)]
         public async Task Query() {
             LCQuery<LCObject> query = new LCQuery<LCObject>("Parent");
-            LCObject parent = await query.Get("5e13112021b47e0070ed0922");
-            LCRelation<LCObject> relation = parent["children"] as LCRelation<LCObject>;
+            LCObject queryParent = await query.Get(parent.ObjectId);
+            LCRelation<LCObject> relation = queryParent["children"] as LCRelation<LCObject>;
 
             TestContext.WriteLine(relation.Key);
             TestContext.WriteLine(relation.Parent);

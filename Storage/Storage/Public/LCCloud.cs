@@ -30,7 +30,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> headers = new Dictionary<string, object> {
                 { PRODUCTION_KEY, IsProduction ? 1 : 0 }
             };
-            object encodeParams = LCEncoder.Encode(parameters);
+            object encodeParams = LCEncoder.Encode(parameters ?? new Dictionary<string, object>());
             Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>(path,
                 headers: headers,
                 data: encodeParams);
@@ -59,7 +59,8 @@ namespace LeanCloud.Storage {
         /// <param name="name">Cloud function name.</param>
         /// <param name="parameters">Parameters of cloud function.</param>
         /// <returns>LCObject, List<LCObject>, or Map<string, LCObject>.</returns>
-        public static async Task<object> RPC(string name, object parameters = null) {
+        public static async Task<object> RPC(string name,
+            object parameters = null) {
             string path = $"call/{name}";
             Dictionary<string, object> headers = new Dictionary<string, object> {
                 { PRODUCTION_KEY, IsProduction ? 1 : 0 }
