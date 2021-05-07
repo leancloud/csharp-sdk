@@ -19,7 +19,7 @@ namespace LeanCloud.Common {
             }
 
             string path = GetFileFullPath(filename);
-            using (FileStream fs = IOFile.OpenWrite(path)) {
+            using (FileStream fs = IOFile.Create(path)) {
                 byte[] buffer = Encoding.UTF8.GetBytes(text);
                 await fs.WriteAsync(buffer, 0, buffer.Length);
             }
