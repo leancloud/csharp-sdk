@@ -127,9 +127,6 @@ namespace LeanCloud.Storage {
                 throw new ArgumentException("Cannot sign up a user that already exists.");
             }
             await Save();
-            currentUser = this;
-
-            await SaveToLocal();
 
             return this;
         }
@@ -555,7 +552,7 @@ namespace LeanCloud.Storage {
                 { authType, data }
             };
             try {
-                await Save();
+                await base.Save();
                 oriAuthData[authType] = data;
                 await UpdateAuthData(oriAuthData);
             } catch (Exception e) {
@@ -570,7 +567,7 @@ namespace LeanCloud.Storage {
                 { authType, null }
             };
             try {
-                await Save();
+                await base.Save();
                 oriAuthData.Remove(authType);
                 await UpdateAuthData(oriAuthData);
             } catch (Exception e) {
@@ -764,6 +761,13 @@ namespace LeanCloud.Storage {
                 result.FolloweesCount = followeesCount;
             }
             return result;
+        }
+
+        public new async Task<LCUser> Save(bool fetchWhenSave = false, LCQuery<LCObject> query = null) {
+            await base.Save(fetchWhenSave, query);
+            currentUser = this;
+            await SaveToLocal();
+            return this;
         }
     }
 }
