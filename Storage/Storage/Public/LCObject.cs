@@ -572,8 +572,8 @@ namespace LeanCloud.Storage {
         public void Merge(LCObjectData objectData) {
             data.ClassName = objectData.ClassName ?? data.ClassName;
             data.ObjectId = objectData.ObjectId ?? data.ObjectId;
-            data.CreatedAt = objectData.CreatedAt != null ? objectData.CreatedAt : data.CreatedAt;
-            data.UpdatedAt = objectData.UpdatedAt != null ? objectData.UpdatedAt : data.UpdatedAt;
+            data.CreatedAt = !objectData.CreatedAt.Equals(default) ? objectData.CreatedAt : data.CreatedAt;
+            data.UpdatedAt = !objectData.UpdatedAt.Equals(default) ? objectData.UpdatedAt : data.UpdatedAt;
             // 先将本地的预估数据直接替换
             data.CustomPropertyDict = estimatedData;
             // 再将服务端的数据覆盖
