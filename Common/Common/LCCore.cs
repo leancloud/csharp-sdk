@@ -7,7 +7,7 @@ namespace LeanCloud.Common {
     /// </summary>
     public class LCCore {
         // SDK 版本号，用于 User-Agent 统计
-        public const string SDKVersion = "0.7.6";
+        public const string SDKVersion = "0.7.7";
 
         // 接口版本号，用于接口版本管理
         public const string APIVersion = "1.1";
