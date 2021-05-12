@@ -205,6 +205,19 @@ namespace LeanCloud.Storage {
             return this;
         }
 
+        public LCQuery<T> WhereWithinRadians(string key, LCGeoPoint point, double maxDistance) {
+            Condition.WhereWithinRadians(key, point, maxDistance);
+            return this;
+        }
+
+        public LCQuery<T> WhereWithinMiles(string key, LCGeoPoint point, double maxDistance) {
+            return WhereWithinRadians(key, point, maxDistance / 3958.8);
+        }
+
+        public LCQuery<T> WhereWithinKilometers(string key, LCGeoPoint point, double maxDistance) {
+            return WhereWithinRadians(key, point, maxDistance / 6371.0);
+        }
+
         /// <summary>
         ///  The value corresponding to key is related to the parent.
         /// </summary>

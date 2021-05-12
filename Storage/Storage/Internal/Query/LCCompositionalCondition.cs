@@ -94,6 +94,14 @@ namespace LeanCloud.Storage.Internal.Query {
             AddOperation(key, "$within", value);
         }
 
+        public void WhereWithinRadians(string key, LCGeoPoint point, double maxDistance) {
+            Dictionary<string, object> value = new Dictionary<string, object> {
+                { "$nearSphere", point },
+                { "$maxDistance", maxDistance }
+            };
+            Add(new LCEqualCondition(key, value));
+        }
+
         public void WhereRelatedTo(LCObject parent, string key) {
             Add(new LCRelatedCondition(parent, key));
         }
