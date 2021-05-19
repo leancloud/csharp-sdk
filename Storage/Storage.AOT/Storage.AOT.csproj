@@ -155,5 +155,14 @@
     <Compile Include="..\Storage\Internal\LCStorage.cs">
       <Link>Storage\Internal\LCStorage.cs</Link>
     </Compile>
+    <Compile Include="..\Storage\Public\LCSearchQuery.cs">
+      <Link>Storage\Public\LCSearchQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Public\LCSearchResponse.cs">
+      <Link>Storage\Public\LCSearchResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Public\LCSearchSortBuilder.cs">
+      <Link>Storage\Public\LCSearchSortBuilder.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>
