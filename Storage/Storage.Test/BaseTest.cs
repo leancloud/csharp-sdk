@@ -43,6 +43,24 @@ namespace Storage.Test {
         internal Account() : base("Account") { }
     }
 
+    internal class ObjectWithFile : LCObject {
+        internal LCFile File {
+            get => this["file"] as LCFile;
+            set {
+                this["file"] = value;
+            }
+        }
+
+        internal LCUser Owner {
+            get => this["owner"] as LCUser;
+            set {
+                this["owner"] = value;
+            }
+        }
+
+        internal ObjectWithFile() : base("ObjectWithFile") {}
+    }
+
     public class BaseTest {
         internal const string AppId = "ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz";
         internal const string AppKey = "NUKmuRbdAhg1vrb2wexYo1jo";
@@ -59,6 +77,7 @@ namespace Storage.Test {
             LCObject.RegisterSubclass("Account", () => new Account());
             LCObject.RegisterSubclass("Hello", () => new Hello());
             LCObject.RegisterSubclass("World", () => new World());
+            LCObject.RegisterSubclass("ObjectWithFile", () => new ObjectWithFile());
         }
 
         [TearDown]
