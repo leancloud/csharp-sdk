@@ -73,12 +73,8 @@ namespace LeanCloud.Storage {
             }
         }
 
-        bool isNew;
-
         bool IsDirty {
-            get {
-                return isNew || estimatedData.Count > 0;
-            }
+            get; set;
         }
 
         /// <summary>
@@ -96,7 +92,7 @@ namespace LeanCloud.Storage {
             operationDict = new Dictionary<string, ILCOperation>();
 
             data.ClassName = className;
-            isNew = true;
+            IsDirty = true;
         }
 
         /// <summary>
@@ -111,7 +107,7 @@ namespace LeanCloud.Storage {
             }
             LCObject obj = Create(className);
             obj.data.ObjectId = objectId;
-            obj.isNew = false;
+            obj.IsDirty = false;
             return obj;
         }
 
@@ -327,8 +323,19 @@ namespace LeanCloud.Storage {
         static async Task SaveBatches(Stack<LCBatch> batches) {
             while (batches.Count > 0) {
                 LCBatch batch = batches.Pop();
+
+                // 特殊处理 File 依赖
+                IEnumerable<LCFile> dirtyFiles = batch.objects.Where(item => (item is LCFile) && item.IsDirty)
+                                                        .Cast<LCFile>();
+                foreach (LCFile file in dirtyFiles) {
+                    await file.Save();
+                }
+
                 List<LCObject> dirtyObjects = batch.objects.Where(item => item.IsDirty)
                                                             .ToList();
+                if (dirtyObjects.Count == 0) {
+                    continue;
+                }
 
                 List<Dictionary<string, object>> requestList = dirtyObjects.Select(item => {
                     string path = item.ObjectId == null ?
@@ -567,6 +574,7 @@ namespace LeanCloud.Storage {
             } else {
                 operationDict[key] = op;
             }
+            IsDirty = true;
         }
 
         public void Merge(LCObjectData objectData) {
@@ -587,7 +595,7 @@ namespace LeanCloud.Storage {
             RebuildEstimatedData();
             // 清空操作
             operationDict.Clear();
-            isNew = false;
+            IsDirty = false;
         }
 
         void RebuildEstimatedData() {

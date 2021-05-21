@@ -13,14 +13,16 @@ namespace LeanCloud.Storage.Internal.Codec {
                         return DecodeDate(dict);
                     } else if (type == "Bytes") {
                         return DecodeBytes(dict);
-                    } else if (type == "Object") {
+                    } else if (type == "Pointer") {
                         return DecodeObject(dict);
-                    } else if (type == "Pointer" || type == "Object") {
+                    } else if (type == "Object") {
                         return DecodeObject(dict);
                     } else if (type == "Relation") {
                         return DecodeRelation(dict);
                     } else if (type == "GeoPoint") {
                         return DecodeGeoPoint(dict);
+                    } else if (type == "File") {
+                        return DecodeFile(dict);
                     }
                 }
                 Dictionary<string, object> d = new Dictionary<string, object>();
@@ -59,6 +61,13 @@ namespace LeanCloud.Storage.Internal.Codec {
             LCObjectData objectData = LCObjectData.Decode(dict as Dictionary<string, object>);
             obj.Merge(objectData);
             return obj;
+        }
+
+        public static LCFile DecodeFile(IDictionary dict) {
+            LCFile file = new LCFile();
+            LCObjectData objectData = LCObjectData.Decode(dict as Dictionary<string, object>);
+            file.Merge(objectData);
+            return file;
         }
 
         public static LCRelation<LCObject> DecodeRelation(IDictionary dict) {

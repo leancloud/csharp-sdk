@@ -34,5 +34,24 @@ namespace Storage.Test {
             await account.Save();
             await account.Delete();
         }
+
+        [Test]
+        public async Task ObjectWithFile() {
+            LCUser user = await LCUser.Login("hello", "world");
+            ObjectWithFile obj = new ObjectWithFile() {
+                File = new LCFile("avatar", "../../../../../assets/hello.png"),
+                Owner = user
+            };
+            await obj.Save();
+
+            LCQuery<ObjectWithFile> query = new LCQuery<ObjectWithFile>("ObjectWithFile");
+            ObjectWithFile obj2 = await query.Get(obj.ObjectId);
+
+            TestContext.WriteLine(obj2.File.Url);
+            TestContext.WriteLine(obj2.Owner.ObjectId);
+
+            Assert.IsNotNull(obj2.File.Url);
+            Assert.IsNotNull(obj2.Owner.ObjectId);
+        }
     }
 }
