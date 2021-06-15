@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['manager',['Manager',['../classLeanCloud_1_1Realtime_1_1LCIMConversationMemberInfo.html#a5d3290e46f3d326c80676a1b41ea503a',1,'LeanCloud::Realtime::LCIMConversationMemberInfo']]],
+  ['member',['Member',['../classLeanCloud_1_1Realtime_1_1LCIMConversationMemberInfo.html#a09d186bdba672fbecb0d1fed5cb6622a',1,'LeanCloud::Realtime::LCIMConversationMemberInfo']]],
+  ['messageattributeskey',['MessageAttributesKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a86eca7162cd90b8a02ec77b24217adff',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedatalatitudekey',['MessageDataLatitudeKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#afe77c5498164e5e1a2155232cce2820a',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedatalongitudekey',['MessageDataLongitudeKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a7825be390e60dfd0cea65b7bfc4c225c',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedatametadatakey',['MessageDataMetaDataKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#abc56fd85f410ff8d57ca2b72ec215dae',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedatametadurationkey',['MessageDataMetaDurationKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a44f87d4a82a6d3d90983b06ebf562b65',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedatametaformatkey',['MessageDataMetaFormatKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#ae9efec67d12afa453492080278830ad7',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedatametaheightkey',['MessageDataMetaHeightKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a423d97ae57b95470f8f5375512c2c7f8',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedatametanamekey',['MessageDataMetaNameKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#ae5ea6b930fd8d7bc70461865f89060d7',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedatametasizekey',['MessageDataMetaSizeKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a7d39cd36dce7e093daa1fc6603205903',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedatametawidthkey',['MessageDataMetaWidthKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#aced79d0dd04da9a10ae424ca962a8a2b',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedataobjectidkey',['MessageDataObjectIdKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a553adbc70dfeab4efe13bfd4ca5a33cd',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagedataurlkey',['MessageDataUrlKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a53a35fb0be3480bc69ec54e95e6d7ddf',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagefilekey',['MessageFileKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#ac4eadee5063c01699f0947af3cdd9fbf',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messageidkey',['MessageIdKey',['../classLeanCloud_1_1Storage_1_1LCStatus.html#a7b4dca2b108b3d449864d95e5e8630a2',1,'LeanCloud::Storage::LCStatus']]],
+  ['messagelocationkey',['MessageLocationKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a29956b919cbb5851fb45f76f57da706c',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagetextkey',['MessageTextKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#ab74a39f755778fdfd0490d3ff8e8106a',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['messagetype',['MessageType',['../classLeanCloud_1_1Realtime_1_1LCIMAudioMessage.html#a24cf61ef1ed172c6a27ef7d8ca55fd57',1,'LeanCloud.Realtime.LCIMAudioMessage.MessageType()'],['../classLeanCloud_1_1Realtime_1_1LCIMFileMessage.html#a9e8a0aea2588ebc3be1881f4c7386750',1,'LeanCloud.Realtime.LCIMFileMessage.MessageType()'],['../classLeanCloud_1_1Realtime_1_1LCIMImageMessage.html#a9381c408b06f8679dd4b6d71ee99f8c7',1,'LeanCloud.Realtime.LCIMImageMessage.MessageType()'],['../classLeanCloud_1_1Realtime_1_1LCIMLocationMessage.html#aea0c5f7e9d004824047994372479138e',1,'LeanCloud.Realtime.LCIMLocationMessage.MessageType()'],['../classLeanCloud_1_1Realtime_1_1LCIMRecalledMessage.html#aba6eee308b4eda6bb426af3b7428214f',1,'LeanCloud.Realtime.LCIMRecalledMessage.MessageType()'],['../classLeanCloud_1_1Realtime_1_1LCIMTextMessage.html#a3e897ff0eee8765ac7c8c59caef0749a',1,'LeanCloud.Realtime.LCIMTextMessage.MessageType()'],['../classLeanCloud_1_1Realtime_1_1LCIMVideoMessage.html#a927da89b9fee2b1b091a4e5fce2074f3',1,'LeanCloud.Realtime.LCIMVideoMessage.MessageType()']]],
+  ['messagetypekey',['MessageTypeKey',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a28dcf4f15d0bc433c9e38f23653ab0e0',1,'LeanCloud::Realtime::LCIMTypedMessage']]]
+];

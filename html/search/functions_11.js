@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['save',['Save',['../classLeanCloud_1_1Storage_1_1LCFile.html#a194cb3f7fe9bc4afe1f616665b206f30',1,'LeanCloud.Storage.LCFile.Save()'],['../classLeanCloud_1_1Storage_1_1LCObject.html#a2510be966fe25fa6cbdd52b7ee44d395',1,'LeanCloud.Storage.LCObject.Save()'],['../classLeanCloud_1_1Storage_1_1LCUser.html#a244250f205095f0946ebbbef03a1409e',1,'LeanCloud.Storage.LCUser.Save()']]],
+  ['saveall',['SaveAll',['../classLeanCloud_1_1Storage_1_1LCObject.html#aac751d05b778d95427b91d46287bcf45',1,'LeanCloud::Storage::LCObject']]],
+  ['select',['Select',['../classLeanCloud_1_1Storage_1_1LCQuery.html#a9a281d088b877ade2602708c3b879edd',1,'LeanCloud.Storage.LCQuery.Select()'],['../classLeanCloud_1_1Realtime_1_1LCIMConversationQuery.html#a7875beabc082491a221d295c8b0683bc',1,'LeanCloud.Realtime.LCIMConversationQuery.Select()']]],
+  ['send',['Send',['../classLeanCloud_1_1Storage_1_1LCStatus.html#a451ae0c1295a8e1f30db52db0efa01e5',1,'LeanCloud.Storage.LCStatus.Send()'],['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a83f7777e98fea8ce6e1b512a95f46330',1,'LeanCloud.Realtime.LCIMConversation.Send()']]],
+  ['sendprivately',['SendPrivately',['../classLeanCloud_1_1Storage_1_1LCStatus.html#a45262d53d946b9d4537afa3fc6d18de5',1,'LeanCloud::Storage::LCStatus']]],
+  ['sendtofollowers',['SendToFollowers',['../classLeanCloud_1_1Storage_1_1LCStatus.html#a102487200b821ddf7ce2d9de0d741702',1,'LeanCloud::Storage::LCStatus']]],
+  ['set',['Set',['../classLeanCloud_1_1Engine_1_1LCEngineRequestContext.html#adf78d86b2b2de4700d2ca97c41756033',1,'LeanCloud::Engine::LCEngineRequestContext']]],
+  ['setrolereadaccess',['SetRoleReadAccess',['../classLeanCloud_1_1Storage_1_1LCACL.html#a24a9137652b54da367fbab67ca63ffba',1,'LeanCloud::Storage::LCACL']]],
+  ['setrolewriteaccess',['SetRoleWriteAccess',['../classLeanCloud_1_1Storage_1_1LCACL.html#a8c41837b9b7bc1180a4c105e0980e3c9',1,'LeanCloud::Storage::LCACL']]],
+  ['setuseridreadaccess',['SetUserIdReadAccess',['../classLeanCloud_1_1Storage_1_1LCACL.html#acab5a1db275ec5cc61afa0d6d5d26fc7',1,'LeanCloud::Storage::LCACL']]],
+  ['setuseridwriteaccess',['SetUserIdWriteAccess',['../classLeanCloud_1_1Storage_1_1LCACL.html#a9e606f41c914569460b1c7eddfa9c39a',1,'LeanCloud::Storage::LCACL']]],
+  ['setuserreadaccess',['SetUserReadAccess',['../classLeanCloud_1_1Storage_1_1LCACL.html#a2c5e63776fd4bed1685e922ba1917bc1',1,'LeanCloud::Storage::LCACL']]],
+  ['setuserwriteaccess',['SetUserWriteAccess',['../classLeanCloud_1_1Storage_1_1LCACL.html#a314e54c593e90803a9f17aba483bf527',1,'LeanCloud::Storage::LCACL']]],
+  ['sid',['Sid',['../classLeanCloud_1_1Storage_1_1LCSearchQuery.html#a0d6596ed7c06625602b0796d38302df5',1,'LeanCloud::Storage::LCSearchQuery']]],
+  ['signup',['SignUp',['../classLeanCloud_1_1Storage_1_1LCUser.html#af1b19702b2da4bebf5d93df5367e3cc1',1,'LeanCloud::Storage::LCUser']]],
+  ['signuporloginbymobilephone',['SignUpOrLoginByMobilePhone',['../classLeanCloud_1_1Storage_1_1LCUser.html#aa48592a9088a9ce6288a5175f090fb60',1,'LeanCloud::Storage::LCUser']]],
+  ['skip',['Skip',['../classLeanCloud_1_1Storage_1_1LCQuery.html#a1dc1dae716265b2daa2e2e3174aa42df',1,'LeanCloud.Storage.LCQuery.Skip()'],['../classLeanCloud_1_1Storage_1_1LCSearchQuery.html#a9917201924925f9bdd4c2afb1f4dff5d',1,'LeanCloud.Storage.LCSearchQuery.Skip()'],['../classLeanCloud_1_1Realtime_1_1LCIMConversationQuery.html#a66722cf110861c0c30674972b3f8e330',1,'LeanCloud.Realtime.LCIMConversationQuery.Skip()']]],
+  ['sortby',['SortBy',['../classLeanCloud_1_1Storage_1_1LCSearchQuery.html#a2f2d69723aa30b2527a510ef668152d5',1,'LeanCloud::Storage::LCSearchQuery']]],
+  ['subscribe',['Subscribe',['../classLeanCloud_1_1Realtime_1_1LCIMServiceConversation.html#a95de85d9590d9079814502d1b02a2976',1,'LeanCloud.Realtime.LCIMServiceConversation.Subscribe()'],['../classLeanCloud_1_1LiveQuery_1_1LCLiveQuery.html#a79f87138ef77c74d0929aba13bd2d2e2',1,'LeanCloud.LiveQuery.LCLiveQuery.Subscribe()'],['../classLeanCloud_1_1LiveQuery_1_1LCQueryExtension.html#aa95a980252896759a42ab96671284eb1',1,'LeanCloud.LiveQuery.LCQueryExtension.Subscribe()']]]
+];
