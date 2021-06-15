@@ -384,21 +384,12 @@ namespace LeanCloud.Realtime {
             if (string.IsNullOrEmpty(id)) {
                 throw new ArgumentNullException(nameof(id));
             }
-            if (LCIMConversation.IsTemporayConversation(id)) {
-                List<LCIMTemporaryConversation> temporaryConversationList = await ConversationController.GetTemporaryConversations(new string[] { id });
-                if (temporaryConversationList == null || temporaryConversationList.Count < 1) {
-                    return null;
-                }
-                return temporaryConversationList[0];
-            }
-            LCIMConversationQuery query = GetQuery()
-                .WhereEqualTo("objectId", id)
-                .Limit(1);
-            ReadOnlyCollection<LCIMConversation> results = await ConversationController.Find(query);
-            if (results == null || results.Count < 1) {
+
+            ReadOnlyCollection<LCIMConversation> convs = await GetConversationList(new string[] { id });
+            if (convs == null || convs.Count() == 0) {
                 return null;
             }
-            return results[0];
+            return convs.First();
         }
 
         /// <summary>
@@ -410,26 +401,12 @@ namespace LeanCloud.Realtime {
             if (ids == null || ids.Count() == 0) {
                 throw new ArgumentNullException(nameof(ids));
             }
-            // 区分临时对话
-            IEnumerable<string> tempConvIds = ids.Where(item => {
-                return LCIMConversation.IsTemporayConversation(item);
-            });
-            IEnumerable<string> convIds = ids.Where(item => {
-                return !tempConvIds.Contains(item);
-            });
-            List<LCIMConversation> conversationList = new List<LCIMConversation>();
-            if (tempConvIds.Count() > 0) {
-                List<LCIMTemporaryConversation> temporaryConversations = await ConversationController.GetTemporaryConversations(tempConvIds);
-                conversationList.AddRange(temporaryConversations);
+
+            IEnumerable<LCIMConversation> convs = await GetOrQueryConversations(ids);
+            if (convs == null) {
+                return default;
             }
-            if (convIds.Count() > 0) {
-                LCIMConversationQuery query = GetQuery()
-                    .WhereContainedIn("objectId", convIds)
-                    .Limit(convIds.Count());
-                ReadOnlyCollection<LCIMConversation> conversations = await ConversationController.Find(query);
-                conversationList.AddRange(conversations);
-            }
-            return conversationList.AsReadOnly();
+            return convs.ToList().AsReadOnly();
         }
 
         /// <summary>
@@ -484,6 +461,58 @@ namespace LeanCloud.Realtime {
             }
             conversation = await GetConversation(convId);
             return conversation;
+        }
+
+        internal async Task<IEnumerable<LCIMConversation>> GetOrQueryConversations(IEnumerable<string> ids) {
+            if (ids == null || ids.Count() == 0) {
+                return default;
+            }
+            
+            List<LCIMConversation> convs = new List<LCIMConversation>();
+            // 区分是否是缓存对话
+            IEnumerable<string> cachedConvIds = ids.Where(id => ConversationDict.ContainsKey(id));
+            IEnumerable<string> noCachedConvIds = ids.Except(cachedConvIds);
+
+            // 查找对话缓存
+            IEnumerable<LCIMConversation> cachedConvs = cachedConvIds.Select(id => {
+                return ConversationDict[id];
+            });
+            if (cachedConvs != null && cachedConvs.Count() > 0) {
+                convs.AddRange(cachedConvs);
+            }
+
+            // 区分临时对话
+            IEnumerable<LCIMConversation> queriedConvs = await QueryConversations(noCachedConvIds);
+            if (queriedConvs != null && queriedConvs.Count() > 0) {
+                convs.AddRange(queriedConvs);
+            }
+
+            return convs;
+        }
+
+        internal async Task<IEnumerable<LCIMConversation>> QueryConversations(IEnumerable<string> ids) {
+            if (ids == null || ids.Count() == 0) {
+                return default;
+            }
+
+            List<LCIMConversation> convs = new List<LCIMConversation>();
+            // 区分临时对话
+            IEnumerable<string> tempConvIds = ids.Where(item => {
+                return LCIMConversation.IsTemporayConversation(item);
+            });
+            IEnumerable<string> convIds = ids.Except(tempConvIds);
+            if (tempConvIds.Count() > 0) {
+                List<LCIMTemporaryConversation> temporaryConversations = await ConversationController.GetTemporaryConversations(tempConvIds);
+                convs.AddRange(temporaryConversations);
+            }
+            if (convIds.Count() > 0) {
+                LCIMConversationQuery query = GetQuery()
+                    .WhereContainedIn("objectId", convIds)
+                    .Limit(convIds.Count());
+                ReadOnlyCollection<LCIMConversation> conversations = await ConversationController.Find(query);
+                convs.AddRange(conversations);
+            }
+            return convs;
         }
     }
 }
