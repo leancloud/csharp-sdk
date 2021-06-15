@@ -186,10 +186,13 @@ namespace LeanCloud.Realtime.Internal.Controller {
             LCIMMessage msg) {
             ReadCommand read = new ReadCommand();
             ReadTuple tuple = new ReadTuple {
-                Cid = convId,
-                Mid = msg.Id,
-                Timestamp = msg.SentTimestamp
+                Cid = convId
             };
+            // 当不传 msg 时，服务端将其收到的最后一条消息标记为已读，可能与客户端不一致
+            if (msg != null) {
+                tuple.Mid = msg.Id;
+                tuple.Timestamp = msg.SentTimestamp;
+            }
             read.Convs.Add(tuple);
             GenericCommand command = NewCommand(CommandType.Read);
             command.ReadMessage = read;

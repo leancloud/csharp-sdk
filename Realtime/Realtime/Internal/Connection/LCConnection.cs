@@ -168,6 +168,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     // 应答
                     int requestIndex = command.I;
                     if (requestToResponses.TryGetValue(command, out TaskCompletionSource<GenericCommand> tcs)) {
+                        requestToResponses.Remove(command);
                         if (command.HasErrorMessage) {
                             // 错误
                             ErrorCommand error = command.ErrorMessage;
@@ -179,7 +180,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
                         } else {
                             tcs.TrySetResult(command);
                         }
-                        requestToResponses.Remove(command);
                     } else {
                         LCLogger.Error($"No request for {requestIndex}");
                     }

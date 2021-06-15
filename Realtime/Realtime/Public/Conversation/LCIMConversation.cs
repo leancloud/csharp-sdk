@@ -185,7 +185,7 @@ namespace LeanCloud.Realtime {
         /// </summary>
         /// <returns></returns>
         public virtual async Task Read() {
-            if (LastMessage == null) {
+            if (Unread == 0) {
                 return;
             }
             await Client.MessageController.Read(Id, LastMessage);
