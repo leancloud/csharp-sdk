@@ -1,9 +1,9 @@
 ﻿using LeanCloud.Storage.Internal.Push;
 
 namespace LeanCloud.Push {
-    public class LCPush {
-        public static void RegisterIOSPush() {
-            IOSPushWrapper.RequestIOSPush();
+    public partial class LCPush {
+        public static void RegisterIOSPush(string teamId) {
+            IOSPushWrapper.RegisterIOSPush(teamId);
         }
 
         public static void RegisterHuaWeiPush() {

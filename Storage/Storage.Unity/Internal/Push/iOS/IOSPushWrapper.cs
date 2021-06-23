@@ -3,17 +3,10 @@
 namespace LeanCloud.Storage.Internal.Push {
     public class IOSPushWrapper {
         [DllImport("__Internal")]
-        private static extern void _RequestDeviceInfo();
+        private static extern void _RegisterIOSPush(string teamId);
 
-        [DllImport("__Internal")]
-        private static extern void _RequestIOSPush();
-
-        public static void RequestDeviceInfo() {
-            _RequestDeviceInfo();
-        }
-
-        public static void RequestIOSPush() {
-            _RequestIOSPush();
+        public static void RegisterIOSPush(string teamId) {
+            _RegisterIOSPush(teamId);
         }
     }
 }
