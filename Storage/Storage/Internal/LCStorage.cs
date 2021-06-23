@@ -25,6 +25,7 @@ namespace LeanCloud.Storage.Internal {
             LCObject.RegisterSubclass(LCFile.CLASS_NAME, () => new LCFile());
             LCObject.RegisterSubclass(LCStatus.CLASS_NAME, () => new LCStatus());
             LCObject.RegisterSubclass(LCFriendshipRequest.CLASS_NAME, () => new LCFriendshipRequest());
+            LCObject.RegisterSubclass(LCInstallation.CLASS_NAME, () => new LCInstallation());
         }
     }
 }

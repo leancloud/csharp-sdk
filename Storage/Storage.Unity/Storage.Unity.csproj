@@ -18,5 +18,13 @@
   <ItemGroup>
     <Folder Include="Public\" />
     <Folder Include="Internal\" />
+    <Folder Include="Internal\Push\" />
+    <Folder Include="Internal\Push\Android\" />
+    <Folder Include="Internal\Push\iOS\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Internal\Push\" />
+    <None Remove="Internal\Push\Android\" />
+    <None Remove="Internal\Push\iOS\" />
   </ItemGroup>
 </Project>
