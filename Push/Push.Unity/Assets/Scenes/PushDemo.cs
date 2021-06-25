@@ -1,0 +1,71 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using LeanCloud;
+using LeanCloud.Storage;
+using LeanCloud.Push;
+
+public class PushDemo : MonoBehaviour {
+    public const string IOS_TEAM_ID = "6KRPUK49Z3";
+
+    public const string XIAOMI_APP_ID = "2882303761517894746";
+    public const string XIAOMI_APP_KEY = "5981789429746";
+
+    public const string OPPO_APP_KEY = "95d0685734ad470c9b4e3df6d537d562";
+    public const string OPPO_APP_SECRET = "58d84d82a0a14aa1b52e66e3224c35a3";
+
+    public const string MEIZU_APP_ID = "";
+    public const string MEIZU_APP_KEY = "";
+
+    public Text deviceInfoText;
+
+    private void Awake() {
+        LCLogger.LogDelegate = (level, message) => {
+            string fullLog = $"LEANCLOUD: {message}";
+            switch (level) {
+                case LCLogLevel.Debug:
+                    Debug.Log(fullLog);
+                    break;
+                case LCLogLevel.Warn:
+                    Debug.LogWarning(fullLog);
+                    break;
+                case LCLogLevel.Error:
+                    Debug.LogError(fullLog);
+                    break;
+                default:
+                    break;
+            }
+        };
+        LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
+
+        deviceInfoText.text = $"{SystemInfo.deviceModel}, {SystemInfo.deviceName}, {SystemInfo.deviceType}, {SystemInfo.operatingSystem}";
+
+        if (Application.platform == RuntimePlatform.IPhonePlayer) {
+            LCIOSPushManager.RegisterIOSPush(IOS_TEAM_ID);
+        } else if (Application.platform == RuntimePlatform.Android) {
+            string deviceModel = SystemInfo.deviceModel.ToLower();
+            if (deviceModel.Contains("huawei")) {
+                LCHuaWeiPushManager.RegisterHuaWeiPush();
+            } else if (deviceModel.Contains("xiaomi")) {
+                LCXiaoMiPushManager.RegisterXiaoMiPush(XIAOMI_APP_ID, XIAOMI_APP_KEY);
+            } else if (deviceModel.Contains("oppo")) {
+                LCOPPOPushManager.RegisterOPPOPush(OPPO_APP_KEY, OPPO_APP_SECRET);
+            } else if (deviceModel.Contains("vivo")) {
+                LCVIVOPushManager.RegisterVIVOPush();
+            } else if (deviceModel.Contains("meizu")) {
+                LCMeiZuPushManager.RegisterMeiZuPush(MEIZU_APP_ID, MEIZU_APP_KEY);
+            }
+        }
+    }
+
+    public async void OnRequestTokenClicked() {
+        try {
+            LCInstallation installation = await LCInstallation.GetCurrent();
+            Debug.Log($"Device Info: {installation}");
+            deviceInfoText.text = installation.ToString();
+        } catch (Exception e) {
+            Debug.LogError(e.Message);
+        }
+    }
+}

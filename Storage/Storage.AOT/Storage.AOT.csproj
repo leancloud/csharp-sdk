@@ -167,5 +167,8 @@
     <Compile Include="..\Storage\Public\LCInstallation.cs">
       <Link>Storage\Public\LCInstallation.cs</Link>
     </Compile>
+    <Compile Include="..\Storage\Public\Push\LCPush.cs">
+      <Link>Storage\Public\Push\LCPush.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

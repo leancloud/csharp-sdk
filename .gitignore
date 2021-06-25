@@ -331,3 +331,7 @@ ASALocalRun/
 
 !Common/Common/Log/
 Doc/
+
+Push/Push.Unity/.vsconfig
+Push/Push.Unity/Library/
+Push/Push.Unity/Temp/

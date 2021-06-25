@@ -16,9 +16,13 @@
     <Folder Include="Internal\Query\" />
     <Folder Include="Public\" />
     <Folder Include="Public\Leaderboard\" />
+    <Folder Include="Public\Push\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common\Common.csproj">
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Public\Push\" />
   </ItemGroup>
 </Project>
