@@ -108,10 +108,6 @@ namespace LeanCloud.Storage {
             
         }
 
-        public LCUser(LCObjectData objectData) : this() {
-            Merge(objectData);
-        }
-
         /// <summary>
         /// Signs up a new user.
         /// </summary>
@@ -165,7 +161,7 @@ namespace LeanCloud.Storage {
             };
             Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>("usersByMobilePhone", data: data);
             LCObjectData objectData = LCObjectData.Decode(response);
-            currentUser = new LCUser(objectData);
+            currentUser = GenerateUser(objectData);
 
             await SaveToLocal();
 
@@ -429,7 +425,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>("users/me",
                 headers: headers);
             LCObjectData objectData = LCObjectData.Decode(response);
-            currentUser = new LCUser(objectData);
+            currentUser = GenerateUser(objectData);
             return currentUser;
         }
 
@@ -586,7 +582,7 @@ namespace LeanCloud.Storage {
         static async Task<LCUser> Login(Dictionary<string, object> data) {
             Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>("login", data: data);
             LCObjectData objectData = LCObjectData.Decode(response);
-            currentUser = new LCUser(objectData);
+            currentUser = GenerateUser(objectData);
 
             await SaveToLocal();
 
@@ -602,7 +598,8 @@ namespace LeanCloud.Storage {
                 { "authData", authData }
             });
             LCObjectData objectData = LCObjectData.Decode(response);
-            currentUser = new LCUser(objectData);
+
+            currentUser = GenerateUser(objectData);
 
             await SaveToLocal();
 
@@ -768,6 +765,12 @@ namespace LeanCloud.Storage {
             currentUser = this;
             await SaveToLocal();
             return this;
+        }
+
+        public static LCUser GenerateUser(LCObjectData objectData) {
+            LCUser user = Create(CLASS_NAME) as LCUser;
+            user.Merge(objectData);
+            return user;
         }
     }
 }
