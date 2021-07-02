@@ -164,6 +164,7 @@ namespace Realtime.Test {
 
         [Test]
         [Order(5)]
+        [Timeout(20000)]
         public async Task Unread() {
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
             string clientId = Guid.NewGuid().ToString();
