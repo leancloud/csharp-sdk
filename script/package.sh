@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 prefix=LeanCloud-SDK
 
@@ -20,7 +20,7 @@ echo $standardReleasePath/$storage.$standard.dll
 pack() {
     local path=$1;
     local dir=$2;
-    local output=$3;
+    local output=./release/$3;
     local platform=$4;
     mkdir $dir
     rsync -avz $path $dir
@@ -35,6 +35,8 @@ pack() {
     zip -r $output $dir
     rm -r $dir
 }
+
+mkdir release
 
 # Storage
 pack ./$storage/$storage/$releasePath/ ./DLLs $prefix-$storage-$standard.zip standard
