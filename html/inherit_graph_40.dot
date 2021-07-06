@@ -1,7 +1,0 @@
-digraph "Graphical Class Hierarchy"
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node1 [label="LeanCloud.Storage.LCStatus\lCount",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classLeanCloud_1_1Storage_1_1LCStatusCount.html",tooltip="LCStatusCount is a result that contains the count of status. "];
-}
