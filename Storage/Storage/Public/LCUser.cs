@@ -13,6 +13,7 @@ namespace LeanCloud.Storage {
         public const string CLASS_NAME = "_User";
 
         private const string USER_DATA = ".userdata";
+        private const string ANONYMOUS_DATA = ".anonymousdata";
 
         public string Username {
             get {
@@ -353,11 +354,16 @@ namespace LeanCloud.Storage {
         /// Creates an anonymous user.
         /// </summary>
         /// <returns></returns>
-        public static Task<LCUser> LoginAnonymously() {
+        public static async Task<LCUser> LoginAnonymously() {
+            string anonymousId = await LCCore.PersistenceController.ReadText(ANONYMOUS_DATA);
+            if (string.IsNullOrEmpty(anonymousId)) {
+                anonymousId = Guid.NewGuid().ToString();
+                await LCCore.PersistenceController.WriteText(ANONYMOUS_DATA, anonymousId);
+            }
             Dictionary<string, object> data = new Dictionary<string, object> {
-                { "id", Guid.NewGuid().ToString() }
+                { "id", anonymousId }
             };
-            return LoginWithAuthData(data, "anonymous");
+            return await LoginWithAuthData(data, "anonymous");
         }
 
         /// <summary>
