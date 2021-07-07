@@ -553,7 +553,7 @@ namespace LeanCloud.Storage {
         /// <param name="json"></param>
         /// <returns></returns>
         public static LCObject ParseObject(string json) {
-            LCObjectData objectData = LCObjectData.Decode(JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+            LCObjectData objectData = LCObjectData.Decode(JsonConvert.DeserializeObject<Dictionary<string, object>>(json, LCJsonConverter.Default));
             LCObject obj = Create(objectData.ClassName);
             obj.Merge(objectData);
             return obj;
