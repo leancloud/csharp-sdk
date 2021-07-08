@@ -6,6 +6,8 @@ using LeanCloud.Storage.Internal.Query;
 
 namespace LeanCloud.Storage.Internal.Codec {
     public static class LCEncoder {
+        public static readonly string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
+
         public static object Encode(object obj) {
             if (obj is DateTime dateTime) {
                 return EncodeDateTime(dateTime);
@@ -33,7 +35,7 @@ namespace LeanCloud.Storage.Internal.Codec {
 
         public static object EncodeDateTime(DateTime dateTime) {
             DateTime utc = dateTime.ToUniversalTime();
-            string str = utc.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            string str = utc.ToString(DateTimeFormat);
             return new Dictionary<string, object> {
                 { "__type", "Date" },
                 { "iso", str }

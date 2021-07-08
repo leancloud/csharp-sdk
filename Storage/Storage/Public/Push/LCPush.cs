@@ -1,15 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using LeanCloud.Storage;
+using LeanCloud.Common;
+using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Push {
     public class LCPush {
+        public static readonly string IOSEnvironmentDev = "dev";
+        public static readonly string IOSEnvironmentProd = "prod";
+
         public Dictionary<string, object> Data {
             get; set;
         }
 
         public LCQuery<LCInstallation> Query {
+            get; set;
+        }
+
+        public string CQL {
             get; set;
         }
 
@@ -69,7 +79,58 @@ namespace LeanCloud.Push {
 
         public async Task Send() {
             Dictionary<string, object> body = new Dictionary<string, object>();
+            if (Query != null) {
+                if (Target.Count == 0) {
+                    Query.WhereNotContainedIn("deviceType", new string[] { "android", "ios" });
+                } else if (Target.Count == 1) {
+                    Query.WhereEqualTo("deviceType", Target.GetEnumerator().Current);
+                }
+                string condition = Query.BuildWhere();
+                if (!string.IsNullOrEmpty(condition)) {
+                    body["where"] = condition;
+                }
+            }
+            if (!string.IsNullOrEmpty(CQL)) {
+                body["cql"] = CQL;
+            }
+            if (body.ContainsKey("where") && body.ContainsKey("cql")) {
+                throw new Exception("You can't use AVQuery and Cloud query at the same time.");
+            }
 
+            if (Channels != null && Channels.Count > 0) {
+                body["channels"] = Channels.ToList();
+            }
+            if (ExpirationTime != default) {
+                body["expiration_time"] = ExpirationTime;
+            }
+            if (ExpirationInterval != default) {
+                body["push_time"] = DateTime.UtcNow.ToString(LCEncoder.DateTimeFormat);
+                body["expiration_interval"] = (long)ExpirationInterval.TotalSeconds;
+            }
+            if (PushDate != default) {
+                body["push_time"] = PushDate.ToUniversalTime().ToString(LCEncoder.DateTimeFormat);
+            }
+            if (FlowControl > 0) {
+                body["flow_control"] = FlowControl;
+            }
+            if (!string.IsNullOrEmpty(IOSEnvironment)) {
+                body["prod"] = IOSEnvironment;
+            }
+            if (!string.IsNullOrEmpty(APNsTopic)) {
+                body["topic"] = APNsTopic;
+            }
+            if (!string.IsNullOrEmpty(APNsTeamId)) {
+                body["apns_team_id"] = APNsTeamId;
+            }
+            if (!string.IsNullOrEmpty(NotificationId)) {
+                body["notification_id"] = NotificationId;
+            }
+
+            if (Data != null) {
+                body["data"] = Data;
+            }
+
+            await LCCore.HttpClient.Post<Dictionary<string, object>>("push", data: body);
         }
     }
 }
