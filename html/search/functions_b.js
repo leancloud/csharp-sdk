@@ -36,7 +36,7 @@ var searchData=
   ['lcuserauthdataloginoption_820',['LCUserAuthDataLoginOption',['../classLeanCloud_1_1Storage_1_1LCUserAuthDataLoginOption.html#a832c4f64dfb390bd5c8f5f49884bcfe7',1,'LeanCloud::Storage::LCUserAuthDataLoginOption']]],
   ['limit_821',['Limit',['../classLeanCloud_1_1Storage_1_1LCQuery.html#a8ec5ced2e851d2d96ffa90f1dc3d6fb0',1,'LeanCloud.Storage.LCQuery.Limit()'],['../classLeanCloud_1_1Storage_1_1LCSearchQuery.html#ad186bbc7629601d72905aeaf66543339',1,'LeanCloud.Storage.LCSearchQuery.Limit()'],['../classLeanCloud_1_1Realtime_1_1LCIMConversationQuery.html#a911664f2353ed7fd4ac2ee888be7f71b',1,'LeanCloud.Realtime.LCIMConversationQuery.Limit()']]],
   ['login_822',['Login',['../classLeanCloud_1_1Storage_1_1LCUser.html#a76d40b27c0a8c36a9aac7c5d2090183a',1,'LeanCloud::Storage::LCUser']]],
-  ['loginanonymously_823',['LoginAnonymously',['../classLeanCloud_1_1Storage_1_1LCUser.html#a7d079d6b85f58b41ee794b875e2b2857',1,'LeanCloud::Storage::LCUser']]],
+  ['loginanonymously_823',['LoginAnonymously',['../classLeanCloud_1_1Storage_1_1LCUser.html#a4856db8bab002554cd78e10ee8fabeca',1,'LeanCloud::Storage::LCUser']]],
   ['loginbyemail_824',['LoginByEmail',['../classLeanCloud_1_1Storage_1_1LCUser.html#af14733a824dff43d35343569afa78d37',1,'LeanCloud::Storage::LCUser']]],
   ['loginbymobilephonenumber_825',['LoginByMobilePhoneNumber',['../classLeanCloud_1_1Storage_1_1LCUser.html#af1935bf6656381ee885815c08bdcba33',1,'LeanCloud::Storage::LCUser']]],
   ['loginbysmscode_826',['LoginBySMSCode',['../classLeanCloud_1_1Storage_1_1LCUser.html#ae4f64d9f5dd02d11938358c2e719e193',1,'LeanCloud::Storage::LCUser']]],

@@ -147,7 +147,7 @@ var searchData=
   ['location_314',['Location',['../classLeanCloud_1_1Realtime_1_1LCIMLocationMessage.html#a5c98d43b9430c3addd0d0de43d96b6ec',1,'LeanCloud::Realtime::LCIMLocationMessage']]],
   ['locationmessagetype_315',['LocationMessageType',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a3809bd28e4ab1d6c23b6feae2710df33',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
   ['login_316',['Login',['../classLeanCloud_1_1Storage_1_1LCUser.html#a76d40b27c0a8c36a9aac7c5d2090183a',1,'LeanCloud::Storage::LCUser']]],
-  ['loginanonymously_317',['LoginAnonymously',['../classLeanCloud_1_1Storage_1_1LCUser.html#a7d079d6b85f58b41ee794b875e2b2857',1,'LeanCloud::Storage::LCUser']]],
+  ['loginanonymously_317',['LoginAnonymously',['../classLeanCloud_1_1Storage_1_1LCUser.html#a4856db8bab002554cd78e10ee8fabeca',1,'LeanCloud::Storage::LCUser']]],
   ['loginbyemail_318',['LoginByEmail',['../classLeanCloud_1_1Storage_1_1LCUser.html#af14733a824dff43d35343569afa78d37',1,'LeanCloud::Storage::LCUser']]],
   ['loginbymobilephonenumber_319',['LoginByMobilePhoneNumber',['../classLeanCloud_1_1Storage_1_1LCUser.html#af1935bf6656381ee885815c08bdcba33',1,'LeanCloud::Storage::LCUser']]],
   ['loginbysmscode_320',['LoginBySMSCode',['../classLeanCloud_1_1Storage_1_1LCUser.html#ae4f64d9f5dd02d11938358c2e719e193',1,'LeanCloud::Storage::LCUser']]],
