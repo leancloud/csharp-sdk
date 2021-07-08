@@ -4,7 +4,6 @@ using UnityEditor.Android;
 using UnityEditor.Build;
 
 public class AndroidPostBuildProcessor : IPostGenerateGradleAndroidProject {
-#if UNITY_ANDROID
     int IOrderedCallback.callbackOrder => 0;
 
     void IPostGenerateGradleAndroidProject.OnPostGenerateGradleAndroidProject(string path) {
@@ -16,5 +15,4 @@ public class AndroidPostBuildProcessor : IPostGenerateGradleAndroidProject {
             Debug.LogWarning($"No agconnect-services.json in {hmsConfigPath} for hms.");
         }
     }
-#endif
 }
