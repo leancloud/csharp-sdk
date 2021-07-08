@@ -47,7 +47,7 @@ namespace LeanCloud.Storage {
             }
             if (data.TryGetValue("user", out object user)) {
                 LCObjectData objectData = LCObjectData.Decode(user as System.Collections.IDictionary);
-                ranking.User = new LCUser(objectData);
+                ranking.User = LCUser.GenerateUser(objectData);
             }
             if (data.TryGetValue("statisticName", out object statisticName)) {
                 ranking.StatisticName = statisticName as string;

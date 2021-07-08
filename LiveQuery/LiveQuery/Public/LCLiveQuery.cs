@@ -209,7 +209,7 @@ namespace LeanCloud.LiveQuery {
                 data.TryGetValue("object", out object obj) &&
                 obj is Dictionary<string, object> dict) {
                 LCObjectData objectData = LCObjectData.Decode(dict);
-                LCUser user = new LCUser(objectData);
+                LCUser user = LCUser.GenerateUser(objectData);
                 liveQuery.OnLogin?.Invoke(user);
             }
         }

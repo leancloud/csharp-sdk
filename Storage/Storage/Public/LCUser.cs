@@ -13,6 +13,7 @@ namespace LeanCloud.Storage {
         public const string CLASS_NAME = "_User";
 
         private const string USER_DATA = ".userdata";
+        private const string ANONYMOUS_DATA = ".anonymousdata";
 
         public string Username {
             get {
@@ -108,10 +109,6 @@ namespace LeanCloud.Storage {
             
         }
 
-        public LCUser(LCObjectData objectData) : this() {
-            Merge(objectData);
-        }
-
         /// <summary>
         /// Signs up a new user.
         /// </summary>
@@ -165,7 +162,7 @@ namespace LeanCloud.Storage {
             };
             Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>("usersByMobilePhone", data: data);
             LCObjectData objectData = LCObjectData.Decode(response);
-            currentUser = new LCUser(objectData);
+            currentUser = GenerateUser(objectData);
 
             await SaveToLocal();
 
@@ -357,11 +354,16 @@ namespace LeanCloud.Storage {
         /// Creates an anonymous user.
         /// </summary>
         /// <returns></returns>
-        public static Task<LCUser> LoginAnonymously() {
+        public static async Task<LCUser> LoginAnonymously() {
+            string anonymousId = await LCCore.PersistenceController.ReadText(ANONYMOUS_DATA);
+            if (string.IsNullOrEmpty(anonymousId)) {
+                anonymousId = Guid.NewGuid().ToString();
+                await LCCore.PersistenceController.WriteText(ANONYMOUS_DATA, anonymousId);
+            }
             Dictionary<string, object> data = new Dictionary<string, object> {
-                { "id", Guid.NewGuid().ToString() }
+                { "id", anonymousId }
             };
-            return LoginWithAuthData(data, "anonymous");
+            return await LoginWithAuthData(data, "anonymous");
         }
 
         /// <summary>
@@ -429,7 +431,7 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>("users/me",
                 headers: headers);
             LCObjectData objectData = LCObjectData.Decode(response);
-            currentUser = new LCUser(objectData);
+            currentUser = GenerateUser(objectData);
             return currentUser;
         }
 
@@ -586,7 +588,7 @@ namespace LeanCloud.Storage {
         static async Task<LCUser> Login(Dictionary<string, object> data) {
             Dictionary<string, object> response = await LCCore.HttpClient.Post<Dictionary<string, object>>("login", data: data);
             LCObjectData objectData = LCObjectData.Decode(response);
-            currentUser = new LCUser(objectData);
+            currentUser = GenerateUser(objectData);
 
             await SaveToLocal();
 
@@ -602,7 +604,8 @@ namespace LeanCloud.Storage {
                 { "authData", authData }
             });
             LCObjectData objectData = LCObjectData.Decode(response);
-            currentUser = new LCUser(objectData);
+
+            currentUser = GenerateUser(objectData);
 
             await SaveToLocal();
 
@@ -768,6 +771,12 @@ namespace LeanCloud.Storage {
             currentUser = this;
             await SaveToLocal();
             return this;
+        }
+
+        public static LCUser GenerateUser(LCObjectData objectData) {
+            LCUser user = Create(CLASS_NAME) as LCUser;
+            user.Merge(objectData);
+            return user;
         }
     }
 }
