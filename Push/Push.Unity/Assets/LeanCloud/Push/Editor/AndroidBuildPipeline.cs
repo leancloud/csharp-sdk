@@ -8,7 +8,7 @@ public class AndroidPostBuildProcessor : IPostGenerateGradleAndroidProject {
 
     void IPostGenerateGradleAndroidProject.OnPostGenerateGradleAndroidProject(string path) {
         // 拷贝华为推送配置文件
-        string hmsConfigPath = $"{Application.dataPath}/LeanCloud/Push/Android/Config/hms/agconnect-services.json";
+        string hmsConfigPath = $"{Application.dataPath}/LeanCloud/Push/Android/HuaWei/hms/agconnect-services.json";
         if (File.Exists(hmsConfigPath)) {
             File.Copy(hmsConfigPath, $"{path}/../launcher/agconnect-services.json", true);
         } else {
