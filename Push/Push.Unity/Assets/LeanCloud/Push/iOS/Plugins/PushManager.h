@@ -13,9 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString* teamId;
 
+@property (nonatomic, strong) NSDictionary* launchPushData;
+
 + (instancetype)sharedInstance;
 
 - (void)registerIOSPush;
+
+- (void)getLaunchData:(NSString*)callbackId;
 
 @end
 

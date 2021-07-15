@@ -16,6 +16,7 @@
 
 const char* PUSH_BRIDGE = "__LC_PUSH_BRIDGE__";
 const char* ON_REGISTER_PUSH = "OnRegisterPush";
+const char* ON_GET_LAUNCH_DATA = "OnGetLaunchData";
 
 + (void)load {
     static dispatch_once_t onceToken;
@@ -25,9 +26,13 @@ const char* ON_REGISTER_PUSH = "OnRegisterPush";
                         object:nil
                          queue:[NSOperationQueue mainQueue]
                     usingBlock:^(NSNotification * _Nonnull note) {
-            
+            NSDictionary* pushData = [note.userInfo objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+            if (pushData) {
+                [PushManager sharedInstance].launchPushData = pushData;
+            }
         }];
         
+        // 获得 devicetoken 事件
         [nc addObserverForName:kUnityDidRegisterForRemoteNotificationsWithDeviceToken object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
             NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken");
             if ([note.userInfo isKindOfClass: [NSData class]]) {
@@ -47,6 +52,17 @@ const char* ON_REGISTER_PUSH = "OnRegisterPush";
                 }
             }
         }];
+        // 收到远程通知事件
+//        [nc addObserverForName:kUnityDidReceiveRemoteNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+//            // 解析
+//            NSDictionary* data = note.userInfo;
+//            NSError* error;
+//            NSData* jsonData = [NSJSONSerialization dataWithJSONObject:data options:NSJSONWritingPrettyPrinted error:&error];
+//            if (!error) {
+//                NSString* json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//                UnitySendMessage(PUSH_BRIDGE, ON_NOTIFICATION, [json UTF8String]);
+//            }
+//        }];
     });
 }
 
@@ -80,6 +96,19 @@ const char* ON_REGISTER_PUSH = "OnRegisterPush";
                 break;
         }
     }];
+}
+
+- (void)getLaunchData:(NSString*)callbackId {
+    NSMutableDictionary* data = [NSMutableDictionary dictionaryWithDictionary:@{@"callbackId": callbackId}];
+    if (_launchPushData) {
+        [data addEntriesFromDictionary:_launchPushData];
+    }
+    NSError* error;
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:data options:NSJSONWritingPrettyPrinted error:&error];
+    if (!error) {
+        NSString* json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        UnitySendMessage(PUSH_BRIDGE, ON_GET_LAUNCH_DATA, [json UTF8String]);
+    }
 }
 
 + (NSString *)hexadecimalStringFromData:(NSData *)data {

@@ -12,3 +12,7 @@ void _RegisterIOSPush(const char* teamId) {
     [PushManager sharedInstance].teamId = [NSString stringWithUTF8String:teamId];
     [[PushManager sharedInstance] registerIOSPush];
 }
+
+void _GetLaunchData(const char* callbackId) {
+    [[PushManager sharedInstance] getLaunchData: [NSString stringWithUTF8String:callbackId]];
+}

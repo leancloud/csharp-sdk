@@ -27,7 +27,7 @@ android {
         }
         versionCode **VERSIONCODE**
         versionName '**VERSIONNAME**'
-        consumerProguardFiles 'proguard-unity.txt'**USER_PROGUARD**
+        consumerProguardFiles 'proguard-unity.txt', 'proguard-user.txt'
     }
 
     lintOptions {

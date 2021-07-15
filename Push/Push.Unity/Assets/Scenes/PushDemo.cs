@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using LeanCloud;
 using LeanCloud.Storage;
 using LeanCloud.Push;
+using System.Threading.Tasks;
+using LC.Newtonsoft.Json;
 
 public class PushDemo : MonoBehaviour {
     public const string IOS_TEAM_ID = "6KRPUK49Z3";
@@ -19,6 +21,9 @@ public class PushDemo : MonoBehaviour {
     public const string MEIZU_APP_KEY = "";
 
     public Text deviceInfoText;
+    public Text launchDataText;
+
+    public InputField pushDataInputField;
 
     private void Awake() {
         LCLogger.LogDelegate = (level, message) => {
@@ -59,13 +64,51 @@ public class PushDemo : MonoBehaviour {
         }
     }
 
-    public async void OnRequestTokenClicked() {
-        try {
+    private void Start() {
+        _ = UpdateDeviceInfo();
+    }
+
+    async Task UpdateDeviceInfo() {
+        while (true) {
+            await Task.Delay(1000);
+
             LCInstallation installation = await LCInstallation.GetCurrent();
-            Debug.Log($"Device Info: {installation}");
             deviceInfoText.text = installation.ToString();
+        }
+    }
+
+    public async void OnSendClicked() {
+        string pushData = pushDataInputField.text;
+        if (string.IsNullOrEmpty(pushData)) {
+            return;
+        }
+
+        try {
+            LCPush push = new LCPush {
+                Data = new Dictionary<string, object> {
+                    { "alert", pushData }
+                },
+                IOSEnvironment = LCPush.IOSEnvironmentDev,
+            };
+
+            LCInstallation installation = await LCInstallation.GetCurrent();
+            push.Query.WhereEqualTo("objectId", installation.ObjectId);
+
+            await push.Send();
         } catch (Exception e) {
-            Debug.LogError(e.Message);
+            Debug.LogError(e);
+        }
+    }
+
+    public async void OnGetLaunchDataClicked() {
+        Dictionary<string, object> launchData = await LCPushBridge.Instance.GetLaunchData();
+        if (launchData == null) {
+            return;
+        }
+        deviceInfoText.text = JsonConvert.SerializeObject(launchData);
+        Debug.Log("-----------------------------------------------");
+        foreach (KeyValuePair<string, object> kv in launchData) {
+            Debug.Log($"{kv.Key} : {kv.Value}");
         }
     }
 }

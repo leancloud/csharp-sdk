@@ -27,5 +27,6 @@ public class VIVOPushManager {
                 }
             }
         });
+        Utils.intentParser = new Utils.IntentParser();
     }
 }

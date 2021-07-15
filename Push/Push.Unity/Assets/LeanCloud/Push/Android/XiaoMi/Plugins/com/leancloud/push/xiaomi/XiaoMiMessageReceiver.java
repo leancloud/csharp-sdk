@@ -32,9 +32,9 @@ public class XiaoMiMessageReceiver extends PushMessageReceiver {
         super.onNotificationMessageClicked(context, miPushMessage);
         Log.i(Utils.TAG, miPushMessage.toString());
         Intent intent = new Intent();
-        intent.putExtra("title", miPushMessage.getTitle());
-        intent.putExtra("description", miPushMessage.getDescription());
-        intent.putExtra("content", miPushMessage.getContent());
+        if (!Utils.isNullOrEmpty(miPushMessage.getContent())) {
+            intent.putExtra("content", miPushMessage.getContent());
+        }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.setClass(context, com.unity3d.player.UnityPlayerActivity.class);
         context.startActivity(intent);

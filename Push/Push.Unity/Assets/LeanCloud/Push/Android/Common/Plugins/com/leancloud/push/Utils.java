@@ -1,8 +1,10 @@
 package com.leancloud.push;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -20,6 +22,8 @@ public class Utils {
 
     private final static String PUSH_BRIDGE = "__LC_PUSH_BRIDGE__";
     private final static String ON_REGISTER_PUSH = "OnRegisterPush";
+
+    public static IntentParser intentParser = null;
 
     public static boolean isNullOrEmpty(String str) {
         return str == null || str.length() == 0;
@@ -62,5 +66,47 @@ public class Utils {
         deviceInfo.put("timeZone", tz.getID());
         String json = (new JSONObject(deviceInfo)).toString();
         UnityPlayer.UnitySendMessage(PUSH_BRIDGE, ON_REGISTER_PUSH, json);
+    }
+
+    public static String getLaunchData() {
+        Intent intent = UnityPlayer.currentActivity.getIntent();
+        if (intent == null) {
+            return null;
+        }
+
+        if (intentParser != null) {
+            return intentParser.Parse();
+        }
+
+        if (intent.hasExtra("content")) {
+            return intent.getStringExtra("content");
+        }
+
+        return null;
+    }
+
+    /**
+     * 用来解析 vivo, oppo 的通知数据
+     */
+    public static class IntentParser {
+        public String Parse() {
+            Intent intent = UnityPlayer.currentActivity.getIntent();
+            if (intent == null) {
+                return null;
+            }
+
+            Bundle bundle = intent.getExtras();
+            if (bundle == null) {
+                return null;
+            }
+
+            Map<String, Object> pushData = new HashMap<>();
+            for (String key : bundle.keySet()) {
+                Log.i(Utils.TAG, key);
+                pushData.put(key, bundle.get(key));
+            }
+            Log.i(TAG, (new JSONObject(pushData)).toString());
+            return (new JSONObject(pushData)).toString();
+        }
     }
 }

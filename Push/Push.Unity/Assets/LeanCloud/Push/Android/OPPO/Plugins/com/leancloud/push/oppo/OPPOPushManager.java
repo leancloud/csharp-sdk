@@ -55,5 +55,6 @@ public class OPPOPushManager {
                     }
                 });
         HeytapPushManager.requestNotificationPermission();
+        Utils.intentParser = new Utils.IntentParser();
     }
 }
