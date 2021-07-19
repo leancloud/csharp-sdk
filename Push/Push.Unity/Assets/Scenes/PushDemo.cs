@@ -52,14 +52,15 @@ public class PushDemo : MonoBehaviour {
             string deviceModel = SystemInfo.deviceModel.ToLower();
             if (deviceModel.Contains("huawei")) {
                 LCHuaWeiPushManager.RegisterHuaWeiPush();
-            } else if (deviceModel.Contains("xiaomi")) {
-                LCXiaoMiPushManager.RegisterXiaoMiPush(XIAOMI_APP_ID, XIAOMI_APP_KEY);
             } else if (deviceModel.Contains("oppo")) {
                 LCOPPOPushManager.RegisterOPPOPush(OPPO_APP_KEY, OPPO_APP_SECRET);
             } else if (deviceModel.Contains("vivo")) {
                 LCVIVOPushManager.RegisterVIVOPush();
             } else if (deviceModel.Contains("meizu")) {
                 LCMeiZuPushManager.RegisterMeiZuPush(MEIZU_APP_ID, MEIZU_APP_KEY);
+            } else /*if (deviceModel.Contains("xiaomi"))*/ {
+                // 其他的厂商可以尝试注册小米推送
+                LCXiaoMiPushManager.RegisterXiaoMiPush(XIAOMI_APP_ID, XIAOMI_APP_KEY);
             }
         }
     }
