@@ -23,6 +23,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             SessionCommand session = await NewSessionCommand();
             session.R = !force;
             session.ConfigBitmap = 0xAB;
+            session.Ua = $"{LCCore.SDKName}/{LCCore.SDKVersion}";
             GenericCommand request = NewCommand(CommandType.Session, OpType.Open);
             request.SessionMessage = session;
             GenericCommand response = await Connection.SendRequest(request);
