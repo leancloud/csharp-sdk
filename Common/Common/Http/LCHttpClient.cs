@@ -37,7 +37,7 @@ namespace LeanCloud.Common {
             this.apiVersion = apiVersion;
 
             client = new HttpClient();
-            ProductHeaderValue product = new ProductHeaderValue("LeanCloud-CSharp-SDK", sdkVersion);
+            ProductHeaderValue product = new ProductHeaderValue(LCCore.SDKName, sdkVersion);
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(product));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("X-LC-Id", appId);

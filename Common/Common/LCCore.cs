@@ -6,6 +6,9 @@ namespace LeanCloud.Common {
     /// LeanCloud Application
     /// </summary>
     public class LCCore {
+        // SDK 名字，用于 User-Agent 统计
+        public const string SDKName = "LeanCloud-CSharp-SDK";
+
         // SDK 版本号，用于 User-Agent 统计
         public const string SDKVersion = "0.8.2";
 
