@@ -53,8 +53,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LC.Newtonsoft.Json.AOT", "L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Storage.Standard", "Storage\Storage.Standard\Storage.Standard.csproj", "{6FD7F9B7-CF80-49C9-972B-A416C9F7E335}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Push", "Push", "{49B438FD-3C6A-47BE-A83A-3D3983C3B95B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
