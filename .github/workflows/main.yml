@@ -26,29 +26,27 @@ jobs:
 
     # 打包 Unity 推送插件
     # 打包不包含 Gradle 配置的插件
+    - run: cd Push/Push.Unity
     - run: |
-        cd Push/Push.Unity
         echo "Assets/LeanCloud.meta" > metaList
         find Assets/LeanCloud/ -name \*.meta >> metaList
-        cd -
     - uses: pCYSl5EDgo/create-unitypackage@master
       with:
         project-folder: 'Push/Push.Unity'
-        package-path: 'release/unity-push-without-gradle.unitypackage'
+        package-path: 'unitypackage/unity-push-without-gradle.unitypackage'
         include-files: metaList
 
     # 打包包含 Gradle 配置的插件
     - run: |
-        cd Push/Push.Unity
         echo "Assets/Plugins.meta" >> metaList
         find Assets/Plugins/ -name \*.meta >> metaList
-        cd -
-        
     - uses: pCYSl5EDgo/create-unitypackage@master
       with:
         project-folder: 'Push/Push.Unity'
-        package-path: 'release/unity-push.unitypackage'
+        package-path: 'unitypackage/unity-push.unitypackage'
         include-files: metaList
+    - run: cd -
+    - run: cp Push/Push.Unity/unitypackage/*.unitypackage release/
     
     # 发布到 Releases
     - name: Release
