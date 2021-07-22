@@ -334,4 +334,8 @@ Doc/
 Push/Push.Unity/.vsconfig
 Push/Push.Unity/Library/
 Push/Push.Unity/Temp/
+Push/Push.Unity/AndroidProj/
+Push/Push.Unity/iOSProj/
+Push/Push.Unity/Logs/
+!Push/Push.Unity/Assets/**/*.meta
 .vscode/
