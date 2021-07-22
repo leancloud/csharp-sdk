@@ -20,15 +20,44 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release
+    
+      # 打包库
     - run: bash ./script/package.sh
+
+    # 打包 Unity 推送插件
+    # 打包不包含 Gradle 配置的插件
+    - run: |
+        echo "Assets/LeanCloud.meta" > metaList
+        find Assets/LeanCloud/ -name \*.meta >> metaList
+    - uses: pCYSl5EDgo/create-unitypackage@master
+      with:
+        project-folder: 'Push/Push.Unity'
+        package-path: 'release/unity-push-without-gradle.unitypackage'
+        include-files: metaList
+
+    # 打包包含 Gradle 配置的插件
+    - run: |
+        echo "Assets/Plugins.meta" >> metaList
+        find Assets/Plugins/ -name \*.meta >> metaList
+    - uses: pCYSl5EDgo/create-unitypackage@master
+      with:
+        project-folder: 'Push/Push.Unity'
+        package-path: 'release/unity-push.unitypackage'
+        include-files: metaList
+    
+    # 发布到 Releases
     - name: Release
       uses: fnkr/github-action-ghr@v1
       if: startsWith(github.ref, 'refs/tags/')
       env:
         GHR_PATH: release/
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # 生成 API 文档
     - name: Doc
       uses: mattnotmitt/doxygen-action@v1
+
+    # 发布 API 文档
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:
