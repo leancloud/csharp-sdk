@@ -17,9 +17,17 @@
     <Folder Include="Public\" />
     <Folder Include="Public\Leaderboard\" />
     <Folder Include="Public\Push\" />
+    <Folder Include="Public\Friendship\" />
+    <Folder Include="Public\Status\" />
+    <Folder Include="Public\Search\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common\Common.csproj">
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Public\Friendship\" />
+    <None Remove="Public\Status\" />
+    <None Remove="Public\Search\" />
   </ItemGroup>
 </Project>
