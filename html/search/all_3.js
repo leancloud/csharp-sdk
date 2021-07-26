@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['data_71',['Data',['../classLeanCloud_1_1Push_1_1LCPush.html#a5ca5e203e527817948ddce66272e6cad',1,'LeanCloud.Push.LCPush.Data()'],['../classLeanCloud_1_1Realtime_1_1LCIMBinaryMessage.html#a162cb886b6f725e93719ef540d018a84',1,'LeanCloud.Realtime.LCIMBinaryMessage.Data()']]],
+  ['data_71',['Data',['../classLeanCloud_1_1Storage_1_1LCStatus.html#a753831e99da47f385e679e2f47db54bb',1,'LeanCloud.Storage.LCStatus.Data()'],['../classLeanCloud_1_1Realtime_1_1LCIMBinaryMessage.html#a162cb886b6f725e93719ef540d018a84',1,'LeanCloud.Realtime.LCIMBinaryMessage.Data()']]],
   ['data_72',['data',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a7de8ee2e52e4abee9ec7db90f27c4bee',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
-  ['data_73',['Data',['../classLeanCloud_1_1Storage_1_1LCStatus.html#a753831e99da47f385e679e2f47db54bb',1,'LeanCloud::Storage::LCStatus']]],
+  ['data_73',['Data',['../classLeanCloud_1_1Push_1_1LCPush.html#a5ca5e203e527817948ddce66272e6cad',1,'LeanCloud::Push::LCPush']]],
   ['day_74',['Day',['../namespaceLeanCloud_1_1Storage.html#ab5c4f02c040b84508201c6f0745fa415a03727ac48595a24daed975559c944a44',1,'LeanCloud::Storage']]],
   ['deactivatedat_75',['DeactivatedAt',['../classLeanCloud_1_1Storage_1_1LCLeaderboardArchive.html#ac10f173cf03d82742ad0cc5df67d1595',1,'LeanCloud::Storage::LCLeaderboardArchive']]],
   ['declinerequest_76',['DeclineRequest',['../classLeanCloud_1_1Storage_1_1LCFriendship.html#a0fed41251077ae0a6f0b85311ed3ddeb',1,'LeanCloud::Storage::LCFriendship']]],
