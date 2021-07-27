@@ -97,6 +97,7 @@ const char* ON_GET_LAUNCH_DATA = "OnGetLaunchData";
     NSMutableDictionary* data = [NSMutableDictionary dictionaryWithDictionary:@{@"callbackId": callbackId}];
     if (_launchPushData) {
         [data addEntriesFromDictionary:_launchPushData];
+        _launchPushData = nil;
     }
     NSError* error;
     NSData* jsonData = [NSJSONSerialization dataWithJSONObject:data options:NSJSONWritingPrettyPrinted error:&error];

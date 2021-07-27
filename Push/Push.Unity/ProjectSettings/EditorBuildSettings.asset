@@ -7,5 +7,5 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/LeanCloud/Push/Samples/PushDemo.unity
-    guid: 4a4a561829e2b4e5d9865ed64c7d9466
+    guid: 2e29948b07ceb45308c9d86483c84317
   m_configObjects: {}

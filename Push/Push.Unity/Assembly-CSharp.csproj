@@ -56,15 +56,15 @@
     <Analyzer Include="/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.Unity/Analyzers/Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/LeanCloud/Push/Android/XiaoMi/LCXiaoMiPushManager.cs" />
-    <Compile Include="Assets/LeanCloud/Push/Android/VIVO/LCVIVOPushManager.cs" />
     <Compile Include="Assets/LeanCloud/Push/Android/OPPO/LCOPPOPushManager.cs" />
     <Compile Include="Assets/LeanCloud/Push/Samples/PushDemo.cs" />
     <Compile Include="Assets/LeanCloud/Push/iOS/LCIOSPushManager.cs" />
+    <Compile Include="Assets/LeanCloud/Push/Android/XiaoMi/LCXiaoMiPushManager.cs" />
     <Compile Include="Assets/LeanCloud/Push/Android/MeiZu/LCMeiZuPushManager.cs" />
     <Compile Include="Assets/LeanCloud/Push/Android/HuaWei/LCHuaWeiPushManager.cs" />
-    <Compile Include="Assets/LeanCloud/Push/Android/LCAndroidPushManager.cs" />
     <Compile Include="Assets/LeanCloud/Push/Runtime/LCPushBridge.cs" />
+    <Compile Include="Assets/LeanCloud/Push/Android/VIVO/LCVIVOPushManager.cs" />
+    <Compile Include="Assets/LeanCloud/Push/Android/LCAndroidPushManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
