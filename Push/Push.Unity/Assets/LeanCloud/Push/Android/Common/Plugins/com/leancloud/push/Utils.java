@@ -13,12 +13,16 @@ import com.unity3d.player.UnityPlayer;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 
 public class Utils {
     public final static String TAG = "LCPush";
+
+    private final static String CONTENT_KEY = "content";
 
     private final static String PUSH_BRIDGE = "__LC_PUSH_BRIDGE__";
     private final static String ON_REGISTER_PUSH = "OnRegisterPush";
@@ -75,11 +79,20 @@ public class Utils {
         }
 
         if (intentParser != null) {
-            return intentParser.Parse();
+            String content = intentParser.Parse();
+            if (!isNullOrEmpty(content)) {
+                Set<String> keys = new HashSet<>(intent.getExtras().keySet());
+                for (String key : keys) {
+                    intent.removeExtra(key);
+                }
+            }
+            return content;
         }
 
-        if (intent.hasExtra("content")) {
-            return intent.getStringExtra("content");
+        if (intent.hasExtra(CONTENT_KEY)) {
+            String content = intent.getStringExtra(CONTENT_KEY);
+            intent.removeExtra(CONTENT_KEY);
+            return content;
         }
 
         return null;
@@ -97,6 +110,10 @@ public class Utils {
 
             Bundle bundle = intent.getExtras();
             if (bundle == null) {
+                return null;
+            }
+
+            if (bundle.keySet().size() == 0) {
                 return null;
             }
 
