@@ -1,6 +1,6 @@
 # csharp-sdk
 
-![build](https://img.shields.io/travis/leancloud/csharp-sdk)
+![build](https://img.shields.io/github/workflow/status/leancloud/csharp-sdk/.NET)
 ![version](https://img.shields.io/github/v/release/leancloud/csharp-sdk?include_prereleases)
 
 LeanCloud C# SDK，基于 .Net Standard 2.0 标准开发，包括服务如下：
