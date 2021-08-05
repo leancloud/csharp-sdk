@@ -106,6 +106,18 @@
                 <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
+
+        <!-- FCM -->
+        <service
+        android:name="com.leancloud.push.fcm.FCMMessageService"
+        android:exported="false">
+        <intent-filter>
+            <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+        </intent-filter>
+        </service>
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

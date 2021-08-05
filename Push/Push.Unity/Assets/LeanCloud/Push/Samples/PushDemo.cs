@@ -42,9 +42,20 @@ public class PushDemo : MonoBehaviour {
                     break;
             }
         };
-        LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
 
         deviceInfoText.text = $"{SystemInfo.deviceModel}, {SystemInfo.deviceName}, {SystemInfo.deviceType}, {SystemInfo.operatingSystem}";
+
+        InitInternationalApp();
+    }
+
+    private void InitInternationalApp() {
+        LCApplication.Initialize("HudJvWWmAuGMifwxByDVLmQi-MdYXbMMI", "YjoQr1X8wHoFIfsSGXzeJaAM");
+
+        LCFCMPushManager.RegisterFCMPush();
+    }
+
+    private void InitChineseApp() {
+        LCApplication.Initialize("ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz", "NUKmuRbdAhg1vrb2wexYo1jo", "https://ikggdre2.lc-cn-n1-shared.com");
 
         if (Application.platform == RuntimePlatform.IPhonePlayer) {
             LCIOSPushManager.RegisterIOSPush(IOS_TEAM_ID);
