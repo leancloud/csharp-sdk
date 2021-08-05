@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <ReleaseVersion>0.9.2</ReleaseVersion>
+    <ReleaseVersion>0.9.3</ReleaseVersion>
     <RootNamespace>LeanCloud.Engine</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
