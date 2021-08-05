@@ -6,8 +6,13 @@ apply plugin: 'com.android.library'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // 华为
     implementation 'com.huawei.hms:push:5.1.1.301'
+    // 魅族
     implementation 'com.meizu.flyme.internet:push-internal:4.1.0'
+    // FCM
+    implementation platform('com.google.firebase:firebase-bom:28.2.1')
+    implementation 'com.google.firebase:firebase-messaging'
 **DEPS**}
 
 android {
