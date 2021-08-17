@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using LeanCloud.Storage.Internal.Object;
+using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Storage {
     /// <summary>
@@ -15,10 +17,25 @@ namespace LeanCloud.Storage {
             get; private set;
         }
 
+
         /// <summary>
         /// The user of this LCRanking.
         /// </summary>
         public LCUser User {
+            get; private set;
+        }
+
+        /// <summary>
+        /// The object of this LCRanking.
+        /// </summary>
+        public LCObject Object {
+            get; private set;
+        }
+
+        /// <summary>
+        /// The entity of this LCRanking.
+        /// </summary>
+        public string Entity {
             get; private set;
         }
 
@@ -46,8 +63,14 @@ namespace LeanCloud.Storage {
                 ranking.Rank = Convert.ToInt32(rank);
             }
             if (data.TryGetValue("user", out object user)) {
-                LCObjectData objectData = LCObjectData.Decode(user as System.Collections.IDictionary);
+                LCObjectData objectData = LCObjectData.Decode(user as IDictionary);
                 ranking.User = LCUser.GenerateUser(objectData);
+            }
+            if (data.TryGetValue("object", out object obj)) {
+                ranking.Object = LCDecoder.DecodeObject(obj as IDictionary);
+            }
+            if (data.TryGetValue("entity", out object entity)) {
+                ranking.Entity = entity as string;
             }
             if (data.TryGetValue("statisticName", out object statisticName)) {
                 ranking.StatisticName = statisticName as string;

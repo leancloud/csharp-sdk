@@ -31,6 +31,9 @@ namespace LeanCloud.Storage {
     /// that handle the statistic.
     /// </summary>
     public class LCLeaderboard {
+        public const string USER_MEMBER_TYPE = "_User";
+        public const string ENTITY_MEMBER_TYPE = "_Entity";
+
         /// <summary>
         /// The name of statistic.
         /// </summary>
@@ -56,6 +59,13 @@ namespace LeanCloud.Storage {
         /// The interval of the version that the leaderboard resets.
         /// </summary>
         public LCLeaderboardVersionChangeInterval VersionChangeInterval {
+            get; private set;
+        }
+
+        /// <summary>
+        /// The member type of this leaderboard.
+        /// </summary>
+        public string MemberType {
             get; private set;
         }
 
@@ -91,7 +101,8 @@ namespace LeanCloud.Storage {
         public static async Task<LCLeaderboard> CreateLeaderboard(string statisticName,
             LCLeaderboardOrder order = LCLeaderboardOrder.Descending,
             LCLeaderboardUpdateStrategy updateStrategy = LCLeaderboardUpdateStrategy.Better,
-            LCLeaderboardVersionChangeInterval versionChangeInterval = LCLeaderboardVersionChangeInterval.Week) {
+            LCLeaderboardVersionChangeInterval versionChangeInterval = LCLeaderboardVersionChangeInterval.Week,
+            string memberType = USER_MEMBER_TYPE) {
             if (string.IsNullOrEmpty(statisticName)) {
                 throw new ArgumentNullException(nameof(statisticName));
             }
@@ -100,10 +111,11 @@ namespace LeanCloud.Storage {
                 { "order", order.ToString().ToLower() },
                 { "versionChangeInterval", versionChangeInterval.ToString().ToLower() },
                 { "updateStrategy", updateStrategy.ToString().ToLower() },
+                { "memberType", memberType },
             };
             string path = "leaderboard/leaderboards";
             Dictionary<string, object> result = await LCCore.HttpClient.Post<Dictionary<string, object>>(path,
-                data:data);
+                data: data);
             LCLeaderboard leaderboard = new LCLeaderboard();
             leaderboard.Merge(result);
             return leaderboard;
@@ -114,12 +126,13 @@ namespace LeanCloud.Storage {
         /// </summary>
         /// <param name="statisticName"></param>
         /// <returns></returns>
-        public static LCLeaderboard CreateWithoutData(string statisticName) {
+        public static LCLeaderboard CreateWithoutData(string statisticName, string memberType = USER_MEMBER_TYPE) {
             if (string.IsNullOrEmpty(statisticName)) {
                 throw new ArgumentNullException(nameof(statisticName));
             }
             return new LCLeaderboard {
-                StatisticName = statisticName
+                StatisticName = statisticName,
+                MemberType = memberType
             };
         }
 
@@ -140,7 +153,7 @@ namespace LeanCloud.Storage {
         /// <param name="statistics"></param>
         /// <param name="overwrite"></param>
         /// <returns></returns>
-        public static async Task<ReadOnlyCollection<LCStatistic>> UpdateStatistics(LCUser user,
+        public static Task<ReadOnlyCollection<LCStatistic>> UpdateStatistics(LCUser user,
             Dictionary<string, double> statistics,
             bool overwrite = false) {
             if (user == null) {
@@ -149,14 +162,61 @@ namespace LeanCloud.Storage {
             if (statistics == null || statistics.Count == 0) {
                 throw new ArgumentNullException(nameof(statistics));
             }
+            
+            string path = $"leaderboard/users/{user.ObjectId}/statistics";
+            return _UpdateStatistics(path, statistics, overwrite);
+        }
+
+        /// <summary>
+        /// Updates the statistic of the object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="statistics"></param>
+        /// <param name="overwrite"></param>
+        /// <returns></returns>
+        public static Task<ReadOnlyCollection<LCStatistic>> UpdateStatistics(LCObject obj,
+            Dictionary<string, double> statistics,
+            bool overwrite = false) {
+            if (obj == null) {
+                throw new ArgumentNullException(nameof(obj));
+            }
+            if (statistics == null || statistics.Count == 0) {
+                throw new ArgumentNullException(nameof(statistics));
+            }
+
+            string path = $"leaderboard/objects/{obj.ObjectId}/statistics";
+            return _UpdateStatistics(path, statistics, overwrite);
+        }
+
+        /// <summary>
+        /// Updates the statistic of the entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="statistics"></param>
+        /// <param name="overwrite"></param>
+        /// <returns></returns>
+        public static Task<ReadOnlyCollection<LCStatistic>> UpdateStatistics(string entity,
+            Dictionary<string, double> statistics,
+            bool overwrite = false) {
+            if (string.IsNullOrEmpty(entity)) {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            if (statistics == null || statistics.Count == 0) {
+                throw new ArgumentNullException(nameof(statistics));
+            }
+
+            string path = $"leaderboard/entities/{entity}/statistics";
+            return _UpdateStatistics(path, statistics, overwrite);
+        }
+
+        private static async Task<ReadOnlyCollection<LCStatistic>> _UpdateStatistics(string path, Dictionary<string, double> statistics, bool overwrite) {
+            if (overwrite) {
+                path = $"{path}?overwrite=1";
+            }
             List<Dictionary<string, object>> data = statistics.Select(statistic => new Dictionary<string, object> {
                 { "statisticName", statistic.Key },
                 { "statisticValue", statistic.Value },
             }).ToList();
-            string path = $"leaderboard/users/{user.ObjectId}/statistics";
-            if (overwrite) {
-                path = $"{path}?overwrite=1";
-            }
             Dictionary<string, object> result = await LCCore.HttpClient.Post<Dictionary<string, object>>(path,
                 data: data);
             if (result.TryGetValue("results", out object results) &&
@@ -168,6 +228,7 @@ namespace LeanCloud.Storage {
                 }
                 return statisticList.AsReadOnly();
             }
+
             return null;
         }
 
@@ -177,12 +238,46 @@ namespace LeanCloud.Storage {
         /// <param name="user"></param>
         /// <param name="statisticNames"></param>
         /// <returns></returns>
-        public static async Task<ReadOnlyCollection<LCStatistic>> GetStatistics(LCUser user,
+        public static Task<ReadOnlyCollection<LCStatistic>> GetStatistics(LCUser user,
             IEnumerable<string> statisticNames = null) {
             if (user == null) {
                 throw new ArgumentNullException(nameof(user));
             }
             string path = $"leaderboard/users/{user.ObjectId}/statistics";
+            return _GetStatistics(path, statisticNames);
+        }
+
+        /// <summary>
+        /// Gets the statistics of the object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="statisticNames"></param>
+        /// <returns></returns>
+        public static Task<ReadOnlyCollection<LCStatistic>> GetStatistics(LCObject obj,
+            IEnumerable<string> statisticNames = null) {
+            if (obj == null) {
+                throw new ArgumentNullException(nameof(obj));
+            }
+            string path = $"leaderboard/objects/{obj.ObjectId}/statistics";
+            return _GetStatistics(path, statisticNames);
+        }
+
+        /// <summary>
+        /// Gets the statistics of the entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="statisticNames"></param>
+        /// <returns></returns>
+        public static Task<ReadOnlyCollection<LCStatistic>> GetStatistics(string entity,
+            IEnumerable<string> statisticNames = null) {
+            if (string.IsNullOrEmpty(entity)) {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            string path = $"leaderboard/entities/{entity}/statistics";
+            return _GetStatistics(path, statisticNames);
+        }
+
+        private static async Task<ReadOnlyCollection<LCStatistic>> _GetStatistics(string path, IEnumerable<string> statisticNames) {
             if (statisticNames != null && statisticNames.Count() > 0) {
                 string names = string.Join(",", statisticNames);
                 path = $"{path}?statistics={names}";
@@ -201,12 +296,12 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
-        /// Deletes the statistics of the user with the given name.
+        /// Deletes the statistics of the user with the given names.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="statisticNames"></param>
         /// <returns></returns>
-        public static async Task DeleteStatistics(LCUser user,
+        public static Task DeleteStatistics(LCUser user,
             IEnumerable<string> statisticNames) {
             if (user == null) {
                 throw new ArgumentNullException(nameof(user));
@@ -214,9 +309,53 @@ namespace LeanCloud.Storage {
             if (statisticNames == null || statisticNames.Count() == 0) {
                 throw new ArgumentNullException(nameof(statisticNames));
             }
+            
+            string path = $"leaderboard/users/{user.ObjectId}/statistics";
+            return _DeleteStatistics(path, statisticNames);
+        }
+
+        /// <summary>
+        /// Deletes the statistics of the object with the given names.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="statisticNames"></param>
+        /// <returns></returns>
+        public static Task DeleteStatistics(LCObject obj,
+            IEnumerable<string> statisticNames) {
+            if (obj == null) {
+                throw new ArgumentNullException(nameof(obj));
+            }
+            if (statisticNames == null || statisticNames.Count() == 0) {
+                throw new ArgumentNullException(nameof(statisticNames));
+            }
+
+            string path = $"leaderboard/objects/{obj.ObjectId}/statistics";
+            return _DeleteStatistics(path, statisticNames);
+        }
+
+        /// <summary>
+        /// Deletes the statistics of the entity with the given names.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="statisticNames"></param>
+        /// <returns></returns>
+        public static Task DeleteStatistics(string entity,
+            IEnumerable<string> statisticNames) {
+            if (string.IsNullOrEmpty(entity)) {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            if (statisticNames == null || statisticNames.Count() == 0) {
+                throw new ArgumentNullException(nameof(statisticNames));
+            }
+
+            string path = $"leaderboard/entities/{entity}/statistics";
+            return _DeleteStatistics(path, statisticNames);
+        }
+
+        private static Task _DeleteStatistics(string path, IEnumerable<string> statisticNames) {
             string names = string.Join(",", statisticNames);
-            string path = $"leaderboard/users/{user.ObjectId}/statistics?statistics={names}";
-            await LCCore.HttpClient.Delete(path);
+            path = $"{path}?statistics={names}";
+            return LCCore.HttpClient.Delete(path);
         }
 
         /// <summary>
@@ -261,9 +400,20 @@ namespace LeanCloud.Storage {
         public Task<ReadOnlyCollection<LCRanking>> GetResults(int version = -1,
             int skip = 0,
             int limit = 10,
-            IEnumerable<string> selectUserKeys = null,
+            IEnumerable<string> selectKeys = null,
+            IEnumerable<string> includeKeys = null,
             IEnumerable<string> includeStatistics = null) {
-            return GetResults(null, version, skip, limit, selectUserKeys, includeStatistics);
+            if (MemberType == USER_MEMBER_TYPE) {
+                return _GetResults($"leaderboard/leaderboards/user/{StatisticName}/ranks",
+                    version, skip, limit, selectKeys, includeKeys, includeStatistics);
+            }
+            if (MemberType == ENTITY_MEMBER_TYPE) {
+                return _GetResults($"leaderboard/leaderboards/entity/{StatisticName}/ranks",
+                    version, skip, limit, selectKeys, includeKeys, includeStatistics);
+            }
+
+            return _GetResults($"leaderboard/leaderboards/object/{StatisticName}/ranks",
+                version, skip, limit, selectKeys, includeKeys, includeStatistics);
         }
 
         /// <summary>
@@ -278,14 +428,15 @@ namespace LeanCloud.Storage {
         public async Task<ReadOnlyCollection<LCRanking>> GetResultsAroundUser(int version = -1,
             int skip = 0,
             int limit = 10,
-            IEnumerable<string> selectUserKeys = null,
+            IEnumerable<string> selectKeys = null,
+            IEnumerable<string> includeKeys = null,
             IEnumerable<string> includeStatistics = null) {
             LCUser user = await LCUser.GetCurrent();
-            return await GetResults(user, version, skip, limit, selectUserKeys, includeStatistics);
+            return await GetResultsAroundUser(user, version, skip, limit, selectKeys, includeKeys, includeStatistics);
         }
 
         /// <summary>
-        /// Gets the rankings of the user.
+        /// Get the rankings that around the user.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="version"></param>
@@ -294,22 +445,78 @@ namespace LeanCloud.Storage {
         /// <param name="selectUserKeys"></param>
         /// <param name="includeStatistics"></param>
         /// <returns></returns>
-        private async Task<ReadOnlyCollection<LCRanking>> GetResults(LCUser user,
+        public Task<ReadOnlyCollection<LCRanking>> GetResultsAroundUser(LCUser user,
+            int version = -1,
+            int skip = 0,
+            int limit = 10,
+            IEnumerable<string> selectKeys = null,
+            IEnumerable<string> includeKeys = null,
+            IEnumerable<string> includeStatistics = null) {
+            if (user == null) {
+                throw new ArgumentNullException(nameof(user));
+            }
+            string path = $"leaderboard/leaderboards/user/{StatisticName}/ranks/{user.ObjectId}";
+            return _GetResults(path, version, skip, limit, selectKeys, includeKeys, includeStatistics);
+        }
+
+        /// <summary>
+        /// Get the rankings that around the object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="version"></param>
+        /// <param name="skip"></param>
+        /// <param name="limit"></param>
+        /// <param name="selectUserKeys"></param>
+        /// <param name="includeStatistics"></param>
+        /// <returns></returns>
+        public Task<ReadOnlyCollection<LCRanking>> GetResultsAroundObject(LCObject obj,
+            int version = -1,
+            int skip = 0,
+            int limit = 10,
+            IEnumerable<string> selectKeys = null,
+            IEnumerable<string> includeKeys = null,
+            IEnumerable<string> includeStatistics = null) {
+            if (obj == null) {
+                throw new ArgumentNullException(nameof(obj));
+            }
+            string path = $"leaderboard/leaderboards/entity/{StatisticName}/ranks/{obj.ObjectId}";
+            return _GetResults(path, version, skip, limit, selectKeys, includeKeys, includeStatistics);
+        }
+
+        /// <summary>
+        /// Get the rankings that around the entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="version"></param>
+        /// <param name="skip"></param>
+        /// <param name="limit"></param>
+        /// <param name="selectUserKeys"></param>
+        /// <param name="includeStatistics"></param>
+        /// <returns></returns>
+        public Task<ReadOnlyCollection<LCRanking>> GetResultsAroundEntity(string entity,
+            int version = -1,
+            int skip = 0,
+            int limit = 10) {
+            if (string.IsNullOrEmpty(entity)) {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            string path = $"leaderboard/leaderboards/entity/{StatisticName}/ranks/{entity}";
+            return _GetResults(path, version, skip, limit, null, null, null);
+        }
+
+        private async Task<ReadOnlyCollection<LCRanking>> _GetResults(string path,
             int version,
             int skip,
             int limit,
-            IEnumerable<string> selectUserKeys,
+            IEnumerable<string> selectKeys,
+            IEnumerable<string> include,
             IEnumerable<string> includeStatistics) {
-            string path = $"leaderboard/leaderboards/{StatisticName}/ranks";
-            if (user != null) {
-                path = $"{path}/{user.ObjectId}";
-            }
-            path = $"{path}?skip={skip}&limit={limit}";
+            path = $"{path}?startPosition={skip}&maxResultsCount={limit}";
             if (version != -1) {
                 path = $"{path}&version={version}";
             }
-            if (selectUserKeys != null) {
-                string keys = string.Join(",", selectUserKeys);
+            if (selectKeys != null) {
+                string keys = string.Join(",", selectKeys);
                 path = $"{path}&includeUser={keys}";
             }
             if (includeStatistics != null) {
@@ -413,6 +620,9 @@ namespace LeanCloud.Storage {
             if (data.TryGetValue("versionChangeInterval", out object interval) &&
                 Enum.TryParse(interval as string, true, out LCLeaderboardVersionChangeInterval i)) {
                 VersionChangeInterval = i;
+            }
+            if (data.TryGetValue("memberType", out object memberType)) {
+                MemberType = memberType as string;
             }
             if (data.TryGetValue("version", out object version)) {
                 Version = Convert.ToInt32(version);
