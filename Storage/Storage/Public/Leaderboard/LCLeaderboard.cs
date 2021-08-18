@@ -517,10 +517,12 @@ namespace LeanCloud.Storage {
             }
             if (selectKeys != null) {
                 string keys = string.Join(",", selectKeys);
-                path = $"{path}&includeUser={keys}";
+                path = $"{path}&selectKeys={keys}";
             }
-            // TODO
-
+            if (includeKeys != null) {
+                string includes = string.Join(",", includeKeys);
+                path = $"{path}&includeKeys={includes}";
+            }
             if (includeStatistics != null) {
                 string statistics = string.Join(",", includeStatistics);
                 path = $"{path}&includeStatistics={statistics}";
