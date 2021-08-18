@@ -432,7 +432,7 @@ namespace LeanCloud.Storage {
             IEnumerable<string> includeKeys = null,
             IEnumerable<string> includeStatistics = null) {
             LCUser user = await LCUser.GetCurrent();
-            return await GetResultsAroundUser(user, version, skip, limit, selectKeys, includeKeys, includeStatistics);
+            return await GetResults(user, version, skip, limit, selectKeys, includeKeys, includeStatistics);
         }
 
         /// <summary>
@@ -445,17 +445,17 @@ namespace LeanCloud.Storage {
         /// <param name="selectUserKeys"></param>
         /// <param name="includeStatistics"></param>
         /// <returns></returns>
-        public Task<ReadOnlyCollection<LCRanking>> GetResultsAroundUser(LCUser user,
+        public Task<ReadOnlyCollection<LCRanking>> GetResults(LCUser aroundUser,
             int version = -1,
             int skip = 0,
             int limit = 10,
             IEnumerable<string> selectKeys = null,
             IEnumerable<string> includeKeys = null,
             IEnumerable<string> includeStatistics = null) {
-            if (user == null) {
-                throw new ArgumentNullException(nameof(user));
+            if (aroundUser == null) {
+                throw new ArgumentNullException(nameof(aroundUser));
             }
-            string path = $"leaderboard/leaderboards/user/{StatisticName}/ranks/{user.ObjectId}";
+            string path = $"leaderboard/leaderboards/user/{StatisticName}/ranks/{aroundUser.ObjectId}";
             return _GetResults(path, version, skip, limit, selectKeys, includeKeys, includeStatistics);
         }
 
@@ -469,17 +469,17 @@ namespace LeanCloud.Storage {
         /// <param name="selectUserKeys"></param>
         /// <param name="includeStatistics"></param>
         /// <returns></returns>
-        public Task<ReadOnlyCollection<LCRanking>> GetResultsAroundObject(LCObject obj,
+        public Task<ReadOnlyCollection<LCRanking>> GetResults(LCObject aroundObject,
             int version = -1,
             int skip = 0,
             int limit = 10,
             IEnumerable<string> selectKeys = null,
             IEnumerable<string> includeKeys = null,
             IEnumerable<string> includeStatistics = null) {
-            if (obj == null) {
-                throw new ArgumentNullException(nameof(obj));
+            if (aroundObject == null) {
+                throw new ArgumentNullException(nameof(aroundObject));
             }
-            string path = $"leaderboard/leaderboards/entity/{StatisticName}/ranks/{obj.ObjectId}";
+            string path = $"leaderboard/leaderboards/entity/{StatisticName}/ranks/{aroundObject.ObjectId}";
             return _GetResults(path, version, skip, limit, selectKeys, includeKeys, includeStatistics);
         }
 
@@ -493,14 +493,14 @@ namespace LeanCloud.Storage {
         /// <param name="selectUserKeys"></param>
         /// <param name="includeStatistics"></param>
         /// <returns></returns>
-        public Task<ReadOnlyCollection<LCRanking>> GetResultsAroundEntity(string entity,
+        public Task<ReadOnlyCollection<LCRanking>> GetResults(string aroundEntity,
             int version = -1,
             int skip = 0,
             int limit = 10) {
-            if (string.IsNullOrEmpty(entity)) {
-                throw new ArgumentNullException(nameof(entity));
+            if (string.IsNullOrEmpty(aroundEntity)) {
+                throw new ArgumentNullException(nameof(aroundEntity));
             }
-            string path = $"leaderboard/leaderboards/entity/{StatisticName}/ranks/{entity}";
+            string path = $"leaderboard/leaderboards/entity/{StatisticName}/ranks/{aroundEntity}";
             return _GetResults(path, version, skip, limit, null, null, null);
         }
 
@@ -509,7 +509,7 @@ namespace LeanCloud.Storage {
             int skip,
             int limit,
             IEnumerable<string> selectKeys,
-            IEnumerable<string> include,
+            IEnumerable<string> includeKeys,
             IEnumerable<string> includeStatistics) {
             path = $"{path}?startPosition={skip}&maxResultsCount={limit}";
             if (version != -1) {
@@ -519,6 +519,8 @@ namespace LeanCloud.Storage {
                 string keys = string.Join(",", selectKeys);
                 path = $"{path}&includeUser={keys}";
             }
+            // TODO
+
             if (includeStatistics != null) {
                 string statistics = string.Join(",", includeStatistics);
                 path = $"{path}&includeStatistics={statistics}";
