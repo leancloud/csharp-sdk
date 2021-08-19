@@ -49,11 +49,11 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     return;
                 }
                 LCLogger.Debug("Ping ~~~");
-                SendPing();
+                await SendPing();
             }
         }
 
-        protected virtual void SendPing() {
+        protected virtual async Task SendPing() {
             // 发送 ping 包
             GenericCommand command = new GenericCommand {
                 Cmd = CommandType.Echo,
@@ -61,7 +61,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 PeerId = connection.id
             };
             try {
-                _ = connection.SendCommand(command);
+                await connection.SendCommand(command);
             } catch (Exception e) {
                 LCLogger.Error(e.Message);
             }

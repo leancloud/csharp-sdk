@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Realtime.Internal.Connection;
-using System.Collections.Generic;
 
 namespace LeanCloud.LiveQuery.Internal {
     /// <summary>
@@ -16,11 +14,11 @@ namespace LeanCloud.LiveQuery.Internal {
             this.connection = connection;
         }
 
-        protected override void SendPing() {
+        protected override async Task SendPing() {
             try {
-                _ = connection.SendText("{}");
-            } catch (Exception) {
-
+                await connection.SendText("{}");
+            } catch (Exception e) {
+                LCLogger.Error(e.Message);
             }
         }
     }
