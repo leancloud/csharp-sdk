@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['userhooks_1033',['UserHooks',['../classLeanCloud_1_1Engine_1_1LCEngine.html#aef707577877a81bb8ee90cafc0699440',1,'LeanCloud::Engine::LCEngine']]]
+  ['textmessagetype_1037',['TextMessageType',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a46248f6369089f07c601d2a9ec017300',1,'LeanCloud::Realtime::LCIMTypedMessage']]]
 ];

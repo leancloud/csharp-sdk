@@ -68,6 +68,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#properties">Properties</a> &#124;
 <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -83,12 +84,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a924de022c4997adc9311bc5ed8abea38"><td class="memItemLeft" align="right" valign="top">async Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboardArchive.html">LCLeaderboardArchive</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a924de022c4997adc9311bc5ed8abea38">GetArchives</a> (int skip=0, int limit=10)</td></tr>
 <tr class="memdesc:a924de022c4997adc9311bc5ed8abea38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets historical data of this leaderboard.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a924de022c4997adc9311bc5ed8abea38">More...</a><br /></td></tr>
 <tr class="separator:a924de022c4997adc9311bc5ed8abea38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46de146170518fd87741e9a07114035e"><td class="memItemLeft" align="right" valign="top">Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a46de146170518fd87741e9a07114035e">GetResults</a> (int version=-1, int skip=0, int limit=10, IEnumerable&lt; string &gt; selectUserKeys=null, IEnumerable&lt; string &gt; includeStatistics=null)</td></tr>
-<tr class="memdesc:a46de146170518fd87741e9a07114035e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the rankings.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a46de146170518fd87741e9a07114035e">More...</a><br /></td></tr>
-<tr class="separator:a46de146170518fd87741e9a07114035e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a042e12f23518400920b26692dce99047"><td class="memItemLeft" align="right" valign="top">async Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a042e12f23518400920b26692dce99047">GetResultsAroundUser</a> (int version=-1, int skip=0, int limit=10, IEnumerable&lt; string &gt; selectUserKeys=null, IEnumerable&lt; string &gt; includeStatistics=null)</td></tr>
-<tr class="memdesc:a042e12f23518400920b26692dce99047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the rankings that around the currently logged in user.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a042e12f23518400920b26692dce99047">More...</a><br /></td></tr>
-<tr class="separator:a042e12f23518400920b26692dce99047"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cd6ef75b746f7594b9a15c3d37c7208"><td class="memItemLeft" align="right" valign="top">Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a6cd6ef75b746f7594b9a15c3d37c7208">GetResults</a> (int version=-1, int skip=0, int limit=10, IEnumerable&lt; string &gt; selectKeys=null, IEnumerable&lt; string &gt; includeKeys=null, IEnumerable&lt; string &gt; includeStatistics=null)</td></tr>
+<tr class="memdesc:a6cd6ef75b746f7594b9a15c3d37c7208"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the rankings.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a6cd6ef75b746f7594b9a15c3d37c7208">More...</a><br /></td></tr>
+<tr class="separator:a6cd6ef75b746f7594b9a15c3d37c7208"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa343418030b19ec5cedb8a33e4819e23"><td class="memItemLeft" align="right" valign="top">async Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#aa343418030b19ec5cedb8a33e4819e23">GetResultsAroundUser</a> (int version=-1, int skip=0, int limit=10, IEnumerable&lt; string &gt; selectKeys=null, IEnumerable&lt; string &gt; includeKeys=null, IEnumerable&lt; string &gt; includeStatistics=null)</td></tr>
+<tr class="memdesc:aa343418030b19ec5cedb8a33e4819e23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the rankings that around the currently logged in user.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#aa343418030b19ec5cedb8a33e4819e23">More...</a><br /></td></tr>
+<tr class="separator:aa343418030b19ec5cedb8a33e4819e23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5d1908dae61ae7150fb0101ac9bc2a1"><td class="memItemLeft" align="right" valign="top">Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#aa5d1908dae61ae7150fb0101ac9bc2a1">GetResults</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a> aroundUser, int version=-1, int skip=0, int limit=10, IEnumerable&lt; string &gt; selectKeys=null, IEnumerable&lt; string &gt; includeKeys=null, IEnumerable&lt; string &gt; includeStatistics=null)</td></tr>
+<tr class="memdesc:aa5d1908dae61ae7150fb0101ac9bc2a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the rankings that around the user.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#aa5d1908dae61ae7150fb0101ac9bc2a1">More...</a><br /></td></tr>
+<tr class="separator:aa5d1908dae61ae7150fb0101ac9bc2a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c8146580afec53c31be61be1549b798"><td class="memItemLeft" align="right" valign="top">Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a2c8146580afec53c31be61be1549b798">GetResults</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCObject.html">LCObject</a> aroundObject, int version=-1, int skip=0, int limit=10, IEnumerable&lt; string &gt; selectKeys=null, IEnumerable&lt; string &gt; includeKeys=null, IEnumerable&lt; string &gt; includeStatistics=null)</td></tr>
+<tr class="memdesc:a2c8146580afec53c31be61be1549b798"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the rankings that around the object.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a2c8146580afec53c31be61be1549b798">More...</a><br /></td></tr>
+<tr class="separator:a2c8146580afec53c31be61be1549b798"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3634ebdc6329df214a5cfbc9042573ae"><td class="memItemLeft" align="right" valign="top">Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a3634ebdc6329df214a5cfbc9042573ae">GetResults</a> (string aroundEntity, int version=-1, int skip=0, int limit=10)</td></tr>
+<tr class="memdesc:a3634ebdc6329df214a5cfbc9042573ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the rankings that around the entity.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a3634ebdc6329df214a5cfbc9042573ae">More...</a><br /></td></tr>
+<tr class="separator:a3634ebdc6329df214a5cfbc9042573ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9973f9af1158cd700dbcf58d8ae325d6"><td class="memItemLeft" align="right" valign="top">async Task&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html">LCLeaderboard</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a9973f9af1158cd700dbcf58d8ae325d6">UpdateUpdateStrategy</a> (<a class="el" href="namespaceLeanCloud_1_1Storage.html#a676b32ce1cd148e448c12f3f14ec2392">LCLeaderboardUpdateStrategy</a> updateStrategy)</td></tr>
 <tr class="memdesc:a9973f9af1158cd700dbcf58d8ae325d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the update strategy of this <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html" title="LCLeaderboard represents LeanCloud leaderboard and contains static functions that handle the statisti...">LCLeaderboard</a>.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a9973f9af1158cd700dbcf58d8ae325d6">More...</a><br /></td></tr>
 <tr class="separator:a9973f9af1158cd700dbcf58d8ae325d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,24 +117,49 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a6a1781c626b5e6059b89fb1736b1f0aa"><td class="memItemLeft" align="right" valign="top">static async Task&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html">LCLeaderboard</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a6a1781c626b5e6059b89fb1736b1f0aa">CreateLeaderboard</a> (string statisticName, <a class="el" href="namespaceLeanCloud_1_1Storage.html#a1891a797f63b3f8f99bff8c9c8107125">LCLeaderboardOrder</a> order=<a class="el" href="namespaceLeanCloud_1_1Storage.html#a1891a797f63b3f8f99bff8c9c8107125ae3cf5ac19407b1a62c6fccaff675a53b">LCLeaderboardOrder.Descending</a>, <a class="el" href="namespaceLeanCloud_1_1Storage.html#a676b32ce1cd148e448c12f3f14ec2392">LCLeaderboardUpdateStrategy</a> updateStrategy=<a class="el" href="namespaceLeanCloud_1_1Storage.html#a676b32ce1cd148e448c12f3f14ec2392a11e35a8c8d2b4a3ff62ddcb2a46708b8">LCLeaderboardUpdateStrategy.Better</a>, <a class="el" href="namespaceLeanCloud_1_1Storage.html#ab5c4f02c040b84508201c6f0745fa415">LCLeaderboardVersionChangeInterval</a> versionChangeInterval=<a class="el" href="namespaceLeanCloud_1_1Storage.html#ab5c4f02c040b84508201c6f0745fa415ad2ce009594dcc60befa6a4e6cbeb71fc">LCLeaderboardVersionChangeInterval.Week</a>)</td></tr>
-<tr class="memdesc:a6a1781c626b5e6059b89fb1736b1f0aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html" title="LCLeaderboard represents LeanCloud leaderboard and contains static functions that handle the statisti...">LCLeaderboard</a> with a statistic name.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a6a1781c626b5e6059b89fb1736b1f0aa">More...</a><br /></td></tr>
-<tr class="separator:a6a1781c626b5e6059b89fb1736b1f0aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0de4b87e6fcc3db1e589b202faf3f2ca"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html">LCLeaderboard</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a0de4b87e6fcc3db1e589b202faf3f2ca">CreateWithoutData</a> (string statisticName)</td></tr>
-<tr class="memdesc:a0de4b87e6fcc3db1e589b202faf3f2ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty leaderboard with a specified name.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a0de4b87e6fcc3db1e589b202faf3f2ca">More...</a><br /></td></tr>
-<tr class="separator:a0de4b87e6fcc3db1e589b202faf3f2ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78883ce849545d4ed30696629374b33f"><td class="memItemLeft" align="right" valign="top">static async Task&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html">LCLeaderboard</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a78883ce849545d4ed30696629374b33f">CreateLeaderboard</a> (string statisticName, <a class="el" href="namespaceLeanCloud_1_1Storage.html#a1891a797f63b3f8f99bff8c9c8107125">LCLeaderboardOrder</a> order=<a class="el" href="namespaceLeanCloud_1_1Storage.html#a1891a797f63b3f8f99bff8c9c8107125ae3cf5ac19407b1a62c6fccaff675a53b">LCLeaderboardOrder.Descending</a>, <a class="el" href="namespaceLeanCloud_1_1Storage.html#a676b32ce1cd148e448c12f3f14ec2392">LCLeaderboardUpdateStrategy</a> updateStrategy=<a class="el" href="namespaceLeanCloud_1_1Storage.html#a676b32ce1cd148e448c12f3f14ec2392a11e35a8c8d2b4a3ff62ddcb2a46708b8">LCLeaderboardUpdateStrategy.Better</a>, <a class="el" href="namespaceLeanCloud_1_1Storage.html#ab5c4f02c040b84508201c6f0745fa415">LCLeaderboardVersionChangeInterval</a> versionChangeInterval=<a class="el" href="namespaceLeanCloud_1_1Storage.html#ab5c4f02c040b84508201c6f0745fa415ad2ce009594dcc60befa6a4e6cbeb71fc">LCLeaderboardVersionChangeInterval.Week</a>, string memberType=<a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#ac3b6dcdd85875ee666aa36b3a239057e">USER_MEMBER_TYPE</a>)</td></tr>
+<tr class="memdesc:a78883ce849545d4ed30696629374b33f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html" title="LCLeaderboard represents LeanCloud leaderboard and contains static functions that handle the statisti...">LCLeaderboard</a> with a statistic name.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a78883ce849545d4ed30696629374b33f">More...</a><br /></td></tr>
+<tr class="separator:a78883ce849545d4ed30696629374b33f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a200154d36657942cf278d56ae352b087"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html">LCLeaderboard</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a200154d36657942cf278d56ae352b087">CreateWithoutData</a> (string statisticName, string memberType=<a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#ac3b6dcdd85875ee666aa36b3a239057e">USER_MEMBER_TYPE</a>)</td></tr>
+<tr class="memdesc:a200154d36657942cf278d56ae352b087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty leaderboard with a specified name.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a200154d36657942cf278d56ae352b087">More...</a><br /></td></tr>
+<tr class="separator:a200154d36657942cf278d56ae352b087"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d7c8a802ca97724138dc7ad9e6c0ab3"><td class="memItemLeft" align="right" valign="top">static Task&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html">LCLeaderboard</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a4d7c8a802ca97724138dc7ad9e6c0ab3">GetLeaderboard</a> (string statisticName)</td></tr>
 <tr class="memdesc:a4d7c8a802ca97724138dc7ad9e6c0ab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html" title="LCLeaderboard represents LeanCloud leaderboard and contains static functions that handle the statisti...">LCLeaderboard</a> with the given name.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a4d7c8a802ca97724138dc7ad9e6c0ab3">More...</a><br /></td></tr>
 <tr class="separator:a4d7c8a802ca97724138dc7ad9e6c0ab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dc75637eb7a137cbad451de3acd6d95"><td class="memItemLeft" align="right" valign="top">static async Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a3dc75637eb7a137cbad451de3acd6d95">UpdateStatistics</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a> user, Dictionary&lt; string, double &gt; statistics, bool overwrite=false)</td></tr>
-<tr class="memdesc:a3dc75637eb7a137cbad451de3acd6d95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the statistic of the user.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a3dc75637eb7a137cbad451de3acd6d95">More...</a><br /></td></tr>
-<tr class="separator:a3dc75637eb7a137cbad451de3acd6d95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a392b6feaa344ea030807cff2def9e311"><td class="memItemLeft" align="right" valign="top">static async Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a392b6feaa344ea030807cff2def9e311">GetStatistics</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a> user, IEnumerable&lt; string &gt; statisticNames=null)</td></tr>
-<tr class="memdesc:a392b6feaa344ea030807cff2def9e311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the statistics of the user.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a392b6feaa344ea030807cff2def9e311">More...</a><br /></td></tr>
-<tr class="separator:a392b6feaa344ea030807cff2def9e311"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7897bda9aec668180d70d2663c63f1d3"><td class="memItemLeft" align="right" valign="top">static async Task&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a7897bda9aec668180d70d2663c63f1d3">DeleteStatistics</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a> user, IEnumerable&lt; string &gt; statisticNames)</td></tr>
-<tr class="memdesc:a7897bda9aec668180d70d2663c63f1d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the statistics of the user with the given name.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a7897bda9aec668180d70d2663c63f1d3">More...</a><br /></td></tr>
-<tr class="separator:a7897bda9aec668180d70d2663c63f1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a802603f820490bd39469b1559a4baa6c"><td class="memItemLeft" align="right" valign="top">static Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a802603f820490bd39469b1559a4baa6c">UpdateStatistics</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a> user, Dictionary&lt; string, double &gt; statistics, bool overwrite=false)</td></tr>
+<tr class="memdesc:a802603f820490bd39469b1559a4baa6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the statistic of the user.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a802603f820490bd39469b1559a4baa6c">More...</a><br /></td></tr>
+<tr class="separator:a802603f820490bd39469b1559a4baa6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1ad664d653ee5f345387a9a2ab1777b"><td class="memItemLeft" align="right" valign="top">static Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#ae1ad664d653ee5f345387a9a2ab1777b">UpdateStatistics</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCObject.html">LCObject</a> obj, Dictionary&lt; string, double &gt; statistics, bool overwrite=false)</td></tr>
+<tr class="memdesc:ae1ad664d653ee5f345387a9a2ab1777b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the statistic of the object.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#ae1ad664d653ee5f345387a9a2ab1777b">More...</a><br /></td></tr>
+<tr class="separator:ae1ad664d653ee5f345387a9a2ab1777b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a590983a3d0da7a126ad04d115ade0789"><td class="memItemLeft" align="right" valign="top">static Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a590983a3d0da7a126ad04d115ade0789">UpdateStatistics</a> (string entity, Dictionary&lt; string, double &gt; statistics, bool overwrite=false)</td></tr>
+<tr class="memdesc:a590983a3d0da7a126ad04d115ade0789"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the statistic of the entity.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a590983a3d0da7a126ad04d115ade0789">More...</a><br /></td></tr>
+<tr class="separator:a590983a3d0da7a126ad04d115ade0789"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af865527186a4efb833f715257ce9f478"><td class="memItemLeft" align="right" valign="top">static Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#af865527186a4efb833f715257ce9f478">GetStatistics</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a> user, IEnumerable&lt; string &gt; statisticNames=null)</td></tr>
+<tr class="memdesc:af865527186a4efb833f715257ce9f478"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the statistics of the user.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#af865527186a4efb833f715257ce9f478">More...</a><br /></td></tr>
+<tr class="separator:af865527186a4efb833f715257ce9f478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c8e820e2625460240925fa4d2d4cedf"><td class="memItemLeft" align="right" valign="top">static Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a0c8e820e2625460240925fa4d2d4cedf">GetStatistics</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCObject.html">LCObject</a> obj, IEnumerable&lt; string &gt; statisticNames=null)</td></tr>
+<tr class="memdesc:a0c8e820e2625460240925fa4d2d4cedf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the statistics of the object.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a0c8e820e2625460240925fa4d2d4cedf">More...</a><br /></td></tr>
+<tr class="separator:a0c8e820e2625460240925fa4d2d4cedf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71542baa0dca0c51035397c89030bdc1"><td class="memItemLeft" align="right" valign="top">static Task&lt; ReadOnlyCollection&lt; <a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a71542baa0dca0c51035397c89030bdc1">GetStatistics</a> (string entity, IEnumerable&lt; string &gt; statisticNames=null)</td></tr>
+<tr class="memdesc:a71542baa0dca0c51035397c89030bdc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the statistics of the entity.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a71542baa0dca0c51035397c89030bdc1">More...</a><br /></td></tr>
+<tr class="separator:a71542baa0dca0c51035397c89030bdc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5573ab13f79fe2a62e08048e0dac308f"><td class="memItemLeft" align="right" valign="top">static Task&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a5573ab13f79fe2a62e08048e0dac308f">DeleteStatistics</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a> user, IEnumerable&lt; string &gt; statisticNames)</td></tr>
+<tr class="memdesc:a5573ab13f79fe2a62e08048e0dac308f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the statistics of the user with the given names.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a5573ab13f79fe2a62e08048e0dac308f">More...</a><br /></td></tr>
+<tr class="separator:a5573ab13f79fe2a62e08048e0dac308f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cc135da93e382d8a9f195d5068322eb"><td class="memItemLeft" align="right" valign="top">static Task&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a9cc135da93e382d8a9f195d5068322eb">DeleteStatistics</a> (<a class="el" href="classLeanCloud_1_1Storage_1_1LCObject.html">LCObject</a> obj, IEnumerable&lt; string &gt; statisticNames)</td></tr>
+<tr class="memdesc:a9cc135da93e382d8a9f195d5068322eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the statistics of the object with the given names.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a9cc135da93e382d8a9f195d5068322eb">More...</a><br /></td></tr>
+<tr class="separator:a9cc135da93e382d8a9f195d5068322eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05cb542f546fa7d5a5378e223ddbbb0e"><td class="memItemLeft" align="right" valign="top">static Task&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a05cb542f546fa7d5a5378e223ddbbb0e">DeleteStatistics</a> (string entity, IEnumerable&lt; string &gt; statisticNames)</td></tr>
+<tr class="memdesc:a05cb542f546fa7d5a5378e223ddbbb0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the statistics of the entity with the given names.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a05cb542f546fa7d5a5378e223ddbbb0e">More...</a><br /></td></tr>
+<tr class="separator:a05cb542f546fa7d5a5378e223ddbbb0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:ac3b6dcdd85875ee666aa36b3a239057e"><td class="memItemLeft" align="right" valign="top">const string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#ac3b6dcdd85875ee666aa36b3a239057e">USER_MEMBER_TYPE</a> = &quot;_User&quot;</td></tr>
+<tr class="separator:ac3b6dcdd85875ee666aa36b3a239057e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8186be097128868d2daaf390404d821a"><td class="memItemLeft" align="right" valign="top">const string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a8186be097128868d2daaf390404d821a">ENTITY_MEMBER_TYPE</a> = &quot;_Entity&quot;</td></tr>
+<tr class="separator:a8186be097128868d2daaf390404d821a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="properties"></a>
 Properties</h2></td></tr>
@@ -140,6 +175,9 @@ Properties</h2></td></tr>
 <tr class="memitem:a5b5a7c77fa4b3b49294d5085659001a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceLeanCloud_1_1Storage.html#ab5c4f02c040b84508201c6f0745fa415">LCLeaderboardVersionChangeInterval</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a5b5a7c77fa4b3b49294d5085659001a1">VersionChangeInterval</a><code> [get]</code></td></tr>
 <tr class="memdesc:a5b5a7c77fa4b3b49294d5085659001a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The interval of the version that the leaderboard resets.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a5b5a7c77fa4b3b49294d5085659001a1">More...</a><br /></td></tr>
 <tr class="separator:a5b5a7c77fa4b3b49294d5085659001a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d374b696a409398c80e0bba274a1898"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a6d374b696a409398c80e0bba274a1898">MemberType</a><code> [get]</code></td></tr>
+<tr class="memdesc:a6d374b696a409398c80e0bba274a1898"><td class="mdescLeft">&#160;</td><td class="mdescRight">The member type of this leaderboard.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a6d374b696a409398c80e0bba274a1898">More...</a><br /></td></tr>
+<tr class="separator:a6d374b696a409398c80e0bba274a1898"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeadb306eab9df084e1e6767bb41559b9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#aeadb306eab9df084e1e6767bb41559b9">Version</a><code> [get]</code></td></tr>
 <tr class="memdesc:aeadb306eab9df084e1e6767bb41559b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The version of this leaderboard.  <a href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#aeadb306eab9df084e1e6767bb41559b9">More...</a><br /></td></tr>
 <tr class="separator:aeadb306eab9df084e1e6767bb41559b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,8 +191,8 @@ Properties</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html" title="LCLeaderboard represents LeanCloud leaderboard and contains static functions that handle the statisti...">LCLeaderboard</a> represents <a class="el" href="namespaceLeanCloud.html">LeanCloud</a> leaderboard and contains static functions that handle the statistic. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a6a1781c626b5e6059b89fb1736b1f0aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a1781c626b5e6059b89fb1736b1f0aa">&#9670;&nbsp;</a></span>CreateLeaderboard()</h2>
+<a id="a78883ce849545d4ed30696629374b33f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78883ce849545d4ed30696629374b33f">&#9670;&nbsp;</a></span>CreateLeaderboard()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -184,7 +222,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="namespaceLeanCloud_1_1Storage.html#ab5c4f02c040b84508201c6f0745fa415">LCLeaderboardVersionChangeInterval</a>&#160;</td>
-          <td class="paramname"><em>versionChangeInterval</em> = <code><a class="el" href="namespaceLeanCloud_1_1Storage.html#ab5c4f02c040b84508201c6f0745fa415ad2ce009594dcc60befa6a4e6cbeb71fc">LCLeaderboardVersionChangeInterval.Week</a></code>&#160;</td>
+          <td class="paramname"><em>versionChangeInterval</em> = <code><a class="el" href="namespaceLeanCloud_1_1Storage.html#ab5c4f02c040b84508201c6f0745fa415ad2ce009594dcc60befa6a4e6cbeb71fc">LCLeaderboardVersionChangeInterval.Week</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>memberType</em> = <code><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#ac3b6dcdd85875ee666aa36b3a239057e">USER_MEMBER_TYPE</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -213,8 +257,8 @@ Properties</h2></td></tr>
 
 </div>
 </div>
-<a id="a0de4b87e6fcc3db1e589b202faf3f2ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0de4b87e6fcc3db1e589b202faf3f2ca">&#9670;&nbsp;</a></span>CreateWithoutData()</h2>
+<a id="a200154d36657942cf278d56ae352b087"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a200154d36657942cf278d56ae352b087">&#9670;&nbsp;</a></span>CreateWithoutData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -226,8 +270,18 @@ Properties</h2></td></tr>
           <td class="memname">static <a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html">LCLeaderboard</a> LeanCloud.Storage.LCLeaderboard.CreateWithoutData </td>
           <td>(</td>
           <td class="paramtype">string&#160;</td>
-          <td class="paramname"><em>statisticName</em></td><td>)</td>
+          <td class="paramname"><em>statisticName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>memberType</em> = <code><a class="el" href="classLeanCloud_1_1Storage_1_1LCLeaderboard.html#ac3b6dcdd85875ee666aa36b3a239057e">USER_MEMBER_TYPE</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -248,8 +302,8 @@ Properties</h2></td></tr>
 
 </div>
 </div>
-<a id="a7897bda9aec668180d70d2663c63f1d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7897bda9aec668180d70d2663c63f1d3">&#9670;&nbsp;</a></span>DeleteStatistics()</h2>
+<a id="a9cc135da93e382d8a9f195d5068322eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cc135da93e382d8a9f195d5068322eb">&#9670;&nbsp;</a></span>DeleteStatistics() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -258,7 +312,53 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static async Task LeanCloud.Storage.LCLeaderboard.DeleteStatistics </td>
+          <td class="memname">static Task LeanCloud.Storage.LCLeaderboard.DeleteStatistics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classLeanCloud_1_1Storage_1_1LCObject.html">LCObject</a>&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>statisticNames</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deletes the statistics of the object with the given names. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td></td></tr>
+    <tr><td class="paramname">statisticNames</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a5573ab13f79fe2a62e08048e0dac308f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5573ab13f79fe2a62e08048e0dac308f">&#9670;&nbsp;</a></span>DeleteStatistics() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Task LeanCloud.Storage.LCLeaderboard.DeleteStatistics </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a>&#160;</td>
           <td class="paramname"><em>user</em>, </td>
@@ -282,10 +382,56 @@ Properties</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Deletes the statistics of the user with the given name. </p>
+<p>Deletes the statistics of the user with the given names. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">user</td><td></td></tr>
+    <tr><td class="paramname">statisticNames</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a05cb542f546fa7d5a5378e223ddbbb0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05cb542f546fa7d5a5378e223ddbbb0e">&#9670;&nbsp;</a></span>DeleteStatistics() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Task LeanCloud.Storage.LCLeaderboard.DeleteStatistics </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>statisticNames</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deletes the statistics of the entity with the given names. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td></td></tr>
     <tr><td class="paramname">statisticNames</td><td></td></tr>
   </table>
   </dd>
@@ -431,8 +577,8 @@ Properties</h2></td></tr>
 
 </div>
 </div>
-<a id="a46de146170518fd87741e9a07114035e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a46de146170518fd87741e9a07114035e">&#9670;&nbsp;</a></span>GetResults()</h2>
+<a id="a6cd6ef75b746f7594b9a15c3d37c7208"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cd6ef75b746f7594b9a15c3d37c7208">&#9670;&nbsp;</a></span>GetResults() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -462,7 +608,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
-          <td class="paramname"><em>selectUserKeys</em> = <code>null</code>, </td>
+          <td class="paramname"><em>selectKeys</em> = <code>null</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>includeKeys</em> = <code>null</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -498,8 +650,230 @@ Properties</h2></td></tr>
 
 </div>
 </div>
-<a id="a042e12f23518400920b26692dce99047"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a042e12f23518400920b26692dce99047">&#9670;&nbsp;</a></span>GetResultsAroundUser()</h2>
+<a id="a2c8146580afec53c31be61be1549b798"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c8146580afec53c31be61be1549b798">&#9670;&nbsp;</a></span>GetResults() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.GetResults </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classLeanCloud_1_1Storage_1_1LCObject.html">LCObject</a>&#160;</td>
+          <td class="paramname"><em>aroundObject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>version</em> = <code>-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>skip</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>10</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>selectKeys</em> = <code>null</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>includeKeys</em> = <code>null</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>includeStatistics</em> = <code>null</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the rankings that around the object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td></td></tr>
+    <tr><td class="paramname">version</td><td></td></tr>
+    <tr><td class="paramname">skip</td><td></td></tr>
+    <tr><td class="paramname">limit</td><td></td></tr>
+    <tr><td class="paramname">selectUserKeys</td><td></td></tr>
+    <tr><td class="paramname">includeStatistics</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="aa5d1908dae61ae7150fb0101ac9bc2a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5d1908dae61ae7150fb0101ac9bc2a1">&#9670;&nbsp;</a></span>GetResults() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.GetResults </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a>&#160;</td>
+          <td class="paramname"><em>aroundUser</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>version</em> = <code>-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>skip</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>10</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>selectKeys</em> = <code>null</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>includeKeys</em> = <code>null</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>includeStatistics</em> = <code>null</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the rankings that around the user. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">user</td><td></td></tr>
+    <tr><td class="paramname">version</td><td></td></tr>
+    <tr><td class="paramname">skip</td><td></td></tr>
+    <tr><td class="paramname">limit</td><td></td></tr>
+    <tr><td class="paramname">selectUserKeys</td><td></td></tr>
+    <tr><td class="paramname">includeStatistics</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a3634ebdc6329df214a5cfbc9042573ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3634ebdc6329df214a5cfbc9042573ae">&#9670;&nbsp;</a></span>GetResults() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCRanking.html">LCRanking</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.GetResults </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>aroundEntity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>version</em> = <code>-1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>skip</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>10</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the rankings that around the entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td></td></tr>
+    <tr><td class="paramname">version</td><td></td></tr>
+    <tr><td class="paramname">skip</td><td></td></tr>
+    <tr><td class="paramname">limit</td><td></td></tr>
+    <tr><td class="paramname">selectUserKeys</td><td></td></tr>
+    <tr><td class="paramname">includeStatistics</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="aa343418030b19ec5cedb8a33e4819e23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa343418030b19ec5cedb8a33e4819e23">&#9670;&nbsp;</a></span>GetResultsAroundUser()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -529,7 +903,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
-          <td class="paramname"><em>selectUserKeys</em> = <code>null</code>, </td>
+          <td class="paramname"><em>selectKeys</em> = <code>null</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>includeKeys</em> = <code>null</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -565,8 +945,8 @@ Properties</h2></td></tr>
 
 </div>
 </div>
-<a id="a392b6feaa344ea030807cff2def9e311"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a392b6feaa344ea030807cff2def9e311">&#9670;&nbsp;</a></span>GetStatistics()</h2>
+<a id="a0c8e820e2625460240925fa4d2d4cedf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c8e820e2625460240925fa4d2d4cedf">&#9670;&nbsp;</a></span>GetStatistics() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -575,7 +955,53 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static async Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.GetStatistics </td>
+          <td class="memname">static Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.GetStatistics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classLeanCloud_1_1Storage_1_1LCObject.html">LCObject</a>&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>statisticNames</em> = <code>null</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the statistics of the object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td></td></tr>
+    <tr><td class="paramname">statisticNames</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="af865527186a4efb833f715257ce9f478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af865527186a4efb833f715257ce9f478">&#9670;&nbsp;</a></span>GetStatistics() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.GetStatistics </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a>&#160;</td>
           <td class="paramname"><em>user</em>, </td>
@@ -603,6 +1029,52 @@ Properties</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">user</td><td></td></tr>
+    <tr><td class="paramname">statisticNames</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a71542baa0dca0c51035397c89030bdc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71542baa0dca0c51035397c89030bdc1">&#9670;&nbsp;</a></span>GetStatistics() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.GetStatistics </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IEnumerable&lt; string &gt;&#160;</td>
+          <td class="paramname"><em>statisticNames</em> = <code>null</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the statistics of the entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td></td></tr>
     <tr><td class="paramname">statisticNames</td><td></td></tr>
   </table>
   </dd>
@@ -639,8 +1111,8 @@ Properties</h2></td></tr>
 
 </div>
 </div>
-<a id="a3dc75637eb7a137cbad451de3acd6d95"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3dc75637eb7a137cbad451de3acd6d95">&#9670;&nbsp;</a></span>UpdateStatistics()</h2>
+<a id="ae1ad664d653ee5f345387a9a2ab1777b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1ad664d653ee5f345387a9a2ab1777b">&#9670;&nbsp;</a></span>UpdateStatistics() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -649,7 +1121,60 @@ Properties</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static async Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.UpdateStatistics </td>
+          <td class="memname">static Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.UpdateStatistics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classLeanCloud_1_1Storage_1_1LCObject.html">LCObject</a>&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Dictionary&lt; string, double &gt;&#160;</td>
+          <td class="paramname"><em>statistics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>overwrite</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Updates the statistic of the object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">obj</td><td></td></tr>
+    <tr><td class="paramname">statistics</td><td></td></tr>
+    <tr><td class="paramname">overwrite</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a802603f820490bd39469b1559a4baa6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a802603f820490bd39469b1559a4baa6c">&#9670;&nbsp;</a></span>UpdateStatistics() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.UpdateStatistics </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classLeanCloud_1_1Storage_1_1LCUser.html">LCUser</a>&#160;</td>
           <td class="paramname"><em>user</em>, </td>
@@ -683,6 +1208,59 @@ Properties</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">user</td><td></td></tr>
+    <tr><td class="paramname">statistics</td><td></td></tr>
+    <tr><td class="paramname">overwrite</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a590983a3d0da7a126ad04d115ade0789"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a590983a3d0da7a126ad04d115ade0789">&#9670;&nbsp;</a></span>UpdateStatistics() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static Task&lt;ReadOnlyCollection&lt;<a class="el" href="classLeanCloud_1_1Storage_1_1LCStatistic.html">LCStatistic</a>&gt; &gt; LeanCloud.Storage.LCLeaderboard.UpdateStatistics </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Dictionary&lt; string, double &gt;&#160;</td>
+          <td class="paramname"><em>statistics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>overwrite</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Updates the statistic of the entity. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td></td></tr>
     <tr><td class="paramname">statistics</td><td></td></tr>
     <tr><td class="paramname">overwrite</td><td></td></tr>
   </table>
@@ -762,6 +1340,51 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a8186be097128868d2daaf390404d821a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8186be097128868d2daaf390404d821a">&#9670;&nbsp;</a></span>ENTITY_MEMBER_TYPE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const string LeanCloud.Storage.LCLeaderboard.ENTITY_MEMBER_TYPE = &quot;_Entity&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac3b6dcdd85875ee666aa36b3a239057e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3b6dcdd85875ee666aa36b3a239057e">&#9670;&nbsp;</a></span>USER_MEMBER_TYPE</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const string LeanCloud.Storage.LCLeaderboard.USER_MEMBER_TYPE = &quot;_User&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Property Documentation</h2>
 <a id="a64e9659f7982fe81009ff27f7c946789"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a64e9659f7982fe81009ff27f7c946789">&#9670;&nbsp;</a></span>CreatedAt</h2>
@@ -784,6 +1407,30 @@ Properties</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The time that the leaderboard created. </p>
+
+</div>
+</div>
+<a id="a6d374b696a409398c80e0bba274a1898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d374b696a409398c80e0bba274a1898">&#9670;&nbsp;</a></span>MemberType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">string LeanCloud.Storage.LCLeaderboard.MemberType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">get</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The member type of this leaderboard. </p>
 
 </div>
 </div>

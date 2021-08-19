@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['lcenginecors_991',['LCEngineCORS',['../classLeanCloud_1_1Engine_1_1LCEngine.html#ab8393a537556b8f5392806c308dda5dc',1,'LeanCloud::Engine::LCEngine']]],
-  ['locationmessagetype_992',['LocationMessageType',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a3809bd28e4ab1d6c23b6feae2710df33',1,'LeanCloud::Realtime::LCIMTypedMessage']]]
+  ['kick_995',['Kick',['../classLeanCloud_1_1Realtime_1_1LCIMSignatureAction.html#a4ff93f667f0cbcd7ee4760f3498977d2',1,'LeanCloud::Realtime::LCIMSignatureAction']]]
 ];

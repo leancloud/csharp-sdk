@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['videomessagetype_1034',['VideoMessageType',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a57f44ce20ccd65d22eb91a2a404f9d73',1,'LeanCloud::Realtime::LCIMTypedMessage']]]
+  ['user_5fmember_5ftype_1038',['USER_MEMBER_TYPE',['../classLeanCloud_1_1Storage_1_1LCLeaderboard.html#ac3b6dcdd85875ee666aa36b3a239057e',1,'LeanCloud::Storage::LCLeaderboard']]],
+  ['userhooks_1039',['UserHooks',['../classLeanCloud_1_1Engine_1_1LCEngine.html#aef707577877a81bb8ee90cafc0699440',1,'LeanCloud::Engine::LCEngine']]]
 ];
