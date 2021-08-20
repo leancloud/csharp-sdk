@@ -283,6 +283,68 @@ namespace LeanCloud.Storage {
                 path = $"{path}?statistics={names}";
             }
             Dictionary<string, object> result = await LCCore.HttpClient.Get<Dictionary<string, object>>(path);
+            return _ToStatistics(result);
+        }
+
+        /// <summary>
+        /// Gets the statistics of the users.
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        public Task<ReadOnlyCollection<LCStatistic>> GetStatistics(IEnumerable<LCUser> users) {
+            if (string.IsNullOrEmpty(StatisticName)) {
+                throw new ArgumentNullException(nameof(StatisticName));
+            }
+            if (users == null || users.Count() == 0) {
+                return null;
+            }
+            string path = $"leaderboard/users/statistics/{StatisticName}";
+            IEnumerable<string> userIds = users.Select(user => user.ObjectId);
+            return _GetSelfStatistics(path, userIds);
+        }
+
+        /// <summary>
+        /// Gets the statistics of the objects.
+        /// </summary>
+        /// <param name="objects"></param>
+        /// <returns></returns>
+        public Task<ReadOnlyCollection<LCStatistic>> GetStatistics(IEnumerable<LCObject> objects) {
+            if (string.IsNullOrEmpty(StatisticName)) {
+                throw new ArgumentNullException(nameof(StatisticName));
+            }
+            if (objects == null || objects.Count() == 0) {
+                return null;
+            }
+            string path = $"leaderboard/objects/statistics/{StatisticName}";
+            IEnumerable<string> objectIds = objects.Select(obj => obj.ObjectId);
+            return _GetSelfStatistics(path, objectIds);
+        }
+
+        /// <summary>
+        /// Gets the statistics of the entities.
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        public Task<ReadOnlyCollection<LCStatistic>> GetStatistics(IEnumerable<string> entities) {
+            if (string.IsNullOrEmpty(StatisticName)) {
+                throw new ArgumentNullException(nameof(StatisticName));
+            }
+            if (entities == null || entities.Count() == 0) {
+                return null;
+            }
+            string path = $"leaderboard/entities/statistics/{StatisticName}";
+            return _GetSelfStatistics(path, entities);
+        }
+
+        private async Task<ReadOnlyCollection<LCStatistic>> _GetSelfStatistics(string path, IEnumerable<string> ids) {
+            Dictionary<string, object> result = await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: ids);
+            return _ToStatistics(result);
+        }
+
+        private static ReadOnlyCollection<LCStatistic> _ToStatistics(Dictionary<string, object> result) {
+            if (result == null) {
+                return null;
+            }
             if (result.TryGetValue("results", out object results) &&
                 results is List<object> list) {
                 List<LCStatistic> statistics = new List<LCStatistic>();
