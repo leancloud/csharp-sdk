@@ -13,6 +13,8 @@ namespace Storage.Test {
     public class LeaderboardTest : BaseTest {
         private string leaderboardName;
 
+        private Dictionary<string, LCUser> userDict = new Dictionary<string, LCUser>();
+
         [SetUp]
         public override void SetUp() {
             base.SetUp();
@@ -60,6 +62,7 @@ namespace Storage.Test {
                 int score = i * 10;
                 user["score"] = score;
                 await user.Save();
+                userDict[user.ObjectId] = user;
                 await LCLeaderboard.UpdateStatistics(user, new Dictionary<string, double> {
                     { leaderboardName, score }
                 });
@@ -115,6 +118,17 @@ namespace Storage.Test {
             ReadOnlyCollection<LCStatistic> statistics = await LCLeaderboard.GetStatistics(user);
             foreach (LCStatistic statistic in statistics) {
                 WriteLine($"{statistic.Name}, {statistic.Value}");
+            }
+        }
+
+        [Test]
+        [Order(6)]
+        public async Task GetStatisticsOfUsers() {
+            LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard(leaderboardName);
+            ReadOnlyCollection<LCStatistic> statistics = await leaderboard.GetStatistics(userDict.Values);
+            foreach (LCStatistic s in statistics) {
+                WriteLine($"{s.User.ObjectId} : {s.Value}");
+                Assert.Contains(s.User.ObjectId, userDict.Keys);
             }
         }
     }
@@ -219,10 +233,23 @@ namespace Storage.Test {
                 WriteLine($"{statistic.Name}, {statistic.Value}");
             }
         }
+
+        [Test]
+        [Order(6)]
+        public async Task GetStatisticsOfObjects() {
+            LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard(leaderboardName);
+            ReadOnlyCollection<LCStatistic> statistics = await leaderboard.GetStatistics(objDict.Values);
+            foreach (LCStatistic s in statistics) {
+                WriteLine($"{s.Object.ObjectId} : {s.Value}");
+                Assert.Contains(s.Object.ObjectId, objDict.Keys);
+            }
+        }
     }
 
     public class EntityLeaderboardTest : BaseTest {
         private string leaderboardName;
+
+        private List<string> entities = new List<string>();
 
         [SetUp]
         public override void SetUp() {
@@ -257,6 +284,7 @@ namespace Storage.Test {
             for (int i = 0; i < 10; i++) {
                 int today = DateTimeOffset.Now.DayOfYear;
                 string entity = $"{today}_{i}";
+                entities.Add(entity);
                 await LCLeaderboard.UpdateStatistics(entity, new Dictionary<string, double> {
                     { leaderboardName, i * 10 }
                 });
@@ -305,6 +333,17 @@ namespace Storage.Test {
             ReadOnlyCollection<LCStatistic> statistics = await LCLeaderboard.GetStatistics(entity);
             foreach (LCStatistic statistic in statistics) {
                 WriteLine($"{statistic.Name}, {statistic.Value}");
+            }
+        }
+
+        [Test]
+        [Order(6)]
+        public async Task GetStatisticsOfEntities() {
+            LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard(leaderboardName);
+            ReadOnlyCollection<LCStatistic> statistics = await leaderboard.GetStatistics(entities);
+            foreach (LCStatistic s in statistics) {
+                WriteLine($"{s.Entity} : {s.Value}");
+                Assert.Contains(s.Entity, entities);
             }
         }
     }
