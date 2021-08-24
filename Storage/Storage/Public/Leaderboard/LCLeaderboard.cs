@@ -456,7 +456,7 @@ namespace LeanCloud.Storage {
         /// <param name="version"></param>
         /// <param name="skip"></param>
         /// <param name="limit"></param>
-        /// <param name="selectUserKeys"></param>
+        /// <param name="selectKeys"></param>
         /// <param name="includeStatistics"></param>
         /// <returns></returns>
         public Task<ReadOnlyCollection<LCRanking>> GetResults(int version = -1,
@@ -484,7 +484,7 @@ namespace LeanCloud.Storage {
         /// <param name="version"></param>
         /// <param name="skip"></param>
         /// <param name="limit"></param>
-        /// <param name="selectUserKeys"></param>
+        /// <param name="selectKeys"></param>
         /// <param name="includeStatistics"></param>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<LCRanking>> GetResultsAroundUser(int version = -1,
@@ -504,7 +504,7 @@ namespace LeanCloud.Storage {
         /// <param name="version"></param>
         /// <param name="skip"></param>
         /// <param name="limit"></param>
-        /// <param name="selectUserKeys"></param>
+        /// <param name="selectKeys"></param>
         /// <param name="includeStatistics"></param>
         /// <returns></returns>
         public Task<ReadOnlyCollection<LCRanking>> GetResults(LCUser aroundUser,
@@ -528,7 +528,7 @@ namespace LeanCloud.Storage {
         /// <param name="version"></param>
         /// <param name="skip"></param>
         /// <param name="limit"></param>
-        /// <param name="selectUserKeys"></param>
+        /// <param name="selectKeys"></param>
         /// <param name="includeStatistics"></param>
         /// <returns></returns>
         public Task<ReadOnlyCollection<LCRanking>> GetResults(LCObject aroundObject,
@@ -552,7 +552,7 @@ namespace LeanCloud.Storage {
         /// <param name="version"></param>
         /// <param name="skip"></param>
         /// <param name="limit"></param>
-        /// <param name="selectUserKeys"></param>
+        /// <param name="selectKeys"></param>
         /// <param name="includeStatistics"></param>
         /// <returns></returns>
         public Task<ReadOnlyCollection<LCRanking>> GetResults(string aroundEntity,
