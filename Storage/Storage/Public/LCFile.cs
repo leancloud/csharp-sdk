@@ -58,6 +58,13 @@ namespace LeanCloud.Storage {
             }
         }
 
+        /// <summary>
+        /// Gets the path prefix of the file.
+        /// </summary>
+        public string PathPrefix {
+            get; set;
+        }
+
         readonly Stream stream;
 
         /// <summary>
@@ -184,11 +191,15 @@ namespace LeanCloud.Storage {
                 { "name", Name },
                 { "__type", "File" },
                 { "mime_type", MimeType },
-                { "metaData", MetaData }
             };
             if (ACL != null) {
                 data["ACL"] = LCEncoder.EncodeACL(ACL);
             }
+            if (!string.IsNullOrEmpty(PathPrefix)) {
+                data["prefix"] = PathPrefix;
+                MetaData["prefix"] = PathPrefix;
+            }
+            data["metaData"] = MetaData;
             return await LCCore.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
         }
 
