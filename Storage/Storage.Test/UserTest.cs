@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text;
 using LeanCloud;
 using LeanCloud.Storage;
 using LC.Newtonsoft.Json;
@@ -17,9 +18,8 @@ namespace Storage.Test {
             user.Password = "world";
             string email = $"{unixTime}@qq.com";
             user.Email = email;
-            //Random random = new Random();
-            //string mobile = $"151{random.Next(10000000, 99999999)}";
-            //user.Mobile = mobile;
+            string mobile = GeneratePhoneNumber();
+            user.Mobile = mobile;
             await user.SignUp();
 
             TestContext.WriteLine(user.Username);
@@ -300,6 +300,23 @@ namespace Storage.Test {
 
         private string GetTestEmail() {
             return $"{TestPhone}@leancloud.rocks";
+        }
+
+        private static string GeneratePhoneNumber() {
+            string[] FIRST_NUMS = new string[] {
+                "134", "135", "136", "137", "138", "139", "150", "151", "152", "157", "158", "159", "182", "183", "184", "187", "188", "178", "147", "172", "198",
+                "130", "131", "132", "145", "155", "156", "166", "171", "175", "176", "185", "186", "166",
+                "133", "149", "153", "173", "177", "180", "181", "189", "199"
+            };
+            StringBuilder sb = new StringBuilder();
+            Random random = new Random();
+            int firstNumIndex = random.Next(0, FIRST_NUMS.Length);
+            sb.Append(FIRST_NUMS[firstNumIndex]);
+            // 后 8 位
+            for (int i = 0; i < 8; i++) {
+                sb.Append(random.Next(0, 10));
+            }
+            return sb.ToString();
         }
     }
 }

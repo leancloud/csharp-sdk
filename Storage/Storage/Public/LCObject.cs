@@ -380,7 +380,7 @@ namespace LeanCloud.Storage {
         /// <param name="query">The condition for saving.</param>
         /// <returns></returns>
         public async Task<LCObject> Save(bool fetchWhenSave = false, LCQuery<LCObject> query = null) {
-            if (LCBatch.HasCircleReference(this, new HashSet<LCObject>())) {
+            if (LCBatch.HasCircleReference(this)) {
                 throw new ArgumentException("Found a circle dependency when save.");
             }
 
@@ -415,7 +415,7 @@ namespace LeanCloud.Storage {
                 throw new ArgumentNullException(nameof(objects));
             }
             foreach (LCObject obj in objects) {
-                if (LCBatch.HasCircleReference(obj, new HashSet<LCObject>())) {
+                if (LCBatch.HasCircleReference(obj)) {
                     throw new ArgumentException("Found a circle dependency when save.");
                 }
             }
@@ -541,10 +541,10 @@ namespace LeanCloud.Storage {
         /// </summary>
         /// <returns></returns>
         public override string ToString() {
-            Dictionary<string, object> originalData = LCObjectData.Encode(data);
-            Dictionary<string, object> currentData = estimatedData.Union(originalData.Where(kv => !estimatedData.ContainsKey(kv.Key)))
-                .ToDictionary(k => k.Key, v => LCEncoder.Encode(v.Value));
-            return JsonConvert.SerializeObject(currentData);
+            if (LCBatch.HasCircleReference(this)) {
+                throw new ArgumentException("Found a circle dependency when save.");
+            }
+            return JsonConvert.SerializeObject(LCEncoder.Encode(this, true));
         }
 
         /// <summary>

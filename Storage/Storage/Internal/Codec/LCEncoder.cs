@@ -8,17 +8,17 @@ namespace LeanCloud.Storage.Internal.Codec {
     public static class LCEncoder {
         public static readonly string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
-        public static object Encode(object obj) {
+        public static object Encode(object obj, bool full = false) {
             if (obj is DateTime dateTime) {
                 return EncodeDateTime(dateTime);
             } else if (obj is byte[] bytes) {
                 return EncodeBytes(bytes);
             } else if (obj is IList list) {
-                return EncodeList(list);
+                return EncodeList(list, full);
             } else if (obj is IDictionary dict) {
-                return EncodeDictionary(dict);
+                return EncodeDictionary(dict, full);
             } else if (obj is LCObject lcObj) {
-                return EncodeLCObject(lcObj);
+                return EncodeLCObject(lcObj, full);
             } else if (obj is ILCOperation op) {
                 return EncodeOperation(op);
             } else if (obj is ILCQueryCondition cond) {
@@ -50,30 +50,42 @@ namespace LeanCloud.Storage.Internal.Codec {
             };
         }
 
-        public static object EncodeList(IList list) {
+        public static object EncodeList(IList list, bool full = false) {
             List<object> l = new List<object>();
             foreach (object obj in list) {
-                l.Add(Encode(obj));
+                l.Add(Encode(obj, full));
             }
             return l;
         }
 
-        public static object EncodeDictionary(IDictionary dict) {
+        public static object EncodeDictionary(IDictionary dict, bool full = false) {
             Dictionary<string, object> d = new Dictionary<string, object>();
             foreach (DictionaryEntry entry in dict) {
                 string key = entry.Key.ToString();
                 object value = entry.Value;
-                d[key] = Encode(value);
+                d[key] = Encode(value, full);
             }
             return d;
         }
 
-        public static object EncodeLCObject(LCObject obj) {
-            return new Dictionary<string, object> {
+        public static object EncodeLCObject(LCObject obj, bool full = false) {
+            Dictionary<string, object> data = new Dictionary<string, object> {
                 { "__type", "Pointer" },
                 { "className", obj.ClassName },
                 { "objectId", obj.ObjectId }
             };
+            if (full) {
+                if (!obj.CreatedAt.Equals(default)) {
+                    data["createdAt"] = obj.CreatedAt.ToUniversalTime();
+                }
+                if (!obj.UpdatedAt.Equals(default)) {
+                    data["updatedAt"] = obj.UpdatedAt.ToUniversalTime();
+                }
+                foreach (KeyValuePair<string, object> kv in obj.estimatedData) {
+                    data[kv.Key] = Encode(kv.Value, full);
+                }
+            }
+            return data;
         }
 
         static object EncodeOperation(ILCOperation operation) {

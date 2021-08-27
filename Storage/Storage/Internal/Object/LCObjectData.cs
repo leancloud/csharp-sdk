@@ -54,31 +54,5 @@ namespace LeanCloud.Storage.Internal.Object {
             }
             return objectData;
         }
-
-        public static Dictionary<string, object> Encode(LCObjectData objectData) {
-            if (objectData == null) {
-                return null;
-            }
-            Dictionary<string, object> dict = new Dictionary<string, object> {
-                { "className", objectData.ClassName }
-            };
-            if (!string.IsNullOrEmpty(objectData.ObjectId)) {
-                dict["objectId"] = objectData.ObjectId;
-            }
-            if (!objectData.CreatedAt.Equals(default)) {
-                dict["createdAt"] = objectData.CreatedAt.ToUniversalTime();
-            }
-            if (!objectData.UpdatedAt.Equals(default)) {
-                dict["updatedAt"] = objectData.UpdatedAt.ToUniversalTime();
-            }
-            if (objectData.CustomPropertyDict != null) {
-                foreach (KeyValuePair<string, object> kv in objectData.CustomPropertyDict) {
-                    string key = kv.Key;
-                    object value = kv.Value;
-                    dict[key] = LCEncoder.Encode(value);
-                }
-            }
-            return dict;
-        }
     }
 }

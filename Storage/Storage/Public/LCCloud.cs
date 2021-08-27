@@ -101,11 +101,8 @@ namespace LeanCloud.Storage {
         }
 
         static object EncodeLCObject(LCObject obj) {
-            Dictionary<string, object> dict = LCObjectData.Encode(obj.data);
+            Dictionary<string, object> dict = LCEncoder.Encode(obj, true) as Dictionary<string, object>;
             dict["__type"] = "Object";
-            foreach (KeyValuePair<string, object> kv in obj.estimatedData) {
-                dict[kv.Key] = kv.Value;
-            }
             return dict;
         }
     }

@@ -14,7 +14,10 @@ namespace LeanCloud.Storage.Internal.Object {
             }
         }
 
-        internal static bool HasCircleReference(object obj, HashSet<LCObject> parents) {
+        internal static bool HasCircleReference(object obj, HashSet<LCObject> parents = null) {
+            if (parents == null) {
+                parents = new HashSet<LCObject>();
+            }
             if (obj is LCObject lcObj && parents.Contains(lcObj)) {
                 return true;
             }
