@@ -192,9 +192,13 @@ namespace Storage.Test {
             LCObject nestedObj = new LCObject("World");
             nestedObj["content"] = "7788";
             obj["objectValue"] = nestedObj;
+
+            World world = new World {
+                Content = "hello, world"
+            };
             obj["pointerList"] = new List<object> {
-                new LCObject("World"),
-                nestedObj
+                world,
+                new LCObject("World")
             };
             await obj.Save();
 
@@ -208,6 +212,11 @@ namespace Storage.Test {
             Assert.AreEqual(newObj["intValue"], 123);
             Assert.AreEqual(newObj["boolValue"], true);
             Assert.AreEqual(newObj["stringValue"], "hello, world");
+            Assert.AreEqual((newObj["objectValue"] as LCObject)["content"], "7788");
+
+            Assert.IsTrue((newObj["pointerList"] as List<object>)[0] is World);
+            World newWorld = (newObj["pointerList"] as List<object>)[0] as World;
+            Assert.AreEqual(newWorld.Content, "hello, world");
         }
     }
 }
