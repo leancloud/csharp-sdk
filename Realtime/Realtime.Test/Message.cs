@@ -176,22 +176,27 @@ namespace Realtime.Test {
 
             client.OnUnreadMessagesCountUpdated = (convs) => {
                 foreach (LCIMConversation conv in convs) {
-                    WriteLine($"unread count: {conv.Unread}");
-                    //Assert.AreEqual(conv.Unread, 1);
-                    //Assert.True(conv.LastMessage is LCIMTextMessage);
-                    //LCIMTextMessage textMsg = conv.LastMessage as LCIMTextMessage;
-                    //Assert.AreEqual(textMsg.Text, "hello");
+                    WriteLine($"OnUnreadMessagesCountUpdated unread count: {conv.Unread}");
+                    Assert.AreEqual(conv.Unread, 1);
+                    Assert.True(conv.LastMessage is LCIMTextMessage);
+                    LCIMTextMessage textMsg = conv.LastMessage as LCIMTextMessage;
+                    Assert.AreEqual(textMsg.Text, "hello");
+                    tcs.TrySetResult(null);
                 }
             };
+            await Task.Delay(5000);
             await client.Open();
 
+            await tcs.Task;
+
+            tcs = new TaskCompletionSource<object>();
             client.OnMessage = (conv, msg) => {
-                WriteLine($"unread count: {conv.Unread}");
+                WriteLine($"OnMessage unread count: {conv.Unread}");
                 Assert.AreEqual(conv.Unread, 2);
                 Assert.True(conv.LastMessage is LCIMTextMessage);
                 LCIMTextMessage textMsg = conv.LastMessage as LCIMTextMessage;
                 Assert.AreEqual(textMsg.Text, "world");
-                tcs.SetResult(true);
+                tcs.TrySetResult(null);
             };
             textMessage = new LCIMTextMessage("world");
             await conversation.Send(textMessage);
@@ -275,6 +280,22 @@ namespace Realtime.Test {
             await conversation.Send(textMessage);
 
             await tcs.Task;
+        }
+
+        [Test]
+        [Order(10)]
+        public async Task SendMessageConcurrently() {
+            LCIMClient client = new LCIMClient("client");
+            await client.Open();
+            LCIMConversation conv = await client.CreateConversation(new string[] { "xxx" });
+            LCIMTextMessage msg = new LCIMTextMessage("hello");
+            for (int i = 0; i < 1000; i++) {
+                _ = Task.Run(() => {
+                    _ = conv.Send(msg);
+                });
+            }
+            await Task.Delay(5000);
+            await client.Close();
         }
     }
 }
