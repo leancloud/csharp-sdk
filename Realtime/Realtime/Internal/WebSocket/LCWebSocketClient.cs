@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
+using System.Collections.Concurrent;
 using System.Text;
 
 namespace LeanCloud.Realtime.Internal.WebSocket {
     public class LCWebSocketClient {
+        class SendTask {
+            internal TaskCompletionSource<object> Tcs { get; set; }
+            internal ArraySegment<byte> Bytes { get; set; }
+            internal WebSocketMessageType MessageType { get; set; }
+        }
+
         // .net standard 2.0 好像在拼合 Frame 时有 bug，所以将这个值调整大一些
         private const int SEND_BUFFER_SIZE = 1024 * 5;
         private const int RECV_BUFFER_SIZE = 1024 * 8;
@@ -20,6 +27,8 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
         private ClientWebSocket ws;
 
+        private ConcurrentQueue<SendTask> sendQueue;
+
         public async Task Connect(string server,
             string subProtocol = null) {
             LCLogger.Debug($"Connecting WebSocket: {server}");
@@ -34,6 +43,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                 LCLogger.Debug($"Connected WebSocket: {server}");
                 await connectTask;
                 // 接收
+                _ = StartSend();
                 _ = StartReceive();
             } else {
                 throw new TimeoutException("Connect timeout");
@@ -59,25 +69,46 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             }
         }
 
-        public async Task Send(byte[] data,
+        public Task Send(byte[] data,
             WebSocketMessageType messageType = WebSocketMessageType.Binary) {
-            ArraySegment<byte> bytes = new ArraySegment<byte>(data);
-            if (ws.State == WebSocketState.Open) {
-                try {
-                    await ws.SendAsync(bytes, messageType, true, default);
-                } catch (Exception e) {
-                    LCLogger.Error(e);
-                    throw e;
-                }
-            } else {
-                string message = $"Error Websocket state: {ws.State}";
-                LCLogger.Error(message);
-                throw new Exception(message);
-            }
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            sendQueue.Enqueue(new SendTask {
+                Tcs = tcs,
+                Bytes = new ArraySegment<byte>(data),
+                MessageType = messageType
+            });
+
+            return tcs.Task;
         }
 
         public async Task Send(string text) {
             await Send(Encoding.UTF8.GetBytes(text), WebSocketMessageType.Text);
+        }
+
+        private async Task StartSend() {
+            sendQueue = new ConcurrentQueue<SendTask>();
+            try {
+                while (ws.State == WebSocketState.Open) {
+                    if (sendQueue.Count == 0) {
+                        await Task.Delay(10);
+                    }
+                    while (sendQueue.Count > 0) {
+                        if (sendQueue.TryDequeue(out SendTask sendTask)) {
+                            try {
+                                await ws.SendAsync(sendTask.Bytes, sendTask.MessageType, true, default);
+                                sendTask.Tcs.TrySetResult(null);
+                            } catch (Exception e) {
+                                LCLogger.Error(e);
+                                sendTask.Tcs.TrySetException(e);
+                                throw e;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LCLogger.Error(e);
+                HandleExceptionClose();
+            }
         }
 
         private async Task StartReceive() {
