@@ -71,7 +71,6 @@ namespace LeanCloud.Storage {
         /// Creates a new file.
         /// </summary>
         public LCFile() : base(CLASS_NAME) {
-            MetaData = new Dictionary<string, object>();
         }
 
         /// <summary>
@@ -112,6 +111,9 @@ namespace LeanCloud.Storage {
         /// <param name="key"></param>
         /// <param name="value"></param>
         public void AddMetaData(string key, object value) {
+            if (MetaData == null) {
+                MetaData = new Dictionary<string, object>();
+            }
             MetaData[key] = value;
         }
 
@@ -197,7 +199,7 @@ namespace LeanCloud.Storage {
             }
             if (!string.IsNullOrEmpty(PathPrefix)) {
                 data["prefix"] = PathPrefix;
-                MetaData["prefix"] = PathPrefix;
+                AddMetaData("prefix", PathPrefix);
             }
             data["metaData"] = MetaData;
             return await LCCore.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
