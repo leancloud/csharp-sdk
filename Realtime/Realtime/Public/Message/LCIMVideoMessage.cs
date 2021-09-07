@@ -50,15 +50,15 @@ namespace LeanCloud.Realtime {
                 return;
             }
             if (File.MetaData.TryGetValue(MessageDataMetaWidthKey, out object width) &&
-                int.TryParse(width as string, out int w)) {
+                width is int w) {
                 Width = w;
             }
             if (File.MetaData.TryGetValue(MessageDataMetaHeightKey, out object height) &&
-                int.TryParse(height as string, out int h)) {
+                height is int h) {
                 Height = h;
             }
             if (File.MetaData.TryGetValue(MessageDataMetaDurationKey, out object duration) &&
-                double.TryParse(duration as string, out double d)) {
+                duration is float d) {
                 Duration = d;
             }
         }
