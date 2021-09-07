@@ -7,7 +7,7 @@ namespace LeanCloud.Realtime {
     /// </summary>
     public class LCIMTemporaryConversation : LCIMConversation {
         public DateTime ExpiredAt {
-            get;
+            get; internal set;
         }
 
         public bool IsExpired {
