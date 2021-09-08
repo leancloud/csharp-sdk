@@ -38,9 +38,11 @@ namespace Storage.Test {
             string text = "hello, world";
             byte[] data = Encoding.UTF8.GetBytes(text);
             LCFile file = new LCFile("text", data);
+            file.PathPrefix = "gamesaves";
             await file.Save();
             TestContext.WriteLine(file.ObjectId);
             Assert.NotNull(file.ObjectId);
+            Assert.True(file.Url.Contains("gamesaves"));
         }
 
         [Test]

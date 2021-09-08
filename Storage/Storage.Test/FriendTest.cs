@@ -57,10 +57,20 @@ namespace Storage.Test {
         public async Task Accept() {
             // 查询好友请求
             LCFriendshipRequest request = await GetRequest();
+            LCUser user = await LCUser.GetCurrent();
+            Assert.AreEqual(request.Friend.ObjectId, user.ObjectId);
+            Assert.AreEqual(request.Status, "pending");
             // 接受
-            await LCFriendship.AcceptRequest(request);
+            Dictionary<string, object> attrs = new Dictionary<string, object> {
+                { "group", "sport" }
+            };
+            await LCFriendship.AcceptRequest(request, attrs);
             // 查询好友
-            Assert.Greater((await GetFriends()).Count, 0);
+            ReadOnlyCollection<LCObject> friends = await GetFriends();
+            Assert.Greater(friends.Count, 0);
+            foreach (LCObject friend in friends) {
+                Assert.AreEqual(friend["group"], "sport");
+            }
         }
 
         [Test]
