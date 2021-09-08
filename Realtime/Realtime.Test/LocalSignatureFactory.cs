@@ -9,7 +9,7 @@ using LeanCloud.Common;
 
 namespace Realtime.Test {
     public class LocalSignatureFactory : ILCIMSignatureFactory {
-        const string MasterKey = "pyvbNSh5jXsuFQ3C8EgnIdhw";
+        const string MasterKey = "VFbnm4iaAdqQPzAdXT2M8KjP";
 
         public Task<LCIMSignature> CreateConnectSignature(string clientId) {
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();

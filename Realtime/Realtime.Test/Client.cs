@@ -9,7 +9,7 @@ using LeanCloud.Storage;
 using static NUnit.Framework.TestContext;
 
 namespace Realtime.Test {
-    public class Client {
+    public class Client : BaseTest {
         private const string USERNAME1 = "username1";
         private const string PASSWORD1 = "password1";
 
@@ -17,15 +17,10 @@ namespace Realtime.Test {
         private const string PASSWORD2 = "password2";
 
         [SetUp]
-        public async Task SetUp() {
-            Utils.SetUp();
+        public override async Task SetUp() {
+            await base.SetUp();
             await NewUser(USERNAME1, PASSWORD1);
             await NewUser(USERNAME2, PASSWORD2);
-        }
-
-        [TearDown]
-        public void TearDown() {
-            Utils.TearDown();
         }
 
         [Test]
@@ -83,6 +78,7 @@ namespace Realtime.Test {
         }
 
         [Test]
+        [Timeout(10000)]
         public async Task CreateChatRoom() {
             string clientId = Guid.NewGuid().ToString();
             LCIMClient client = new LCIMClient(clientId);
@@ -108,6 +104,13 @@ namespace Realtime.Test {
             await conversation.Send(textMessage);
 
             int count = await chatRoom.GetMembersCount();
+            int onlineCount = await chatRoom.GetOnlineMembersCount();
+            Assert.AreEqual(count, onlineCount);
+
+            Exception ex = Assert.ThrowsAsync<Exception>(async () => {
+                await chatRoom.AddMembers(new string[] { "test" });
+            });
+            Assert.AreEqual(ex.Message, "Add members is not allowed in chat room.");
 
             ReadOnlyCollection<string> onlineMembers = await chatRoom.GetOnlineMembers();
             Assert.GreaterOrEqual(onlineMembers.Count, 1);
@@ -137,7 +140,8 @@ namespace Realtime.Test {
                 tcs.SetResult(null);
             };
 
-            await client.CreateTemporaryConversation(new string[] { "world" });
+            LCIMTemporaryConversation temporaryConversation = await client.CreateTemporaryConversation(new string[] { "world" });
+            Assert.False(temporaryConversation.IsExpired);
 
             await tcs.Task;
         }
@@ -157,5 +161,42 @@ namespace Realtime.Test {
                 }
             }
         }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task Reconnect() {
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            string clientId = Guid.NewGuid().ToString();
+            LCIMClient client = new LCIMClient(clientId);
+
+            await client.Open();
+
+            client.OnPaused = () => {
+                LCLogger.Debug("paused.");
+            };
+            client.OnResume = () => {
+                LCLogger.Debug("resumed.");
+                tcs.TrySetResult(null);
+            };
+
+            await Task.Delay(3000);
+            LCRealtime.Pause();
+            await Task.Delay(3000);
+            LCRealtime.Resume();
+
+            await tcs.Task;
+        }
+
+        // 太耗时了
+        //[Test]
+        //[Timeout(200000)]
+        //public async Task PingPong() {
+        //    string clientId = Guid.NewGuid().ToString();
+        //    LCIMClient client = new LCIMClient(clientId);
+
+        //    await client.Open();
+
+        //    await Task.Delay(190 * 1000);
+        //}
     }
 }

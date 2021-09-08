@@ -5,15 +5,15 @@ using LeanCloud.Realtime;
 using LeanCloud.Realtime.Internal.Protocol;
 
 namespace Realtime.Test {
-    public class Throttle {
+    public class Throttle : BaseTest {
         private LCIMClient c1;
         private LCIMClient c2;
 
         private LCIMConversation conversation;
 
         [SetUp]
-        public async Task SetUp() {
-            Utils.SetUp();
+        public override async Task SetUp() {
+            await base.SetUp();
             c1 = new LCIMClient(Guid.NewGuid().ToString());
             c2 = new LCIMClient(Guid.NewGuid().ToString());
             await c1.Open();
@@ -23,10 +23,10 @@ namespace Realtime.Test {
         }
 
         [TearDown]
-        public async Task TearDown() {
+        public override async Task TearDown() {
             await c1.Close();
             await c2.Close();
-            Utils.TearDown();
+            await base.TearDown();
         }
 
         [Test]

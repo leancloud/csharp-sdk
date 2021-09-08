@@ -3,7 +3,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using LeanCloud;
 using LeanCloud.Storage;
 using LeanCloud.Realtime;
 
@@ -24,15 +23,15 @@ class EmojiMessage : LCIMTypedMessage {
 }
 
 namespace Realtime.Test {
-    public class Message {
+    public class Message : BaseTest {
         private LCIMClient m1;
         private LCIMClient m2;
 
         private LCIMConversation conversation;
 
         [SetUp]
-        public async Task SetUp() {
-            Utils.SetUp();
+        public override async Task SetUp() {
+            await base.SetUp();
             m1 = new LCIMClient("m1");
             m2 = new LCIMClient("m2");
             await m1.Open();
@@ -41,10 +40,10 @@ namespace Realtime.Test {
         }
 
         [TearDown]
-        public async Task TearDown() {
+        public override async Task TearDown() {
             await m1.Close();
             await m2.Close();
-            Utils.TearDown();
+            await base.TearDown();
         }
 
         [Test]

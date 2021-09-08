@@ -8,15 +8,15 @@ using LeanCloud.Realtime;
 using static NUnit.Framework.TestContext;
 
 namespace Realtime.Test {
-    public class Conversation {
+    public class Conversation : BaseTest {
         private LCIMClient c1;
         private LCIMClient c2;
         private LCIMClient lean;
         private LCIMConversation conversation;
 
         [SetUp]
-        public async Task SetUp() {
-            Utils.SetUp();
+        public override async Task SetUp() {
+            await base.SetUp();
             c1 = new LCIMClient(Guid.NewGuid().ToString());
             await c1.Open();
             c2 = new LCIMClient(Guid.NewGuid().ToString());
@@ -27,11 +27,11 @@ namespace Realtime.Test {
         }
 
         [TearDown]
-        public async Task TearDown() {
+        public override async Task TearDown() {
             await c1.Close();
             await c2.Close();
             await lean.Close();
-            Utils.TearDown();
+            await base.TearDown();
         }
 
         [Test]
@@ -194,6 +194,9 @@ namespace Realtime.Test {
                 await conversation.UpdateMemberRole("cloud", LCIMConversationMemberInfo.Manager);
                 LCIMConversationMemberInfo memberInfo = await conversation.GetMemberInfo("cloud");
                 Assert.True(memberInfo.IsManager);
+                Assert.AreEqual(memberInfo.ConversationId, conversation.Id);
+                Assert.AreEqual(memberInfo.MemberId, "cloud");
+                Assert.False(memberInfo.IsOwner);
             } catch (LCException e) {
                 if (e.Code == 4325) {
                     tcs.TrySetResult(null);
@@ -244,6 +247,14 @@ namespace Realtime.Test {
             Assert.AreEqual(conversation["k2"], "v2");
 
             //await tcs.Task;
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Order(8)]
+        public async Task MuteConversation() {
+            await conversation.Mute();
+            await conversation.Unmute();
         }
     }
 }

@@ -4,21 +4,21 @@ using System.Threading.Tasks;
 using LeanCloud.Realtime;
 
 namespace Realtime.Test {
-    public class ConversationQuery {
+    public class ConversationQuery : BaseTest {
         private readonly string clientId = "m1";
         private LCIMClient client;
 
         [SetUp]
-        public async Task SetUp() {
-            Utils.SetUp();
+        public override async Task SetUp() {
+            await base.SetUp();
             client = new LCIMClient(clientId);
             await client.Open();
         }
 
         [TearDown]
-        public async Task TearDown() {
+        public override async Task TearDown() {
             await client.Close();
-            Utils.TearDown();
+            await base.TearDown();
         }
 
         [Test]
@@ -43,19 +43,19 @@ namespace Realtime.Test {
             }
         }
 
-        //[Test]
-        //public async Task QueryCompact() {
-        //    string memberId = "m1";
-        //    LCIMConversationQuery query = new LCIMConversationQuery(client)
-        //        .WhereEqualTo("m", memberId);
-        //    query.Compact = true;
-        //    ReadOnlyCollection<LCIMConversation> conversations = await query.Find();
-        //    foreach (LCIMConversation conversation in conversations) {
-        //        Assert.True(conversation.MemberIds.Count == 0);
-        //        await conversation.Fetch();
-        //        Assert.True(conversation.MemberIds.Count > 0);
-        //    }
-        //}
+        [Test]
+        public async Task QueryCompact() {
+            string memberId = "m1";
+            LCIMConversationQuery query = new LCIMConversationQuery(client)
+                .WhereEqualTo("m", memberId);
+            query.Compact = true;
+            ReadOnlyCollection<LCIMConversation> conversations = await query.Find();
+            foreach (LCIMConversation conversation in conversations) {
+                Assert.True(conversation.MemberIds.Count == 0);
+                await conversation.Fetch();
+                Assert.True(conversation.MemberIds.Count > 0);
+            }
+        }
 
         [Test]
         public async Task QueryWithLastMessage() {
