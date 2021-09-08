@@ -6,7 +6,6 @@ using LC.Newtonsoft.Json;
 using LeanCloud.Realtime.Internal.Router;
 using LeanCloud.Realtime.Internal.WebSocket;
 using LeanCloud.Common;
-using LeanCloud.Realtime.Internal.Connection;
 
 namespace LeanCloud.LiveQuery.Internal {
     public class LCLiveQueryConnection {
