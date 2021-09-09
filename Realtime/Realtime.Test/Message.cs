@@ -142,10 +142,10 @@ namespace Realtime.Test {
                 await conv.Read();
             };
             m1.OnMessageDelivered = (conv, msgId) => {
-                WriteLine($"{msgId} is delivered.");
+                WriteLine($"{msgId} has delivered at {conv.LastDeliveredAt}");
             };
             m1.OnMessageRead = (conv, msgId) => {
-                WriteLine($"{msgId} is read.");
+                WriteLine($"{msgId} has read at {conv.LastReadAt}");
                 tcs.SetResult(null);
             };
             LCIMTextMessage textMessage = new LCIMTextMessage("hello");
@@ -196,12 +196,17 @@ namespace Realtime.Test {
         [Test]
         [Order(4)]
         public async Task Query() {
-            ReadOnlyCollection<LCIMMessage> messages = await conversation.QueryMessages(messageType: -6);
+            ReadOnlyCollection<LCIMMessage> messages = await conversation.QueryMessages(messageType: -1);
             Assert.Greater(messages.Count, 0);
             foreach (LCIMMessage message in messages) {
                 Assert.AreEqual(message.ConversationId, conversation.Id);
                 Assert.NotNull(message.Id);
                 WriteLine(message.Id);
+                Assert.AreNotEqual(message.SentAt, default(DateTime));
+                WriteLine($"Sent at: {message.SentAt}");
+                Assert.AreNotEqual(message.DeliveredAt, default(DateTime));
+                WriteLine($"Delivered at: {message.DeliveredAt}");
+                WriteLine($"Read at: {message.ReadAt}");
             }
         }
 
