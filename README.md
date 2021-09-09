@@ -25,8 +25,8 @@ LeanCloud C# SDK，基于 .Net Standard 2.0 标准开发，包括服务如下：
 
 ```json
 "dependencies": {
-  "com.leancloud.storage": "https://github.com/leancloud/csharp-sdk-upm.git#storage-0.9.8",
-  "com.leancloud.realtime": "https://github.com/leancloud/csharp-sdk-upm.git#realtime-0.9.8"
+  "com.leancloud.storage": "https://github.com/leancloud/csharp-sdk-upm.git#storage-0.9.9",
+  "com.leancloud.realtime": "https://github.com/leancloud/csharp-sdk-upm.git#realtime-0.9.9"
 }
 ```
 
