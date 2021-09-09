@@ -9,7 +9,7 @@ namespace Storage.Test {
         [Test]
         public async Task BaseQuery() {
             LCQuery<LCObject> query = new LCQuery<LCObject>("Hello");
-            query.Limit(2);
+            query.Skip(1).Limit(2);
             ReadOnlyCollection<LCObject> list = await query.Find();
             TestContext.WriteLine(list.Count);
             Assert.AreEqual(list.Count, 2);

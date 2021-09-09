@@ -119,7 +119,7 @@ namespace LeanCloud.Realtime {
                             File.Name = name as string;
                         }
                         if (File.MetaData.TryGetValue(MessageDataMetaSizeKey, out object size) &&
-                            int.TryParse(size as string, out int s)) {
+                            size is int s) {
                             Size = s;
                         }
                         if (File.MetaData.TryGetValue(MessageDataMetaFormatKey, out object format)) {

@@ -60,7 +60,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 if (transient) {
                     conversation = new LCIMChatRoom(Client);
                 } else if (temporary) {
-                    conversation = new LCIMTemporaryConversation(Client);
+                    LCIMTemporaryConversation tempConv = new LCIMTemporaryConversation(Client);
+                    if (DateTime.TryParse(response.ConvMessage.Cdate, out DateTime createdTime)) {
+                        tempConv.ExpiredAt = createdTime.AddSeconds(response.ConvMessage.TempConvTTL);
+                    }
+                    conversation = tempConv;
                 } else if (properties != null && properties.ContainsKey("system")) {
                     conversation = new LCIMServiceConversation(Client);
                 } else {

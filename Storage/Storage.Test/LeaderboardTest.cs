@@ -40,8 +40,12 @@ namespace Storage.Test {
             }
             LCLeaderboard leaderboard = await LCLeaderboard.CreateLeaderboard(leaderboardName);
             Assert.AreEqual(leaderboard.StatisticName, leaderboardName);
+            await leaderboard.UpdateUpdateStrategy(LCLeaderboardUpdateStrategy.Last);
+            Assert.True(leaderboard.UpdateStrategy == LCLeaderboardUpdateStrategy.Last);
+            await leaderboard.UpdateVersionChangeInterval(LCLeaderboardVersionChangeInterval.Month);
+            Assert.True(leaderboard.VersionChangeInterval == LCLeaderboardVersionChangeInterval.Month);
         }
-
+        
         [Test]
         [Order(1)]
         public async Task Update() {
@@ -131,6 +135,40 @@ namespace Storage.Test {
                 Assert.Contains(s.User.ObjectId, userDict.Keys);
             }
         }
+
+        [Test]
+        [Order(7)]
+        public async Task DeleteStatistics() {
+            Dictionary<string, LCUser>.ValueCollection.Enumerator enumerator = userDict.Values.GetEnumerator();
+            enumerator.MoveNext();
+            LCObject user = enumerator.Current;
+            await LCLeaderboard.DeleteStatistics(user, new string[] { leaderboardName });
+            ReadOnlyCollection<LCStatistic> statistics = await LCLeaderboard.GetStatistics(user, new string[] { leaderboardName });
+            //Assert.AreEqual(statistics.Count, 0);
+
+            LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard(leaderboardName);
+            await leaderboard.Reset();
+            ReadOnlyCollection<LCRanking> rankings = await leaderboard.GetResults();
+            Assert.AreEqual(rankings.Count, 0);
+        }
+
+        [Test]
+        [Order(8)]
+        public async Task GetArchives() {
+            try {
+                LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard("Leaderboard_232");
+                ReadOnlyCollection<LCLeaderboardArchive> archives = await leaderboard.GetArchives();
+                foreach (LCLeaderboardArchive archive in archives) {
+                    WriteLine(archive.StatisticName);
+                    WriteLine(archive.Version);
+                    WriteLine(archive.Url);
+                }
+            } catch (LCException e) {
+                if (e.Code != 2100) {
+                    throw e;
+                }
+            }
+        }
     }
 
     public class ObjectLeaderboardTest : BaseTest {
@@ -165,6 +203,10 @@ namespace Storage.Test {
             }
             LCLeaderboard leaderboard = await LCLeaderboard.CreateLeaderboard(leaderboardName, memberType: LeaderboaderObjectClassName);
             Assert.AreEqual(leaderboard.StatisticName, leaderboardName);
+            await leaderboard.UpdateUpdateStrategy(LCLeaderboardUpdateStrategy.Last);
+            Assert.True(leaderboard.UpdateStrategy == LCLeaderboardUpdateStrategy.Last);
+            await leaderboard.UpdateVersionChangeInterval(LCLeaderboardVersionChangeInterval.Month);
+            Assert.True(leaderboard.VersionChangeInterval == LCLeaderboardVersionChangeInterval.Month);
         }
 
         [Test]
@@ -244,6 +286,40 @@ namespace Storage.Test {
                 Assert.Contains(s.Object.ObjectId, objDict.Keys);
             }
         }
+
+        [Test]
+        [Order(7)]
+        public async Task DeleteStatistics() {
+            Dictionary<string, LCObject>.ValueCollection.Enumerator enumerator = objDict.Values.GetEnumerator();
+            enumerator.MoveNext();
+            LCObject obj = enumerator.Current;
+            await LCLeaderboard.DeleteStatistics(obj, new string[] { leaderboardName });
+            ReadOnlyCollection<LCStatistic> statistics = await LCLeaderboard.GetStatistics(obj, new string[] { leaderboardName });
+            //Assert.AreEqual(statistics.Count, 0);
+
+            LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard(leaderboardName);
+            await leaderboard.Reset();
+            ReadOnlyCollection<LCRanking> rankings = await leaderboard.GetResults();
+            Assert.AreEqual(rankings.Count, 0);
+        }
+
+        [Test]
+        [Order(8)]
+        public async Task GetArchives() {
+            try {
+                LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard("Leaderboard_Object_232");
+                ReadOnlyCollection<LCLeaderboardArchive> archives = await leaderboard.GetArchives();
+                foreach (LCLeaderboardArchive archive in archives) {
+                    WriteLine(archive.StatisticName);
+                    WriteLine(archive.Version);
+                    WriteLine(archive.Url);
+                }
+            } catch (LCException e) {
+                if (e.Code != 2100) {
+                    throw e;
+                }
+            }
+        }
     }
 
     public class EntityLeaderboardTest : BaseTest {
@@ -276,6 +352,10 @@ namespace Storage.Test {
             }
             LCLeaderboard leaderboard = await LCLeaderboard.CreateLeaderboard(leaderboardName, memberType: LCLeaderboard.ENTITY_MEMBER_TYPE);
             Assert.AreEqual(leaderboard.StatisticName, leaderboardName);
+            await leaderboard.UpdateUpdateStrategy(LCLeaderboardUpdateStrategy.Last);
+            Assert.True(leaderboard.UpdateStrategy == LCLeaderboardUpdateStrategy.Last);
+            await leaderboard.UpdateVersionChangeInterval(LCLeaderboardVersionChangeInterval.Month);
+            Assert.True(leaderboard.VersionChangeInterval == LCLeaderboardVersionChangeInterval.Month);
         }
 
         [Test]
@@ -344,6 +424,38 @@ namespace Storage.Test {
             foreach (LCStatistic s in statistics) {
                 WriteLine($"{s.Entity} : {s.Value}");
                 Assert.Contains(s.Entity, entities);
+            }
+        }
+
+        [Test]
+        [Order(7)]
+        public async Task DeleteStatistics() {
+            string entity = entities[0];
+            await LCLeaderboard.DeleteStatistics(entity, new string[] { leaderboardName });
+            ReadOnlyCollection<LCStatistic> statistics = await LCLeaderboard.GetStatistics(entity, new string[] { leaderboardName });
+            //Assert.AreEqual(statistics.Count, 0);
+
+            LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard(leaderboardName);
+            await leaderboard.Reset();
+            ReadOnlyCollection<LCRanking> rankings = await leaderboard.GetResults();
+            Assert.AreEqual(rankings.Count, 0);
+        }
+
+        [Test]
+        [Order(8)]
+        public async Task GetArchives() {
+            try {
+                LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard("Leaderboard_Entity_232");
+                ReadOnlyCollection<LCLeaderboardArchive> archives = await leaderboard.GetArchives();
+                foreach (LCLeaderboardArchive archive in archives) {
+                    WriteLine(archive.StatisticName);
+                    WriteLine(archive.Version);
+                    WriteLine(archive.Url);
+                }
+            } catch (LCException e) {
+                if (e.Code != 2100) {
+                    throw e;
+                }
             }
         }
     }

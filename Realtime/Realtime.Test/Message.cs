@@ -3,7 +3,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using LeanCloud;
 using LeanCloud.Storage;
 using LeanCloud.Realtime;
 
@@ -24,15 +23,15 @@ class EmojiMessage : LCIMTypedMessage {
 }
 
 namespace Realtime.Test {
-    public class Message {
+    public class Message : BaseTest {
         private LCIMClient m1;
         private LCIMClient m2;
 
         private LCIMConversation conversation;
 
         [SetUp]
-        public async Task SetUp() {
-            Utils.SetUp();
+        public override async Task SetUp() {
+            await base.SetUp();
             m1 = new LCIMClient("m1");
             m2 = new LCIMClient("m2");
             await m1.Open();
@@ -41,14 +40,15 @@ namespace Realtime.Test {
         }
 
         [TearDown]
-        public async Task TearDown() {
+        public override async Task TearDown() {
             await m1.Close();
             await m2.Close();
-            Utils.TearDown();
+            await base.TearDown();
         }
 
         [Test]
         [Order(0)]
+        [Timeout(20000)]
         public async Task Send() {
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
 
@@ -57,15 +57,39 @@ namespace Realtime.Test {
                 WriteLine(msg.Id);
                 if (msg is LCIMImageMessage imageMsg) {
                     WriteLine($"-------- url: {imageMsg.Url}");
+                    Assert.NotNull(imageMsg.Url);
+                    Assert.AreEqual(imageMsg.Width, 225);
+                    Assert.AreEqual(imageMsg.Height, 225);
+                    count++;
+                } else if (msg is LCIMLocationMessage locationMsg) {
+                    WriteLine($"-------- location: {locationMsg.Location}");
+                    Assert.Less(Math.Abs(20.0059 - locationMsg.Location.Latitude), 0.0001);
+                    Assert.Less(Math.Abs(110.3665 - locationMsg.Location.Longitude), 0.0001);
+                    count++;
+                } else if (msg is LCIMAudioMessage audioMsg) {
+                    WriteLine($"-------- audio: {audioMsg.File}");
+                    Assert.NotNull(audioMsg.File.Url);
+                    Assert.Less(Math.Abs(audioMsg.Duration - 1), 0.0001);
+                    count++;
+                } else if (msg is LCIMVideoMessage videoMsg) {
+                    WriteLine($"-------- video: {videoMsg}");
+                    Assert.NotNull(videoMsg.File.Url);
+                    Assert.Less(Math.Abs(videoMsg.Duration - 11), 0.0001);
+                    Assert.AreEqual(videoMsg.Width, 1280);
+                    Assert.AreEqual(videoMsg.Height, 720);
                     count++;
                 } else if (msg is LCIMFileMessage fileMsg) {
                     WriteLine($"-------- name: {fileMsg.Format}");
+                    Assert.NotNull(fileMsg.Url);
+                    Assert.AreEqual(fileMsg.Format, "zip");
+                    Assert.AreEqual(fileMsg.Size, 1387);
                     count++;
                 } else if (msg is LCIMTextMessage textMsg) {
                     WriteLine($"-------- text: {textMsg.Text}");
+                    Assert.AreEqual(textMsg.Text, "hello, world");
                     count++;
-                }
-                if (count >= 3) {
+                } 
+                if (count == 6) {
                     tcs.SetResult(null);
                 }
             };
@@ -75,11 +99,14 @@ namespace Realtime.Test {
             Assert.NotNull(textMessage.Id);
 
             LCFile image = new LCFile("hello", "../../../../../assets/hello.png");
+            image.AddMetaData("width", 225);
+            image.AddMetaData("height", 225);
             LCIMImageMessage imageMessage = new LCIMImageMessage(image);
             await conversation.Send(imageMessage);
             Assert.NotNull(imageMessage.Id);
 
-            LCFile file = new LCFile("apk", "../../../../../assets/test.apk");
+            LCFile file = new LCFile("hello.zip", "../../../../../assets/hello.png.zip");
+            file.AddMetaData("size", 1387);
             LCIMFileMessage fileMessage = new LCIMFileMessage(file);
             await conversation.Send(fileMessage);
             Assert.NotNull(fileMessage.Id);
@@ -87,6 +114,22 @@ namespace Realtime.Test {
             LCIMBinaryMessage binaryMessage = new LCIMBinaryMessage(System.Text.Encoding.UTF8.GetBytes("LeanCloud"));
             await conversation.Send(binaryMessage);
             Assert.NotNull(binaryMessage.Id);
+
+            LCIMLocationMessage locationMessage = new LCIMLocationMessage(new LCGeoPoint(20.0059, 110.3665));
+            await conversation.Send(locationMessage);
+            Assert.NotNull(locationMessage.Id);
+
+            LCFile audio = new LCFile("audio.wav", "../../../../../assets/audio.wav");
+            audio.AddMetaData("duration", 1.0);
+            LCIMAudioMessage audioMessage = new LCIMAudioMessage(audio);
+            await conversation.Send(audioMessage);
+
+            LCFile video = new LCFile("lake.mp4", "../../../../../assets/lake.mp4");
+            video.AddMetaData("duration", 11.0);
+            video.AddMetaData("width", 1280);
+            video.AddMetaData("height", 720);
+            LCIMVideoMessage videoMessage = new LCIMVideoMessage(video);
+            await conversation.Send(videoMessage);
 
             await tcs.Task;
         }
@@ -99,10 +142,10 @@ namespace Realtime.Test {
                 await conv.Read();
             };
             m1.OnMessageDelivered = (conv, msgId) => {
-                WriteLine($"{msgId} is delivered.");
+                WriteLine($"{msgId} has delivered at {conv.LastDeliveredAt}");
             };
             m1.OnMessageRead = (conv, msgId) => {
-                WriteLine($"{msgId} is read.");
+                WriteLine($"{msgId} has read at {conv.LastReadAt}");
                 tcs.SetResult(null);
             };
             LCIMTextMessage textMessage = new LCIMTextMessage("hello");
@@ -153,12 +196,17 @@ namespace Realtime.Test {
         [Test]
         [Order(4)]
         public async Task Query() {
-            ReadOnlyCollection<LCIMMessage> messages = await conversation.QueryMessages(messageType: -6);
+            ReadOnlyCollection<LCIMMessage> messages = await conversation.QueryMessages(messageType: -1);
             Assert.Greater(messages.Count, 0);
             foreach (LCIMMessage message in messages) {
                 Assert.AreEqual(message.ConversationId, conversation.Id);
                 Assert.NotNull(message.Id);
                 WriteLine(message.Id);
+                Assert.AreNotEqual(message.SentAt, default(DateTime));
+                WriteLine($"Sent at: {message.SentAt}");
+                Assert.AreNotEqual(message.DeliveredAt, default(DateTime));
+                WriteLine($"Delivered at: {message.DeliveredAt}");
+                WriteLine($"Read at: {message.ReadAt}");
             }
         }
 

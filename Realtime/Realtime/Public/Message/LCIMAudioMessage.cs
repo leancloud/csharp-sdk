@@ -35,7 +35,7 @@ namespace LeanCloud.Realtime {
                 return;
             }
             if (File.MetaData.TryGetValue(MessageDataMetaDurationKey, out object duration) &&
-                double.TryParse(duration as string, out double d)) {
+                duration is float d) {
                 Duration = d;
             }
         }

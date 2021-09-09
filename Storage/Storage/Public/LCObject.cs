@@ -21,7 +21,6 @@ namespace LeanCloud.Storage {
 
         internal Dictionary<string, ILCOperation> operationDict;
 
-        static readonly Dictionary<Type, LCSubclassInfo> subclassTypeDict = new Dictionary<Type, LCSubclassInfo>();
         static readonly Dictionary<string, LCSubclassInfo> subclassNameDict = new Dictionary<string, LCSubclassInfo>();
 
         /// <summary>
@@ -121,13 +120,6 @@ namespace LeanCloud.Storage {
                 return subclassInfo.Constructor.Invoke();
             }
             return new LCObject(className);
-        }
-
-        internal static LCObject Create(Type type) {
-            if (subclassTypeDict.TryGetValue(type, out LCSubclassInfo subclassInfo)) {
-                return subclassInfo.Constructor.Invoke();
-            }
-            return null;
         }
 
         /// <summary>
@@ -533,7 +525,6 @@ namespace LeanCloud.Storage {
             Type classType = typeof(T);
             LCSubclassInfo subclassInfo = new LCSubclassInfo(className, classType, constructor);
             subclassNameDict[className] = subclassInfo;
-            subclassTypeDict[classType] = subclassInfo;
         }
 
         /// <summary>
