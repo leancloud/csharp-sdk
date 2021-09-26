@@ -67,37 +67,42 @@ namespace LeanCloud.Common {
 
         public Task<T> Get<T>(string path,
             Dictionary<string, object> headers = null,
-            Dictionary<string, object> queryParams = null) {
-            return Request<T>(path, HttpMethod.Get, headers, null, queryParams);
+            Dictionary<string, object> queryParams = null,
+            bool withAPIVersion = true) {
+            return Request<T>(path, HttpMethod.Get, headers, null, queryParams, withAPIVersion);
         }
 
         public Task<T> Post<T>(string path,
             Dictionary<string, object> headers = null,
             object data = null,
-            Dictionary<string, object> queryParams = null) {
-            return Request<T>(path, HttpMethod.Post, headers, data, queryParams);
+            Dictionary<string, object> queryParams = null,
+            bool withAPIVersion = true) {
+            return Request<T>(path, HttpMethod.Post, headers, data, queryParams, withAPIVersion);
         }
 
         public Task<T> Put<T>(string path,
             Dictionary<string, object> headers = null,
             object data = null,
-            Dictionary<string, object> queryParams = null) {
-            return Request<T>(path, HttpMethod.Put, headers, data, queryParams);
+            Dictionary<string, object> queryParams = null,
+            bool withAPIVersion = true) {
+            return Request<T>(path, HttpMethod.Put, headers, data, queryParams, withAPIVersion);
         }
 
         public Task Delete(string path,
             Dictionary<string, object> headers = null,
             object data = null,
-            Dictionary<string, object> queryParams = null) {
-            return Request<Dictionary<string, object>>(path, HttpMethod.Delete, headers, data, queryParams);
+            Dictionary<string, object> queryParams = null,
+            bool withAPIVersion = true) {
+            return Request<Dictionary<string, object>>(path, HttpMethod.Delete, headers, data, queryParams, withAPIVersion);
         }
 
         async Task<T> Request<T>(string path,
             HttpMethod method,
             Dictionary<string, object> headers = null,
             object data = null,
-            Dictionary<string, object> queryParams = null) {
-            string url = await BuildUrl(path, queryParams);
+            Dictionary<string, object> queryParams = null,
+            bool withAPIVersion = true) {
+            string url = await BuildUrl(path, queryParams, withAPIVersion);
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(url),
                 Method = method,
@@ -142,9 +147,15 @@ namespace LeanCloud.Common {
             return new LCException(code, message);
         }
 
-        async Task<string> BuildUrl(string path, Dictionary<string, object> queryParams = null) {
+        async Task<string> BuildUrl(string path, Dictionary<string, object> queryParams, bool withAPIVersion) {
             string apiServer = await LCCore.AppRouter.GetApiServer();
-            string url = $"{apiServer}/{apiVersion}/{path}";
+            StringBuilder urlSB = new StringBuilder();
+            urlSB.Append(apiServer);
+            if (withAPIVersion) {
+                urlSB.Append($"/{apiVersion}");
+            }
+            urlSB.Append($"/{path}");
+            string url = urlSB.ToString();
             if (queryParams != null) {
                 IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
                 string queries = string.Join("&", queryPairs);
