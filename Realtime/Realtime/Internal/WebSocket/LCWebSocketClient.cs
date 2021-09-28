@@ -32,7 +32,8 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
         public async Task Connect(string server,
             string subProtocol = null,
-            Dictionary<string, string> headers = null) {
+            Dictionary<string, string> headers = null,
+            TimeSpan keepAliveInterval = default) {
             LCLogger.Debug($"Connecting WebSocket: {server}");
             Task timeoutTask = Task.Delay(CONNECT_TIMEOUT);
             ws = new ClientWebSocket();
@@ -44,6 +45,9 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                 foreach (KeyValuePair<string, string> kv in headers) {
                     ws.Options.SetRequestHeader(kv.Key, kv.Value);
                 }
+            }
+            if (keepAliveInterval != default) {
+                ws.Options.KeepAliveInterval = keepAliveInterval;
             }
             Task connectTask = ws.ConnectAsync(new Uri(server), default);
             if (await Task.WhenAny(connectTask, timeoutTask) == connectTask) {
