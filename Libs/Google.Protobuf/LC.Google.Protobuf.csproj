@@ -23,7 +23,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <!-- Include PDB in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <ReleaseVersion>0.9.9</ReleaseVersion>
+    <ReleaseVersion>0.9.10</ReleaseVersion>
     <PackageId>LC.Google.Protobuf</PackageId>
   </PropertyGroup>
 
