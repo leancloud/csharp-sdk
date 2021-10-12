@@ -30,8 +30,10 @@ namespace LeanCloud.Engine {
                     return await Invoke(mi, dict);
                 }
                 return body;
+            } catch (LCException e) {
+                return StatusCode(400, LCEngine.ConvertException(e));
             } catch (Exception e) {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
 
@@ -50,8 +52,10 @@ namespace LeanCloud.Engine {
                     return await Invoke(mi, dict);
                 }
                 return body;
+            } catch (LCException e) {
+                return StatusCode(400, LCEngine.ConvertException(e));
             } catch (Exception e) {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
 
@@ -70,8 +74,10 @@ namespace LeanCloud.Engine {
                     return await Invoke(mi, dict);
                 }
                 return body;
+            } catch (LCException e) {
+                return StatusCode(400, LCEngine.ConvertException(e));
             } catch (Exception e) {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
 

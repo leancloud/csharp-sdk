@@ -21,7 +21,7 @@ namespace LeanCloud.Engine {
             try {
                 return LCEngine.GetFunctions(Request);
             } catch (Exception e) {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
 
@@ -44,8 +44,10 @@ namespace LeanCloud.Engine {
                     }
                 }
                 return body;
+            } catch (LCException e) {
+                return StatusCode(400, LCEngine.ConvertException(e));
             } catch (Exception e) {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
 
@@ -68,8 +70,10 @@ namespace LeanCloud.Engine {
                     }
                 }
                 return body;
+            } catch (LCException e) {
+                return StatusCode(400, LCEngine.ConvertException(e));
             } catch (Exception e) {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
 

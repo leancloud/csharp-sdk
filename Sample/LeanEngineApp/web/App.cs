@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using LeanCloud.Storage;
 using LeanCloud.Engine;
+using LeanCloud;
 
 namespace web {
     public class App {
@@ -40,6 +41,16 @@ namespace web {
             LCQuery<LCObject> query = new LCQuery<LCObject>("Todo");
             ReadOnlyCollection<LCObject> todos = await query.Find();
             return todos.ToDictionary(t => t.ObjectId);
+        }
+
+        [LCEngineFunction("lcexception")]
+        public static string LCException() {
+            throw new LCException(123, "Runtime exception");
+        }
+
+        [LCEngineFunction("exception")]
+        public static string Exception() {
+            throw new Exception("Hello, exception");
         }
     }
 }
