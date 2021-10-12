@@ -1,7 +1,9 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using LeanCloud;
 using LeanCloud.Storage;
 
 namespace Storage.Test {
@@ -57,6 +59,20 @@ namespace Storage.Test {
                 LCObject obj = kv.Value as LCObject;
                 Assert.AreEqual(kv.Key, obj.ObjectId);
             }
+        }
+
+        [Test]
+        public void CatchLCException() {
+            LCException ex = Assert.CatchAsync<LCException>(() => LCCloud.Run("lcexception"));
+            Assert.AreEqual(ex.Code, 123);
+            Assert.AreEqual(ex.Message, "Runtime exception");
+        }
+
+        [Test]
+        public void CatchException() {
+            LCException ex = Assert.CatchAsync<LCException>(() => LCCloud.Run("exception"));
+            Assert.AreEqual(ex.Code, 1);
+            Assert.AreEqual(ex.Message, "Hello, exception");
         }
     }
 }

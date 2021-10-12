@@ -20,6 +20,7 @@
     <Folder Include="Public\Friendship\" />
     <Folder Include="Public\Status\" />
     <Folder Include="Public\Search\" />
+    <Folder Include="Public\User\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common\Common.csproj">
@@ -29,5 +30,6 @@
     <None Remove="Public\Friendship\" />
     <None Remove="Public\Status\" />
     <None Remove="Public\Search\" />
+    <None Remove="Public\User\" />
   </ItemGroup>
 </Project>

@@ -104,9 +104,6 @@
     <Compile Include="..\Storage\Public\LCHookObject.cs">
       <Link>Storage\Public\LCHookObject.cs</Link>
     </Compile>
-    <Compile Include="..\Storage\Public\LCUser.cs">
-      <Link>Storage\Public\LCUser.cs</Link>
-    </Compile>
     <Compile Include="..\Storage\Public\LCObject.cs">
       <Link>Storage\Public\LCObject.cs</Link>
     </Compile>
@@ -169,6 +166,12 @@
     </Compile>
     <Compile Include="..\Storage\Public\Friendship\LCFollowersAndFollowees.cs">
       <Link>Storage\Public\Friendship\LCFollowersAndFollowees.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Public\User\LCUser.cs">
+      <Link>Storage\Public\User\LCUser.cs</Link>
+    </Compile>
+    <Compile Include="..\Storage\Public\User\LCUserQueryCondition.cs">
+      <Link>Storage\Public\User\LCUserQueryCondition.cs</Link>
     </Compile>
   </ItemGroup>
 </Project>

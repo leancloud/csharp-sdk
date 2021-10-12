@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Object;
 
@@ -777,6 +778,31 @@ namespace LeanCloud.Storage {
             LCUser user = Create(CLASS_NAME) as LCUser;
             user.Merge(objectData);
             return user;
+        }
+
+        public static async Task<ReadOnlyCollection<LCUser>> StrictlyFind(LCUserQueryCondition condition) {
+            if (condition == null) {
+                throw new ArgumentNullException(nameof(condition));
+            }
+
+            string path = "users/strictlyQuery";
+            Dictionary<string, object> dict = new Dictionary<string, object> {};
+            string where = condition.BuildWhere();
+            if (!string.IsNullOrEmpty(where)) {
+                dict["where"] = where;
+            }
+            
+            Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>(path,
+                queryParams: dict);
+            List<object> results = response["results"] as List<object>;
+            List<LCUser> users = new List<LCUser>();
+            foreach (object item in results) {
+                LCUser user = Create(CLASS_NAME) as LCUser;
+                LCObjectData objectData = LCObjectData.Decode(item as Dictionary<string, object>);
+                user.Merge(objectData);
+                users.Add(user);
+            }
+            return users.AsReadOnly();
         }
     }
 }

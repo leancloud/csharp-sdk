@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text;
+using System.Collections.ObjectModel;
 using LeanCloud;
 using LeanCloud.Storage;
 using LC.Newtonsoft.Json;
@@ -295,6 +296,27 @@ namespace Storage.Test {
             } catch (LCException e) {
                 TestContext.WriteLine($"{e.Code} : {e.Message}");
                 TestContext.WriteLine(JsonConvert.SerializeObject(currentUser.AuthData));
+            }
+        }
+
+        [Test]
+        [Order(18)]
+        public async Task QueryUser() {
+            LCUser anoymous1 = await LCUser.LoginAnonymously();
+
+            string nickname = anoymous1.ObjectId;
+            anoymous1["nickname"] = nickname;
+            await anoymous1.Save();
+
+            await LCUser.LoginAnonymously();
+
+            LCUserQueryCondition condition = new LCUserQueryCondition();
+            condition.WhereEqualTo("nickname", nickname);
+            ReadOnlyCollection<LCUser> users = await LCUser.StrictlyFind(condition);
+
+            Assert.Greater(users.Count, 0);
+            foreach (LCUser user in users) {
+                Assert.AreEqual(user.ObjectId, anoymous1.ObjectId);
             }
         }
 
