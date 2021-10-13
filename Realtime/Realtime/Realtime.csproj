@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ReleaseVersion>0.9.10</ReleaseVersion>
+    <ReleaseVersion>0.9.11</ReleaseVersion>
     <RootNamespace>LeanCloud.Realtime</RootNamespace>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
