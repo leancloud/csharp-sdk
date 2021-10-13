@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Codec;
-using LeanCloud.Storage.Internal.Object;
 
 namespace LeanCloud.Storage {
     /// <summary>

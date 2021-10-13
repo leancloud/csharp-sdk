@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using LeanCloud.Storage.Internal.Object;
 using LeanCloud.Storage;
+using LeanCloud.Storage.Internal.Codec;
 
 namespace LeanCloud.Engine {
     [ApiController]
@@ -51,12 +52,17 @@ namespace LeanCloud.Engine {
 
                     LCObject result = await LCEngine.Invoke(mi, new object[] { obj }) as LCObject;
                     if (result != null) {
-                        return LCCloud.Encode(result);
+                        Dictionary<string, object> dict = LCEncoder.EncodeLCObject(result, true) as Dictionary<string, object>;
+                        dict.Remove("__type");
+                        dict.Remove("className");
+                        return dict;
                     }
                 }
                 return body;
+            } catch (LCException e) {
+                return StatusCode(400, LCEngine.ConvertException(e));
             } catch (Exception e) {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
 

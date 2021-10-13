@@ -220,14 +220,7 @@ namespace LeanCloud.Engine {
                 }
                 return mi.Invoke(null, parameters);
             } catch (TargetInvocationException e) {
-                Exception ex = e.InnerException;
-                if (ex is LCException lcEx) {
-                    throw new Exception(JsonConvert.SerializeObject(new Dictionary<string, object> {
-                        { "code", lcEx.Code },
-                        { "message", lcEx.Message }
-                    }));
-                }
-                throw ex;
+                throw e.InnerException;
             }
         }
 
@@ -245,14 +238,7 @@ namespace LeanCloud.Engine {
                 }
                 return mi.Invoke(null, ps);
             } catch (TargetInvocationException e) {
-                Exception ex = e.InnerException;
-                if (ex is LCException lcEx) {
-                    throw new Exception(JsonConvert.SerializeObject(new Dictionary<string, object> {
-                        { "code", lcEx.Code },
-                        { "message", lcEx.Message }
-                    }));
-                }
-                throw ex;
+                throw e.InnerException;
             }
         }
 
@@ -314,6 +300,20 @@ namespace LeanCloud.Engine {
 
             return new Dictionary<string, List<string>> {
                 { "result", functions }
+            };
+        }
+
+        internal static object ConvertException(Exception e) {
+            LCLogger.Error(e.ToString());
+            if (e is LCException lcEx) {
+                return new Dictionary<string, object> {
+                    { "code", lcEx.Code },
+                    { "error", lcEx.Message }
+                };
+            }
+            return new Dictionary<string, object> {
+                { "code", 1 },
+                { "error", e.Message }
             };
         }
     }

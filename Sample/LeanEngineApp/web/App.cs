@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 using System.Linq;
 using LeanCloud.Storage;
 using LeanCloud.Engine;
+using LeanCloud;
 
 namespace web {
     public class App {
+        private const string HOOK_CLASS_NAME = "TestHookClass";
+
         // Function
         [LCEngineFunction("ping")]
         public static string Ping() {
@@ -40,6 +43,57 @@ namespace web {
             LCQuery<LCObject> query = new LCQuery<LCObject>("Todo");
             ReadOnlyCollection<LCObject> todos = await query.Find();
             return todos.ToDictionary(t => t.ObjectId);
+        }
+
+        [LCEngineFunction("lcexception")]
+        public static string LCException() {
+            throw new LCException(123, "Runtime exception");
+        }
+
+        [LCEngineFunction("exception")]
+        public static string Exception() {
+            throw new Exception("Hello, exception");
+        }
+
+        // Class Hook
+        [LCEngineClassHook(HOOK_CLASS_NAME, LCEngineObjectHookType.BeforeSave)]
+        public static LCObject BeforeSaveClass(LCObject obj) {
+            if (obj["score"] == null) {
+                obj["score"] = 60;
+            }
+            return obj;
+        }
+
+        [LCEngineClassHook(HOOK_CLASS_NAME, LCEngineObjectHookType.AfterSave)]
+        public static void AfterSaveClass(LCObject obj) {
+            LCLogger.Debug($"Saved {obj.ObjectId}");
+        }
+
+        [LCEngineClassHook(HOOK_CLASS_NAME, LCEngineObjectHookType.BeforeUpdate)]
+        public static LCObject BeforeUpdateClass(LCObject obj) {
+            ReadOnlyCollection<string> updatedKeys = obj.GetUpdatedKeys();
+            if (updatedKeys.Contains("score")) {
+                int score = (int) obj["score"];
+                if (score > 100) {
+                    throw new Exception($"Error score: {score}");
+                }
+            }
+            return obj;
+        }
+
+        [LCEngineClassHook(HOOK_CLASS_NAME, LCEngineObjectHookType.AfterUpdate)]
+        public static void AfterUpdateClass(LCObject obj) {
+            LCLogger.Debug($"Updated {obj.ObjectId}");
+        }
+
+        [LCEngineClassHook(HOOK_CLASS_NAME, LCEngineObjectHookType.BeforeDelete)]
+        public static void BeforeDeleteClass(LCObject obj) {
+            throw new Exception($"Cannot delete {obj.ClassName}");
+        }
+
+        [LCEngineClassHook(HOOK_CLASS_NAME, LCEngineObjectHookType.AfterDelete)]
+        public static void AfterDeleteClass(LCObject obj) {
+            LCLogger.Debug($"Deleted {obj.ObjectId}");
         }
     }
 }

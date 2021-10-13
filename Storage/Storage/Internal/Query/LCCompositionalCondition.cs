@@ -8,9 +8,9 @@ namespace LeanCloud.Storage.Internal.Query {
         public const string And = "$and";
         public const string Or = "$or";
 
-        readonly string composition;
+        protected string composition;
 
-        List<ILCQueryCondition> conditionList;
+        protected List<ILCQueryCondition> conditionList;
 
         List<string> orderByList;
         HashSet<string> includes;
@@ -217,8 +217,9 @@ namespace LeanCloud.Storage.Internal.Query {
                 { "skip", Skip },
                 { "limit", Limit }
             };
-            if (conditionList != null && conditionList.Count > 0) {
-                dict["where"] = JsonConvert.SerializeObject(Encode());
+            string where = BuildWhere();
+            if (!string.IsNullOrEmpty(where)) {
+                dict["where"] = where;
             }
             string order = BuildOrders();
             if (!string.IsNullOrEmpty(order)) {
