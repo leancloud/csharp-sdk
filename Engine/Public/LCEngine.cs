@@ -304,6 +304,7 @@ namespace LeanCloud.Engine {
         }
 
         internal static object ConvertException(Exception e) {
+            LCLogger.Error(e.ToString());
             if (e is LCException lcEx) {
                 return new Dictionary<string, object> {
                     { "code", lcEx.Code },
