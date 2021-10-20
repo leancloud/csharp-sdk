@@ -1,0 +1,4 @@
+<linker>
+  <assembly fullname="Realtime" preserve="all"/>
+  <assembly fullname="LC.Google.Protobuf" preserve="all"/>
+</linker>

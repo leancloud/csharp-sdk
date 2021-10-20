@@ -48,4 +48,9 @@
       <Link>Common\Exception\LCException.cs</Link>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\link.xml">
+      <LogicalName>Common.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
