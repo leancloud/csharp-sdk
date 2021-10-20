@@ -19,4 +19,9 @@
     <Folder Include="Public\" />
     <Folder Include="Internal\" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\link.xml">
+      <LogicalName>Storage.Unity.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

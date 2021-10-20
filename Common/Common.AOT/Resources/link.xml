@@ -1,0 +1,4 @@
+<linker>
+  <assembly fullname="Common" preserve="all"/>
+  <assembly fullname="LC.Newtonsoft.Json" preserve="all"/>
+</linker>
