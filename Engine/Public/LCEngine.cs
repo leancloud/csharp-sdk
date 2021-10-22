@@ -30,6 +30,7 @@ namespace LeanCloud.Engine {
         internal const string OnSMSVerified = "__on_verified_sms";
         internal const string OnEmailVerified = "__on_verified_email";
         internal const string OnLogin = "__on_login__User";
+        internal const string OnAuthData = "__on_authdata__User";
 
         const string ClientOnline = "_clientOnline";
         const string ClientOffline = "_clientOffline";
@@ -145,6 +146,8 @@ namespace LeanCloud.Engine {
                             return OnEmailVerified;
                         case LCEngineUserHookType.OnLogin:
                             return OnLogin;
+                        case LCEngineUserHookType.OnAuthData:
+                            return OnAuthData;
                         default:
                             throw new Exception($"Error hook type: {attr.HookType}");
                     }
