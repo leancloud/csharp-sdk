@@ -9,19 +9,11 @@ namespace LeanCloud {
         /// Error code
         /// </summary>
         public int Code {
-            get; set;
+            get; private set;
         }
 
-        /// <summary>
-        /// Error message
-        /// </summary>
-        public new string Message {
-            get; set;
-        }
-
-        public LCException(int code, string message) {
+        public LCException(int code, string message) : base(message) {
             Code = code;
-            Message = message;
         }
 
         public override string ToString() {

@@ -5,12 +5,9 @@ namespace Storage.Test {
     public class ExceptionTest : BaseTest {
         [Test]
         public void LeanCloudException() {
-            try {
-                throw new LCException(123, "hello, world");
-            } catch (LCException e) {
-                TestContext.WriteLine($"{e.Code} : {e.Message}");
-                Assert.AreEqual(e.Code, 123);
-            }
+            LCException e = Assert.Catch<LCException>(() => throw new LCException(123, "hello, exception"));
+            TestContext.WriteLine($"{e.Code} : {e.Message}");
+            Assert.AreEqual(e.Code, 123);
         }
     }
 }
