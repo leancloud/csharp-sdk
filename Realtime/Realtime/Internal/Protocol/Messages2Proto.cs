@@ -894,8 +894,8 @@ namespace LeanCloud.Realtime.Internal.Protocol {
     public SystemInfo(SystemInfo other) : this() {
       _hasBits0 = other._hasBits0;
       deviceType_ = other.deviceType_;
-      osVersion_ = other.HasOsVersion ? other.osVersion_.Clone() : null;
-      androidVersion_ = other.HasAndroidVersion ? other.androidVersion_.Clone() : null;
+      osVersion_ = other.osVersion_ != null ? other.osVersion_.Clone() : null;
+      androidVersion_ = other.androidVersion_ != null ? other.androidVersion_.Clone() : null;
       isEmulator_ = other.isEmulator_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -939,16 +939,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         osVersion_ = value;
       }
     }
-    /// <summary>Gets whether the osVersion field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasOsVersion {
-      get { return osVersion_ != null; }
-    }
-    /// <summary>Clears the value of the osVersion field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearOsVersion() {
-      osVersion_ = null;
-    }
 
     /// <summary>Field number for the "androidVersion" field.</summary>
     public const int AndroidVersionFieldNumber = 3;
@@ -959,16 +949,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         androidVersion_ = value;
       }
-    }
-    /// <summary>Gets whether the androidVersion field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasAndroidVersion {
-      get { return androidVersion_ != null; }
-    }
-    /// <summary>Clears the value of the androidVersion field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearAndroidVersion() {
-      androidVersion_ = null;
     }
 
     /// <summary>Field number for the "isEmulator" field.</summary>
@@ -1019,8 +999,8 @@ namespace LeanCloud.Realtime.Internal.Protocol {
     public override int GetHashCode() {
       int hash = 1;
       if (HasDeviceType) hash ^= DeviceType.GetHashCode();
-      if (HasOsVersion) hash ^= OsVersion.GetHashCode();
-      if (HasAndroidVersion) hash ^= AndroidVersion.GetHashCode();
+      if (osVersion_ != null) hash ^= OsVersion.GetHashCode();
+      if (androidVersion_ != null) hash ^= AndroidVersion.GetHashCode();
       if (HasIsEmulator) hash ^= IsEmulator.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -1039,11 +1019,11 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         output.WriteRawTag(8);
         output.WriteEnum((int) DeviceType);
       }
-      if (HasOsVersion) {
+      if (osVersion_ != null) {
         output.WriteRawTag(18);
         output.WriteMessage(OsVersion);
       }
-      if (HasAndroidVersion) {
+      if (androidVersion_ != null) {
         output.WriteRawTag(26);
         output.WriteMessage(AndroidVersion);
       }
@@ -1062,10 +1042,10 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (HasDeviceType) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) DeviceType);
       }
-      if (HasOsVersion) {
+      if (osVersion_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(OsVersion);
       }
-      if (HasAndroidVersion) {
+      if (androidVersion_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AndroidVersion);
       }
       if (HasIsEmulator) {
@@ -1085,14 +1065,14 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (other.HasDeviceType) {
         DeviceType = other.DeviceType;
       }
-      if (other.HasOsVersion) {
-        if (!HasOsVersion) {
+      if (other.osVersion_ != null) {
+        if (osVersion_ == null) {
           OsVersion = new global::LeanCloud.Realtime.Internal.Protocol.SemanticVersion();
         }
         OsVersion.MergeFrom(other.OsVersion);
       }
-      if (other.HasAndroidVersion) {
-        if (!HasAndroidVersion) {
+      if (other.androidVersion_ != null) {
+        if (androidVersion_ == null) {
           AndroidVersion = new global::LeanCloud.Realtime.Internal.Protocol.AndroidVersion();
         }
         AndroidVersion.MergeFrom(other.AndroidVersion);
@@ -1116,14 +1096,14 @@ namespace LeanCloud.Realtime.Internal.Protocol {
             break;
           }
           case 18: {
-            if (!HasOsVersion) {
+            if (osVersion_ == null) {
               OsVersion = new global::LeanCloud.Realtime.Internal.Protocol.SemanticVersion();
             }
             input.ReadMessage(OsVersion);
             break;
           }
           case 26: {
-            if (!HasAndroidVersion) {
+            if (androidVersion_ == null) {
               AndroidVersion = new global::LeanCloud.Realtime.Internal.Protocol.AndroidVersion();
             }
             input.ReadMessage(AndroidVersion);
@@ -2564,7 +2544,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public LoginCommand(LoginCommand other) : this() {
-      systemInfo_ = other.HasSystemInfo ? other.systemInfo_.Clone() : null;
+      systemInfo_ = other.systemInfo_ != null ? other.systemInfo_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -2582,16 +2562,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         systemInfo_ = value;
       }
-    }
-    /// <summary>Gets whether the systemInfo field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasSystemInfo {
-      get { return systemInfo_ != null; }
-    }
-    /// <summary>Clears the value of the systemInfo field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearSystemInfo() {
-      systemInfo_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2614,7 +2584,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (HasSystemInfo) hash ^= SystemInfo.GetHashCode();
+      if (systemInfo_ != null) hash ^= SystemInfo.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -2628,7 +2598,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (HasSystemInfo) {
+      if (systemInfo_ != null) {
         output.WriteRawTag(10);
         output.WriteMessage(SystemInfo);
       }
@@ -2640,7 +2610,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (HasSystemInfo) {
+      if (systemInfo_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(SystemInfo);
       }
       if (_unknownFields != null) {
@@ -2654,8 +2624,8 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (other == null) {
         return;
       }
-      if (other.HasSystemInfo) {
-        if (!HasSystemInfo) {
+      if (other.systemInfo_ != null) {
+        if (systemInfo_ == null) {
           SystemInfo = new global::LeanCloud.Realtime.Internal.Protocol.SystemInfo();
         }
         SystemInfo.MergeFrom(other.SystemInfo);
@@ -2672,7 +2642,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            if (!HasSystemInfo) {
+            if (systemInfo_ == null) {
               SystemInfo = new global::LeanCloud.Realtime.Internal.Protocol.SystemInfo();
             }
             input.ReadMessage(SystemInfo);
@@ -3058,7 +3028,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       lastUnreadNotifTime_ = other.lastUnreadNotifTime_;
       lastPatchTime_ = other.lastPatchTime_;
       configBitmap_ = other.configBitmap_;
-      systemInfo_ = other.HasSystemInfo ? other.systemInfo_.Clone() : null;
+      systemInfo_ = other.systemInfo_ != null ? other.systemInfo_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -3496,16 +3466,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         systemInfo_ = value;
       }
     }
-    /// <summary>Gets whether the systemInfo field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasSystemInfo {
-      get { return systemInfo_ != null; }
-    }
-    /// <summary>Clears the value of the systemInfo field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearSystemInfo() {
-      systemInfo_ = null;
-    }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
@@ -3565,7 +3525,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (HasLastUnreadNotifTime) hash ^= LastUnreadNotifTime.GetHashCode();
       if (HasLastPatchTime) hash ^= LastPatchTime.GetHashCode();
       if (HasConfigBitmap) hash ^= ConfigBitmap.GetHashCode();
-      if (HasSystemInfo) hash ^= SystemInfo.GetHashCode();
+      if (systemInfo_ != null) hash ^= SystemInfo.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -3649,7 +3609,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         output.WriteRawTag(152, 1);
         output.WriteInt64(ConfigBitmap);
       }
-      if (HasSystemInfo) {
+      if (systemInfo_ != null) {
         output.WriteRawTag(162, 1);
         output.WriteMessage(SystemInfo);
       }
@@ -3714,7 +3674,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (HasConfigBitmap) {
         size += 2 + pb::CodedOutputStream.ComputeInt64Size(ConfigBitmap);
       }
-      if (HasSystemInfo) {
+      if (systemInfo_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(SystemInfo);
       }
       if (_unknownFields != null) {
@@ -3781,8 +3741,8 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (other.HasConfigBitmap) {
         ConfigBitmap = other.ConfigBitmap;
       }
-      if (other.HasSystemInfo) {
-        if (!HasSystemInfo) {
+      if (other.systemInfo_ != null) {
+        if (systemInfo_ == null) {
           SystemInfo = new global::LeanCloud.Realtime.Internal.Protocol.SystemInfo();
         }
         SystemInfo.MergeFrom(other.SystemInfo);
@@ -3875,7 +3835,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
             break;
           }
           case 162: {
-            if (!HasSystemInfo) {
+            if (systemInfo_ == null) {
               SystemInfo = new global::LeanCloud.Realtime.Internal.Protocol.SystemInfo();
             }
             input.ReadMessage(SystemInfo);
@@ -5868,17 +5828,17 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       queryAllMembers_ = other.queryAllMembers_;
       maxReadTuples_ = other.maxReadTuples_.Clone();
       cids_ = other.cids_.Clone();
-      info_ = other.HasInfo ? other.info_.Clone() : null;
+      info_ = other.info_ != null ? other.info_.Clone() : null;
       tempConv_ = other.tempConv_;
       tempConvTTL_ = other.tempConvTTL_;
       tempConvIds_ = other.tempConvIds_.Clone();
       allowedPids_ = other.allowedPids_.Clone();
       failedPids_ = other.failedPids_.Clone();
       next_ = other.next_;
-      results_ = other.HasResults ? other.results_.Clone() : null;
-      where_ = other.HasWhere ? other.where_.Clone() : null;
-      attr_ = other.HasAttr ? other.attr_.Clone() : null;
-      attrModified_ = other.HasAttrModified ? other.attrModified_.Clone() : null;
+      results_ = other.results_ != null ? other.results_.Clone() : null;
+      where_ = other.where_ != null ? other.where_.Clone() : null;
+      attr_ = other.attr_ != null ? other.attr_.Clone() : null;
+      attrModified_ = other.attrModified_ != null ? other.attrModified_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -6446,16 +6406,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         info_ = value;
       }
     }
-    /// <summary>Gets whether the info field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasInfo {
-      get { return info_ != null; }
-    }
-    /// <summary>Clears the value of the info field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearInfo() {
-      info_ = null;
-    }
 
     /// <summary>Field number for the "tempConv" field.</summary>
     public const int TempConvFieldNumber = 27;
@@ -6571,16 +6521,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         results_ = value;
       }
     }
-    /// <summary>Gets whether the results field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasResults {
-      get { return results_ != null; }
-    }
-    /// <summary>Clears the value of the results field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearResults() {
-      results_ = null;
-    }
 
     /// <summary>Field number for the "where" field.</summary>
     public const int WhereFieldNumber = 101;
@@ -6591,16 +6531,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         where_ = value;
       }
-    }
-    /// <summary>Gets whether the where field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasWhere {
-      get { return where_ != null; }
-    }
-    /// <summary>Clears the value of the where field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearWhere() {
-      where_ = null;
     }
 
     /// <summary>Field number for the "attr" field.</summary>
@@ -6613,16 +6543,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         attr_ = value;
       }
     }
-    /// <summary>Gets whether the attr field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasAttr {
-      get { return attr_ != null; }
-    }
-    /// <summary>Clears the value of the attr field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearAttr() {
-      attr_ = null;
-    }
 
     /// <summary>Field number for the "attrModified" field.</summary>
     public const int AttrModifiedFieldNumber = 104;
@@ -6633,16 +6553,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         attrModified_ = value;
       }
-    }
-    /// <summary>Gets whether the attrModified field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasAttrModified {
-      get { return attrModified_ != null; }
-    }
-    /// <summary>Clears the value of the attrModified field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearAttrModified() {
-      attrModified_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6725,17 +6635,17 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (HasQueryAllMembers) hash ^= QueryAllMembers.GetHashCode();
       hash ^= maxReadTuples_.GetHashCode();
       hash ^= cids_.GetHashCode();
-      if (HasInfo) hash ^= Info.GetHashCode();
+      if (info_ != null) hash ^= Info.GetHashCode();
       if (HasTempConv) hash ^= TempConv.GetHashCode();
       if (HasTempConvTTL) hash ^= TempConvTTL.GetHashCode();
       hash ^= tempConvIds_.GetHashCode();
       hash ^= allowedPids_.GetHashCode();
       hash ^= failedPids_.GetHashCode();
       if (HasNext) hash ^= Next.GetHashCode();
-      if (HasResults) hash ^= Results.GetHashCode();
-      if (HasWhere) hash ^= Where.GetHashCode();
-      if (HasAttr) hash ^= Attr.GetHashCode();
-      if (HasAttrModified) hash ^= AttrModified.GetHashCode();
+      if (results_ != null) hash ^= Results.GetHashCode();
+      if (where_ != null) hash ^= Where.GetHashCode();
+      if (attr_ != null) hash ^= Attr.GetHashCode();
+      if (attrModified_ != null) hash ^= AttrModified.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -6840,7 +6750,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       }
       maxReadTuples_.WriteTo(output, _repeated_maxReadTuples_codec);
       cids_.WriteTo(output, _repeated_cids_codec);
-      if (HasInfo) {
+      if (info_ != null) {
         output.WriteRawTag(210, 1);
         output.WriteMessage(Info);
       }
@@ -6859,19 +6769,19 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         output.WriteRawTag(194, 2);
         output.WriteString(Next);
       }
-      if (HasResults) {
+      if (results_ != null) {
         output.WriteRawTag(162, 6);
         output.WriteMessage(Results);
       }
-      if (HasWhere) {
+      if (where_ != null) {
         output.WriteRawTag(170, 6);
         output.WriteMessage(Where);
       }
-      if (HasAttr) {
+      if (attr_ != null) {
         output.WriteRawTag(186, 6);
         output.WriteMessage(Attr);
       }
-      if (HasAttrModified) {
+      if (attrModified_ != null) {
         output.WriteRawTag(194, 6);
         output.WriteMessage(AttrModified);
       }
@@ -6952,7 +6862,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       }
       size += maxReadTuples_.CalculateSize(_repeated_maxReadTuples_codec);
       size += cids_.CalculateSize(_repeated_cids_codec);
-      if (HasInfo) {
+      if (info_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Info);
       }
       if (HasTempConv) {
@@ -6967,16 +6877,16 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (HasNext) {
         size += 2 + pb::CodedOutputStream.ComputeStringSize(Next);
       }
-      if (HasResults) {
+      if (results_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Results);
       }
-      if (HasWhere) {
+      if (where_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Where);
       }
-      if (HasAttr) {
+      if (attr_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(Attr);
       }
-      if (HasAttrModified) {
+      if (attrModified_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(AttrModified);
       }
       if (_unknownFields != null) {
@@ -7059,8 +6969,8 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       }
       maxReadTuples_.Add(other.maxReadTuples_);
       cids_.Add(other.cids_);
-      if (other.HasInfo) {
-        if (!HasInfo) {
+      if (other.info_ != null) {
+        if (info_ == null) {
           Info = new global::LeanCloud.Realtime.Internal.Protocol.ConvMemberInfo();
         }
         Info.MergeFrom(other.Info);
@@ -7077,26 +6987,26 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (other.HasNext) {
         Next = other.Next;
       }
-      if (other.HasResults) {
-        if (!HasResults) {
+      if (other.results_ != null) {
+        if (results_ == null) {
           Results = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         Results.MergeFrom(other.Results);
       }
-      if (other.HasWhere) {
-        if (!HasWhere) {
+      if (other.where_ != null) {
+        if (where_ == null) {
           Where = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         Where.MergeFrom(other.Where);
       }
-      if (other.HasAttr) {
-        if (!HasAttr) {
+      if (other.attr_ != null) {
+        if (attr_ == null) {
           Attr = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         Attr.MergeFrom(other.Attr);
       }
-      if (other.HasAttrModified) {
-        if (!HasAttrModified) {
+      if (other.attrModified_ != null) {
+        if (attrModified_ == null) {
           AttrModified = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         AttrModified.MergeFrom(other.AttrModified);
@@ -7213,7 +7123,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
             break;
           }
           case 210: {
-            if (!HasInfo) {
+            if (info_ == null) {
               Info = new global::LeanCloud.Realtime.Internal.Protocol.ConvMemberInfo();
             }
             input.ReadMessage(Info);
@@ -7244,28 +7154,28 @@ namespace LeanCloud.Realtime.Internal.Protocol {
             break;
           }
           case 802: {
-            if (!HasResults) {
+            if (results_ == null) {
               Results = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(Results);
             break;
           }
           case 810: {
-            if (!HasWhere) {
+            if (where_ == null) {
               Where = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(Where);
             break;
           }
           case 826: {
-            if (!HasAttr) {
+            if (attr_ == null) {
               Attr = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(Attr);
             break;
           }
           case 834: {
-            if (!HasAttrModified) {
+            if (attrModified_ == null) {
               AttrModified = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(AttrModified);
@@ -10432,7 +10342,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       subtopic_ = other.subtopic_;
       topics_ = other.topics_.Clone();
       subtopics_ = other.subtopics_.Clone();
-      results_ = other.HasResults ? other.results_.Clone() : null;
+      results_ = other.results_ != null ? other.results_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -10550,16 +10460,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         results_ = value;
       }
     }
-    /// <summary>Gets whether the results field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasResults {
-      get { return results_ != null; }
-    }
-    /// <summary>Clears the value of the results field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearResults() {
-      results_ = null;
-    }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
@@ -10593,7 +10493,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (HasSubtopic) hash ^= Subtopic.GetHashCode();
       hash ^= topics_.GetHashCode();
       hash ^= subtopics_.GetHashCode();
-      if (HasResults) hash ^= Results.GetHashCode();
+      if (results_ != null) hash ^= Results.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -10622,7 +10522,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       }
       topics_.WriteTo(output, _repeated_topics_codec);
       subtopics_.WriteTo(output, _repeated_subtopics_codec);
-      if (HasResults) {
+      if (results_ != null) {
         output.WriteRawTag(58);
         output.WriteMessage(Results);
       }
@@ -10646,7 +10546,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       }
       size += topics_.CalculateSize(_repeated_topics_codec);
       size += subtopics_.CalculateSize(_repeated_subtopics_codec);
-      if (HasResults) {
+      if (results_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Results);
       }
       if (_unknownFields != null) {
@@ -10672,8 +10572,8 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       }
       topics_.Add(other.topics_);
       subtopics_.Add(other.subtopics_);
-      if (other.HasResults) {
-        if (!HasResults) {
+      if (other.results_ != null) {
+        if (results_ == null) {
           Results = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
         }
         Results.MergeFrom(other.Results);
@@ -10714,7 +10614,7 @@ namespace LeanCloud.Realtime.Internal.Protocol {
             break;
           }
           case 58: {
-            if (!HasResults) {
+            if (results_ == null) {
               Results = new global::LeanCloud.Realtime.Internal.Protocol.JsonObjectMessage();
             }
             input.ReadMessage(Results);
@@ -11269,24 +11169,24 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       serverTs_ = other.serverTs_;
       clientTs_ = other.clientTs_;
       notificationType_ = other.notificationType_;
-      loginMessage_ = other.HasLoginMessage ? other.loginMessage_.Clone() : null;
-      dataMessage_ = other.HasDataMessage ? other.dataMessage_.Clone() : null;
-      sessionMessage_ = other.HasSessionMessage ? other.sessionMessage_.Clone() : null;
-      errorMessage_ = other.HasErrorMessage ? other.errorMessage_.Clone() : null;
-      directMessage_ = other.HasDirectMessage ? other.directMessage_.Clone() : null;
-      ackMessage_ = other.HasAckMessage ? other.ackMessage_.Clone() : null;
-      unreadMessage_ = other.HasUnreadMessage ? other.unreadMessage_.Clone() : null;
-      readMessage_ = other.HasReadMessage ? other.readMessage_.Clone() : null;
-      rcpMessage_ = other.HasRcpMessage ? other.rcpMessage_.Clone() : null;
-      logsMessage_ = other.HasLogsMessage ? other.logsMessage_.Clone() : null;
-      convMessage_ = other.HasConvMessage ? other.convMessage_.Clone() : null;
-      roomMessage_ = other.HasRoomMessage ? other.roomMessage_.Clone() : null;
-      presenceMessage_ = other.HasPresenceMessage ? other.presenceMessage_.Clone() : null;
-      reportMessage_ = other.HasReportMessage ? other.reportMessage_.Clone() : null;
-      patchMessage_ = other.HasPatchMessage ? other.patchMessage_.Clone() : null;
-      pubsubMessage_ = other.HasPubsubMessage ? other.pubsubMessage_.Clone() : null;
-      blacklistMessage_ = other.HasBlacklistMessage ? other.blacklistMessage_.Clone() : null;
-      loggedinMessage_ = other.HasLoggedinMessage ? other.loggedinMessage_.Clone() : null;
+      loginMessage_ = other.loginMessage_ != null ? other.loginMessage_.Clone() : null;
+      dataMessage_ = other.dataMessage_ != null ? other.dataMessage_.Clone() : null;
+      sessionMessage_ = other.sessionMessage_ != null ? other.sessionMessage_.Clone() : null;
+      errorMessage_ = other.errorMessage_ != null ? other.errorMessage_.Clone() : null;
+      directMessage_ = other.directMessage_ != null ? other.directMessage_.Clone() : null;
+      ackMessage_ = other.ackMessage_ != null ? other.ackMessage_.Clone() : null;
+      unreadMessage_ = other.unreadMessage_ != null ? other.unreadMessage_.Clone() : null;
+      readMessage_ = other.readMessage_ != null ? other.readMessage_.Clone() : null;
+      rcpMessage_ = other.rcpMessage_ != null ? other.rcpMessage_.Clone() : null;
+      logsMessage_ = other.logsMessage_ != null ? other.logsMessage_.Clone() : null;
+      convMessage_ = other.convMessage_ != null ? other.convMessage_.Clone() : null;
+      roomMessage_ = other.roomMessage_ != null ? other.roomMessage_.Clone() : null;
+      presenceMessage_ = other.presenceMessage_ != null ? other.presenceMessage_.Clone() : null;
+      reportMessage_ = other.reportMessage_ != null ? other.reportMessage_.Clone() : null;
+      patchMessage_ = other.patchMessage_ != null ? other.patchMessage_.Clone() : null;
+      pubsubMessage_ = other.pubsubMessage_ != null ? other.pubsubMessage_.Clone() : null;
+      blacklistMessage_ = other.blacklistMessage_ != null ? other.blacklistMessage_.Clone() : null;
+      loggedinMessage_ = other.loggedinMessage_ != null ? other.loggedinMessage_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -11566,16 +11466,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         loginMessage_ = value;
       }
     }
-    /// <summary>Gets whether the loginMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasLoginMessage {
-      get { return loginMessage_ != null; }
-    }
-    /// <summary>Clears the value of the loginMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearLoginMessage() {
-      loginMessage_ = null;
-    }
 
     /// <summary>Field number for the "dataMessage" field.</summary>
     public const int DataMessageFieldNumber = 101;
@@ -11586,16 +11476,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         dataMessage_ = value;
       }
-    }
-    /// <summary>Gets whether the dataMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasDataMessage {
-      get { return dataMessage_ != null; }
-    }
-    /// <summary>Clears the value of the dataMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearDataMessage() {
-      dataMessage_ = null;
     }
 
     /// <summary>Field number for the "sessionMessage" field.</summary>
@@ -11608,16 +11488,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         sessionMessage_ = value;
       }
     }
-    /// <summary>Gets whether the sessionMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasSessionMessage {
-      get { return sessionMessage_ != null; }
-    }
-    /// <summary>Clears the value of the sessionMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearSessionMessage() {
-      sessionMessage_ = null;
-    }
 
     /// <summary>Field number for the "errorMessage" field.</summary>
     public const int ErrorMessageFieldNumber = 103;
@@ -11628,16 +11498,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         errorMessage_ = value;
       }
-    }
-    /// <summary>Gets whether the errorMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasErrorMessage {
-      get { return errorMessage_ != null; }
-    }
-    /// <summary>Clears the value of the errorMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearErrorMessage() {
-      errorMessage_ = null;
     }
 
     /// <summary>Field number for the "directMessage" field.</summary>
@@ -11650,16 +11510,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         directMessage_ = value;
       }
     }
-    /// <summary>Gets whether the directMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasDirectMessage {
-      get { return directMessage_ != null; }
-    }
-    /// <summary>Clears the value of the directMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearDirectMessage() {
-      directMessage_ = null;
-    }
 
     /// <summary>Field number for the "ackMessage" field.</summary>
     public const int AckMessageFieldNumber = 105;
@@ -11670,16 +11520,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         ackMessage_ = value;
       }
-    }
-    /// <summary>Gets whether the ackMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasAckMessage {
-      get { return ackMessage_ != null; }
-    }
-    /// <summary>Clears the value of the ackMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearAckMessage() {
-      ackMessage_ = null;
     }
 
     /// <summary>Field number for the "unreadMessage" field.</summary>
@@ -11692,16 +11532,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         unreadMessage_ = value;
       }
     }
-    /// <summary>Gets whether the unreadMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasUnreadMessage {
-      get { return unreadMessage_ != null; }
-    }
-    /// <summary>Clears the value of the unreadMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearUnreadMessage() {
-      unreadMessage_ = null;
-    }
 
     /// <summary>Field number for the "readMessage" field.</summary>
     public const int ReadMessageFieldNumber = 107;
@@ -11712,16 +11542,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         readMessage_ = value;
       }
-    }
-    /// <summary>Gets whether the readMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasReadMessage {
-      get { return readMessage_ != null; }
-    }
-    /// <summary>Clears the value of the readMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearReadMessage() {
-      readMessage_ = null;
     }
 
     /// <summary>Field number for the "rcpMessage" field.</summary>
@@ -11734,16 +11554,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         rcpMessage_ = value;
       }
     }
-    /// <summary>Gets whether the rcpMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasRcpMessage {
-      get { return rcpMessage_ != null; }
-    }
-    /// <summary>Clears the value of the rcpMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearRcpMessage() {
-      rcpMessage_ = null;
-    }
 
     /// <summary>Field number for the "logsMessage" field.</summary>
     public const int LogsMessageFieldNumber = 109;
@@ -11754,16 +11564,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         logsMessage_ = value;
       }
-    }
-    /// <summary>Gets whether the logsMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasLogsMessage {
-      get { return logsMessage_ != null; }
-    }
-    /// <summary>Clears the value of the logsMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearLogsMessage() {
-      logsMessage_ = null;
     }
 
     /// <summary>Field number for the "convMessage" field.</summary>
@@ -11776,16 +11576,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         convMessage_ = value;
       }
     }
-    /// <summary>Gets whether the convMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasConvMessage {
-      get { return convMessage_ != null; }
-    }
-    /// <summary>Clears the value of the convMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearConvMessage() {
-      convMessage_ = null;
-    }
 
     /// <summary>Field number for the "roomMessage" field.</summary>
     public const int RoomMessageFieldNumber = 111;
@@ -11796,16 +11586,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         roomMessage_ = value;
       }
-    }
-    /// <summary>Gets whether the roomMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasRoomMessage {
-      get { return roomMessage_ != null; }
-    }
-    /// <summary>Clears the value of the roomMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearRoomMessage() {
-      roomMessage_ = null;
     }
 
     /// <summary>Field number for the "presenceMessage" field.</summary>
@@ -11818,16 +11598,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         presenceMessage_ = value;
       }
     }
-    /// <summary>Gets whether the presenceMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasPresenceMessage {
-      get { return presenceMessage_ != null; }
-    }
-    /// <summary>Clears the value of the presenceMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearPresenceMessage() {
-      presenceMessage_ = null;
-    }
 
     /// <summary>Field number for the "reportMessage" field.</summary>
     public const int ReportMessageFieldNumber = 113;
@@ -11838,16 +11608,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         reportMessage_ = value;
       }
-    }
-    /// <summary>Gets whether the reportMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasReportMessage {
-      get { return reportMessage_ != null; }
-    }
-    /// <summary>Clears the value of the reportMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearReportMessage() {
-      reportMessage_ = null;
     }
 
     /// <summary>Field number for the "patchMessage" field.</summary>
@@ -11860,16 +11620,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         patchMessage_ = value;
       }
     }
-    /// <summary>Gets whether the patchMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasPatchMessage {
-      get { return patchMessage_ != null; }
-    }
-    /// <summary>Clears the value of the patchMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearPatchMessage() {
-      patchMessage_ = null;
-    }
 
     /// <summary>Field number for the "pubsubMessage" field.</summary>
     public const int PubsubMessageFieldNumber = 115;
@@ -11880,16 +11630,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         pubsubMessage_ = value;
       }
-    }
-    /// <summary>Gets whether the pubsubMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasPubsubMessage {
-      get { return pubsubMessage_ != null; }
-    }
-    /// <summary>Clears the value of the pubsubMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearPubsubMessage() {
-      pubsubMessage_ = null;
     }
 
     /// <summary>Field number for the "blacklistMessage" field.</summary>
@@ -11902,16 +11642,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         blacklistMessage_ = value;
       }
     }
-    /// <summary>Gets whether the blacklistMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasBlacklistMessage {
-      get { return blacklistMessage_ != null; }
-    }
-    /// <summary>Clears the value of the blacklistMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearBlacklistMessage() {
-      blacklistMessage_ = null;
-    }
 
     /// <summary>Field number for the "loggedinMessage" field.</summary>
     public const int LoggedinMessageFieldNumber = 117;
@@ -11922,16 +11652,6 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       set {
         loggedinMessage_ = value;
       }
-    }
-    /// <summary>Gets whether the loggedinMessage field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasLoggedinMessage {
-      get { return loggedinMessage_ != null; }
-    }
-    /// <summary>Clears the value of the loggedinMessage field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearLoggedinMessage() {
-      loggedinMessage_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -11993,24 +11713,24 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (HasServerTs) hash ^= ServerTs.GetHashCode();
       if (HasClientTs) hash ^= ClientTs.GetHashCode();
       if (HasNotificationType) hash ^= NotificationType.GetHashCode();
-      if (HasLoginMessage) hash ^= LoginMessage.GetHashCode();
-      if (HasDataMessage) hash ^= DataMessage.GetHashCode();
-      if (HasSessionMessage) hash ^= SessionMessage.GetHashCode();
-      if (HasErrorMessage) hash ^= ErrorMessage.GetHashCode();
-      if (HasDirectMessage) hash ^= DirectMessage.GetHashCode();
-      if (HasAckMessage) hash ^= AckMessage.GetHashCode();
-      if (HasUnreadMessage) hash ^= UnreadMessage.GetHashCode();
-      if (HasReadMessage) hash ^= ReadMessage.GetHashCode();
-      if (HasRcpMessage) hash ^= RcpMessage.GetHashCode();
-      if (HasLogsMessage) hash ^= LogsMessage.GetHashCode();
-      if (HasConvMessage) hash ^= ConvMessage.GetHashCode();
-      if (HasRoomMessage) hash ^= RoomMessage.GetHashCode();
-      if (HasPresenceMessage) hash ^= PresenceMessage.GetHashCode();
-      if (HasReportMessage) hash ^= ReportMessage.GetHashCode();
-      if (HasPatchMessage) hash ^= PatchMessage.GetHashCode();
-      if (HasPubsubMessage) hash ^= PubsubMessage.GetHashCode();
-      if (HasBlacklistMessage) hash ^= BlacklistMessage.GetHashCode();
-      if (HasLoggedinMessage) hash ^= LoggedinMessage.GetHashCode();
+      if (loginMessage_ != null) hash ^= LoginMessage.GetHashCode();
+      if (dataMessage_ != null) hash ^= DataMessage.GetHashCode();
+      if (sessionMessage_ != null) hash ^= SessionMessage.GetHashCode();
+      if (errorMessage_ != null) hash ^= ErrorMessage.GetHashCode();
+      if (directMessage_ != null) hash ^= DirectMessage.GetHashCode();
+      if (ackMessage_ != null) hash ^= AckMessage.GetHashCode();
+      if (unreadMessage_ != null) hash ^= UnreadMessage.GetHashCode();
+      if (readMessage_ != null) hash ^= ReadMessage.GetHashCode();
+      if (rcpMessage_ != null) hash ^= RcpMessage.GetHashCode();
+      if (logsMessage_ != null) hash ^= LogsMessage.GetHashCode();
+      if (convMessage_ != null) hash ^= ConvMessage.GetHashCode();
+      if (roomMessage_ != null) hash ^= RoomMessage.GetHashCode();
+      if (presenceMessage_ != null) hash ^= PresenceMessage.GetHashCode();
+      if (reportMessage_ != null) hash ^= ReportMessage.GetHashCode();
+      if (patchMessage_ != null) hash ^= PatchMessage.GetHashCode();
+      if (pubsubMessage_ != null) hash ^= PubsubMessage.GetHashCode();
+      if (blacklistMessage_ != null) hash ^= BlacklistMessage.GetHashCode();
+      if (loggedinMessage_ != null) hash ^= LoggedinMessage.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -12068,75 +11788,75 @@ namespace LeanCloud.Realtime.Internal.Protocol {
         output.WriteRawTag(88);
         output.WriteInt32(NotificationType);
       }
-      if (HasLoginMessage) {
+      if (loginMessage_ != null) {
         output.WriteRawTag(162, 6);
         output.WriteMessage(LoginMessage);
       }
-      if (HasDataMessage) {
+      if (dataMessage_ != null) {
         output.WriteRawTag(170, 6);
         output.WriteMessage(DataMessage);
       }
-      if (HasSessionMessage) {
+      if (sessionMessage_ != null) {
         output.WriteRawTag(178, 6);
         output.WriteMessage(SessionMessage);
       }
-      if (HasErrorMessage) {
+      if (errorMessage_ != null) {
         output.WriteRawTag(186, 6);
         output.WriteMessage(ErrorMessage);
       }
-      if (HasDirectMessage) {
+      if (directMessage_ != null) {
         output.WriteRawTag(194, 6);
         output.WriteMessage(DirectMessage);
       }
-      if (HasAckMessage) {
+      if (ackMessage_ != null) {
         output.WriteRawTag(202, 6);
         output.WriteMessage(AckMessage);
       }
-      if (HasUnreadMessage) {
+      if (unreadMessage_ != null) {
         output.WriteRawTag(210, 6);
         output.WriteMessage(UnreadMessage);
       }
-      if (HasReadMessage) {
+      if (readMessage_ != null) {
         output.WriteRawTag(218, 6);
         output.WriteMessage(ReadMessage);
       }
-      if (HasRcpMessage) {
+      if (rcpMessage_ != null) {
         output.WriteRawTag(226, 6);
         output.WriteMessage(RcpMessage);
       }
-      if (HasLogsMessage) {
+      if (logsMessage_ != null) {
         output.WriteRawTag(234, 6);
         output.WriteMessage(LogsMessage);
       }
-      if (HasConvMessage) {
+      if (convMessage_ != null) {
         output.WriteRawTag(242, 6);
         output.WriteMessage(ConvMessage);
       }
-      if (HasRoomMessage) {
+      if (roomMessage_ != null) {
         output.WriteRawTag(250, 6);
         output.WriteMessage(RoomMessage);
       }
-      if (HasPresenceMessage) {
+      if (presenceMessage_ != null) {
         output.WriteRawTag(130, 7);
         output.WriteMessage(PresenceMessage);
       }
-      if (HasReportMessage) {
+      if (reportMessage_ != null) {
         output.WriteRawTag(138, 7);
         output.WriteMessage(ReportMessage);
       }
-      if (HasPatchMessage) {
+      if (patchMessage_ != null) {
         output.WriteRawTag(146, 7);
         output.WriteMessage(PatchMessage);
       }
-      if (HasPubsubMessage) {
+      if (pubsubMessage_ != null) {
         output.WriteRawTag(154, 7);
         output.WriteMessage(PubsubMessage);
       }
-      if (HasBlacklistMessage) {
+      if (blacklistMessage_ != null) {
         output.WriteRawTag(162, 7);
         output.WriteMessage(BlacklistMessage);
       }
-      if (HasLoggedinMessage) {
+      if (loggedinMessage_ != null) {
         output.WriteRawTag(170, 7);
         output.WriteMessage(LoggedinMessage);
       }
@@ -12181,58 +11901,58 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (HasNotificationType) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(NotificationType);
       }
-      if (HasLoginMessage) {
+      if (loginMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(LoginMessage);
       }
-      if (HasDataMessage) {
+      if (dataMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(DataMessage);
       }
-      if (HasSessionMessage) {
+      if (sessionMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(SessionMessage);
       }
-      if (HasErrorMessage) {
+      if (errorMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(ErrorMessage);
       }
-      if (HasDirectMessage) {
+      if (directMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(DirectMessage);
       }
-      if (HasAckMessage) {
+      if (ackMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(AckMessage);
       }
-      if (HasUnreadMessage) {
+      if (unreadMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(UnreadMessage);
       }
-      if (HasReadMessage) {
+      if (readMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(ReadMessage);
       }
-      if (HasRcpMessage) {
+      if (rcpMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RcpMessage);
       }
-      if (HasLogsMessage) {
+      if (logsMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(LogsMessage);
       }
-      if (HasConvMessage) {
+      if (convMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(ConvMessage);
       }
-      if (HasRoomMessage) {
+      if (roomMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(RoomMessage);
       }
-      if (HasPresenceMessage) {
+      if (presenceMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(PresenceMessage);
       }
-      if (HasReportMessage) {
+      if (reportMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(ReportMessage);
       }
-      if (HasPatchMessage) {
+      if (patchMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(PatchMessage);
       }
-      if (HasPubsubMessage) {
+      if (pubsubMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(PubsubMessage);
       }
-      if (HasBlacklistMessage) {
+      if (blacklistMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(BlacklistMessage);
       }
-      if (HasLoggedinMessage) {
+      if (loggedinMessage_ != null) {
         size += 2 + pb::CodedOutputStream.ComputeMessageSize(LoggedinMessage);
       }
       if (_unknownFields != null) {
@@ -12279,110 +11999,110 @@ namespace LeanCloud.Realtime.Internal.Protocol {
       if (other.HasNotificationType) {
         NotificationType = other.NotificationType;
       }
-      if (other.HasLoginMessage) {
-        if (!HasLoginMessage) {
+      if (other.loginMessage_ != null) {
+        if (loginMessage_ == null) {
           LoginMessage = new global::LeanCloud.Realtime.Internal.Protocol.LoginCommand();
         }
         LoginMessage.MergeFrom(other.LoginMessage);
       }
-      if (other.HasDataMessage) {
-        if (!HasDataMessage) {
+      if (other.dataMessage_ != null) {
+        if (dataMessage_ == null) {
           DataMessage = new global::LeanCloud.Realtime.Internal.Protocol.DataCommand();
         }
         DataMessage.MergeFrom(other.DataMessage);
       }
-      if (other.HasSessionMessage) {
-        if (!HasSessionMessage) {
+      if (other.sessionMessage_ != null) {
+        if (sessionMessage_ == null) {
           SessionMessage = new global::LeanCloud.Realtime.Internal.Protocol.SessionCommand();
         }
         SessionMessage.MergeFrom(other.SessionMessage);
       }
-      if (other.HasErrorMessage) {
-        if (!HasErrorMessage) {
+      if (other.errorMessage_ != null) {
+        if (errorMessage_ == null) {
           ErrorMessage = new global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand();
         }
         ErrorMessage.MergeFrom(other.ErrorMessage);
       }
-      if (other.HasDirectMessage) {
-        if (!HasDirectMessage) {
+      if (other.directMessage_ != null) {
+        if (directMessage_ == null) {
           DirectMessage = new global::LeanCloud.Realtime.Internal.Protocol.DirectCommand();
         }
         DirectMessage.MergeFrom(other.DirectMessage);
       }
-      if (other.HasAckMessage) {
-        if (!HasAckMessage) {
+      if (other.ackMessage_ != null) {
+        if (ackMessage_ == null) {
           AckMessage = new global::LeanCloud.Realtime.Internal.Protocol.AckCommand();
         }
         AckMessage.MergeFrom(other.AckMessage);
       }
-      if (other.HasUnreadMessage) {
-        if (!HasUnreadMessage) {
+      if (other.unreadMessage_ != null) {
+        if (unreadMessage_ == null) {
           UnreadMessage = new global::LeanCloud.Realtime.Internal.Protocol.UnreadCommand();
         }
         UnreadMessage.MergeFrom(other.UnreadMessage);
       }
-      if (other.HasReadMessage) {
-        if (!HasReadMessage) {
+      if (other.readMessage_ != null) {
+        if (readMessage_ == null) {
           ReadMessage = new global::LeanCloud.Realtime.Internal.Protocol.ReadCommand();
         }
         ReadMessage.MergeFrom(other.ReadMessage);
       }
-      if (other.HasRcpMessage) {
-        if (!HasRcpMessage) {
+      if (other.rcpMessage_ != null) {
+        if (rcpMessage_ == null) {
           RcpMessage = new global::LeanCloud.Realtime.Internal.Protocol.RcpCommand();
         }
         RcpMessage.MergeFrom(other.RcpMessage);
       }
-      if (other.HasLogsMessage) {
-        if (!HasLogsMessage) {
+      if (other.logsMessage_ != null) {
+        if (logsMessage_ == null) {
           LogsMessage = new global::LeanCloud.Realtime.Internal.Protocol.LogsCommand();
         }
         LogsMessage.MergeFrom(other.LogsMessage);
       }
-      if (other.HasConvMessage) {
-        if (!HasConvMessage) {
+      if (other.convMessage_ != null) {
+        if (convMessage_ == null) {
           ConvMessage = new global::LeanCloud.Realtime.Internal.Protocol.ConvCommand();
         }
         ConvMessage.MergeFrom(other.ConvMessage);
       }
-      if (other.HasRoomMessage) {
-        if (!HasRoomMessage) {
+      if (other.roomMessage_ != null) {
+        if (roomMessage_ == null) {
           RoomMessage = new global::LeanCloud.Realtime.Internal.Protocol.RoomCommand();
         }
         RoomMessage.MergeFrom(other.RoomMessage);
       }
-      if (other.HasPresenceMessage) {
-        if (!HasPresenceMessage) {
+      if (other.presenceMessage_ != null) {
+        if (presenceMessage_ == null) {
           PresenceMessage = new global::LeanCloud.Realtime.Internal.Protocol.PresenceCommand();
         }
         PresenceMessage.MergeFrom(other.PresenceMessage);
       }
-      if (other.HasReportMessage) {
-        if (!HasReportMessage) {
+      if (other.reportMessage_ != null) {
+        if (reportMessage_ == null) {
           ReportMessage = new global::LeanCloud.Realtime.Internal.Protocol.ReportCommand();
         }
         ReportMessage.MergeFrom(other.ReportMessage);
       }
-      if (other.HasPatchMessage) {
-        if (!HasPatchMessage) {
+      if (other.patchMessage_ != null) {
+        if (patchMessage_ == null) {
           PatchMessage = new global::LeanCloud.Realtime.Internal.Protocol.PatchCommand();
         }
         PatchMessage.MergeFrom(other.PatchMessage);
       }
-      if (other.HasPubsubMessage) {
-        if (!HasPubsubMessage) {
+      if (other.pubsubMessage_ != null) {
+        if (pubsubMessage_ == null) {
           PubsubMessage = new global::LeanCloud.Realtime.Internal.Protocol.PubsubCommand();
         }
         PubsubMessage.MergeFrom(other.PubsubMessage);
       }
-      if (other.HasBlacklistMessage) {
-        if (!HasBlacklistMessage) {
+      if (other.blacklistMessage_ != null) {
+        if (blacklistMessage_ == null) {
           BlacklistMessage = new global::LeanCloud.Realtime.Internal.Protocol.BlacklistCommand();
         }
         BlacklistMessage.MergeFrom(other.BlacklistMessage);
       }
-      if (other.HasLoggedinMessage) {
-        if (!HasLoggedinMessage) {
+      if (other.loggedinMessage_ != null) {
+        if (loggedinMessage_ == null) {
           LoggedinMessage = new global::LeanCloud.Realtime.Internal.Protocol.LoggedinCommand();
         }
         LoggedinMessage.MergeFrom(other.LoggedinMessage);
@@ -12443,126 +12163,126 @@ namespace LeanCloud.Realtime.Internal.Protocol {
             break;
           }
           case 802: {
-            if (!HasLoginMessage) {
+            if (loginMessage_ == null) {
               LoginMessage = new global::LeanCloud.Realtime.Internal.Protocol.LoginCommand();
             }
             input.ReadMessage(LoginMessage);
             break;
           }
           case 810: {
-            if (!HasDataMessage) {
+            if (dataMessage_ == null) {
               DataMessage = new global::LeanCloud.Realtime.Internal.Protocol.DataCommand();
             }
             input.ReadMessage(DataMessage);
             break;
           }
           case 818: {
-            if (!HasSessionMessage) {
+            if (sessionMessage_ == null) {
               SessionMessage = new global::LeanCloud.Realtime.Internal.Protocol.SessionCommand();
             }
             input.ReadMessage(SessionMessage);
             break;
           }
           case 826: {
-            if (!HasErrorMessage) {
+            if (errorMessage_ == null) {
               ErrorMessage = new global::LeanCloud.Realtime.Internal.Protocol.ErrorCommand();
             }
             input.ReadMessage(ErrorMessage);
             break;
           }
           case 834: {
-            if (!HasDirectMessage) {
+            if (directMessage_ == null) {
               DirectMessage = new global::LeanCloud.Realtime.Internal.Protocol.DirectCommand();
             }
             input.ReadMessage(DirectMessage);
             break;
           }
           case 842: {
-            if (!HasAckMessage) {
+            if (ackMessage_ == null) {
               AckMessage = new global::LeanCloud.Realtime.Internal.Protocol.AckCommand();
             }
             input.ReadMessage(AckMessage);
             break;
           }
           case 850: {
-            if (!HasUnreadMessage) {
+            if (unreadMessage_ == null) {
               UnreadMessage = new global::LeanCloud.Realtime.Internal.Protocol.UnreadCommand();
             }
             input.ReadMessage(UnreadMessage);
             break;
           }
           case 858: {
-            if (!HasReadMessage) {
+            if (readMessage_ == null) {
               ReadMessage = new global::LeanCloud.Realtime.Internal.Protocol.ReadCommand();
             }
             input.ReadMessage(ReadMessage);
             break;
           }
           case 866: {
-            if (!HasRcpMessage) {
+            if (rcpMessage_ == null) {
               RcpMessage = new global::LeanCloud.Realtime.Internal.Protocol.RcpCommand();
             }
             input.ReadMessage(RcpMessage);
             break;
           }
           case 874: {
-            if (!HasLogsMessage) {
+            if (logsMessage_ == null) {
               LogsMessage = new global::LeanCloud.Realtime.Internal.Protocol.LogsCommand();
             }
             input.ReadMessage(LogsMessage);
             break;
           }
           case 882: {
-            if (!HasConvMessage) {
+            if (convMessage_ == null) {
               ConvMessage = new global::LeanCloud.Realtime.Internal.Protocol.ConvCommand();
             }
             input.ReadMessage(ConvMessage);
             break;
           }
           case 890: {
-            if (!HasRoomMessage) {
+            if (roomMessage_ == null) {
               RoomMessage = new global::LeanCloud.Realtime.Internal.Protocol.RoomCommand();
             }
             input.ReadMessage(RoomMessage);
             break;
           }
           case 898: {
-            if (!HasPresenceMessage) {
+            if (presenceMessage_ == null) {
               PresenceMessage = new global::LeanCloud.Realtime.Internal.Protocol.PresenceCommand();
             }
             input.ReadMessage(PresenceMessage);
             break;
           }
           case 906: {
-            if (!HasReportMessage) {
+            if (reportMessage_ == null) {
               ReportMessage = new global::LeanCloud.Realtime.Internal.Protocol.ReportCommand();
             }
             input.ReadMessage(ReportMessage);
             break;
           }
           case 914: {
-            if (!HasPatchMessage) {
+            if (patchMessage_ == null) {
               PatchMessage = new global::LeanCloud.Realtime.Internal.Protocol.PatchCommand();
             }
             input.ReadMessage(PatchMessage);
             break;
           }
           case 922: {
-            if (!HasPubsubMessage) {
+            if (pubsubMessage_ == null) {
               PubsubMessage = new global::LeanCloud.Realtime.Internal.Protocol.PubsubCommand();
             }
             input.ReadMessage(PubsubMessage);
             break;
           }
           case 930: {
-            if (!HasBlacklistMessage) {
+            if (blacklistMessage_ == null) {
               BlacklistMessage = new global::LeanCloud.Realtime.Internal.Protocol.BlacklistCommand();
             }
             input.ReadMessage(BlacklistMessage);
             break;
           }
           case 938: {
-            if (!HasLoggedinMessage) {
+            if (loggedinMessage_ == null) {
               LoggedinMessage = new global::LeanCloud.Realtime.Internal.Protocol.LoggedinCommand();
             }
             input.ReadMessage(LoggedinMessage);

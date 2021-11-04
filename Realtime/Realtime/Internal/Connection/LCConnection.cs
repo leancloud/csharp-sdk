@@ -169,7 +169,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     int requestIndex = command.I;
                     if (requestToResponses.TryGetValue(command, out TaskCompletionSource<GenericCommand> tcs)) {
                         requestToResponses.Remove(command);
-                        if (command.HasErrorMessage) {
+                        if (command.ErrorMessage != null) {
                             // 错误
                             ErrorCommand error = command.ErrorMessage;
                             int code = error.Code;
