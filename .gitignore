@@ -339,3 +339,4 @@ Push/Push.Unity/iOSProj/
 Push/Push.Unity/Logs/
 !Push/Push.Unity/Assets/**/*.meta
 .vscode/
+script/deploy-upm.sh

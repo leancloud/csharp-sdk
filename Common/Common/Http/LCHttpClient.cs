@@ -149,8 +149,7 @@ namespace LeanCloud.Common {
 
         async Task<string> BuildUrl(string path, Dictionary<string, object> queryParams, bool withAPIVersion) {
             string apiServer = await LCCore.AppRouter.GetApiServer();
-            StringBuilder urlSB = new StringBuilder();
-            urlSB.Append(apiServer);
+            StringBuilder urlSB = new StringBuilder(apiServer.TrimEnd('/'));
             if (withAPIVersion) {
                 urlSB.Append($"/{apiVersion}");
             }
