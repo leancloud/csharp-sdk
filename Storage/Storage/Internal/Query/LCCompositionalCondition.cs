@@ -31,7 +31,7 @@ namespace LeanCloud.Storage.Internal.Query {
         public LCCompositionalCondition(string composition = And) {
             this.composition = composition;
             Skip = 0;
-            Limit = 30;
+            Limit = 100;
         }
 
         // 查询条件
