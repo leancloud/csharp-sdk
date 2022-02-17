@@ -503,11 +503,13 @@ namespace LeanCloud.Realtime {
             if (conv.TryGetValue("uniqueId", out object uniqueIdObj)) {
                 UniqueId = uniqueIdObj as string;
             }
-            if (conv.TryGetValue("createdAt", out object createdAtObj)) {
-                CreatedAt = DateTime.Parse(createdAtObj.ToString());
+            if (conv.TryGetValue("createdAt", out object createdAtObj) &&
+                createdAtObj is DateTime createdAt) {
+                CreatedAt = createdAt;
             }
-            if (conv.TryGetValue("updatedAt", out object updatedAtObj)) {
-                UpdatedAt = DateTime.Parse(updatedAtObj.ToString());
+            if (conv.TryGetValue("updatedAt", out object updatedAtObj) &&
+                updatedAtObj is DateTime updatedAt) {
+                UpdatedAt = updatedAt;
             }
             if (conv.TryGetValue("c", out object co)) {
                 CreatorId = co as string;

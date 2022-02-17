@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Globalization;
 using LC.Newtonsoft.Json;
 using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Storage.Internal.Codec;
@@ -10,6 +11,8 @@ using LeanCloud.Common;
 
 namespace LeanCloud.Realtime.Internal.Controller {
     internal class LCIMConversationController : LCIMController {
+        private const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
+
         internal LCIMConversationController(LCIMClient client) : base(client) {
 
         }
@@ -61,7 +64,8 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     conversation = new LCIMChatRoom(Client);
                 } else if (temporary) {
                     LCIMTemporaryConversation tempConv = new LCIMTemporaryConversation(Client);
-                    if (DateTime.TryParse(response.ConvMessage.Cdate, out DateTime createdTime)) {
+                    if (DateTime.TryParseExact(response.ConvMessage.Cdate, DefaultDateTimeFormat,
+                        CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime createdTime)) {
                         tempConv.ExpiredAt = createdTime.AddSeconds(response.ConvMessage.TempConvTTL);
                     }
                     conversation = tempConv;
@@ -82,8 +86,10 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 new HashSet<string>(members) : new HashSet<string>();
             // 将自己加入
             conversation.ids.Add(Client.Id);
-            conversation.CreatedAt = DateTime.Parse(response.ConvMessage.Cdate);
-            conversation.UpdatedAt = conversation.CreatedAt;
+            if (DateTime.TryParseExact(response.ConvMessage.Cdate, DefaultDateTimeFormat,
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime createdAt)) {
+                conversation.CreatedAt = conversation.UpdatedAt = createdAt;
+            }
             return conversation;
         }
 
