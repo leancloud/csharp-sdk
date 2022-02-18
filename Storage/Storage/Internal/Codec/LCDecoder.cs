@@ -44,9 +44,11 @@ namespace LeanCloud.Storage.Internal.Codec {
         }
 
         public static DateTime DecodeDate(IDictionary dict) {
-            string str = dict["iso"].ToString();
-            DateTime dateTime = DateTime.Parse(str);
-            return dateTime.ToLocalTime();
+            object value = dict["iso"];
+            if (value is DateTime dt) {
+                return dt;
+            }
+            return default;
         }
 
         public static byte[] DecodeBytes(IDictionary dict) {

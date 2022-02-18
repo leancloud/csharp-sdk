@@ -104,11 +104,11 @@ namespace LeanCloud.Push {
                 body["expiration_time"] = ExpirationTime;
             }
             if (ExpirationInterval != default) {
-                body["push_time"] = DateTime.UtcNow.ToString(LCEncoder.DateTimeFormat);
+                body["push_time"] = DateTime.UtcNow;
                 body["expiration_interval"] = (long)ExpirationInterval.TotalSeconds;
             }
             if (PushDate != default) {
-                body["push_time"] = PushDate.ToUniversalTime().ToString(LCEncoder.DateTimeFormat);
+                body["push_time"] = PushDate.ToUniversalTime();
             }
             if (FlowControl > 0) {
                 body["flow_control"] = FlowControl;
