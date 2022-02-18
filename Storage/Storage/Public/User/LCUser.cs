@@ -165,7 +165,7 @@ namespace LeanCloud.Storage {
             LCObjectData objectData = LCObjectData.Decode(response);
             currentUser = GenerateUser(objectData);
 
-            await SaveToLocal();
+            await _SaveToLocal();
 
             return currentUser;
         }
@@ -549,6 +549,28 @@ namespace LeanCloud.Storage {
             return new LCQuery<LCUser>(CLASS_NAME);
         }
 
+        /// <summary>
+        /// Save to local.
+        /// </summary>
+        /// <returns></returns>
+        public async Task SaveToLocal() {
+            currentUser = this;
+            await _SaveToLocal();
+            IsDirty = false;
+        }
+
+        /// <summary>
+        /// Fetches this object from the cloud.
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <param name="includes"></param>
+        /// <returns></returns>
+        public new async Task<LCUser> Fetch(IEnumerable<string> keys = null, IEnumerable<string> includes = null) {
+            await base.Fetch(keys, includes);
+            await SaveToLocal();
+            return this;
+        }
+
         async Task LinkWithAuthData(string authType, Dictionary<string, object> data) {
             Dictionary<string, object> oriAuthData = new Dictionary<string, object>(AuthData ?? new Dictionary<string, object>());
             AuthData = new Dictionary<string, object> {
@@ -583,7 +605,7 @@ namespace LeanCloud.Storage {
             LCObjectData objData = new LCObjectData();
             objData.CustomPropertyDict["authData"] = authData;
             Merge(objData);
-            await SaveToLocal();
+            await _SaveToLocal();
         }
 
         static async Task<LCUser> Login(Dictionary<string, object> data) {
@@ -591,7 +613,7 @@ namespace LeanCloud.Storage {
             LCObjectData objectData = LCObjectData.Decode(response);
             currentUser = GenerateUser(objectData);
 
-            await SaveToLocal();
+            await _SaveToLocal();
 
             return currentUser;
         }
@@ -608,7 +630,7 @@ namespace LeanCloud.Storage {
 
             currentUser = GenerateUser(objectData);
 
-            await SaveToLocal();
+            await _SaveToLocal();
 
             return currentUser;
         }
@@ -619,7 +641,7 @@ namespace LeanCloud.Storage {
             authData["unionid"] = unionId;
         }
 
-        private static async Task SaveToLocal() {
+        private static async Task _SaveToLocal() {
             try {
                 string json = currentUser.ToString();
                 await LCCore.PersistenceController.WriteText(USER_DATA, json);
@@ -770,7 +792,7 @@ namespace LeanCloud.Storage {
         public new async Task<LCUser> Save(bool fetchWhenSave = false, LCQuery<LCObject> query = null) {
             await base.Save(fetchWhenSave, query);
             currentUser = this;
-            await SaveToLocal();
+            await _SaveToLocal();
             return this;
         }
 

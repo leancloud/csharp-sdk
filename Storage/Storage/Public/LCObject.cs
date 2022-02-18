@@ -72,7 +72,7 @@ namespace LeanCloud.Storage {
             }
         }
 
-        bool IsDirty {
+        protected bool IsDirty {
             get; set;
         }
 
