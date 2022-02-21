@@ -433,6 +433,8 @@ namespace LeanCloud.Storage {
                 headers: headers);
             LCObjectData objectData = LCObjectData.Decode(response);
             currentUser = GenerateUser(objectData);
+            await _SaveToLocal();
+
             return currentUser;
         }
 
