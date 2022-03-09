@@ -52,10 +52,10 @@ namespace LeanCloud.Common {
             string server = null,
             string masterKey = null) {
             if (string.IsNullOrEmpty(appId)) {
-                throw new ArgumentException(nameof(appId));
+                throw new ArgumentNullException(nameof(appId));
             }
             if (string.IsNullOrEmpty(appKey)) {
-                throw new ArgumentException(nameof(appKey));
+                throw new ArgumentNullException(nameof(appKey));
             }
 
             AppId = appId;

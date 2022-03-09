@@ -140,7 +140,8 @@ namespace LeanCloud.Storage {
                         await uploader.Upload(onProgress);
                     } else if (provider == "qiniu") {
                         // Qiniu
-                        LCQiniuUploader uploader = new LCQiniuUploader(uploadUrl, token, key, stream);
+                        string bucket = uploadToken["bucket"] as string;
+                        LCQiniuUploader uploader = new LCQiniuUploader(uploadUrl, token, bucket, key, stream);
                         await uploader.Upload(onProgress);
                     } else {
                         throw new Exception($"{provider} is not support.");
@@ -157,6 +158,9 @@ namespace LeanCloud.Storage {
                         { "token", token }
                     });
                     throw e;
+                } finally {
+                    stream?.Close();
+                    stream?.Dispose();
                 }
             }
             return this;
