@@ -21,7 +21,7 @@ namespace LeanCloud.Storage.Internal.File {
         }
 
         internal async Task Upload(Action<long, long> onProgress) {
-            LCProgressableStreamContent content = new LCProgressableStreamContent(new StreamContent(stream), onProgress);
+            LCProgressableStreamContent content = new LCProgressableStreamContent(stream, onProgress);
 
             HttpRequestMessage request = new HttpRequestMessage {
                 RequestUri = new Uri(uploadUrl),
@@ -42,8 +42,9 @@ namespace LeanCloud.Storage.Internal.File {
             response.Dispose();
             LCHttpUtils.PrintResponse(response, resultString);
 
-            HttpStatusCode statusCode = response.StatusCode;
-            
+            if (!response.IsSuccessStatusCode) {
+                throw new Exception(resultString);
+            }
         }
     }
 }
