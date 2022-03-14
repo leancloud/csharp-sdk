@@ -19,8 +19,10 @@ namespace LeanCloud.Engine {
         [HttpPost("functions/{className}/{hookName}")]
         public async Task<object> Hook(string className, string hookName, JsonElement body) {
             try {
-                LCLogger.Debug($"Hook: {className}#{hookName}");
-                LCLogger.Debug(body.ToString());
+                if (LCLogger.LogDelegate != null) {
+                    LCLogger.Debug($"Hook: {className}#{hookName}");
+                    LCLogger.Debug(body.ToString());
+                }
 
                 LCEngine.CheckHookKey(Request);
 

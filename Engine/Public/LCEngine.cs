@@ -210,7 +210,9 @@ namespace LeanCloud.Engine {
         }
 
         private static void PrintEnvironmentVar(string key) {
-            LCLogger.Debug($"{key} : {Environment.GetEnvironmentVariable(key)}");
+            if (LCLogger.LogDelegate != null) {
+                LCLogger.Debug($"{key} : {Environment.GetEnvironmentVariable(key)}");
+            }
         }
 
         internal static async Task<object> Invoke(MethodInfo mi, object[] parameters) {
@@ -307,7 +309,7 @@ namespace LeanCloud.Engine {
         }
 
         internal static object ConvertException(Exception e) {
-            LCLogger.Error(e.ToString());
+            LCLogger.Error(e);
             if (e is LCException lcEx) {
                 return new Dictionary<string, object> {
                     { "code", lcEx.Code },

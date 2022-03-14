@@ -159,7 +159,9 @@ namespace LeanCloud.LiveQuery {
                             OnLoginNotification(dict);
                             break;
                         default:
-                            LCLogger.Debug($"Not support: {op}");
+                            if (LCLogger.LogDelegate != null) {
+                                LCLogger.Debug($"Not support: {op}");
+                            }
                             break;
                     }
                 }

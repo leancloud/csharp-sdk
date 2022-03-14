@@ -43,7 +43,7 @@ namespace LeanCloud.Push {
                 }
                 await installation.Save();
             } catch (Exception e) {
-                LCLogger.Error(e.ToString());
+                LCLogger.Error(e);
             }
         }
 

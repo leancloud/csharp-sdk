@@ -18,7 +18,7 @@ namespace LeanCloud.LiveQuery.Internal {
             try {
                 await connection.SendText("{}");
             } catch (Exception e) {
-                LCLogger.Error(e.Message);
+                LCLogger.Error(e);
             }
         }
     }

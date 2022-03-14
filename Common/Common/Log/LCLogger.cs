@@ -39,6 +39,9 @@ namespace LeanCloud {
         }
 
         public static void Error(Exception e) {
+            if (LogDelegate == null) {
+                return;
+            }
             StringBuilder sb = new StringBuilder();
             sb.Append(e.GetType());
             sb.Append("\n");
