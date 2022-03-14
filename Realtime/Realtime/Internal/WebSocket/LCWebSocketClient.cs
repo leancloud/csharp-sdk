@@ -34,7 +34,9 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             string subProtocol = null,
             Dictionary<string, string> headers = null,
             TimeSpan keepAliveInterval = default) {
-            LCLogger.Debug($"Connecting WebSocket: {server}");
+            if (LCLogger.LogDelegate != null) {
+                LCLogger.Debug($"Connecting WebSocket: {server}");
+            }
             Task timeoutTask = Task.Delay(CONNECT_TIMEOUT);
             ws = new ClientWebSocket();
             ws.Options.SetBuffer(RECV_BUFFER_SIZE, SEND_BUFFER_SIZE);
@@ -51,7 +53,9 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             }
             Task connectTask = ws.ConnectAsync(new Uri(server), default);
             if (await Task.WhenAny(connectTask, timeoutTask) == connectTask) {
-                LCLogger.Debug($"Connected WebSocket: {server}");
+                if (LCLogger.LogDelegate != null) {
+                    LCLogger.Debug($"Connected WebSocket: {server}");
+                }
                 await connectTask;
                 // 接收
                 _ = StartSend();
@@ -130,7 +134,9 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                 while (ws.State == WebSocketState.Open) {
                     WebSocketReceiveResult result = await ws.ReceiveAsync(new ArraySegment<byte>(recvBuffer), default);
                     if (result.MessageType == WebSocketMessageType.Close) {
-                        LCLogger.Debug($"Receive Closed: {result.CloseStatus}");
+                        if (LCLogger.LogDelegate != null) {
+                            LCLogger.Debug($"Receive Closed: {result.CloseStatus}");
+                        }
                         if (ws.State == WebSocketState.CloseReceived) {
                             // 如果是服务端主动关闭，则挥手关闭，并认为是断线
                             try {

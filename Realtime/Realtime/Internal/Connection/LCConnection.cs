@@ -124,7 +124,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     if (requestToResponses.TryGetValue(sendingReq, out TaskCompletionSource<GenericCommand> waitingTcs)) {
                         return await waitingTcs.Task;
                     }
-                    LCLogger.Error($"error request: {request}");
+                    if (LCLogger.LogDelegate != null) {
+                        LCLogger.Error($"error request: {request}");
+                    }
                 }
             }
 
@@ -140,7 +142,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         internal async Task SendCommand(GenericCommand command) {
-            LCLogger.Debug($"{id} => {FormatCommand(command)}");
+            if (LCLogger.LogDelegate != null) {
+                LCLogger.Debug($"{id} => {FormatCommand(command)}");
+            }
             byte[] bytes = command.ToByteArray();
             Task sendTask = ws.Send(bytes);
             if (await Task.WhenAny(sendTask, Task.Delay(SEND_TIMEOUT)) == sendTask) {
@@ -163,7 +167,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
         private void OnMessage(byte[] bytes, int length) {
             try {
                 GenericCommand command = GenericCommand.Parser.ParseFrom(bytes, 0, length);
-                LCLogger.Debug($"{id} <= {FormatCommand(command)}");
+                if (LCLogger.LogDelegate != null) {
+                    LCLogger.Debug($"{id} <= {FormatCommand(command)}");
+                }
                 if (command.HasI) {
                     // 应答
                     int requestIndex = command.I;
@@ -181,7 +187,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
                             tcs.TrySetResult(command);
                         }
                     } else {
-                        LCLogger.Error($"No request for {requestIndex}");
+                        if (LCLogger.LogDelegate != null) {
+                            LCLogger.Error($"No request for {requestIndex}");
+                        }
                     }
                 } else {
                     if (command.Cmd == CommandType.Echo) {
@@ -227,13 +235,17 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 // 重连策略
                 while (reconnectCount < MAX_RECONNECT_TIMES) {
                     try {
-                        LCLogger.Debug($"Reconnecting... {reconnectCount}");
+                        if (LCLogger.LogDelegate != null) {
+                            LCLogger.Debug($"Reconnecting... {reconnectCount}");
+                        }
                         await Connect();
                         break;
                     } catch (Exception e) {
                         reconnectCount++;
-                        LCLogger.Error(e);
-                        LCLogger.Debug($"Reconnect after {RECONNECT_INTERVAL}ms");
+                        if (LCLogger.LogDelegate != null) {
+                            LCLogger.Error(e);
+                            LCLogger.Debug($"Reconnect after {RECONNECT_INTERVAL}ms");
+                        }
                         await Task.Delay(RECONNECT_INTERVAL);
                     }
                 }

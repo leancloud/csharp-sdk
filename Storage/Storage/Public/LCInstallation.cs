@@ -45,7 +45,7 @@ namespace LeanCloud.Storage {
                 string json = currentInstallation.ToString();
                 await LCCore.PersistenceController.WriteText(DEVICE_DATA, json);
             } catch (Exception e) {
-                LCLogger.Error(e.Message);
+                LCLogger.Error(e);
             }
         }
 

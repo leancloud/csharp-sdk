@@ -28,8 +28,10 @@ namespace LeanCloud.Engine {
         [HttpPost("functions/{funcName}")]
         public async Task<object> Run(string funcName, JsonElement body) {
             try {
-                LCLogger.Debug($"Run: {funcName}");
-                LCLogger.Debug(body.ToString());
+                if (LCLogger.LogDelegate != null) {
+                    LCLogger.Debug($"Run: {funcName}");
+                    LCLogger.Debug(body.ToString());
+                }
 
                 if (Functions.TryGetValue(funcName, out MethodInfo mi)) {
                     LCEngine.InitRequestContext(Request);
@@ -54,8 +56,10 @@ namespace LeanCloud.Engine {
         [HttpPost("call/{funcName}")]
         public async Task<object> RPC(string funcName, JsonElement body) {
             try {
-                LCLogger.Debug($"RPC: {funcName}");
-                LCLogger.Debug(body.ToString());
+                if (LCLogger.LogDelegate != null) {
+                    LCLogger.Debug($"RPC: {funcName}");
+                    LCLogger.Debug(body.ToString());
+                }
 
                 if (Functions.TryGetValue(funcName, out MethodInfo mi)) {
                     LCEngine.InitRequestContext(Request);

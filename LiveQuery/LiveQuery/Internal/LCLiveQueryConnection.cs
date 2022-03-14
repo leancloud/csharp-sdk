@@ -57,11 +57,15 @@ namespace LeanCloud.LiveQuery.Internal {
             try {
                 LCRTMServer rtmServer = await router.GetServer();
                 try {
-                    LCLogger.Debug($"Primary Server");
+                    if (LCLogger.LogDelegate != null) {
+                        LCLogger.Debug($"Primary Server: {rtmServer.Primary}");
+                    }
                     await client.Connect(rtmServer.Primary, SUB_PROTOCOL);
                 } catch (Exception e) {
-                    LCLogger.Error(e);
-                    LCLogger.Debug($"Secondary Server");
+                    if (LCLogger.LogDelegate != null) {
+                        LCLogger.Error(e);
+                        LCLogger.Debug($"Secondary Server: {rtmServer.Secondary}");
+                    }
                     await client.Connect(rtmServer.Secondary, SUB_PROTOCOL);
                 }
                 // 启动心跳
@@ -114,7 +118,9 @@ namespace LeanCloud.LiveQuery.Internal {
         /// <param name="text"></param>
         /// <returns></returns>
         internal async Task SendText(string text) {
-            LCLogger.Debug($"{id} => {text}");
+            if (LCLogger.LogDelegate != null) {
+                LCLogger.Debug($"{id} => {text}");
+            }
             Task sendTask = client.Send(text);
             if (await Task.WhenAny(sendTask, Task.Delay(SEND_TIMEOUT)) == sendTask) {
                 await sendTask;
@@ -140,7 +146,9 @@ namespace LeanCloud.LiveQuery.Internal {
                 string json = Encoding.UTF8.GetString(bytes, 0, length);
                 Dictionary<string, object> msg = JsonConvert.DeserializeObject<Dictionary<string, object>>(json,
                     LCJsonConverter.Default);
-                LCLogger.Debug($"{id} <= {json}");
+                if (LCLogger.LogDelegate != null) {
+                    LCLogger.Debug($"{id} <= {json}");
+                }
                 if (msg.TryGetValue("i", out object i)) {
                     int requestIndex = Convert.ToInt32(i);
                     if (responses.TryGetValue(requestIndex, out TaskCompletionSource<Dictionary<string, object>> tcs)) {
@@ -158,7 +166,9 @@ namespace LeanCloud.LiveQuery.Internal {
                         }
                         responses.Remove(requestIndex);
                     } else {
-                        LCLogger.Error($"No request for {requestIndex}");
+                        if (LCLogger.LogDelegate != null) {
+                            LCLogger.Error($"No request for {requestIndex}");
+                        }
                     }
                 } else {
                     if (json == "{}") {
@@ -193,13 +203,17 @@ namespace LeanCloud.LiveQuery.Internal {
                 // 重连策略
                 while (reconnectCount < MAX_RECONNECT_TIMES) {
                     try {
-                        LCLogger.Debug($"Reconnecting... {reconnectCount}");
+                        if (LCLogger.LogDelegate != null) {
+                            LCLogger.Debug($"Reconnecting... {reconnectCount}");
+                        }
                         await Connect();
                         break;
                     } catch (Exception e) {
                         reconnectCount++;
-                        LCLogger.Error(e);
-                        LCLogger.Debug($"Reconnect after {RECONNECT_INTERVAL}ms");
+                        if (LCLogger.LogDelegate != null) {
+                            LCLogger.Error(e);
+                            LCLogger.Debug($"Reconnect after {RECONNECT_INTERVAL}ms");
+                        }
                         await Task.Delay(RECONNECT_INTERVAL);
                     }
                 }

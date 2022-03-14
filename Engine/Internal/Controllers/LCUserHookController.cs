@@ -34,8 +34,10 @@ namespace LeanCloud.Engine {
         [HttpPost("_User/onAuthData")]
         public async Task<object> HookAuthData(JsonElement body) {
             try {
-                LCLogger.Debug(LCEngine.OnAuthData);
-                LCLogger.Debug(body.ToString());
+                if (LCLogger.LogDelegate != null) {
+                    LCLogger.Debug(LCEngine.OnAuthData);
+                    LCLogger.Debug(body.ToString());
+                }
 
                 LCEngine.CheckHookKey(Request);
 
