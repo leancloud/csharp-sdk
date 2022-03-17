@@ -46,7 +46,7 @@ namespace LeanCloud.Storage.Internal.Codec {
         public static DateTime DecodeDate(IDictionary dict) {
             object value = dict["iso"];
             if (value is DateTime dt) {
-                return dt;
+                return dt.ToLocalTime();
             }
             return default;
         }

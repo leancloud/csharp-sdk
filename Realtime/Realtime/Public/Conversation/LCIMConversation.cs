@@ -109,7 +109,7 @@ namespace LeanCloud.Realtime {
         public DateTime LastDeliveredAt {
             get {
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(LastDeliveredTimestamp);
-                return dateTimeOffset.DateTime;
+                return dateTimeOffset.LocalDateTime;
             }
         }
 
@@ -126,7 +126,7 @@ namespace LeanCloud.Realtime {
         public DateTime LastReadAt {
             get {
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(LastReadTimestamp);
-                return dateTimeOffset.DateTime;
+                return dateTimeOffset.LocalDateTime;
             }
         }
 
@@ -505,11 +505,11 @@ namespace LeanCloud.Realtime {
             }
             if (conv.TryGetValue("createdAt", out object createdAtObj) &&
                 createdAtObj is DateTime createdAt) {
-                CreatedAt = createdAt;
+                CreatedAt = createdAt.ToLocalTime();
             }
             if (conv.TryGetValue("updatedAt", out object updatedAtObj) &&
                 updatedAtObj is DateTime updatedAt) {
-                UpdatedAt = updatedAt;
+                UpdatedAt = updatedAt.ToLocalTime();
             }
             if (conv.TryGetValue("c", out object co)) {
                 CreatorId = co as string;

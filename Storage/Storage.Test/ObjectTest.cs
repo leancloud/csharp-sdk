@@ -16,7 +16,8 @@ namespace Storage.Test {
             @object["intValue"] = 123;
             @object["boolValue"] = true;
             @object["stringValue"] = "hello, world";
-            @object["time"] = DateTime.Now;
+            DateTime now = DateTime.Now;
+            @object["time"] = now;
             @object["intList"] = new List<int> { 1, 1, 2, 3, 5, 8 };
             @object["stringMap"] = new Dictionary<string, object> {
                 { "k1", 111 },
@@ -50,6 +51,7 @@ namespace Storage.Test {
             Assert.AreEqual(@object["intValue"], 123);
             Assert.AreEqual(@object["boolValue"], true);
             Assert.AreEqual(@object["stringValue"], "hello, world");
+            Assert.AreEqual(@object["time"], now);
 
             Assert.NotNull(nestedObj);
             Assert.NotNull(nestedObj.ClassName);
