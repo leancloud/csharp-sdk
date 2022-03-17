@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Globalization;
 using LeanCloud.Storage;
 using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Codec;
@@ -104,11 +105,11 @@ namespace LeanCloud.Push {
                 body["expiration_time"] = ExpirationTime;
             }
             if (ExpirationInterval != default) {
-                body["push_time"] = DateTime.UtcNow;
+                body["push_time"] = DateTime.UtcNow.ToString(LCEncoder.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
                 body["expiration_interval"] = (long)ExpirationInterval.TotalSeconds;
             }
             if (PushDate != default) {
-                body["push_time"] = PushDate.ToUniversalTime();
+                body["push_time"] = PushDate.ToUniversalTime().ToString(LCEncoder.DefaultDateTimeFormat, CultureInfo.InvariantCulture);
             }
             if (FlowControl > 0) {
                 body["flow_control"] = FlowControl;

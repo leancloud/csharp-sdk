@@ -40,9 +40,9 @@ namespace LeanCloud.Storage.Internal.Object {
                 } else if (key == "objectId") {
                     objectData.ObjectId = value.ToString();
                 } else if (key == "createdAt" && value is DateTime createdAt) {
-                    objectData.CreatedAt = createdAt;
+                    objectData.CreatedAt = createdAt.ToLocalTime();
                 } else if (key == "updatedAt" && value is DateTime updatedAt) {
-                    objectData.UpdatedAt = updatedAt;
+                    objectData.UpdatedAt = updatedAt.ToLocalTime();
                 } else {
                     if (key == "ACL" &&
                         value is Dictionary<string, object> dic) {

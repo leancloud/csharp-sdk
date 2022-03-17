@@ -66,7 +66,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     LCIMTemporaryConversation tempConv = new LCIMTemporaryConversation(Client);
                     if (DateTime.TryParseExact(response.ConvMessage.Cdate, DefaultDateTimeFormat,
                         CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime createdTime)) {
-                        tempConv.ExpiredAt = createdTime.AddSeconds(response.ConvMessage.TempConvTTL);
+                        tempConv.ExpiredAt = createdTime.AddSeconds(response.ConvMessage.TempConvTTL).ToLocalTime();
                     }
                     conversation = tempConv;
                 } else if (properties != null && properties.ContainsKey("system")) {
@@ -88,7 +88,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             conversation.ids.Add(Client.Id);
             if (DateTime.TryParseExact(response.ConvMessage.Cdate, DefaultDateTimeFormat,
                 CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime createdAt)) {
-                conversation.CreatedAt = conversation.UpdatedAt = createdAt;
+                conversation.CreatedAt = conversation.UpdatedAt = createdAt.ToLocalTime();
             }
             return conversation;
         }
