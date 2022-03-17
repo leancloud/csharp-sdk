@@ -20,7 +20,7 @@
     <RepositoryUrl>https://github.com/protocolbuffers/protobuf.git</RepositoryUrl>
     <!-- Include PDB in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <ReleaseVersion>0.10.4</ReleaseVersion>
+    <ReleaseVersion>0.10.5</ReleaseVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' or '$(TargetFramework)' == 'netstandard2.0' ">
