@@ -16,7 +16,7 @@ namespace Storage.Test {
         [Test]
         [Order(0)]
         public async Task SaveFromPath() {
-            LCFile avatar = new LCFile("avatar", AvatarFilePath);
+            LCFile avatar = new LCFile("avatar.png", AvatarFilePath);
             await avatar.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");
             });
@@ -27,7 +27,7 @@ namespace Storage.Test {
         [Test]
         [Order(1)]
         public async Task SaveBigFileFromPath() {
-            video = new LCFile("video", VideoFilePath);
+            video = new LCFile("video.mp4", VideoFilePath);
             await video.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");
             });
@@ -50,7 +50,7 @@ namespace Storage.Test {
         public async Task SaveFromMemory() {
             string text = "hello, world";
             byte[] data = Encoding.UTF8.GetBytes(text);
-            LCFile file = new LCFile("text", data);
+            LCFile file = new LCFile("text.txt", data);
             file.PathPrefix = "gamesaves";
             await file.Save();
             TestContext.WriteLine(file.ObjectId);
@@ -61,7 +61,7 @@ namespace Storage.Test {
         [Test]
         [Order(4)]
         public async Task SaveFromUrl() {
-            LCFile file = new LCFile("scene", new Uri("http://img95.699pic.com/photo/50015/9034.jpg_wh300.jpg"));
+            LCFile file = new LCFile("scene.jpg", new Uri("http://img95.699pic.com/photo/50015/9034.jpg_wh300.jpg"));
             file.AddMetaData("size", 1024);
             file.AddMetaData("width", 128);
             file.AddMetaData("height", 256);
@@ -74,7 +74,7 @@ namespace Storage.Test {
         [Test]
         [Order(5)]
         public async Task Qiniu() {
-            LCFile file = new LCFile("avatar", APKFilePath);
+            LCFile file = new LCFile("test.apk", APKFilePath);
             await file.Save();
             TestContext.WriteLine(file.ObjectId);
             Assert.NotNull(file.ObjectId);
@@ -85,7 +85,7 @@ namespace Storage.Test {
         public async Task FileACL() {
             LCUser user = await LCUser.LoginAnonymously();
 
-            LCFile file = new LCFile("avatar", AvatarFilePath);
+            LCFile file = new LCFile("avatar.png", AvatarFilePath);
             LCACL acl = new LCACL();
             acl.SetUserReadAccess(user, true);
             file.ACL = acl;
@@ -108,7 +108,7 @@ namespace Storage.Test {
         public async Task AWS() {
             LCApplication.Initialize("HudJvWWmAuGMifwxByDVLmQi-MdYXbMMI", "YjoQr1X8wHoFIfsSGXzeJaAM",
                 "https://hudjvwwm.api.lncldglobal.com");
-            LCFile file = new LCFile("avatar", AvatarFilePath);
+            LCFile file = new LCFile("avatar.png", AvatarFilePath);
             await file.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");
             });
@@ -121,7 +121,7 @@ namespace Storage.Test {
         public async Task AWSBigFile() {
             LCApplication.Initialize("HudJvWWmAuGMifwxByDVLmQi-MdYXbMMI", "YjoQr1X8wHoFIfsSGXzeJaAM",
                 "https://hudjvwwm.api.lncldglobal.com");
-            LCFile file = new LCFile("video", VideoFilePath);
+            LCFile file = new LCFile("video.mp4", VideoFilePath);
             await file.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");
             });

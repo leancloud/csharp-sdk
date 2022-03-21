@@ -14,6 +14,8 @@ namespace LeanCloud.Storage {
     public class LCFile : LCObject {
         public const string CLASS_NAME = "_File";
 
+        private const string METADATA_SIZE_KEY = "size";
+
         /// <summary>
         /// Gets the name of the file.
         /// </summary>
@@ -81,6 +83,7 @@ namespace LeanCloud.Storage {
         public LCFile(string name, byte[] bytes) : this() {
             Name = name;
             stream = new MemoryStream(bytes);
+            AddMetaData(METADATA_SIZE_KEY, stream.Length);
         }
 
         /// <summary>
@@ -90,8 +93,8 @@ namespace LeanCloud.Storage {
         /// <param name="path"></param>
         public LCFile(string name, string path) : this() {
             Name = name;
-            MimeType = LCMimeTypeMap.GetMimeType(path);
             stream = new FileStream(path, FileMode.Open);
+            AddMetaData(METADATA_SIZE_KEY, stream.Length);
         }
 
         /// <summary>

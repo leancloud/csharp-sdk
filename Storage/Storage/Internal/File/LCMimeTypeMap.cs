@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace LeanCloud.Storage.Internal.File {
     internal static class LCMimeTypeMap {
+        static readonly string DEFAULT_MIME_TYPE = "application/octet-stream";
+
         static readonly Dictionary<string, string> MIMETypesDictionary = new Dictionary<string, string> {
             { "ai", "application/postscript" },
             { "aif", "audio/x-aiff" },
@@ -200,9 +202,9 @@ namespace LeanCloud.Storage.Internal.File {
                 if (MIMETypesDictionary.TryGetValue(suffix, out string type)) {
                     return type;
                 }
-                return "unknown/unknown";
+                return DEFAULT_MIME_TYPE;
             } catch {
-                return "unknown/unknown";
+                return DEFAULT_MIME_TYPE;
             }
         }
     }
