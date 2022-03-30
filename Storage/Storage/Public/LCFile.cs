@@ -136,6 +136,7 @@ namespace LeanCloud.Storage {
                 string key = uploadToken["key"] as string;
                 string token = uploadToken["token"] as string;
                 string provider = uploadToken["provider"] as string;
+                MimeType = uploadToken["mime_type"] as string;
                 try {
                     if (provider == "s3") {
                         // AWS
@@ -199,7 +200,6 @@ namespace LeanCloud.Storage {
             Dictionary<string, object> data = new Dictionary<string, object> {
                 { "name", Name },
                 { "__type", "File" },
-                { "mime_type", MimeType },
             };
             if (ACL != null) {
                 data["ACL"] = LCEncoder.EncodeACL(ACL);
@@ -207,6 +207,9 @@ namespace LeanCloud.Storage {
             if (!string.IsNullOrEmpty(PathPrefix)) {
                 data["prefix"] = PathPrefix;
                 AddMetaData("prefix", PathPrefix);
+            }
+            if (!string.IsNullOrEmpty(MimeType)) {
+                data["mime_type"] = MimeType;
             }
             data["metaData"] = MetaData;
             return await LCCore.HttpClient.Post<Dictionary<string, object>>("fileTokens", data: data);
