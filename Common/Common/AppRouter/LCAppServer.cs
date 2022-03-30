@@ -1,40 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
+using LC.Newtonsoft.Json;
 
 namespace LeanCloud.Common {
     public class LCAppServer {
+        [JsonProperty("api_server")]
         public string ApiServer {
-            get; private set;
+            get => apiServer;
+            internal set {
+                apiServer = GetUrlWithScheme(value);
+            }
         }
 
+        private string apiServer;
+
+        [JsonProperty("engine_server")]
         public string EngineServer {
-            get; private set;
+            get => engineServer;
+            internal set {
+                engineServer = GetUrlWithScheme(value);
+            }
         }
 
+        private string engineServer;
+
+        [JsonProperty("push_server")]
         public string PushServer {
-            get; private set;
+            get => pushServer;
+            private set {
+                pushServer = GetUrlWithScheme(value);
+            }
+        }
+
+        private string pushServer;
+
+        [JsonProperty("ttl")]
+        public int Ttl {
+            get; set;
         }
 
         public string RTMServer {
             get; private set;
         }
 
-        public bool IsValid {
-            get {
-                return ttl != -1 || DateTime.Now < expiredAt;
-            }
-        }
+        public bool IsValid => Ttl == -1 || DateTimeOffset.Now < createdAt + TimeSpan.FromSeconds(Ttl);
 
-        private readonly DateTime expiredAt;
+        private readonly DateTimeOffset createdAt;
 
-        private readonly int ttl;
-
-        public LCAppServer(Dictionary<string, object> data) {
-            ApiServer = GetUrlWithScheme(data["api_server"] as string);
-            PushServer = GetUrlWithScheme(data["push_server"] as string);
-            EngineServer = GetUrlWithScheme(data["engine_server"] as string);
-            ttl = (int)(long)data["ttl"];
-            expiredAt = DateTime.Now.AddSeconds(ttl);
+        public LCAppServer() {
+            createdAt = DateTimeOffset.Now;
         }
 
         private static string GetUrlWithScheme(string url) {
@@ -43,12 +57,12 @@ namespace LeanCloud.Common {
 
         internal static LCAppServer GetInternalFallbackAppServer(string appId) {
             string prefix = appId.Substring(0, 8).ToLower();
-            return new LCAppServer(new Dictionary<string, object> {
-                { "api_server", $"https://{prefix}.api.lncldglobal.com" },
-                { "push_server", $"https://{prefix}.engine.lncldglobal.com" },
-                { "engine_server", $"https://{prefix}.push.lncldglobal.com" },
-                { "ttl", -1 }
-            });
+            return new LCAppServer {
+                ApiServer = $"https://{prefix}.api.lncldglobal.com",
+                PushServer = $"https://{prefix}.engine.lncldglobal.com",
+                EngineServer = $"https://{prefix}.push.lncldglobal.com",
+                Ttl = -1
+            };
         }
     }
 }

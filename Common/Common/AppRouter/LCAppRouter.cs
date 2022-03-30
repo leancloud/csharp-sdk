@@ -60,8 +60,7 @@ namespace LeanCloud.Common {
                     response.Dispose();
                     LCHttpUtils.PrintResponse(response, resultString);
 
-                    Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultString);
-                    appServer = new LCAppServer(data);
+                    appServer = JsonConvert.DeserializeObject<LCAppServer>(resultString, LCJsonConverter.Default);
                 } catch (Exception e) {
                     LCLogger.Error(e);
                     // 拉取服务地址失败后，使用国际节点的默认服务地址
