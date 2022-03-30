@@ -106,8 +106,7 @@ namespace Storage.Test {
         [Test]
         [Order(10)]
         public async Task AWS() {
-            LCApplication.Initialize("HudJvWWmAuGMifwxByDVLmQi-MdYXbMMI", "YjoQr1X8wHoFIfsSGXzeJaAM",
-                "https://hudjvwwm.api.lncldglobal.com");
+            LCApplication.Initialize("HudJvWWmAuGMifwxByDVLmQi-MdYXbMMI", "YjoQr1X8wHoFIfsSGXzeJaAM");
             LCFile file = new LCFile("avatar.png", AvatarFilePath);
             await file.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");
