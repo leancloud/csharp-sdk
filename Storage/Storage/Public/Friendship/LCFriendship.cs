@@ -16,10 +16,15 @@ namespace LeanCloud.Storage {
         /// <param name="attributes">The additional attributes for the friendship.</param>
         /// <returns></returns>
         public static async Task Request(string userId, Dictionary<string, object> attributes = null) {
+            if (string.IsNullOrEmpty(userId)) {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
             LCUser user = await LCUser.GetCurrent();
             if (user == null) {
                 throw new ArgumentNullException("current user");
             }
+
             string path = "users/friendshipRequests";
             LCObject friend = LCObject.CreateWithoutData("_User", userId);
             Dictionary<string, object> data = new Dictionary<string, object> {
@@ -63,6 +68,44 @@ namespace LeanCloud.Storage {
             }
             string path = $"users/friendshipRequests/{request.ObjectId}/decline";
             await LCCore.HttpClient.Put<Dictionary<string, object>>(path);
+        }
+
+        /// <summary>
+        /// Blocks the user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static async Task Block(string userId) {
+            if (string.IsNullOrEmpty(userId)) {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            LCUser user = await LCUser.GetCurrent();
+            if (user == null) {
+                throw new ArgumentNullException("current user");
+            }
+
+            string path = $"users/self/friendBlocklist/{userId}";
+            await LCCore.HttpClient.Post<object>(path);
+        }
+
+        /// <summary>
+        /// Unblocks the user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static async Task Unblock(string userId) {
+            if (string.IsNullOrEmpty(userId)) {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            LCUser user = await LCUser.GetCurrent();
+            if (user == null) {
+                throw new ArgumentNullException("current user");
+            }
+
+            string path = $"users/self/friendBlocklist/{userId}";
+            await LCCore.HttpClient.Delete(path);
         }
     }
 }

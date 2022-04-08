@@ -97,5 +97,38 @@ namespace Storage.Test {
             // 查询好友
             Assert.AreEqual((await GetFriends()).Count, 0);
         }
+
+        [Test]
+        [Order(10)]
+        public async Task Block() {
+            await LCUser.BecomeWithSessionToken(user1.SessionToken);
+            await LCFriendship.Block(user2.ObjectId);
+        }
+
+        [Test]
+        [Order(11)]
+        public async Task QueryBlocks() {
+            await LCUser.BecomeWithSessionToken(user2.SessionToken);
+            user2["nickname"] = "user2";
+            await user2.Save();
+
+            await LCUser.BecomeWithSessionToken(user1.SessionToken);
+            LCQuery<LCObject> query = user1.BlockQuery()
+                .Include("blockedUser")
+                .Select("blockedUser.nickname")
+                .Select("blockedUser.shortId");
+            LCObject block = await query.First();
+            Assert.NotNull(block);
+            LCUser blockedUser = block["blockedUser"] as LCUser;
+            Assert.NotNull(blockedUser);
+            Assert.AreEqual(blockedUser.ObjectId, user2.ObjectId);
+            Assert.NotNull(blockedUser["nickname"]);
+        }
+
+        [Test]
+        [Order(12)]
+        public async Task Unblock() {
+            await LCFriendship.Unblock(user2.ObjectId);
+        }
     }
 }

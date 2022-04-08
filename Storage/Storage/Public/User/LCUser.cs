@@ -733,6 +733,10 @@ namespace LeanCloud.Storage {
                 .Include("followee");
         }
 
+        public LCQuery<LCObject> BlockQuery() {
+            return new LCQuery<LCObject>("_Blocklist", "users/self/friendBlocklist");
+        }
+
         /// <summary>
         /// Gets the followers and followees of the currently logged in user.
         /// </summary>
