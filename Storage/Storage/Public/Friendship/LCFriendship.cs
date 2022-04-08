@@ -75,7 +75,7 @@ namespace LeanCloud.Storage {
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static async Task Block(string userId) {
+        public static async Task BlockFriend(string userId) {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }
@@ -94,7 +94,7 @@ namespace LeanCloud.Storage {
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public static async Task Unblock(string userId) {
+        public static async Task UnblockFriend(string userId) {
             if (string.IsNullOrEmpty(userId)) {
                 throw new ArgumentNullException(nameof(userId));
             }

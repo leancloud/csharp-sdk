@@ -102,7 +102,7 @@ namespace Storage.Test {
         [Order(10)]
         public async Task Block() {
             await LCUser.BecomeWithSessionToken(user1.SessionToken);
-            await LCFriendship.Block(user2.ObjectId);
+            await LCFriendship.BlockFriend(user2.ObjectId);
         }
 
         [Test]
@@ -128,7 +128,7 @@ namespace Storage.Test {
         [Test]
         [Order(12)]
         public async Task Unblock() {
-            await LCFriendship.Unblock(user2.ObjectId);
+            await LCFriendship.UnblockFriend(user2.ObjectId);
         }
     }
 }
