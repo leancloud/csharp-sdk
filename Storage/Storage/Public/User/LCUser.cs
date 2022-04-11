@@ -733,6 +733,18 @@ namespace LeanCloud.Storage {
                 .Include("followee");
         }
 
+        /// <summary>
+        /// Constructs a friend query.
+        /// </summary>
+        /// <returns></returns>
+        public LCQuery<LCObject> FriendQuery() {
+            return new LCQuery<LCObject>("_Followee", "users/self/friendBlocklist");
+        }
+
+        /// <summary>
+        /// Constructs a block query for friend.
+        /// </summary>
+        /// <returns></returns>
         public LCQuery<LCObject> FriendBlockQuery() {
             return new LCQuery<LCObject>("_Blocklist", "users/self/friendBlocklist");
         }
