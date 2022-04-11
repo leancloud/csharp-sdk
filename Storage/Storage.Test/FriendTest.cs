@@ -113,7 +113,7 @@ namespace Storage.Test {
             await user2.Save();
 
             await LCUser.BecomeWithSessionToken(user1.SessionToken);
-            LCQuery<LCObject> query = user1.FriendBlockQuery()
+            LCQuery<LCObject> query = user1.FriendshipBlockQuery()
                 .Include("blockedUser")
                 .Select("blockedUser.nickname")
                 .Select("blockedUser.shortId");
