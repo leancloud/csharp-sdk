@@ -27,9 +27,7 @@ namespace Storage.Test {
 
         async Task<ReadOnlyCollection<LCObject>> GetFriends() {
             LCUser user = await LCUser.GetCurrent();
-            LCQuery<LCObject> query = new LCQuery<LCObject>("_Followee")
-                .WhereEqualTo("user", user)
-                .WhereEqualTo("friendStatus", true);
+            LCQuery<LCObject> query = user.FriendshipQuery();
             return await query.Find();
         }
 
