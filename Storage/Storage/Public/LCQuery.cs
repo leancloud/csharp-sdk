@@ -20,6 +20,10 @@ namespace LeanCloud.Storage {
             get; internal set;
         }
 
+        private string endpoint;
+
+        public string Endpoint => string.IsNullOrEmpty(endpoint) ? $"classes/{ClassName}" : endpoint;
+
         public LCCompositionalCondition Condition {
             get; internal set;
         }
@@ -28,8 +32,9 @@ namespace LeanCloud.Storage {
         /// Constructs a LCQuery for class.
         /// </summary>
         /// <param name="className"></param>
-        public LCQuery(string className) {
+        public LCQuery(string className, string endpoint) {
             ClassName = className;
+            this.endpoint = endpoint;
             Condition = new LCCompositionalCondition();
         }
 
@@ -47,8 +52,8 @@ namespace LeanCloud.Storage {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class LCQuery<T> : LCQuery where T : LCObject {
-        public LCQuery(string className) :
-            base(className) {
+        public LCQuery(string className, string endPoint = null) :
+            base(className, endPoint) {
 
         }
 
@@ -393,7 +398,7 @@ namespace LeanCloud.Storage {
         /// </summary>
         /// <returns></returns>
         public async Task<int> Count() {
-            string path = $"classes/{ClassName}";
+            string path = Endpoint;
             Dictionary<string, object> parameters = BuildParams();
             parameters["limit"] = 0;
             parameters["count"] = 1;
@@ -428,7 +433,7 @@ namespace LeanCloud.Storage {
         /// </summary>
         /// <returns></returns>
         public async Task<ReadOnlyCollection<T>> Find() {
-            string path = $"classes/{ClassName}";
+            string path = Endpoint;
             Dictionary<string, object> parameters = BuildParams();
             Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>(path, queryParams: parameters);
             List<object> results = response["results"] as List<object>;

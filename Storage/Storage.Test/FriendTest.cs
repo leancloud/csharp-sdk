@@ -27,9 +27,7 @@ namespace Storage.Test {
 
         async Task<ReadOnlyCollection<LCObject>> GetFriends() {
             LCUser user = await LCUser.GetCurrent();
-            LCQuery<LCObject> query = new LCQuery<LCObject>("_Followee")
-                .WhereEqualTo("user", user)
-                .WhereEqualTo("friendStatus", true);
+            LCQuery<LCObject> query = user.FriendshipQuery();
             return await query.Find();
         }
 
@@ -96,6 +94,39 @@ namespace Storage.Test {
             await user1.Unfollow(user2.ObjectId);
             // 查询好友
             Assert.AreEqual((await GetFriends()).Count, 0);
+        }
+
+        [Test]
+        [Order(10)]
+        public async Task Block() {
+            await LCUser.BecomeWithSessionToken(user1.SessionToken);
+            await LCFriendship.BlockFriend(user2.ObjectId);
+        }
+
+        [Test]
+        [Order(11)]
+        public async Task QueryBlocks() {
+            await LCUser.BecomeWithSessionToken(user2.SessionToken);
+            user2["nickname"] = "user2";
+            await user2.Save();
+
+            await LCUser.BecomeWithSessionToken(user1.SessionToken);
+            LCQuery<LCObject> query = user1.FriendshipBlockQuery()
+                .Include("blockedUser")
+                .Select("blockedUser.nickname")
+                .Select("blockedUser.shortId");
+            LCObject block = await query.First();
+            Assert.NotNull(block);
+            LCUser blockedUser = block["blockedUser"] as LCUser;
+            Assert.NotNull(blockedUser);
+            Assert.AreEqual(blockedUser.ObjectId, user2.ObjectId);
+            Assert.NotNull(blockedUser["nickname"]);
+        }
+
+        [Test]
+        [Order(12)]
+        public async Task Unblock() {
+            await LCFriendship.UnblockFriend(user2.ObjectId);
         }
     }
 }

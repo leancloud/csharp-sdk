@@ -734,6 +734,22 @@ namespace LeanCloud.Storage {
         }
 
         /// <summary>
+        /// Constructs a friend query.
+        /// </summary>
+        /// <returns></returns>
+        public LCQuery<LCObject> FriendshipQuery() {
+            return new LCQuery<LCObject>("_Followee", "users/self/friends");
+        }
+
+        /// <summary>
+        /// Constructs a block query for friend.
+        /// </summary>
+        /// <returns></returns>
+        public LCQuery<LCObject> FriendshipBlockQuery() {
+            return new LCQuery<LCObject>("_Blocklist", "users/self/friendBlocklist");
+        }
+
+        /// <summary>
         /// Gets the followers and followees of the currently logged in user.
         /// </summary>
         /// <param name="includeFollower"></param>
