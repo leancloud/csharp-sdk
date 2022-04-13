@@ -112,7 +112,7 @@ var searchData=
   ['lcobject_2ecs_109',['LCObject.cs',['../LCObject_8cs.html',1,'']]],
   ['lcpush_110',['LCPush',['../classLeanCloud_1_1Push_1_1LCPush.html#a594fb443b6fca872ddb44f0aca5f6b11',1,'LeanCloud.Push.LCPush.LCPush()'],['../classLeanCloud_1_1Push_1_1LCPush.html',1,'LeanCloud.Push.LCPush']]],
   ['lcpush_2ecs_111',['LCPush.cs',['../LCPush_8cs.html',1,'']]],
-  ['lcquery_112',['LCQuery',['../classLeanCloud_1_1Storage_1_1LCQuery.html#ae190207beb9769ef17f5de13803bbed1',1,'LeanCloud.Storage.LCQuery.LCQuery(string className)'],['../classLeanCloud_1_1Storage_1_1LCQuery.html#ae190207beb9769ef17f5de13803bbed1',1,'LeanCloud.Storage.LCQuery.LCQuery(string className)'],['../classLeanCloud_1_1Storage_1_1LCQuery.html',1,'LeanCloud.Storage.LCQuery&lt; T &gt;']]],
+  ['lcquery_112',['LCQuery',['../classLeanCloud_1_1Storage_1_1LCQuery.html#a4b6440959e8d8bbaf25cfa00803048a6',1,'LeanCloud.Storage.LCQuery.LCQuery(string className, string endpoint)'],['../classLeanCloud_1_1Storage_1_1LCQuery.html#a74eb470b409849fc2cfc0a2e03a64946',1,'LeanCloud.Storage.LCQuery.LCQuery(string className, string endPoint=null)'],['../classLeanCloud_1_1Storage_1_1LCQuery.html',1,'LeanCloud.Storage.LCQuery&lt; T &gt;']]],
   ['lcquery_2ecs_113',['LCQuery.cs',['../LCQuery_8cs.html',1,'']]],
   ['lcquery_3c_20lcstatus_20_3e_114',['LCQuery&lt; LCStatus &gt;',['../classLeanCloud_1_1Storage_1_1LCQuery.html',1,'LeanCloud::Storage']]],
   ['lcqueryextension_115',['LCQueryExtension',['../classLeanCloud_1_1LiveQuery_1_1LCQueryExtension.html',1,'LeanCloud::LiveQuery']]],
