@@ -52,8 +52,13 @@ namespace LeanCloud.Storage {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class LCQuery<T> : LCQuery where T : LCObject {
-        public LCQuery(string className, string endPoint = null) :
-            base(className, endPoint) {
+        public LCQuery(string className) :
+            base(className, null) {
+
+        }
+
+        public LCQuery(string className, string endpoint) :
+            base(className, endpoint) {
 
         }
 
