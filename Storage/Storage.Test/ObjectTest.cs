@@ -16,7 +16,7 @@ namespace Storage.Test {
             @object["intValue"] = 123;
             @object["boolValue"] = true;
             @object["stringValue"] = "hello, world";
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.Parse("2022-04-22T05:05:21.0005369Z");
             @object["time"] = now;
             @object["intList"] = new List<int> { 1, 1, 2, 3, 5, 8 };
             @object["stringMap"] = new Dictionary<string, object> {
