@@ -7,7 +7,7 @@ using LeanCloud.Storage.Internal.Query;
 
 namespace LeanCloud.Storage.Internal.Codec {
     public static class LCEncoder {
-        public const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFK";
+        public const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK";
 
         public static object Encode(object obj, bool full = false) {
             if (obj is DateTime dateTime) {
