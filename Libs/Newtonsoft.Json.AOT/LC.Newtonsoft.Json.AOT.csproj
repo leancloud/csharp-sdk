@@ -34,7 +34,7 @@
     <!-- including PDB files in NuGet for source link because symbolsource.org does not support portable PDBs -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <ReleaseVersion>0.10.9</ReleaseVersion>
+    <ReleaseVersion>0.10.10</ReleaseVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.orig" />
