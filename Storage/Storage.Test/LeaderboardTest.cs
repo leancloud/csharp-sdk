@@ -113,6 +113,31 @@ namespace Storage.Test {
 
         [Test]
         [Order(5)]
+        public async Task GetGroupResults() {
+            LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard(leaderboardName);
+            ReadOnlyCollection<LCRanking> rankings = await leaderboard.GetGroupResults(userDict.Keys, selectKeys: new string[] { "score" });
+            foreach (LCRanking ranking in rankings) {
+                WriteLine($"{ranking.Rank} : {ranking.User.ObjectId}, {ranking.Value}");
+                Assert.NotNull(ranking.User["score"]);
+            }
+        }
+
+        [Test]
+        [Order(6)]
+        public async Task GetGroupResultsOfMe() {
+            int today = DateTimeOffset.Now.DayOfYear;
+            string username = $"{today}_0";
+            string password = "leancloud";
+            LCUser user = await LCUser.Login(username, password);
+            LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard(leaderboardName);
+            ReadOnlyCollection<LCRanking> rankings = await leaderboard.GetGroupResultsAroundUser(user, userDict.Keys, limit: 5);
+            foreach (LCRanking ranking in rankings) {
+                WriteLine($"{ranking.Rank} : {ranking.User.ObjectId}, {ranking.Value}");
+            }
+        }
+
+        [Test]
+        [Order(10)]
         public async Task GetOtherStatistics() {
             int today = DateTimeOffset.Now.DayOfYear;
             string username = $"{today}_0";
@@ -126,7 +151,7 @@ namespace Storage.Test {
         }
 
         [Test]
-        [Order(6)]
+        [Order(11)]
         public async Task GetStatisticsOfUsers() {
             LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard(leaderboardName);
             ReadOnlyCollection<LCStatistic> statistics = await leaderboard.GetStatistics(userDict.Values);
@@ -137,7 +162,7 @@ namespace Storage.Test {
         }
 
         [Test]
-        [Order(7)]
+        [Order(20)]
         public async Task DeleteStatistics() {
             Dictionary<string, LCUser>.ValueCollection.Enumerator enumerator = userDict.Values.GetEnumerator();
             enumerator.MoveNext();
@@ -153,7 +178,7 @@ namespace Storage.Test {
         }
 
         [Test]
-        [Order(8)]
+        [Order(21)]
         public async Task GetArchives() {
             try {
                 LCLeaderboard leaderboard = await LCLeaderboard.GetLeaderboard("Leaderboard_232");

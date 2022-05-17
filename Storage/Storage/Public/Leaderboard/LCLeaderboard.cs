@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Text;
 using LeanCloud.Common;
 using LeanCloud.Storage.Internal.Codec;
 
@@ -585,22 +586,7 @@ namespace LeanCloud.Storage {
             IEnumerable<string> selectKeys,
             IEnumerable<string> includeKeys,
             IEnumerable<string> includeStatistics) {
-            path = $"{path}?startPosition={skip}&maxResultsCount={limit}";
-            if (version != -1) {
-                path = $"{path}&version={version}";
-            }
-            if (selectKeys != null) {
-                string keys = string.Join(",", selectKeys);
-                path = $"{path}&selectKeys={keys}";
-            }
-            if (includeKeys != null) {
-                string includes = string.Join(",", includeKeys);
-                path = $"{path}&includeKeys={includes}";
-            }
-            if (includeStatistics != null) {
-                string statistics = string.Join(",", includeStatistics);
-                path = $"{path}&includeStatistics={statistics}";
-            }
+            path = $"{path}?{BuildQueryParams(version, skip, limit, selectKeys, includeKeys, includeStatistics)}";
             Dictionary<string, object> result = await LCCore.HttpClient.Get<Dictionary<string, object>>(path);
             if (result.TryGetValue("results", out object results) &&
                 results is List<object> list) {
@@ -612,6 +598,90 @@ namespace LeanCloud.Storage {
                 return rankings.AsReadOnly();
             }
             return null;
+        }
+
+        public Task<ReadOnlyCollection<LCRanking>> GetGroupResults(IEnumerable<string> ids,
+            int version = -1,
+            int skip = 0,
+            int limit = 10,
+            IEnumerable<string> selectKeys = null,
+            IEnumerable<string> includeKeys = null,
+            IEnumerable<string> includeStatistics = null) {
+            string path = $"leaderboard/leaderboards/user/{StatisticName}/group/ranks";
+            return GetGroupResults(path, ids, version, skip, limit, selectKeys, includeKeys, includeStatistics);
+        }
+
+        public Task<ReadOnlyCollection<LCRanking>> GetGroupResultsAroundUser(LCUser user,
+            IEnumerable<string> ids,
+            int version = -1,
+            int skip = 0,
+            int limit = 10,
+            IEnumerable<string> selectKeys = null,
+            IEnumerable<string> includeKeys = null,
+            IEnumerable<string> includeStatistics = null) {
+            if (user == null) {
+                throw new ArgumentNullException(nameof(user));
+            }
+            if (string.IsNullOrEmpty(user.ObjectId)) {
+                throw new ArgumentNullException(nameof(user.ObjectId));
+            }
+            string path = $"leaderboard/leaderboards/user/{StatisticName}/group/ranks/{user.ObjectId}";
+            return GetGroupResults(path, ids, version, skip, limit, selectKeys, includeKeys, includeStatistics);
+        }
+
+        private async Task<ReadOnlyCollection<LCRanking>> GetGroupResults(string path,
+            IEnumerable<string> ids,
+            int version,
+            int skip,
+            int limit,
+            IEnumerable<string> selectKeys,
+            IEnumerable<string> includeKeys,
+            IEnumerable<string> includeStatistics) {
+            if (ids == null || ids.Count() == 0) {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            path = $"{path}?{BuildQueryParams(version, skip, limit, selectKeys, includeKeys, includeStatistics)}";
+            Dictionary<string, object> data = new Dictionary<string, object> {
+                { "ids", ids }
+            };
+            Dictionary<string, object> result = await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
+            if (result.TryGetValue("results", out object results) &&
+                results is List<object> list) {
+                List<LCRanking> rankings = new List<LCRanking>();
+                foreach (object item in list) {
+                    LCRanking ranking = LCRanking.Parse(item as IDictionary<string, object>);
+                    rankings.Add(ranking);
+                }
+                return rankings.AsReadOnly();
+            }
+            return null;
+        }
+
+        private static string BuildQueryParams(int version,
+            int skip,
+            int limit,
+            IEnumerable<string> selectKeys,
+            IEnumerable<string> includeKeys,
+            IEnumerable<string> includeStatistics) {
+            StringBuilder builder = new StringBuilder();
+            builder.Append($"startPosition={skip}&maxResultsCount={limit}");
+            if (version != -1) {
+                builder.Append($"&version={version}");
+            }
+            if (selectKeys != null) {
+                string keys = string.Join(",", selectKeys);
+                builder.Append($"&selectKeys={keys}");
+            }
+            if (includeKeys != null) {
+                string includes = string.Join(",", includeKeys);
+                builder.Append($"&includeKeys={includes}");
+            }
+            if (includeStatistics != null) {
+                string statistics = string.Join(",", includeStatistics);
+                builder.Append($"&includeStatistics={statistics}");
+            }
+            return builder.ToString();
         }
 
         /// <summary>
