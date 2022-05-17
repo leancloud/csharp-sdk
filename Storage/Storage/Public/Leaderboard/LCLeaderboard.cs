@@ -159,6 +159,9 @@ namespace LeanCloud.Storage {
             if (user == null) {
                 throw new ArgumentNullException(nameof(user));
             }
+            if (string.IsNullOrEmpty(user.ObjectId)) {
+                throw new ArgumentNullException(nameof(user.ObjectId));
+            }
             if (statistics == null || statistics.Count == 0) {
                 throw new ArgumentNullException(nameof(statistics));
             }
@@ -242,6 +245,9 @@ namespace LeanCloud.Storage {
             IEnumerable<string> statisticNames = null) {
             if (user == null) {
                 throw new ArgumentNullException(nameof(user));
+            }
+            if (string.IsNullOrEmpty(user.ObjectId)) {
+                throw new ArgumentNullException(nameof(user.ObjectId));
             }
             string path = $"leaderboard/users/{user.ObjectId}/statistics";
             return _GetStatistics(path, statisticNames);
@@ -337,7 +343,10 @@ namespace LeanCloud.Storage {
         }
 
         private async Task<ReadOnlyCollection<LCStatistic>> _GetSelfStatistics(string path, IEnumerable<string> ids) {
-            Dictionary<string, object> result = await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: ids);
+            Dictionary<string, object> data = new Dictionary<string, object> {
+                { "ids", ids }
+            };
+            Dictionary<string, object> result = await LCCore.HttpClient.Post<Dictionary<string, object>>(path, data: data);
             return _ToStatistics(result);
         }
 
@@ -367,6 +376,9 @@ namespace LeanCloud.Storage {
             IEnumerable<string> statisticNames) {
             if (user == null) {
                 throw new ArgumentNullException(nameof(user));
+            }
+            if (string.IsNullOrEmpty(user.ObjectId)) {
+                throw new ArgumentNullException(nameof(user.ObjectId));
             }
             if (statisticNames == null || statisticNames.Count() == 0) {
                 throw new ArgumentNullException(nameof(statisticNames));
