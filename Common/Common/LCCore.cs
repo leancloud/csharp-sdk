@@ -10,7 +10,7 @@ namespace LeanCloud.Common {
         public const string SDKName = "LeanCloud-CSharp-SDK";
 
         // SDK 版本号，用于 User-Agent 统计
-        public const string SDKVersion = "0.10.10";
+        public const string SDKVersion = "0.10.11";
 
         // 接口版本号，用于接口版本管理
         public const string APIVersion = "1.1";
