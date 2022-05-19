@@ -2,7 +2,7 @@ var searchData=
 [
   ['sentat_0',['SentAt',['../classLeanCloud_1_1Realtime_1_1LCIMMessage.html#a7aa374b11a7f1eaa88053bc83eafccb1',1,'LeanCloud::Realtime::LCIMMessage']]],
   ['senttimestamp_1',['SentTimestamp',['../classLeanCloud_1_1Realtime_1_1LCIMMessageQueryEndpoint.html#a347b367404f1e2acc8a03c340a77078b',1,'LeanCloud.Realtime.LCIMMessageQueryEndpoint.SentTimestamp()'],['../classLeanCloud_1_1Realtime_1_1LCIMMessage.html#a38d531f8e59a5631d4e0b4ab812d87ee',1,'LeanCloud.Realtime.LCIMMessage.SentTimestamp()']]],
-  ['sessiontoken_2',['SessionToken',['../classLeanCloud_1_1Storage_1_1LCUser.html#a57f69dfe2623efcaecc12060fea6063e',1,'LeanCloud.Storage.LCUser.SessionToken()'],['../classLeanCloud_1_1Engine_1_1LCEngineRequestContext.html#a9f24c23aec3ec29af807b8ecce02465f',1,'LeanCloud.Engine.LCEngineRequestContext.SessionToken()']]],
+  ['sessiontoken_2',['SessionToken',['../classLeanCloud_1_1Engine_1_1LCEngineRequestContext.html#a9f24c23aec3ec29af807b8ecce02465f',1,'LeanCloud.Engine.LCEngineRequestContext.SessionToken()'],['../classLeanCloud_1_1Storage_1_1LCUser.html#a57f69dfe2623efcaecc12060fea6063e',1,'LeanCloud.Storage.LCUser.SessionToken()']]],
   ['sid_3',['Sid',['../classLeanCloud_1_1Storage_1_1LCSearchResponse.html#aeacbc2ab8c9d26ef0f5c5152f4db426b',1,'LeanCloud::Storage::LCSearchResponse']]],
   ['signature_4',['Signature',['../classLeanCloud_1_1Realtime_1_1LCIMSignature.html#a1d803f11c2b488fbbff5632adf7600d0',1,'LeanCloud::Realtime::LCIMSignature']]],
   ['sinceid_5',['SinceId',['../classLeanCloud_1_1Storage_1_1LCStatusQuery.html#a5bb5a936bb70966f7c71e996a787c5af',1,'LeanCloud::Storage::LCStatusQuery']]],

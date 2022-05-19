@@ -6,7 +6,7 @@ var searchData=
   ['unmute_3',['Unmute',['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#adc533a82172149d6772146f0a8c0f4d8',1,'LeanCloud::Realtime::LCIMConversation']]],
   ['unmutemembers_4',['UnmuteMembers',['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a36b39ee51ea5a7b65302846347ee3b52',1,'LeanCloud::Realtime::LCIMConversation']]],
   ['unset_5',['Unset',['../classLeanCloud_1_1Storage_1_1LCObject.html#abe2a1278e15eb00a53bbb12a8886b5e6',1,'LeanCloud::Storage::LCObject']]],
-  ['unsubscribe_6',['Unsubscribe',['../classLeanCloud_1_1Realtime_1_1LCIMServiceConversation.html#ae80a0a4de76fe5684cf351c69fe989c7',1,'LeanCloud.Realtime.LCIMServiceConversation.Unsubscribe()'],['../classLeanCloud_1_1LiveQuery_1_1LCLiveQuery.html#af31882120f58b7e48bb4699af81ff719',1,'LeanCloud.LiveQuery.LCLiveQuery.Unsubscribe()']]],
+  ['unsubscribe_6',['Unsubscribe',['../classLeanCloud_1_1LiveQuery_1_1LCLiveQuery.html#af31882120f58b7e48bb4699af81ff719',1,'LeanCloud.LiveQuery.LCLiveQuery.Unsubscribe()'],['../classLeanCloud_1_1Realtime_1_1LCIMServiceConversation.html#ae80a0a4de76fe5684cf351c69fe989c7',1,'LeanCloud.Realtime.LCIMServiceConversation.Unsubscribe()']]],
   ['updateinfo_7',['UpdateInfo',['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#ae2c7d4464a80de75ca796fc2adedc80d',1,'LeanCloud::Realtime::LCIMConversation']]],
   ['updatememberrole_8',['UpdateMemberRole',['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a9655f18fca0a44d63ca8a11364c48b78',1,'LeanCloud::Realtime::LCIMConversation']]],
   ['updatemessage_9',['UpdateMessage',['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a4dc9bf582809fcd3ef64010cacd03f83',1,'LeanCloud::Realtime::LCIMConversation']]],
