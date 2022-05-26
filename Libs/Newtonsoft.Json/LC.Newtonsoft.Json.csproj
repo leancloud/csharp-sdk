@@ -30,7 +30,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <CodeAnalysisRuleset>Newtonsoft.Json.ruleset</CodeAnalysisRuleset>
-    <ReleaseVersion>0.10.11</ReleaseVersion>
+    <ReleaseVersion>0.10.12</ReleaseVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.orig" />
