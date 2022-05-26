@@ -45,6 +45,7 @@ public class PushDemo : MonoBehaviour {
 
         deviceInfoText.text = $"{SystemInfo.deviceModel}, {SystemInfo.deviceName}, {SystemInfo.deviceType}, {SystemInfo.operatingSystem}";
 
+        //InitChineseApp();
         InitInternationalApp();
     }
 

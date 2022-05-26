@@ -20,6 +20,15 @@
             <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
         </activity>
 
+        <!-- 华为 -->
+        <service 
+            android:name="com.leancloud.push.huawei.HuaWeiMessageService" 
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
         <!-- 小米 -->
         <service
             android:name="com.xiaomi.push.service.XMPushService"
