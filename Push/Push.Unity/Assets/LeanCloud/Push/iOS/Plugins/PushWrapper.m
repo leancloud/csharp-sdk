@@ -16,3 +16,7 @@ void _RegisterIOSPush(const char* teamId) {
 void _GetLaunchData(const char* callbackId) {
     [[PushManager sharedInstance] getLaunchData: [NSString stringWithUTF8String:callbackId]];
 }
+
+void _SetIconBadgeNumber(int number) {
+    [[PushManager sharedInstance] setIconBadgeNumber: number];
+}

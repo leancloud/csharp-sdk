@@ -48,6 +48,7 @@ const char* ON_GET_LAUNCH_DATA = "OnGetLaunchData";
                 NSData* jsonData = [NSJSONSerialization dataWithJSONObject:deviceInfo options:NSJSONWritingPrettyPrinted error:&error];
                 if (!error) {
                     NSString* json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                    NSLog(json);
                     UnitySendMessage(PUSH_BRIDGE, ON_REGISTER_PUSH, [json UTF8String]);
                 }
             }
@@ -105,6 +106,10 @@ const char* ON_GET_LAUNCH_DATA = "OnGetLaunchData";
         NSString* json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         UnitySendMessage(PUSH_BRIDGE, ON_GET_LAUNCH_DATA, [json UTF8String]);
     }
+}
+
+- (void)setIconBadgeNumber:(NSInteger)number {
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:number];
 }
 
 + (NSString *)hexadecimalStringFromData:(NSData *)data {
