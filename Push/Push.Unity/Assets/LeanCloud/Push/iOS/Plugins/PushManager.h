@@ -11,15 +11,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PushManager : NSObject
 
-@property (nonatomic, strong) NSString* teamId;
+@property(nonatomic, strong) NSString *teamId;
 
-@property (nonatomic, strong) NSDictionary* launchPushData;
+@property(nonatomic, strong) NSDictionary *launchPushData;
 
 + (instancetype)sharedInstance;
 
 - (void)registerIOSPush;
 
-- (void)getLaunchData:(NSString*)callbackId;
+- (void)getLaunchData:(NSString *)callbackId;
+
+- (void)setIconBadgeNumber:(NSInteger)number;
 
 @end
 

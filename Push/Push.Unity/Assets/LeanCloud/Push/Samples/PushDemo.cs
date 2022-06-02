@@ -60,6 +60,7 @@ public class PushDemo : MonoBehaviour {
 
         if (Application.platform == RuntimePlatform.IPhonePlayer) {
             LCIOSPushManager.RegisterIOSPush(IOS_TEAM_ID);
+            LCIOSPushManager.SetIconBadgeNumber(0);
         } else if (Application.platform == RuntimePlatform.Android) {
             string deviceModel = SystemInfo.deviceModel.ToLower();
             if (deviceModel.Contains("huawei")) {
