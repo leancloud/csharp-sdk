@@ -79,6 +79,12 @@ namespace Storage.Test {
             foreach (LCObject obj in list) {
                 Assert.NotNull(obj.ObjectId);
             }
+
+            foreach (LCObject obj in list) {
+                World world = obj as World;
+                world.Content = $"world";
+            }
+            await LCObject.SaveAll(list);
         }
 
         [Test]

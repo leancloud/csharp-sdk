@@ -332,7 +332,7 @@ namespace LeanCloud.Storage {
                 List<Dictionary<string, object>> requestList = dirtyObjects.Select(item => {
                     string path = item.ObjectId == null ?
                                 $"/1.1/classes/{item.ClassName}" :
-                                $"/1.1/classes/{item.ClassName}/{item.ClassName}";
+                                $"/1.1/classes/{item.ClassName}/{item.ObjectId}";
                     string method = item.ObjectId == null ? "POST" : "PUT";
                     Dictionary<string, object> body = LCEncoder.Encode(item.operationDict) as Dictionary<string, object>;
                     return new Dictionary<string, object> {
