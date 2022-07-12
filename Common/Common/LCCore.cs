@@ -27,10 +27,6 @@ namespace LeanCloud.Common {
             get; private set;
         }
 
-        public static bool UseProduction {
-            get; set;
-        }
-
         public static LCAppRouter AppRouter {
             get; private set;
         }
