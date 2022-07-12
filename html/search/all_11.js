@@ -32,7 +32,7 @@ var searchData=
   ['reset_29',['Reset',['../classLeanCloud_1_1Storage_1_1LCLeaderboard.html#adc65034a2f259715ff9c8d893c943c06',1,'LeanCloud::Storage::LCLeaderboard']]],
   ['resetpasswordbysmscode_30',['ResetPasswordBySmsCode',['../classLeanCloud_1_1Storage_1_1LCUser.html#af701d9fbac9d1efa0e38cc195b63f67a',1,'LeanCloud::Storage::LCUser']]],
   ['resetunreadcount_31',['ResetUnreadCount',['../classLeanCloud_1_1Storage_1_1LCStatus.html#a3c4b827389622d2ed8f3fd245ad30680',1,'LeanCloud::Storage::LCStatus']]],
-  ['results_32',['Results',['../classLeanCloud_1_1Realtime_1_1LCIMPageResult.html#a50bd8cdac0b945d36eb8c2a321e99763',1,'LeanCloud.Realtime.LCIMPageResult.Results()'],['../classLeanCloud_1_1Storage_1_1LCSearchResponse.html#a61856e5d5b552df65225a8bd37272da7',1,'LeanCloud.Storage.LCSearchResponse.Results()']]],
+  ['results_32',['Results',['../classLeanCloud_1_1Storage_1_1LCSearchResponse.html#a61856e5d5b552df65225a8bd37272da7',1,'LeanCloud.Storage.LCSearchResponse.Results()'],['../classLeanCloud_1_1Realtime_1_1LCIMPageResult.html#a50bd8cdac0b945d36eb8c2a321e99763',1,'LeanCloud.Realtime.LCIMPageResult.Results()']]],
   ['resume_33',['Resume',['../classLeanCloud_1_1Realtime_1_1LCRealtime.html#a707d154d5e7de5ed8cc57978b1ac9680',1,'LeanCloud::Realtime::LCRealtime']]],
   ['role_34',['Role',['../classLeanCloud_1_1Realtime_1_1LCIMConversationMemberInfo.html#a5057ed59298c678f9333536503480d02',1,'LeanCloud::Realtime::LCIMConversationMemberInfo']]],
   ['roles_35',['Roles',['../classLeanCloud_1_1Storage_1_1LCRole.html#ab48551fbbab1c2ef5d8f13d4a5aef1ad',1,'LeanCloud::Storage::LCRole']]],
