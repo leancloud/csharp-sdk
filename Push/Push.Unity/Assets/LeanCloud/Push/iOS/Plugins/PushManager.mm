@@ -35,7 +35,8 @@ const char* ON_GET_LAUNCH_DATA = "OnGetLaunchData";
         // 获得 devicetoken 事件
         [nc addObserverForName:kUnityDidRegisterForRemoteNotificationsWithDeviceToken object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
             NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken");
-            if ([note.userInfo isKindOfClass: [NSData class]]) {
+            if ([note.userInfo isKindOfClass: [NSData class]] &&
+                [PushManager sharedInstance].teamId) {
                 NSString* deviceToken = [PushManager hexadecimalStringFromData:(NSData*)note.userInfo];
                 NSDictionary* deviceInfo = @{
                     @"deviceType": [PushManager deviceType],
