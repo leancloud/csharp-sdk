@@ -14,6 +14,8 @@ namespace Storage.Test {
         public async Task CreateObject() {
             Hello @object = new Hello();
             @object["intValue"] = 123;
+            @object.FloatValue = 3.14f;
+            @object.DoubleValue = 3.1415926;
             @object["boolValue"] = true;
             @object["stringValue"] = "hello, world";
             DateTime now = DateTime.Parse("2022-04-22T05:05:21.0005369Z");
@@ -35,6 +37,8 @@ namespace Storage.Test {
             WriteLine(@object.CreatedAt);
             WriteLine(@object.UpdatedAt);
             WriteLine(@object["intValue"]);
+            WriteLine(@object.FloatValue);
+            WriteLine(@object.DoubleValue);
             WriteLine(@object["boolValue"]);
             WriteLine(@object["stringValue"]);
             WriteLine(@object["objectValue"]);
@@ -49,6 +53,8 @@ namespace Storage.Test {
             Assert.NotNull(@object.CreatedAt);
             Assert.NotNull(@object.UpdatedAt);
             Assert.AreEqual(@object["intValue"], 123);
+            Assert.AreEqual(@object.FloatValue, 3.14f);
+            Assert.AreEqual(@object.DoubleValue, 3.1415926);
             Assert.AreEqual(@object["boolValue"], true);
             Assert.AreEqual(@object["stringValue"], "hello, world");
             Assert.AreEqual(@object["time"], now);
