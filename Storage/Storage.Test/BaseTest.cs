@@ -4,6 +4,20 @@ using LeanCloud.Storage;
 
 namespace Storage.Test {
     internal class Hello : LCObject {
+        internal float FloatValue {
+            get => (float)this["floatValue"];
+            set {
+                this["floatValue"] = value;
+            }
+        }
+
+        internal double DoubleValue {
+            get => (double)this["doubleValue"];
+            set {
+                this["doubleValue"] = value;
+            }
+        }
+
         internal World World {
             get => this["objectValue"] as World;
             set {

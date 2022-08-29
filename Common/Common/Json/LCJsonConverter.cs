@@ -29,7 +29,7 @@ namespace LeanCloud.Common {
                 }
             }
             if (reader.TokenType == JsonToken.Float) {
-                return Convert.ToSingle(reader.Value);
+                return Convert.ToDouble(reader.Value);
             }
 
             return serializer.Deserialize(reader);
