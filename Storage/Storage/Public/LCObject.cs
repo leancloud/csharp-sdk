@@ -384,7 +384,7 @@ namespace LeanCloud.Storage {
             string path = ObjectId == null ? $"classes/{ClassName}" : $"classes/{ClassName}/{ObjectId}";
             Dictionary<string, object> queryParams = new Dictionary<string, object>();
             if (fetchWhenSave) {
-                queryParams["fetchWhenSave"] = true;
+                queryParams["fetchWhenSave"] = true.ToString().ToLower();
             }
             if (query != null) {
                 queryParams["where"] = query.BuildWhere();
