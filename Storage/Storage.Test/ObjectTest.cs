@@ -232,5 +232,26 @@ namespace Storage.Test {
             World newWorld = (newObj["pointerList"] as List<object>)[0] as World;
             Assert.AreEqual(newWorld.Content, "hello, world");
         }
+
+        [Test]
+        public async Task FetchWhenSave() {
+            LCObject hello = LCObject.Create("Hello");
+            hello["intValue"] = 0;
+            await hello.Save();
+
+            string objectId = hello.ObjectId;
+
+            LCObject incrHello = LCObject.CreateWithoutData("Hello", objectId);
+            incrHello.Increment("intValue", 1);
+            await incrHello.Save(true);
+            WriteLine($"intValue: {incrHello["intValue"]}");
+            Assert.AreEqual(incrHello["intValue"], 1);
+
+            LCObject incrHello2 = LCObject.CreateWithoutData("Hello", objectId);
+            incrHello2.Increment("intValue", 1);
+            await incrHello2.Save(true);
+            WriteLine($"intValue2: {incrHello2["intValue"]}");
+            Assert.AreEqual(incrHello2["intValue"], 2);
+        }
     }
 }
