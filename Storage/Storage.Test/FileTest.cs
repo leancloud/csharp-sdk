@@ -4,6 +4,9 @@ using System.Text;
 using System.Threading.Tasks;
 using LeanCloud;
 using LeanCloud.Storage;
+using System.Security.Cryptography;
+using System.IO;
+using LeanCloud.Common;
 
 namespace Storage.Test {
     public class FileTest : BaseTest {
@@ -126,6 +129,26 @@ namespace Storage.Test {
             });
             TestContext.WriteLine(file.ObjectId);
             Assert.NotNull(file.ObjectId);
+        }
+
+        [Test]
+        [Order(12)]
+        public async Task CheckSum() {
+            LCFile avatar = new LCFile("avatar.png", AvatarFilePath);
+            await avatar.Save();
+
+            LCQuery<LCFile> query = new LCQuery<LCFile>(LCFile.CLASS_NAME);
+            LCFile file = await query.Get(avatar.ObjectId);
+            string sum = file.MetaData["_checksum"] as string;
+
+            using (MD5 md5 = MD5.Create()) {
+                using (FileStream fs = new FileStream(AvatarFilePath, FileMode.Open)) {
+                    fs.Position = 0;
+                    byte[] bytes = md5.ComputeHash(fs);
+                    string hash = LCUtils.ToHex(bytes);
+                    Assert.AreEqual(sum, hash);
+                }
+            }
         }
     }
 }

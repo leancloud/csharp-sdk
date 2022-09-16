@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 using LeanCloud.Common;
 using LeanCloud.Storage.Internal.File;
 using LeanCloud.Storage.Internal.Object;
@@ -15,6 +16,7 @@ namespace LeanCloud.Storage {
         public const string CLASS_NAME = "_File";
 
         private const string METADATA_SIZE_KEY = "size";
+        private const string METADATA_SUM_KEY = "_checksum";
 
         /// <summary>
         /// Gets the name of the file.
@@ -81,9 +83,16 @@ namespace LeanCloud.Storage {
         /// <param name="name"></param>
         /// <param name="bytes"></param>
         public LCFile(string name, byte[] bytes) : this() {
+            if (bytes == null || bytes.Length == 0) {
+                throw new ArgumentNullException(nameof(bytes));
+            }
             Name = name;
+            AddMetaData(METADATA_SIZE_KEY, bytes.Length);
+            using (MD5 md5 = MD5.Create()) {
+                byte[] hash = md5.ComputeHash(bytes);
+                AddMetaData(METADATA_SUM_KEY, LCUtils.ToHex(hash));
+            }
             stream = new MemoryStream(bytes);
-            AddMetaData(METADATA_SIZE_KEY, stream.Length);
         }
 
         /// <summary>
@@ -92,9 +101,19 @@ namespace LeanCloud.Storage {
         /// <param name="name"></param>
         /// <param name="path"></param>
         public LCFile(string name, string path) : this() {
+            if (string.IsNullOrEmpty(path)) {
+                throw new ArgumentNullException(nameof(path));
+            }
             Name = name;
+            using (MD5 md5 = MD5.Create()) {
+                using (FileStream fs = new FileStream(path, FileMode.Open)) {
+                    fs.Position = 0;
+                    AddMetaData(METADATA_SIZE_KEY, fs.Length);
+                    byte[] hash = md5.ComputeHash(fs);
+                    AddMetaData(METADATA_SUM_KEY, LCUtils.ToHex(hash));
+                }
+            }
             stream = new FileStream(path, FileMode.Open);
-            AddMetaData(METADATA_SIZE_KEY, stream.Length);
         }
 
         /// <summary>

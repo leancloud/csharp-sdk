@@ -48,6 +48,9 @@
     <Compile Include="..\Common\Exception\LCException.cs">
       <Link>Common\Exception\LCException.cs</Link>
     </Compile>
+    <Compile Include="..\Common\LCUtils.cs">
+      <Link>Common\LCUtils.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\link.xml">
