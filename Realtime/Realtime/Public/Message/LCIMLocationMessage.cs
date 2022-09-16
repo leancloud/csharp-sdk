@@ -40,11 +40,11 @@ namespace LeanCloud.Realtime {
                 }
                 double latitude = 0, longitude = 0;
                 if (locationData.TryGetValue(MessageDataLatitudeKey, out object lat) &&
-                    lat is float la) {
+                    lat is double la) {
                     latitude = la;
                 }
                 if (locationData.TryGetValue(MessageDataLongitudeKey, out object lon) &&
-                    lon is float lo) {
+                    lon is double lo) {
                     longitude = lo;
                 }
                 Location = new LCGeoPoint(latitude, longitude);

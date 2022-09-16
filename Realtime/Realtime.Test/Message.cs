@@ -62,7 +62,7 @@ namespace Realtime.Test {
                     Assert.AreEqual(imageMsg.Height, 225);
                     count++;
                 } else if (msg is LCIMLocationMessage locationMsg) {
-                    WriteLine($"-------- location: {locationMsg.Location}");
+                    WriteLine($"-------- location: {locationMsg.Location.Latitude}, {locationMsg.Location.Longitude}");
                     Assert.Less(Math.Abs(20.0059 - locationMsg.Location.Latitude), 0.0001);
                     Assert.Less(Math.Abs(110.3665 - locationMsg.Location.Longitude), 0.0001);
                     count++;
