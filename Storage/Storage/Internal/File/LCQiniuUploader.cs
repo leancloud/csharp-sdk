@@ -2,7 +2,6 @@
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
-using System.Web;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Collections.Generic;
@@ -55,7 +54,7 @@ namespace LeanCloud.Storage.Internal.File {
         }
 
         internal async Task Upload(Action<long, long> onProgress) {
-            string encodedObjectName = HttpUtility.UrlEncode(Convert.ToBase64String(Encoding.UTF8.GetBytes(key)));
+            string encodedObjectName = Uri.EscapeUriString(Convert.ToBase64String(Encoding.UTF8.GetBytes(key)));
 
             HttpClient client = new HttpClient();
 
