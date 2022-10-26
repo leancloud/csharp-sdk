@@ -14,6 +14,10 @@ namespace Storage.Test {
         static readonly string APKFilePath = "../../../../../assets/test.apk";
         static readonly string VideoFilePath = "../../../../../assets/video.mp4";
 
+        static readonly string US_APP_ID = "ldCRr8t23k3ydo7FxmJlKQmn-MdYXbMMI";
+        static readonly string US_APP_KEY = "GwQDHkmsQTSF2ZXWegzXio5F";
+        static readonly string US_SERVER = "https://ldcrr8t2.api.lncldglobal.com";
+
         private LCFile video;
 
         [Test]
@@ -109,7 +113,7 @@ namespace Storage.Test {
         [Test]
         [Order(10)]
         public async Task AWS() {
-            LCApplication.Initialize("HudJvWWmAuGMifwxByDVLmQi-MdYXbMMI", "YjoQr1X8wHoFIfsSGXzeJaAM");
+            LCApplication.Initialize(US_APP_ID, US_APP_KEY);
             LCFile file = new LCFile("avatar.png", AvatarFilePath);
             await file.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");
@@ -121,8 +125,7 @@ namespace Storage.Test {
         [Test]
         [Order(11)]
         public async Task AWSBigFile() {
-            LCApplication.Initialize("HudJvWWmAuGMifwxByDVLmQi-MdYXbMMI", "YjoQr1X8wHoFIfsSGXzeJaAM",
-                "https://hudjvwwm.api.lncldglobal.com");
+            LCApplication.Initialize(US_APP_ID, US_APP_KEY, US_SERVER);
             LCFile file = new LCFile("video.mp4", VideoFilePath);
             await file.Save((count, total) => {
                 TestContext.WriteLine($"progress: {count}/{total}");

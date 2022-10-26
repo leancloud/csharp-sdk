@@ -9,7 +9,7 @@ using LeanCloud.Common;
 
 namespace Realtime.Test {
     public class LocalSignatureFactory : ILCIMSignatureFactory {
-        const string MasterKey = "VFbnm4iaAdqQPzAdXT2M8KjP";
+        const string MasterKey = "8Z0R6fd5eohDAHlgtiRgpkAu";
 
         public Task<LCIMSignature> CreateConnectSignature(string clientId) {
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
@@ -57,20 +57,21 @@ namespace Realtime.Test {
         }
 
         public Task<LCIMSignature> CreateBlacklistSignature(string conversationId, string clientId, IEnumerable<string> memberIds, string action) {
-            string sortedMemberIds = string.Empty;
-            if (memberIds != null) {
-                List<string> sortedMemberList = memberIds.ToList();
-                sortedMemberList.Sort();
-                sortedMemberIds = string.Join(":", sortedMemberList);
-            }
-            long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
-            string nonce = NewNonce();
-            string signature = GenerateSignature(LCCore.AppId, clientId, conversationId, sortedMemberIds, timestamp.ToString(), nonce, action);
-            return Task.FromResult(new LCIMSignature {
-                Signature = signature,
-                Timestamp = timestamp,
-                Nonce = nonce
-            });
+            //string sortedMemberIds = string.Empty;
+            //if (memberIds != null) {
+            //    List<string> sortedMemberList = memberIds.ToList();
+            //    sortedMemberList.Sort();
+            //    sortedMemberIds = string.Join(":", sortedMemberList);
+            //}
+            //long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+            //string nonce = NewNonce();
+            //string signature = GenerateSignature(LCCore.AppId, clientId, conversationId, sortedMemberIds, timestamp.ToString(), nonce, action);
+            //return Task.FromResult(new LCIMSignature {
+            //    Signature = signature,
+            //    Timestamp = timestamp,
+            //    Nonce = nonce
+            //});
+            return Task.FromResult<LCIMSignature>(null);
         }
 
         private static string SignSHA1(string key, string text) {

@@ -8,9 +8,9 @@ using static NUnit.Framework.TestContext;
 
 namespace Realtime.Test {
     public class Signature {
-        internal const string AppId = "3zWMOXuO9iSdnjXM942i6DdI-gzGzoHsz";
-        internal const string AppKey = "bkwiNq4Tj417eUaHlTWS5sPm";
-        internal const string AppServer = "https://3zwmoxuo.lc-cn-n1-shared.com";
+        internal const string AppId = "7oDgNicekFVXBMkRKcLpvX5w-gzGzoHsz";
+        internal const string AppKey = "tPT17REZjS3DfjTJodw6fJzj";
+        internal const string AppServer = "https://7odgnice.lc-cn-n1-shared.com";
 
         private LCIMClient hello;
         private LCIMClient world;

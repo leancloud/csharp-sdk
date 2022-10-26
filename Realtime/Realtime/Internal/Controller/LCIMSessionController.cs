@@ -94,7 +94,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     Nonce = ret["nonce"] as string
                 };
             }
-            if (signature != null) {
+            if (signature != null && signature.IsValid) {
                 session.S = signature.Signature;
                 session.T = signature.Timestamp;
                 session.N = signature.Nonce;
