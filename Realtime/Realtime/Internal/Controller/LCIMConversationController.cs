@@ -52,9 +52,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
             };
             if (Client.SignatureFactory != null) {
                 LCIMSignature signature = await Client.SignatureFactory.CreateStartConversationSignature(Client.Id, members);
-                conv.S = signature.Signature;
-                conv.T = signature.Timestamp;
-                conv.N = signature.Nonce;
+                if (signature != null && signature.IsValid) {
+                    conv.S = signature.Signature;
+                    conv.T = signature.Timestamp;
+                    conv.N = signature.Nonce;
+                }
             }
             request.ConvMessage = conv;
             GenericCommand response = await Connection.SendRequest(request);
@@ -138,9 +140,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     Client.Id,
                     clientIds,
                     LCIMSignatureAction.Invite);
-                conv.S = signature.Signature;
-                conv.T = signature.Timestamp;
-                conv.N = signature.Nonce;
+                if (signature != null && signature.IsValid) {
+                    conv.S = signature.Signature;
+                    conv.T = signature.Timestamp;
+                    conv.N = signature.Nonce;
+                }
             }
             GenericCommand request = NewCommand(CommandType.Conv, OpType.Add);
             request.ConvMessage = conv;
@@ -163,9 +167,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     Client.Id,
                     removeIds,
                     LCIMSignatureAction.Kick);
-                conv.S = signature.Signature;
-                conv.T = signature.Timestamp;
-                conv.N = signature.Nonce;
+                if (signature != null && signature.IsValid) {
+                    conv.S = signature.Signature;
+                    conv.T = signature.Timestamp;
+                    conv.N = signature.Nonce;
+                }
             }
             GenericCommand request = NewCommand(CommandType.Conv, OpType.Remove);
             request.ConvMessage = conv;
@@ -234,9 +240,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     Client.Id,
                     clientIds,
                     LCIMSignatureAction.ConversationBlockClients);
-                blacklist.S = signature.Signature;
-                blacklist.T = signature.Timestamp;
-                blacklist.N = signature.Nonce;
+                if (signature != null && signature.IsValid) {
+                    blacklist.S = signature.Signature;
+                    blacklist.T = signature.Timestamp;
+                    blacklist.N = signature.Nonce;
+                }
             }
             GenericCommand request = NewCommand(CommandType.Blacklist, OpType.Block);
             request.BlacklistMessage = blacklist;
@@ -256,9 +264,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
                     Client.Id,
                     clientIds,
                     LCIMSignatureAction.ConversationUnblockClients);
-                blacklist.S = signature.Signature;
-                blacklist.T = signature.Timestamp;
-                blacklist.N = signature.Nonce;
+                if (signature != null && signature.IsValid) {
+                    blacklist.S = signature.Signature;
+                    blacklist.T = signature.Timestamp;
+                    blacklist.N = signature.Nonce;
+                }
             }
             GenericCommand request = NewCommand(CommandType.Blacklist, OpType.Unblock);
             request.BlacklistMessage = blacklist;

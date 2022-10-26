@@ -17,5 +17,10 @@
         public string Nonce {
             get; set;
         }
+
+        public bool IsValid =>
+            !string.IsNullOrEmpty(Signature) &&
+            !string.IsNullOrEmpty(Nonce) &&
+            Timestamp > 0;
     }
 }
