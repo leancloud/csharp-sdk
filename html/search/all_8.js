@@ -29,5 +29,6 @@ var searchData=
   ['ismute_26',['IsMute',['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a6c4a58a669f564716eb0e46821568eed',1,'LeanCloud::Realtime::LCIMConversation']]],
   ['isowner_27',['IsOwner',['../classLeanCloud_1_1Realtime_1_1LCIMConversationMemberInfo.html#a190518d4d8deb73a7455b4bba52ae12c',1,'LeanCloud::Realtime::LCIMConversationMemberInfo']]],
   ['isproduction_28',['IsProduction',['../classLeanCloud_1_1Storage_1_1LCCloud.html#adb1dae6f75087dd551f6968e544696dd',1,'LeanCloud::Storage::LCCloud']]],
-  ['issuccess_29',['IsSuccess',['../classLeanCloud_1_1Realtime_1_1LCIMPartiallySuccessResult.html#abc410ea32d845b8fb2648ebc914c4b67',1,'LeanCloud::Realtime::LCIMPartiallySuccessResult']]]
+  ['issuccess_29',['IsSuccess',['../classLeanCloud_1_1Realtime_1_1LCIMPartiallySuccessResult.html#abc410ea32d845b8fb2648ebc914c4b67',1,'LeanCloud::Realtime::LCIMPartiallySuccessResult']]],
+  ['isvalid_30',['IsValid',['../classLeanCloud_1_1Realtime_1_1LCIMSignature.html#affb7e0a360899cac0e9aa9610ab4097f',1,'LeanCloud::Realtime::LCIMSignature']]]
 ];
