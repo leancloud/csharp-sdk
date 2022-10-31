@@ -79,12 +79,17 @@ namespace LeanCloud.Push {
         /// </summary>
         /// <param name="json"></param>
         public async void OnReceiveMessage(string json) {
+            if (OnReceiveNotification == null) {
+                // 如果没有注册通知回调，则不默认获取推送数据，避免因为项目侧延迟注册回调，导致推送数据丢失
+                return;
+            }
+
             Dictionary<string, object> launchData = await GetLaunchData();
             if (launchData == null || launchData.Count == 0) {
                 return;
             }
 
-            OnReceiveNotification?.Invoke(launchData);
+            OnReceiveNotification.Invoke(launchData);
         }
 
         public Task<Dictionary<string, object>> GetLaunchData() {
