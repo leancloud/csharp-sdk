@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using LC.Newtonsoft.Json;
 
 public class PushDemo : MonoBehaviour {
-    public const string IOS_TEAM_ID = "6KRPUK49Z3";
+    public const string IOS_TEAM_ID = "Y6X8P44TM5";
 
     public const string XIAOMI_APP_ID = "2882303761517894746";
     public const string XIAOMI_APP_KEY = "5981789429746";
@@ -45,8 +45,8 @@ public class PushDemo : MonoBehaviour {
 
         deviceInfoText.text = $"{SystemInfo.deviceModel}, {SystemInfo.deviceName}, {SystemInfo.deviceType}, {SystemInfo.operatingSystem}";
 
-        //InitChineseApp();
-        InitInternationalApp();
+        InitChineseApp();
+        //InitInternationalApp();
     }
 
     private void InitInternationalApp() {
@@ -78,7 +78,16 @@ public class PushDemo : MonoBehaviour {
         }
     }
 
-    private void Start() {
+    private async void Start() {
+        LCPushBridge.Instance.OnReceiveNotification += notification => {
+            launchDataText.text = $"Receive: {JsonConvert.SerializeObject(notification)}";
+        };
+
+        Dictionary<string, object> launchData = await LCPushBridge.Instance.GetLaunchData();
+        if (launchData != null && launchData.Count > 0) {
+            launchDataText.text = $"Launch: {JsonConvert.SerializeObject(launchData)}";
+        }
+
         _ = UpdateDeviceInfo();
     }
 
@@ -119,7 +128,7 @@ public class PushDemo : MonoBehaviour {
         if (launchData == null) {
             return;
         }
-        deviceInfoText.text = JsonConvert.SerializeObject(launchData);
+        launchDataText.text = JsonConvert.SerializeObject(launchData);
         Debug.Log("-----------------------------------------------");
         foreach (KeyValuePair<string, object> kv in launchData) {
             Debug.Log($"{kv.Key} : {kv.Value}");

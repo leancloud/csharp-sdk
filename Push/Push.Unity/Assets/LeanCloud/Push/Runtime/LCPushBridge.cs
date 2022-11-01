@@ -10,7 +10,11 @@ namespace LeanCloud.Push {
     public class LCPushBridge : MonoBehaviour {
         private const string PUSH_BRIDGE = "__LC_PUSH_BRIDGE__";
 
+        private const string CALLBACK_ID = "callbackId";
+
         public static LCPushBridge Instance { get; private set; }
+
+        public Action<Dictionary<string, object>> OnReceiveNotification { get; set; }
 
         private readonly Dictionary<string, Action<Dictionary<string, object>>> id2Callbacks = new Dictionary<string, Action<Dictionary<string, object>>>();
 
@@ -59,7 +63,7 @@ namespace LeanCloud.Push {
             try {
                 Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json,
                     LCJsonConverter.Default);
-                if (data.TryGetValue("callbackId", out object idObj) &&
+                if (data.TryGetValue(CALLBACK_ID, out object idObj) &&
                     idObj is string id &&
                     id2Callbacks.TryGetValue(id, out Action<Dictionary<string, object>> callback)) {
                     callback.Invoke(data);
@@ -70,12 +74,31 @@ namespace LeanCloud.Push {
             }
         }
 
+        /// <summary>
+        /// 通知回调
+        /// </summary>
+        /// <param name="json"></param>
+        public async void OnReceiveMessage(string json) {
+            if (OnReceiveNotification == null) {
+                // 如果没有注册通知回调，则不默认获取推送数据，避免因为项目侧延迟注册回调，导致推送数据丢失
+                return;
+            }
+
+            Dictionary<string, object> launchData = await GetLaunchData();
+            if (launchData == null || launchData.Count == 0) {
+                return;
+            }
+
+            OnReceiveNotification.Invoke(launchData);
+        }
+
         public Task<Dictionary<string, object>> GetLaunchData() {
             if (Application.platform == RuntimePlatform.IPhonePlayer) {
                 TaskCompletionSource<Dictionary<string, object>> tcs = new TaskCompletionSource<Dictionary<string, object>>();
 
                 string callbackId = Guid.NewGuid().ToString();
                 id2Callbacks.Add(callbackId, data => {
+                    data.Remove(CALLBACK_ID);
                     tcs.TrySetResult(data);
                 });
                 LCIOSPushManager.GetLaunchData(callbackId);

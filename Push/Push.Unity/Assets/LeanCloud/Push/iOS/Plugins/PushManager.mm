@@ -17,6 +17,7 @@
 const char* PUSH_BRIDGE = "__LC_PUSH_BRIDGE__";
 const char* ON_REGISTER_PUSH = "OnRegisterPush";
 const char* ON_GET_LAUNCH_DATA = "OnGetLaunchData";
+const char* ON_RECEIVE_MESSAGE = "OnReceiveMessage";
 
 + (void)load {
     static dispatch_once_t onceToken;
@@ -59,6 +60,13 @@ const char* ON_GET_LAUNCH_DATA = "OnGetLaunchData";
             // 解析
             NSDictionary* pushData = note.userInfo;
             [PushManager sharedInstance].launchPushData = pushData;
+            
+            NSError* error;
+            NSData* jsonData = [NSJSONSerialization dataWithJSONObject:pushData options:NSJSONWritingPrettyPrinted error:&error];
+            if (!error) {
+                NSString* json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                UnitySendMessage(PUSH_BRIDGE, ON_RECEIVE_MESSAGE, [json UTF8String]);
+            }
         }];
     });
 }
