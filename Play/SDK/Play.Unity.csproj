@@ -1,0 +1,175 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ReleaseVersion>0.10.19</ReleaseVersion>
+    <AssemblyName>Play</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\PlayHeartBeat.cs.meta">
+      <Link>Internal\PlayHeartBeat.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\BaseConnection.cs.meta">
+      <Link>Internal\BaseConnection.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\protocol.meta">
+      <Link>Internal\protocol.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\ResponseWrapper.cs.meta">
+      <Link>Internal\ResponseWrapper.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\LobbyConnection.cs.meta">
+      <Link>Internal\LobbyConnection.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\GameRouter.cs.meta">
+      <Link>Internal\GameRouter.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\GameConnection.cs.meta">
+      <Link>Internal\GameConnection.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\CustomType.cs.meta">
+      <Link>Internal\CustomType.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\LobbyService.cs.meta">
+      <Link>Internal\LobbyService.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\Connection.cs.meta">
+      <Link>Internal\Connection.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\CommandWrapper.cs.meta">
+      <Link>Internal\CommandWrapper.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\protocol\GenericCollection.cs.meta">
+      <Link>Internal\protocol\GenericCollection.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\protocol\Messages.cs.meta">
+      <Link>Internal\protocol\Messages.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Room.cs.meta">
+      <Link>Public\Room.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Player.cs.meta">
+      <Link>Public\Player.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\PlayObject.cs.meta">
+      <Link>Public\PlayObject.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\LobbyRoom.cs.meta">
+      <Link>Public\LobbyRoom.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\PlayArray.cs.meta">
+      <Link>Public\PlayArray.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Config.cs.meta">
+      <Link>Public\Config.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Lobby.cs.meta">
+      <Link>Public\Lobby.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Client.cs.meta">
+      <Link>Public\Client.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\SendEventOptions.cs.meta">
+      <Link>Public\SendEventOptions.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\RoomOptions.cs.meta">
+      <Link>Public\RoomOptions.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\CodecUtils.cs.meta">
+      <Link>Public\CodecUtils.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Utils.cs.meta">
+      <Link>Public\Utils.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\PlayExceptionCode.cs.meta">
+      <Link>Public\PlayExceptionCode.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\PlayException.cs.meta">
+      <Link>Public\PlayException.cs.meta</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\GameConnection.cs">
+      <Link>Internal\GameConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\PlayHeartBeat.cs">
+      <Link>Internal\PlayHeartBeat.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\GameRouter.cs">
+      <Link>Internal\GameRouter.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\CustomType.cs">
+      <Link>Internal\CustomType.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\LobbyConnection.cs">
+      <Link>Internal\LobbyConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\LobbyService.cs">
+      <Link>Internal\LobbyService.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\BaseConnection.cs">
+      <Link>Internal\BaseConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\ResponseWrapper.cs">
+      <Link>Internal\ResponseWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\Connection.cs">
+      <Link>Internal\Connection.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\CommandWrapper.cs">
+      <Link>Internal\CommandWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\protocol\GenericCollection.cs">
+      <Link>Internal\protocol\GenericCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\protocol\Messages.cs">
+      <Link>Internal\protocol\Messages.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\CodecUtils.cs">
+      <Link>Public\CodecUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Client.cs">
+      <Link>Public\Client.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\RoomOptions.cs">
+      <Link>Public\RoomOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Config.cs">
+      <Link>Public\Config.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\PlayObject.cs">
+      <Link>Public\PlayObject.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Lobby.cs">
+      <Link>Public\Lobby.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\LobbyRoom.cs">
+      <Link>Public\LobbyRoom.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Room.cs">
+      <Link>Public\Room.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\PlayExceptionCode.cs">
+      <Link>Public\PlayExceptionCode.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\PlayException.cs">
+      <Link>Public\PlayException.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Player.cs">
+      <Link>Public\Player.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\SendEventOptions.cs">
+      <Link>Public\SendEventOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Utils.cs">
+      <Link>Public\Utils.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\PlayArray.cs">
+      <Link>Public\PlayArray.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Realtime\Realtime.AOT\Realtime.AOT.csproj" />
+  </ItemGroup>
+</Project>

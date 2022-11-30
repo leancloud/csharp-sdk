@@ -1,0 +1,348 @@
+syntax = "proto3";
+
+package game_protobuf_messages.proto.messages;
+option csharp_namespace = "LeanCloud.Play.Protocol";
+
+import "google/protobuf/wrappers.proto";
+
+enum CommandType {
+    unknown = 0;
+    session = 1;
+    conv = 2;
+    direct = 3;
+    error = 4;
+    lobby = 5;
+    statistic = 6;
+    events = 7;
+    ack = 8;
+    echo = 9;
+}
+
+enum OpType {
+    // session
+    none = 0;
+    open = 1;
+    opened = 2;
+    close = 3;
+    closed = 4;
+
+    // conv
+    start = 30;
+    started = 31;
+    add_random = 32;
+    random_added = 33;
+    match_random = 34;
+    random_matched = 35;
+    add = 36;
+    added = 37;
+    members_joined = 38;
+    members_online = 39;
+
+    remove = 40;
+    removed = 41;
+    members_left = 42;
+    members_offline = 43;
+
+    update_master_client = 44;
+    master_client_updated = 45;
+    master_client_changed = 46;
+
+    update = 47;
+    updated = 48;
+    updated_notify = 49;
+
+    update_system_property = 50;
+    system_property_updated = 51;
+    system_property_updated_notify = 52;
+
+    opened_notify = 53;
+
+    visible = 54;
+    visible_notify = 55;
+
+    update_player_prop = 56;
+    player_prop_updated = 57;
+    player_props = 58;
+
+    kick = 59;
+    kicked = 60;
+    kicked_notice = 61;
+
+    update_interest_groups = 62;
+    interest_groups_updated = 65;
+
+    room_list = 100;
+    find_friends = 101;
+    found_friends = 102;
+}
+
+message IntValue {
+    int32 val = 1;
+}
+
+message RoomSystemProperty {
+    google.protobuf.BoolValue open = 1;
+    google.protobuf.BoolValue visible = 2;
+    string expect_members = 3;
+    int32 max_members = 4;
+}
+
+message RoomMember {
+    string pid = 1;
+    int32 actor_id = 2;
+    bytes attr = 3;
+    bool inactive = 4;
+}
+
+message AppInfo {
+    int32 app_code = 1;
+    string app_msg = 2;
+}
+
+message ErrorInfo {
+    int32 reason_code = 1;
+    string detail = 2;
+    AppInfo app_info = 3;
+}
+
+message RoomOptions {
+    string cid = 1;
+    google.protobuf.BoolValue visible = 2;
+    google.protobuf.BoolValue open = 3;
+    int32 empty_room_ttl = 4;
+    int32 player_ttl = 5;
+    int32 max_members = 6;
+    int64 flag = 7;
+    string plugin_name = 8;
+    bytes attr = 9;
+    repeated string expect_members = 10;
+    repeated string lobby_attr_keys = 11;
+    repeated RoomMember members = 12;
+    int32 member_count = 13;
+    int32 master_actor_id = 14;
+}
+
+message SessionOpenRequest {
+    string app_id = 1;
+    string peer_id = 2;
+    string game_version = 3;
+    // deprecated
+    string sdk_version = 4;
+    string protocol_version = 5;
+    int64 t = 6;
+    string n = 7;
+    string s = 8;
+    int64 config_bitmap = 9;
+    string session_token = 10;
+}
+
+message CreateRoomRequest {
+    RoomOptions room_options = 1;
+}
+
+message CreateRoomResponse {
+    RoomOptions room_options = 1;
+    string addr = 2;
+    bool room_created = 3;
+}
+
+message JoinRoomRequest {
+    bool rejoin = 1;
+    RoomOptions room_options = 2;
+    bytes expect_attr = 3;
+    string piggyback_peer_id = 4;
+    bool create_on_not_found = 5;
+}
+
+message JoinRoomResponse {
+    RoomOptions room_options = 1;
+    string addr = 2;
+}
+
+message JoinRoomNotification {
+    RoomMember member = 1;
+}
+
+message LeftRoomNotification {
+    int32 actor_id = 1;
+}
+
+message KickMemberRequest {
+    int32 target_actor_id = 1;
+    AppInfo app_info = 2;
+}
+
+message KickMemberResponse {
+    int32 target_actor_id = 1;
+}
+
+message UpdatePropertyRequest {
+    int32 target_actor_id = 1;
+    bytes expect_attr = 2;
+    bytes attr = 3;
+}
+
+message UpdatePropertyResponse {
+    bytes attr = 1;
+    int32 actor_id = 2;
+}
+
+message UpdatePropertyNotification {
+    bytes attr = 1;
+    // 0 表示更改了房间属性，非 0 表示更改某 Player 的属性
+    int32 actor_id = 2;
+}
+
+message UpdateSysPropertyRequest {
+    RoomSystemProperty expect_sys_attr = 1;
+    RoomSystemProperty sys_attr = 2;
+}
+
+message UpdateSysPropertyResponse {
+    RoomSystemProperty sys_attr = 1;
+}
+
+message UpdateSysPropertyNotification {
+    RoomSystemProperty sys_attr = 1;
+}
+
+message UpdateMasterClientRequest {
+    int32 master_actor_id = 1;
+}
+
+message UpdateMasterClientResponse {
+    int32 master_actor_id = 1;
+}
+
+message UpdateMasterClientNotification {
+    // 0 表示目前没有 master
+    int32 master_actor_id = 1;
+}
+
+message RoomNotification {
+    // 0 表示系统触发操作的通知
+    int32 init_by_actor = 1;
+    AppInfo app_info = 3;
+    bool by_master = 4;
+
+    oneof notification {
+        JoinRoomNotification join_room = 20;
+        UpdatePropertyNotification update_property = 21;
+        UpdateSysPropertyNotification update_sys_property = 22;
+        UpdateMasterClientNotification update_master_client = 23;
+        LeftRoomNotification left_room = 24;
+    }
+}
+
+message DirectCommand {
+    bool cached = 1;
+    int32 event_id = 2;
+    int32 receiver_group = 3;
+    int32 caching_option = 4;
+    int32 event_options = 5;
+    repeated int32 to_actor_ids = 6;
+    bytes msg = 7;
+    int64 timestamp = 8;
+    int32 from_actor_id = 9;
+    int32 i = 10;
+    int32 interest_group = 11;
+}
+
+message AckCommand {
+    int64 timestamp = 1;
+    int32 i = 11;
+}
+
+message EventsRequest {
+    bytes msg = 1;
+    google.protobuf.Int32Value actor_id = 2;
+    google.protobuf.Int32Value event_id = 3;
+}
+
+message EventsCommand {
+    repeated DirectCommand events = 1;
+}
+
+message InterestGroups {
+    repeated int32 disabled_groups = 1;
+    repeated int32 enabled_groups = 2;
+}
+
+message JoinLobbyRequest {
+    string lobby_id = 1;
+}
+
+message RoomListCommand {
+    repeated RoomOptions list = 1;
+}
+
+message AppStatistic {
+    int32 count_of_rooms = 1;
+    int32 count_of_players_on_router = 2;
+    int32 count_of_players_in_rooms = 3;
+    int32 count_of_players = 4;
+}
+
+message StatisticCommand {
+    AppStatistic app_stats = 1;
+}
+
+message ErrorCommand {
+    ErrorInfo error_info = 1;
+}
+
+message RequestMessage {
+    int32 i = 1;
+
+    oneof request {
+        SessionOpenRequest session_open = 20;
+        CreateRoomRequest create_room = 21;
+        JoinRoomRequest join_room = 22;
+        UpdatePropertyRequest update_property = 23;
+        UpdateSysPropertyRequest update_sys_property = 24;
+        UpdateMasterClientRequest update_master_client = 25;
+        KickMemberRequest kick_member = 26;
+        EventsRequest events = 27;
+        InterestGroups interest_groups = 28;
+
+        JoinLobbyRequest join_lobby = 54;
+    }
+}
+
+message ResponseMessage {
+    int32 i = 1;
+    ErrorInfo error_info = 2;
+
+    oneof response {
+        CreateRoomResponse create_room = 20;
+        JoinRoomResponse join_room = 21;
+        UpdatePropertyResponse update_property = 22;
+        UpdateSysPropertyResponse update_sys_property = 23;
+        UpdateMasterClientResponse update_master_client = 24;
+        KickMemberResponse kick_member = 25;
+        AckCommand ack = 26;
+        InterestGroups interest_groups = 28;
+    }
+}
+
+message Body {
+    oneof body {
+        RequestMessage request = 1;
+        ResponseMessage response = 2;
+        DirectCommand direct = 3;
+        RoomNotification room_notification = 4;
+        EventsCommand events = 5;
+
+        StatisticCommand statistic = 50;
+        RoomListCommand room_list = 51;
+
+        ErrorCommand error = 127;
+    }
+}
+
+message Command {
+    CommandType cmd = 1;
+    OpType op = 2;
+
+    bytes body = 3;
+}

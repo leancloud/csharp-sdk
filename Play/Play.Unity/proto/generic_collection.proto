@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package cn.leancloud.play.proto;
+option csharp_namespace = "LeanCloud.Play.Protocol";
+
+option java_multiple_files = true;
+
+message GenericCollectionValue {
+    enum Type {
+        NULL = 0;
+        BYTES = 1;
+        BYTE = 2;
+        SHORT = 3;
+        INT = 4;
+        LONG = 5;
+        BOOL = 6;
+        FLOAT = 7;
+        DOUBLE = 8;
+        OBJECT = 9;
+        STRING = 10;
+        MAP = 11;
+        ARRAY = 12;
+    }
+
+    Type type = 1;
+    oneof value {
+        int32 int_value = 2;
+        int64 long_int_value = 3;
+        bool bool_value = 4;
+        string string_value = 5;
+        bytes bytes_value = 6;
+        float float_value = 7;
+        double double_value = 8;
+    }
+    int32 object_type_id = 9;
+}
+
+message GenericCollection {
+    message MapEntry {
+        string key = 1;
+        GenericCollectionValue val = 2;
+    }
+
+    repeated GenericCollectionValue list_value = 1;
+    repeated MapEntry map_entry_value = 2;
+}
