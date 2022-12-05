@@ -4,6 +4,7 @@ prefix=LeanCloud-SDK
 
 storage=Storage
 realtime=Realtime
+play=Play
 livequery=LiveQuery
 
 standard=Standard
@@ -14,8 +15,6 @@ releasePath=bin/Release/netstandard2.0
 
 standardReleasePath=./$storage/$storage.$standard/$releasePath
 unityReleasePath=./$storage/$storage.$unity/$releasePath
-
-echo $standardReleasePath/$storage.$standard.dll
 
 pack() {
     local path=$1;
@@ -45,6 +44,9 @@ pack ./$storage/$storage.$aot/$releasePath/ ./Plugins $prefix-$storage-$unity.zi
 # Realtime
 pack ./$livequery/$livequery/$releasePath/ ./DLLs $prefix-$realtime-$standard.zip standard
 pack ./$livequery/$livequery.$aot/$releasePath/ ./Plugins $prefix-$realtime-$unity.zip unity
+
+# Play
+pack ./$play/SDK/$releasePath/ ./Plugins $prefix-$play-$unity.zip unity
 
 # Engine
 pack ./Engine/bin/Release/netcoreapp3.1/ ./DLLs LeanCloud-SDK-Engine-Standard.zip

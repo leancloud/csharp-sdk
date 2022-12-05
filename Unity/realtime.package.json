@@ -7,7 +7,7 @@
   "dependencies": {
     "com.leancloud.storage": "https://github.com/leancloud/csharp-sdk-upm.git#storage-__VERSION__"
   },
-  "keywords": ["LeanCloud", "Storage"],
+  "keywords": ["LeanCloud", "Realtime"],
   "author": {
     "name": "LeanCloud",
     "email": "support@leancloud.rocks",

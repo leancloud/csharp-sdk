@@ -70,7 +70,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
             this.id = id;
             requestToResponses = new Dictionary<GenericCommand, TaskCompletionSource<GenericCommand>>(new RequestAndResponseComparer());
 
-            heartBeat = new LCHeartBeat(this, OnDisconnect);
+            heartBeat = new LCRTMHeartBeat(this, OnDisconnect);
             router = new LCRTMRouter();
             ws = new LCWebSocketClient {
                 OnMessage = OnMessage,
@@ -220,7 +220,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal void Reset() {
             Disconnect();
             // 重新创建连接组件
-            heartBeat = new LCHeartBeat(this, OnDisconnect);
+            heartBeat = new LCRTMHeartBeat(this, OnDisconnect);
             router = new LCRTMRouter();
             ws = new LCWebSocketClient {
                 OnMessage = OnMessage,

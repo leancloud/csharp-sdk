@@ -3,6 +3,7 @@
   <assembly fullname="Storage" preserve="all"/>
   <assembly fullname="Realtime" preserve="all"/>
   <assembly fullname="LiveQuery" preserve="all"/>
+  <assembly fullname="Play" preserve="all"/>
   <assembly fullname="LC.Google.Protobuf" preserve="all"/>
   <assembly fullname="LC.Newtonsoft.Json" preserve="all"/>
   <assembly fullname="Realtime.Unity" preserve="all"/>

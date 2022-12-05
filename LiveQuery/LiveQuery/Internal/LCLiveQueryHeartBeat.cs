@@ -7,10 +7,13 @@ namespace LeanCloud.LiveQuery.Internal {
     /// LiveQuery heartbeat controller
     /// </summary>
     internal class LCLiveQueryHeartBeat : LCHeartBeat {
+        private const int KEEP_ALIVE_INTERVAL = 180 * 1000;
+
         private readonly LCLiveQueryConnection connection;
 
         internal LCLiveQueryHeartBeat(LCLiveQueryConnection connection,
-            Action onTimeout) : base(onTimeout) {
+            Action onTimeout) :
+            base(KEEP_ALIVE_INTERVAL, onTimeout) {
             this.connection = connection;
         }
 

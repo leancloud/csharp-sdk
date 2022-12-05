@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using LeanCloud.Common;
-using LeanCloud.Realtime.Internal.Protocol;
 
 namespace LeanCloud.Realtime.Internal.Connection {
     /// <summary>
@@ -12,11 +10,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
     /// 3. Check pong interval every 180 seconds.
     ///    If the interval is greater than 360 seconds, the connection is considered disconnected.
     /// </summary>
-    public class LCHeartBeat {
-        private const int PING_INTERVAL = 180 * 1000;
-
-        private readonly LCConnection connection;
-
+    public abstract class LCHeartBeat {
         private readonly Action onTimeout;
 
         private CancellationTokenSource heartBeatCTS;
@@ -25,13 +19,11 @@ namespace LeanCloud.Realtime.Internal.Connection {
 
         private DateTimeOffset lastPongTime;
 
-        public LCHeartBeat(Action onTimeout) {
-            this.onTimeout = onTimeout;
-        }
+        private readonly int keepAliveInterval;
 
-        internal LCHeartBeat(LCConnection connection,
-            Action onTimeout) : this(onTimeout) {
-            this.connection = connection;
+        protected LCHeartBeat(int keepAliveInterval, Action onTimeout) {
+            this.keepAliveInterval = keepAliveInterval;
+            this.onTimeout = onTimeout;
         }
 
         public void Start() {
@@ -44,7 +36,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         private async void StartPing() {
             while (running) {
                 try {
-                    await Task.Delay(PING_INTERVAL, heartBeatCTS.Token);
+                    await Task.Delay(keepAliveInterval, heartBeatCTS.Token);
                 } catch (TaskCanceledException) {
                     return;
                 }
@@ -53,37 +45,25 @@ namespace LeanCloud.Realtime.Internal.Connection {
             }
         }
 
-        protected virtual async Task SendPing() {
-            // 发送 ping 包
-            GenericCommand command = new GenericCommand {
-                Cmd = CommandType.Echo,
-                AppId = LCCore.AppId,
-                PeerId = connection.id
-            };
-            try {
-                await connection.SendCommand(command);
-            } catch (Exception e) {
-                LCLogger.Error(e);
-            }
-        }
-
         private async void StartPong() {
             lastPongTime = DateTimeOffset.Now;
             while (running) {
                 try {
-                    await Task.Delay(PING_INTERVAL / 2, heartBeatCTS.Token);
+                    await Task.Delay(keepAliveInterval / 2, heartBeatCTS.Token);
                 } catch (TaskCanceledException) {
                     return;
                 }
                 // 检查 pong 包时间
                 TimeSpan interval = DateTimeOffset.Now - lastPongTime;
-                if (interval.TotalMilliseconds > PING_INTERVAL * 2) {
+                if (interval.TotalMilliseconds > keepAliveInterval * 2) {
                     // 断线
                     Stop();
                     onTimeout.Invoke();
                 }
             }
         }
+
+        protected abstract Task SendPing();
 
         public void Pong() {
             LCLogger.Debug("Pong ~~~");
