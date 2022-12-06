@@ -28,6 +28,7 @@ var menudata={children:[
 {text:"Namespace List",url:"namespaces.html"},
 {text:"Namespace Members",url:"namespacemembers.html",children:[
 {text:"All",url:"namespacemembers.html"},
+{text:"Functions",url:"namespacemembers_func.html"},
 {text:"Enumerations",url:"namespacemembers_enum.html"}]}]},
 {text:"Classes",url:"annotated.html",children:[
 {text:"Class List",url:"annotated.html"},
@@ -104,6 +105,7 @@ var menudata={children:[
 {text:"d",url:"functions_prop_d.html#index_d"},
 {text:"e",url:"functions_prop_e.html#index_e"},
 {text:"f",url:"functions_prop_f.html#index_f"},
+{text:"g",url:"functions_prop_g.html#index_g"},
 {text:"h",url:"functions_prop_h.html#index_h"},
 {text:"i",url:"functions_prop_i.html#index_i"},
 {text:"k",url:"functions_prop_k.html#index_k"},

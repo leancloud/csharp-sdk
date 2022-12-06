@@ -1,12 +1,16 @@
 var searchData=
 [
-  ['tag_0',['Tag',['../classLeanCloud_1_1Realtime_1_1LCIMClient.html#a95ae1b2241def5ea2ef692e05db1595d',1,'LeanCloud::Realtime::LCIMClient']]],
-  ['target_1',['Target',['../classLeanCloud_1_1Push_1_1LCPush.html#a300ea06812632de5706487d05cbce46f',1,'LeanCloud::Push::LCPush']]],
-  ['targetclass_2',['TargetClass',['../classLeanCloud_1_1Storage_1_1LCRelation.html#a78e3d5a65e170cdd7f8fc472abff315a',1,'LeanCloud::Storage::LCRelation']]],
-  ['text_3',['Text',['../classLeanCloud_1_1Realtime_1_1LCIMTextMessage.html#a7abe9c8aa3f16aac8d73927d1387f601',1,'LeanCloud::Realtime::LCIMTextMessage']]],
-  ['this_5bstring_20key_5d_4',['this[string key]',['../classLeanCloud_1_1Storage_1_1LCObject.html#ad6ac2c9813fe0174041bbf4e9d97bb3f',1,'LeanCloud.Storage.LCObject.this[string key]()'],['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#adcb0b95e774546ecc3b9fcd51b86678d',1,'LeanCloud.Realtime.LCIMConversation.this[string key]()'],['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a4242dbb500c063953f19fda0ae630063',1,'LeanCloud.Realtime.LCIMTypedMessage.this[string key]()']]],
-  ['timestamp_5',['Timestamp',['../classLeanCloud_1_1Realtime_1_1LCIMSignature.html#aae682e80a65a5a6122d81c4189647076',1,'LeanCloud::Realtime::LCIMSignature']]],
-  ['token_6',['Token',['../classLeanCloud_1_1Storage_1_1LCCapture.html#ad97f6badc3484222e64b36221d17c0f3',1,'LeanCloud::Storage::LCCapture']]],
-  ['total_7',['Total',['../classLeanCloud_1_1Storage_1_1LCStatusCount.html#a27181f8e3b15c734b0ec482d195a4e74',1,'LeanCloud::Storage::LCStatusCount']]],
-  ['transient_8',['Transient',['../classLeanCloud_1_1Realtime_1_1LCIMMessageSendOptions.html#a2d4d425347852f2abf1e1fa4f2e84975',1,'LeanCloud::Realtime::LCIMMessageSendOptions']]]
+  ['sentat_0',['SentAt',['../classLeanCloud_1_1Realtime_1_1LCIMMessage.html#a7aa374b11a7f1eaa88053bc83eafccb1',1,'LeanCloud::Realtime::LCIMMessage']]],
+  ['senttimestamp_1',['SentTimestamp',['../classLeanCloud_1_1Realtime_1_1LCIMMessageQueryEndpoint.html#a347b367404f1e2acc8a03c340a77078b',1,'LeanCloud.Realtime.LCIMMessageQueryEndpoint.SentTimestamp()'],['../classLeanCloud_1_1Realtime_1_1LCIMMessage.html#a38d531f8e59a5631d4e0b4ab812d87ee',1,'LeanCloud.Realtime.LCIMMessage.SentTimestamp()']]],
+  ['sessiontoken_2',['SessionToken',['../classLeanCloud_1_1Storage_1_1LCUser.html#a57f69dfe2623efcaecc12060fea6063e',1,'LeanCloud.Storage.LCUser.SessionToken()'],['../classLeanCloud_1_1Engine_1_1LCEngineRequestContext.html#a9f24c23aec3ec29af807b8ecce02465f',1,'LeanCloud.Engine.LCEngineRequestContext.SessionToken()']]],
+  ['sid_3',['Sid',['../classLeanCloud_1_1Storage_1_1LCSearchResponse.html#aeacbc2ab8c9d26ef0f5c5152f4db426b',1,'LeanCloud::Storage::LCSearchResponse']]],
+  ['signature_4',['Signature',['../classLeanCloud_1_1Realtime_1_1LCIMSignature.html#a1d803f11c2b488fbbff5632adf7600d0',1,'LeanCloud::Realtime::LCIMSignature']]],
+  ['sinceid_5',['SinceId',['../classLeanCloud_1_1Storage_1_1LCStatusQuery.html#a5bb5a936bb70966f7c71e996a787c5af',1,'LeanCloud::Storage::LCStatusQuery']]],
+  ['size_6',['Size',['../classLeanCloud_1_1Realtime_1_1LCIMFileMessage.html#a624e40b1fc52d43a1d45e75dd6d8c2f5',1,'LeanCloud::Realtime::LCIMFileMessage']]],
+  ['skip_7',['Skip',['../classLeanCloud_1_1Storage_1_1LCUserQueryCondition.html#af34f36b0be0e51b0cd141fee08b19f2b',1,'LeanCloud::Storage::LCUserQueryCondition']]],
+  ['ssl_8',['Ssl',['../classLeanCloud_1_1Play_1_1Client.html#a2010cad47458c251f2fe864907352b6d',1,'LeanCloud::Play::Client']]],
+  ['statisticname_9',['StatisticName',['../classLeanCloud_1_1Storage_1_1LCLeaderboard.html#ad8e0dc05d734304adaa92e3f237e41c0',1,'LeanCloud.Storage.LCLeaderboard.StatisticName()'],['../classLeanCloud_1_1Storage_1_1LCLeaderboardArchive.html#a194ea4c6a4ee2a8d808f50d274276b8a',1,'LeanCloud.Storage.LCLeaderboardArchive.StatisticName()'],['../classLeanCloud_1_1Storage_1_1LCRanking.html#a5bc934043c707c28dd18ca37b6aad49e',1,'LeanCloud.Storage.LCRanking.StatisticName()']]],
+  ['status_10',['Status',['../classLeanCloud_1_1Storage_1_1LCFriendshipRequest.html#a2207afa26ee65a1e39ad1ade3f899932',1,'LeanCloud.Storage.LCFriendshipRequest.Status()'],['../classLeanCloud_1_1Storage_1_1LCLeaderboardArchive.html#a502798d96d27ea1b0b7093ba73a904f1',1,'LeanCloud.Storage.LCLeaderboardArchive.Status()']]],
+  ['successfulclientidlist_11',['SuccessfulClientIdList',['../classLeanCloud_1_1Realtime_1_1LCIMPartiallySuccessResult.html#a360c7c85c32984941f03b0c1f2ca0654',1,'LeanCloud::Realtime::LCIMPartiallySuccessResult']]],
+  ['syncroot_12',['SyncRoot',['../classLeanCloud_1_1Play_1_1PlayArray.html#aab35c767306b8af4322a5e550eb2aed5',1,'LeanCloud::Play::PlayArray']]]
 ];
