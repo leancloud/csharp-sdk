@@ -10,6 +10,7 @@ LeanCloud C# SDK，基于 .Net Standard 2.0 标准开发，包括服务如下：
 - 即时通讯
 - Live Query
 - 云引擎
+- 多人对战
 
 参考：[Unity Demo](https://github.com/leancloud/CSharp-SDK-Unity-Demo)
 
@@ -25,8 +26,9 @@ LeanCloud C# SDK，基于 .Net Standard 2.0 标准开发，包括服务如下：
 
 ```json
 "dependencies": {
-  "com.leancloud.storage": "https://github.com/leancloud/csharp-sdk-upm.git#storage-0.10.19",
-  "com.leancloud.realtime": "https://github.com/leancloud/csharp-sdk-upm.git#realtime-0.10.19"
+  "com.leancloud.storage": "https://github.com/leancloud/csharp-sdk-upm.git#storage-1.0.2",
+  "com.leancloud.realtime": "https://github.com/leancloud/csharp-sdk-upm.git#realtime-1.0.2",
+  "com.leancloud.play": "https://github.com/leancloud/csharp-sdk-upm.git#play-1.0.2"
 }
 ```
 
@@ -71,6 +73,8 @@ using LeanCloud;
 using LeanCloud.Storage;
 // 即时通讯
 using LeanCloud.Realtime;
+// 多人对战
+using Leancloud.Play;
 ```
 
 ## 初始化
