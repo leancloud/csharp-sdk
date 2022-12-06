@@ -19,7 +19,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release
+      run: |
+        dotnet clean --configuration Release
+        dotnet build --configuration Release
     
     # 打包库
     - run: bash ./script/package.sh
