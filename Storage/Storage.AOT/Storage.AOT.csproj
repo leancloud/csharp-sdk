@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ReleaseVersion>0.10.19</ReleaseVersion>
+    <ReleaseVersion>1.0.2</ReleaseVersion>
     <AssemblyName>Storage</AssemblyName>
     <AssemblyVersion>$(ReleaseVersion)</AssemblyVersion>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
