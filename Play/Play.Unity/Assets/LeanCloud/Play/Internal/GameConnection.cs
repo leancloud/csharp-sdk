@@ -28,10 +28,10 @@ namespace LeanCloud.Play {
             return res.Response.CreateRoom.RoomOptions;
         }
 
-        internal async Task<Protocol.RoomOptions> JoinRoom(string roomId, List<string> expectedUserIds) {
+        internal async Task<Protocol.RoomOptions> JoinRoom(string roomId, bool rejoin = false, List<string> expectedUserIds = null) {
             var request = NewRequest();
             request.JoinRoom = new JoinRoomRequest {
-                Rejoin = false,
+                Rejoin = rejoin,
                 RoomOptions = new Protocol.RoomOptions {
                     Cid = roomId
                 },
