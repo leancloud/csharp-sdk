@@ -409,6 +409,43 @@ namespace LeanCloud.Play {
             }
         }
 
+        [UnityTest]
+        public IEnumerator RejoinClosedRoom() {
+            var f = false;
+            var roomName = $"jrt9_r_{Random.Range(0, 1000000)}";
+            var c0 = Utils.NewClient("jrt9_0");
+            var c1 = Utils.NewClient("jrt9_1");
+
+            c0.Connect().OnSuccess(_ => {
+                var roomOptions = new RoomOptions {
+                    PlayerTtl = 600
+                };
+                return c0.CreateRoom(roomName, roomOptions);
+            }, TaskScheduler.FromCurrentSynchronizationContext()).Unwrap().OnSuccess(_ => {
+                return c1.Connect();
+            }, TaskScheduler.FromCurrentSynchronizationContext()).Unwrap().OnSuccess(_ => {
+                return c1.JoinRoom(roomName);
+            }, TaskScheduler.FromCurrentSynchronizationContext()).Unwrap().OnSuccess(async _ => {
+                await c0.SetRoomOpen(false);
+                c1.OnDisconnected += () => {
+                    Debug.Log("------------- disconnected");
+                    c1.Connect().OnSuccess(async _ => {
+                        string lastRoomName = await c1.FetchMyRoom();
+                        return c1.RejoinRoom(lastRoomName);
+                    }).Unwrap().Unwrap().OnSuccess(async __ => {
+                        await c0.Close();
+                        await c1.Close();
+                        f = true;
+                    });
+                };
+                DisconnectRoom(c1.Room);
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+
+            while (!f) {
+                yield return null;
+            }
+        }
+
         private static void DisconnectRoom(Room room) {
             FieldInfo connProp = typeof(Room).GetField("gameConn", BindingFlags.Instance | BindingFlags.NonPublic);
             object conn = connProp.GetValue(room);
