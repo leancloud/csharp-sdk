@@ -141,7 +141,7 @@ namespace LeanCloud.Play {
                 LobbyInfo lobbyInfo = await Client.lobbyService.Authorize();
                 gameConn = new GameConnection(Client.AppId, lobbyRoom.Url, Client.GameVersion, Client.UserId, lobbyInfo.SessionToken);
                 await gameConn.Connect();
-                Protocol.RoomOptions options = await gameConn.JoinRoom(lobbyRoom.RoomId, expectedUserIds);
+                Protocol.RoomOptions options = await gameConn.JoinRoom(lobbyRoom.RoomId, false, expectedUserIds);
                 Init(options);
                 state = State.Game;
             } catch (Exception e) {
@@ -158,7 +158,7 @@ namespace LeanCloud.Play {
                 LobbyRoomResult lobbyRoom = await Client.lobbyService.JoinRoom(roomName, null, true, false);
                 gameConn = new GameConnection(Client.AppId, lobbyRoom.Url, Client.GameVersion, Client.UserId, lobbyInfo.SessionToken);
                 await gameConn.Connect();
-                Protocol.RoomOptions options = await gameConn.JoinRoom(lobbyRoom.RoomId, null);
+                Protocol.RoomOptions options = await gameConn.JoinRoom(lobbyRoom.RoomId, true);
                 Init(options);
                 state = State.Game;
             } catch (Exception e) {
@@ -178,7 +178,7 @@ namespace LeanCloud.Play {
                 if (lobbyRoom.Create) {
                     options = await gameConn.CreateRoom(lobbyRoom.RoomId, roomOptions, expectedUserIds);
                 } else {
-                    options = await gameConn.JoinRoom(lobbyRoom.RoomId, null);
+                    options = await gameConn.JoinRoom(lobbyRoom.RoomId);
                 }
                 Init(options);
                 state = State.Game;
@@ -195,7 +195,7 @@ namespace LeanCloud.Play {
                 LobbyRoomResult lobbyRoom = await Client.lobbyService.JoinRandomRoom(matchProperties, expectedUserIds);
                 gameConn = new GameConnection(Client.AppId, lobbyRoom.Url, Client.GameVersion, Client.UserId, lobbyInfo.SessionToken);
                 await gameConn.Connect();
-                Protocol.RoomOptions options = await gameConn.JoinRoom(lobbyRoom.RoomId, expectedUserIds);
+                Protocol.RoomOptions options = await gameConn.JoinRoom(lobbyRoom.RoomId, false, expectedUserIds);
                 Init(options);
                 state = State.Game;
             } catch (Exception e) {

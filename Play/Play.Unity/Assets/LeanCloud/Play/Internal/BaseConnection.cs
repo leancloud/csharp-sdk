@@ -189,6 +189,7 @@ namespace LeanCloud.Play {
 
         internal async Task Close() {
             try {
+                heartBeat.Stop();
                 await ws.Close();
             } catch (Exception e) {
                 LCLogger.Error(e.Message);
