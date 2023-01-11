@@ -320,6 +320,16 @@ namespace Storage.Test {
             }
         }
 
+        [Test]
+        [Order(19)]
+        public async Task RefreshSessionToken() {
+            LCUser user = await LCUser.Login(TestPhone, TestPhone);
+            string oldToken = user.SessionToken;
+            await user.RefreshSessionToken();
+            string newToken = user.SessionToken;
+            Assert.AreNotEqual(oldToken, newToken);
+        }
+
         private string GetTestEmail() {
             return $"{TestPhone}@leancloud.rocks";
         }

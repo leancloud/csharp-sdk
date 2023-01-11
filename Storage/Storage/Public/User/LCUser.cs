@@ -438,6 +438,13 @@ namespace LeanCloud.Storage {
             return currentUser;
         }
 
+        public async Task RefreshSessionToken() {
+            string path = $"users/{ObjectId}/refreshSessionToken";
+            Dictionary<string, object> response = await LCCore.HttpClient.Put<Dictionary<string, object>>(path);
+            SessionToken = response["sessionToken"] as string;
+            await _SaveToLocal();
+        }
+
         /// <summary>
         /// Requests a password reset email to be sent to a user's email address.
         /// </summary>
