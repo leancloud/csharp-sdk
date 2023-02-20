@@ -31,8 +31,9 @@ var searchData=
   ['resetunreadcount_28',['ResetUnreadCount',['../classLeanCloud_1_1Storage_1_1LCStatus.html#a3c4b827389622d2ed8f3fd245ad30680',1,'LeanCloud::Storage::LCStatus']]],
   ['resume_29',['Resume',['../classLeanCloud_1_1Realtime_1_1LCRealtime.html#a707d154d5e7de5ed8cc57978b1ac9680',1,'LeanCloud::Realtime::LCRealtime']]],
   ['resumemessagequeue_30',['ResumeMessageQueue',['../classLeanCloud_1_1Play_1_1Client.html#a7d9276d7915144247234af4397e63212',1,'LeanCloud::Play::Client']]],
-  ['roomoptions_31',['RoomOptions',['../classLeanCloud_1_1Play_1_1RoomOptions.html#af779a1032c5ea8dd0fa457ce0e063d05',1,'LeanCloud::Play::RoomOptions']]],
-  ['rpc_32',['RPC',['../classLeanCloud_1_1Storage_1_1LCCloud.html#afccc37dbd92f33a5072321cdbdf22d08',1,'LeanCloud::Storage::LCCloud']]],
-  ['run_33',['Run',['../classLeanCloud_1_1Storage_1_1LCCloud.html#aca22b59966c7eb0bea52b82846495a15',1,'LeanCloud::Storage::LCCloud']]],
-  ['run_3c_20t_20_3e_34',['Run&lt; T &gt;',['../classLeanCloud_1_1Storage_1_1LCCloud.html#ad6d6929d2e22a226ebaab04e200cc25d',1,'LeanCloud::Storage::LCCloud']]]
+  ['retrieveshorttoken_31',['RetrieveShortToken',['../classLeanCloud_1_1Storage_1_1LCUser.html#a755039bd98801dafedd3024775aa8ed6',1,'LeanCloud::Storage::LCUser']]],
+  ['roomoptions_32',['RoomOptions',['../classLeanCloud_1_1Play_1_1RoomOptions.html#af779a1032c5ea8dd0fa457ce0e063d05',1,'LeanCloud::Play::RoomOptions']]],
+  ['rpc_33',['RPC',['../classLeanCloud_1_1Storage_1_1LCCloud.html#afccc37dbd92f33a5072321cdbdf22d08',1,'LeanCloud::Storage::LCCloud']]],
+  ['run_34',['Run',['../classLeanCloud_1_1Storage_1_1LCCloud.html#aca22b59966c7eb0bea52b82846495a15',1,'LeanCloud::Storage::LCCloud']]],
+  ['run_3c_20t_20_3e_35',['Run&lt; T &gt;',['../classLeanCloud_1_1Storage_1_1LCCloud.html#ad6d6929d2e22a226ebaab04e200cc25d',1,'LeanCloud::Storage::LCCloud']]]
 ];
