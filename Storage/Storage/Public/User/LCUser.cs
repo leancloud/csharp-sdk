@@ -851,5 +851,12 @@ namespace LeanCloud.Storage {
             }
             return users.AsReadOnly();
         }
+
+        public static async Task<string> RetrieveShortToken() {
+            string path = "storage/1.1/users/tap-support/identity";
+            Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>(path,
+                withAPIVersion: false);
+            return response["identityToken"] as string;
+        }
     }
 }
