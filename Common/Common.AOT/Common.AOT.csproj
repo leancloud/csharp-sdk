@@ -51,6 +51,9 @@
     <Compile Include="..\Common\LCUtils.cs">
       <Link>Common\LCUtils.cs</Link>
     </Compile>
+    <Compile Include="..\Common\Http\LCHttpRetryHandler.cs">
+      <Link>Common\Http\LCHttpRetryHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\link.xml">
