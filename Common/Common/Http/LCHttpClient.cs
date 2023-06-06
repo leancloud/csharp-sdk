@@ -156,7 +156,9 @@ namespace LeanCloud.Common {
             urlSB.Append($"/{path}");
             string url = urlSB.ToString();
             if (queryParams != null) {
-                IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
+                IEnumerable<string> queryPairs = queryParams
+                    .Where(kv => kv.Value != null)
+                    .Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value.ToString())}");
                 string queries = string.Join("&", queryPairs);
                 url = $"{url}?{queries}";
             }
