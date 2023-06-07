@@ -36,7 +36,7 @@ namespace LeanCloud.Common {
             this.sdkVersion = sdkVersion;
             this.apiVersion = apiVersion;
 
-            client = new HttpClient(new LCHttpRetryHandler(new HttpClientHandler()));
+            client = new HttpClient();
             ProductHeaderValue product = new ProductHeaderValue(LCCore.SDKName, sdkVersion);
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(product));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -156,7 +156,9 @@ namespace LeanCloud.Common {
             urlSB.Append($"/{path}");
             string url = urlSB.ToString();
             if (queryParams != null) {
-                IEnumerable<string> queryPairs = queryParams.Select(kv => $"{kv.Key}={kv.Value}");
+                IEnumerable<string> queryPairs = queryParams
+                    .Where(kv => kv.Value != null)
+                    .Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value.ToString())}");
                 string queries = string.Join("&", queryPairs);
                 url = $"{url}?{queries}";
             }

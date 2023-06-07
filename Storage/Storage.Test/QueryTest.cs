@@ -344,5 +344,13 @@ namespace Storage.Test {
                 //    world["content"] as string != "7788");
             }
         }
+
+        [Test]
+        public async Task EncodeQuery() {
+            LCQuery<LCObject> query = new LCQuery<LCObject>("Hello");
+            query.WhereEqualTo("aaa", "6++p68FsKitla3SUBNSf2Q==");
+            int count = await query.Count();
+            Assert.Greater(count, 0);
+        }
     }
 }
