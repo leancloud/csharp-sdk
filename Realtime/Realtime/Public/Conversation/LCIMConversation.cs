@@ -491,57 +491,51 @@ namespace LeanCloud.Realtime {
         }
 
         internal void MergeFrom(Dictionary<string, object> conv) {
-            if (conv.TryGetValue("objectId", out object idObj)) {
-                Id = idObj as string;
-            }
-            if (conv.TryGetValue("name", out object nameObj)) {
-                Name = nameObj as string;
-            }
-            if (conv.TryGetValue("unique", out object uniqueObj)) {
-                Unique = (bool)uniqueObj;
-            }
-            if (conv.TryGetValue("uniqueId", out object uniqueIdObj)) {
-                UniqueId = uniqueIdObj as string;
-            }
-            if (conv.TryGetValue("createdAt", out object createdAtObj) &&
-                createdAtObj is DateTime createdAt) {
-                CreatedAt = createdAt.ToLocalTime();
-            }
-            if (conv.TryGetValue("updatedAt", out object updatedAtObj) &&
-                updatedAtObj is DateTime updatedAt) {
-                UpdatedAt = updatedAt.ToLocalTime();
-            }
-            if (conv.TryGetValue("c", out object co)) {
-                CreatorId = co as string;
-            }
-            if (conv.TryGetValue("m", out object mo)) {
-                IEnumerable<string> ids = (mo as IList<object>).Cast<string>();
-                this.ids = new HashSet<string>(ids);
-            }
-            if (conv.TryGetValue("mu", out object muo)) {
-                IEnumerable<string> ids = (muo as IList<object>).Cast<string>();
-                mutedIds = new HashSet<string>(ids);
-            }
-            if (conv.TryGetValue("msg", out object msgo)) {
-                if (conv.TryGetValue("bin", out object bino)) {
-                    string msg = msgo as string;
-                    bool bin = (bool)bino;
-                    if (bin) {
-                        byte[] bytes = Convert.FromBase64String(msg);
-                        LastMessage = LCIMBinaryMessage.Deserialize(bytes);
-                    } else {
-                        LastMessage = LCIMTypedMessage.Deserialize(msg);
+            foreach (KeyValuePair<string, object> kv in conv) {
+                if (kv.Key == "objectId") {
+                    Id = kv.Value as string;
+                } else if (kv.Key == "name") {
+                    Name = kv.Value as string;
+                } else if (kv.Key == "unique") {
+                    Unique = (bool)kv.Value;
+                } else if (kv.Key == "uniqueId") {
+                    UniqueId = kv.Value as string;
+                } else if (kv.Key == "createdAt" && kv.Value is DateTime createdAt) {
+                    CreatedAt = createdAt.ToLocalTime();
+                } else if (kv.Key == "updatedAt" && kv.Value is DateTime updatedAt) {
+                    UpdatedAt = updatedAt.ToLocalTime();
+                } else if (kv.Key == "c") {
+                    CreatorId = kv.Value as string;
+                } else if (kv.Key == "m") {
+                    IEnumerable<string> ids = (kv.Value as IList<object>).Cast<string>();
+                    this.ids = new HashSet<string>(ids);
+                } else if (kv.Key == "mu") {
+                    IEnumerable<string> ids = (kv.Value as IList<object>).Cast<string>();
+                    mutedIds = new HashSet<string>(ids);
+                } else if (kv.Key == "msg") {
+                    if (conv.TryGetValue("bin", out object bino)) {
+                        string msg = kv.Value as string;
+                        bool bin = (bool)bino;
+                        if (bin) {
+                            byte[] bytes = Convert.FromBase64String(msg);
+                            LastMessage = LCIMBinaryMessage.Deserialize(bytes);
+                        } else {
+                            LastMessage = LCIMTypedMessage.Deserialize(msg);
+                        }
                     }
-                }
-                LastMessage.ConversationId = Id;
-                if (conv.TryGetValue("msg_mid", out object msgId)) {
-                    LastMessage.Id = msgId as string;
-                }
-                if (conv.TryGetValue("msg_from", out object msgFrom)) {
-                    LastMessage.FromClientId = msgFrom as string;
-                }
-                if (conv.TryGetValue("msg_timestamp", out object timestamp)) {
-                    LastMessage.SentTimestamp = (long)timestamp;
+                    LastMessage.ConversationId = Id;
+                    if (conv.TryGetValue("msg_mid", out object msgId)) {
+                        LastMessage.Id = msgId as string;
+                    }
+                    if (conv.TryGetValue("msg_from", out object msgFrom)) {
+                        LastMessage.FromClientId = msgFrom as string;
+                    }
+                    if (conv.TryGetValue("msg_timestamp", out object timestamp)) {
+                        LastMessage.SentTimestamp = (long)timestamp;
+                    }
+                } else {
+                    // 自定义属性
+                    this[kv.Key] = kv.Value;
                 }
             }
         }
