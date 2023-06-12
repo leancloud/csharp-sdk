@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using LeanCloud;
 using LeanCloud.Realtime;
 
@@ -255,6 +256,15 @@ namespace Realtime.Test {
         public async Task MuteConversation() {
             await conversation.Mute();
             await conversation.Unmute();
+        }
+
+        [Test]
+        [Order(9)]
+        public async Task QueryCustomAttrsConversations() {
+            LCIMConversationQuery query = lean.GetQuery();
+            var convs = await query.Find();
+            int count = convs.Where(conv => conv["k1"] != null).Count();
+            Assert.Greater(count, 0);
         }
     }
 }
