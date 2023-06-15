@@ -8,7 +8,7 @@ using LeanCloud.Engine;
 using LeanCloud;
 
 namespace web {
-    public class App {
+    public partial class App {
         private const string HOOK_CLASS_NAME = "TestHookClass";
 
         // Function
