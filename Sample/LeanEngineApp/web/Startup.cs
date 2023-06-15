@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using LeanCloud;
 using LeanCloud.Engine;
+using web.LeanDB;
 
 namespace web {
     public class Startup {
@@ -36,6 +37,10 @@ namespace web {
                 }
             };
             LCEngine.Initialize(services);
+
+            RedisHelper.Init();
+            MySQLHelper.Init();
+            MongoHelper.Init();
 
             services.AddControllersWithViews();
         }

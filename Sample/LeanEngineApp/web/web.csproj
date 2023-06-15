@@ -24,6 +24,10 @@
     <None Remove="Libs\Storage.pdb" />
     <None Remove="Libs\Engine.dll" />
     <None Remove="Libs\Engine.pdb" />
+    <None Remove="L%27e%27an%27D%27B\" />
+    <None Remove="StackExchange.Redis" />
+    <None Remove="MySql.Data" />
+    <None Remove="MongoDB.Driver" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Libs\Storage.deps.json" />
@@ -34,5 +38,13 @@
     <Content Remove="Libs\Engine.deps.json" />
     <Content Remove="Libs\Engine.deps.json" />
     <Content Remove="Libs\Engine.deps.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="LeanDB\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="2.6.111" />
+    <PackageReference Include="MySql.Data" Version="8.0.33" />
+    <PackageReference Include="MongoDB.Driver" Version="2.19.2" />
   </ItemGroup>
 </Project>
