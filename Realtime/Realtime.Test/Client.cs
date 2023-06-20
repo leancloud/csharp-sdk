@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using LeanCloud;
 using LeanCloud.Realtime;
 using LeanCloud.Storage;
@@ -63,7 +64,11 @@ namespace Realtime.Test {
                 WriteLine(conv.CreatorId);
             };
 
+            string name = Guid.NewGuid().ToString();
+
             client.OnMembersJoined = (conv, memberList, initBy) => {
+                WriteLine($"custom id: {conv["custom_id"]}");
+                Assert.AreEqual(conv["custom_id"], name);
                 WriteLine($"on members joined: {initBy}");
                 foreach (string memberId in conv.MemberIds) {
                     WriteLine(memberId);
@@ -71,8 +76,11 @@ namespace Realtime.Test {
                 tcs.SetResult(null);
             };
 
-            string name = Guid.NewGuid().ToString();
-            LCIMConversation conversation = await client.CreateConversation(new string[] { "world" }, name: name, unique: false);
+            Dictionary<string, object> props = new Dictionary<string, object> {
+                { "custom_id", name }
+            };
+            LCIMConversation conversation = await client.CreateConversation(new string[] { "world" },
+                name: name, unique: false, properties: props);
 
             await tcs.Task;
         }
