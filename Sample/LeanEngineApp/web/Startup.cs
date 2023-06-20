@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using LeanCloud;
 using LeanCloud.Engine;
 using web.LeanDB;
@@ -21,16 +19,23 @@ namespace web {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
+            services.AddLogging(builder => {
+                builder
+                    .AddFilter("Microsoft", LogLevel.Error)
+                    .AddFilter("System", LogLevel.Error)
+                    .AddConsole();
+            });
+
             LCLogger.LogDelegate = (level, log) => {
                 switch (level) {
-                    case LCLogLevel.Debug:
-                        Console.WriteLine($"[DEBUG] {log}");
-                        break;
+                    //case LCLogLevel.Debug:
+                    //    Console.WriteLine($"[DEBUG] {log}");
+                    //    break;
                     case LCLogLevel.Warn:
-                        Console.WriteLine($"[WARN] {log}");
+                        Console.Out.WriteLine($"[WARN] {log}");
                         break;
                     case LCLogLevel.Error:
-                        Console.WriteLine($"[ERROR] {log}");
+                        Console.Error.WriteLine($"[ERROR] {log}");
                         break;
                     default:
                         break;

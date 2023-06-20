@@ -309,17 +309,21 @@ namespace LeanCloud.Engine {
         }
 
         internal static object ConvertException(Exception e) {
-            LCLogger.Error(e);
-            if (e is LCException lcEx) {
+            if (e is LCEngineException engineEx) {
                 return new Dictionary<string, object> {
-                    { "code", lcEx.Code },
-                    { "error", lcEx.Message }
+                    { "code", engineEx.Code },
+                    { "error", engineEx.Message }
                 };
             }
             return new Dictionary<string, object> {
                 { "code", 1 },
                 { "error", e.Message }
             };
+        }
+
+        internal static void LogException(string funcName, Exception e) {
+            int responseCode = e is LCEngineException engineEx? engineEx.Status : 500;
+            LCLogger.Error($"Leangine: /{funcName} : {responseCode}: {e}");
         }
     }
 }

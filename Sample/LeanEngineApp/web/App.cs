@@ -55,6 +55,11 @@ namespace web {
             throw new Exception("Hello, exception");
         }
 
+        [LCEngineFunction("engineException")]
+        public static string EngineException() {
+            throw new LCEngineException(403, 111, "Engine exception");
+        }
+
         // Class Hook
         [LCEngineClassHook(HOOK_CLASS_NAME, LCEngineObjectHookType.BeforeSave)]
         public static LCObject BeforeSaveClass(LCObject obj) {
