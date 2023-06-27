@@ -254,26 +254,6 @@ namespace LeanCloud.Engine {
             return dict;
         }
 
-        internal static void InitRequestContext(HttpRequest request) {
-            LCEngineRequestContext.Init();
-
-            LCEngineRequestContext.RemoteAddress = GetIP(request);
-
-            if (request.Headers.TryGetValue("x-lc-session", out StringValues session)) {
-                LCEngineRequestContext.SessionToken = session;
-            }
-        }
-
-        internal static string GetIP(HttpRequest request) {
-            if (request.Headers.TryGetValue("x-real-ip", out StringValues ip)) {
-                return ip.ToString();
-            }
-            if (request.Headers.TryGetValue("x-forwarded-for", out StringValues forward)) {
-                return forward.ToString();
-            }
-            return request.HttpContext.Connection.RemoteIpAddress.ToString();
-        }
-
         internal static void CheckMasterKey(HttpRequest request) {
             if (!request.Headers.TryGetValue(LCMasterKeyName, out StringValues masterKey)) {
                 throw new Exception("No master key");

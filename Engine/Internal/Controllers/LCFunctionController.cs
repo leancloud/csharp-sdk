@@ -34,10 +34,9 @@ namespace LeanCloud.Engine {
                 }
 
                 if (Functions.TryGetValue(funcName, out MethodInfo mi)) {
-                    LCEngine.InitRequestContext(Request);
-
-                    object[] ps = ParseParameters(mi, body);
-                    object result = await LCEngine.Invoke(mi, ps.ToArray());
+                    LCEngineRequestContext context = new LCEngineRequestContext(Request);
+                    object[] ps = ParseParameters(mi, context, body);
+                    object result = await LCEngine.Invoke(mi, ps);
 
                     if (result != null) {
                         return new Dictionary<string, object> {
@@ -63,9 +62,8 @@ namespace LeanCloud.Engine {
                 }
 
                 if (Functions.TryGetValue(funcName, out MethodInfo mi)) {
-                    LCEngine.InitRequestContext(Request);
-
-                    object[] ps = ParseParameters(mi, body);
+                    LCEngineRequestContext context = new LCEngineRequestContext(Request);
+                    object[] ps = ParseParameters(mi, context, body);
                     object result = await LCEngine.Invoke(mi, ps);
 
                     if (result != null) {
@@ -83,23 +81,22 @@ namespace LeanCloud.Engine {
             }
         }
 
-        private static object[] ParseParameters(MethodInfo mi, JsonElement body) {
-            Dictionary<string, object> parameters = LCEngine.Decode(body);
+        private static object[] ParseParameters(MethodInfo mi, LCEngineRequestContext context, JsonElement body) {
             List<object> ps = new List<object>();
 
-            if (mi.GetParameters().Length > 0) {
-                if (Array.Exists(mi.GetParameters(),
-                    p => p.GetCustomAttribute<LCEngineFunctionParamAttribute>() != null)) {
-                    // 如果包含 LCEngineFunctionParamAttribute 的参数，则按照配对方式传递参数
-                    foreach (ParameterInfo pi in mi.GetParameters()) {
-                        LCEngineFunctionParamAttribute attr = pi.GetCustomAttribute<LCEngineFunctionParamAttribute>();
-                        if (attr != null) {
-                            string paramName = attr.ParamName;
-                            ps.Add(parameters[paramName]);
-                        }
-                    }
+            Dictionary<string, object> parameters = LCEngine.Decode(body);
+
+            foreach (ParameterInfo pi in mi.GetParameters()) {
+                if (pi.ParameterType == typeof(LCEngineRequestContext)) {
+                    ps.Add(context);
                 } else {
-                    ps.Add(LCDecoder.Decode(LCEngine.Decode(body)));
+                    LCEngineFunctionParamAttribute attr = pi.GetCustomAttribute<LCEngineFunctionParamAttribute>();
+                    if (attr == null) {
+                        throw new ArgumentException($"{pi.Name} needs LCEngineFunctionParamAttribute.");
+                    }
+
+                    string paramName = attr.ParamName;
+                    ps.Add(parameters[paramName]);
                 }
             }
 
