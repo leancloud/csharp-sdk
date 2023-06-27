@@ -61,9 +61,10 @@ namespace LeanCloud.Engine {
                     }
                 }
                 return body;
-            } catch (LCException e) {
-                return StatusCode(400, LCEngine.ConvertException(e));
+            } catch (LCEngineException e) {
+                return StatusCode(e.Status, LCEngine.ConvertException(e));
             } catch (Exception e) {
+                LCEngine.LogException($"{className}/{hookName}", e);
                 return StatusCode(500, LCEngine.ConvertException(e));
             }
         }

@@ -15,7 +15,6 @@ namespace web.LeanDB {
             string uid = Environment.GetEnvironmentVariable("MYSQL_ADMIN_USER_mysql");
             string password = Environment.GetEnvironmentVariable("MYSQL_ADMIN_PASSWORD_mysql");
             string connectionString = $"server={host};port={port};uid={uid};pwd={password};database=leancloud";
-            Console.WriteLine(connectionString);
 
             Conn = new MySqlConnection(connectionString);
             Conn.Open();

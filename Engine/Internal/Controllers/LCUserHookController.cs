@@ -53,9 +53,10 @@ namespace LeanCloud.Engine {
                     }
                 }
                 return body;
-            } catch (LCException e) {
-                return StatusCode(400, LCEngine.ConvertException(e));
+            } catch (LCEngineException e) {
+                return StatusCode(e.Status, LCEngine.ConvertException(e));
             } catch (Exception e) {
+                LCEngine.LogException("_User/onAuthData", e);
                 return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
@@ -74,9 +75,10 @@ namespace LeanCloud.Engine {
                     return await Invoke(mi, dict);
                 }
                 return body;
-            } catch (LCException e) {
-                return StatusCode(400, LCEngine.ConvertException(e));
+            } catch (LCEngineException e) {
+                return StatusCode(e.Status, LCEngine.ConvertException(e));
             } catch (Exception e) {
+                LCEngine.LogException(hookKey, e);
                 return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
