@@ -22,7 +22,7 @@ namespace Storage.Test {
                     throw e;
                 }
             }
-            LCException ex = Assert.CatchAsync<LCException>(() => LCUser.Login(username, password));
+            LCException ex = Assert.ThrowsAsync<LCException>(() => LCUser.Login(username, password));
             Assert.AreEqual(ex.Code, 142);
         }
 
@@ -34,7 +34,7 @@ namespace Storage.Test {
                 { "openid", "1234" },
                 { "access_token", "haha" }
             };
-            LCException ex = Assert.CatchAsync<LCException>(() => LCUser.LoginWithAuthData(authData, platform));
+            LCException ex = Assert.ThrowsAsync<LCException>(() => LCUser.LoginWithAuthData(authData, platform));
             Assert.AreEqual(ex.Code, 142);
 
             authData["openid"] = "123";
