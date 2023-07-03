@@ -124,6 +124,9 @@
     <Compile Include="..\Realtime\Internal\Connection\LCRTMHeartBeat.cs">
       <Link>Realtime\Internal\Connection\LCRTMHeartBeat.cs</Link>
     </Compile>
+    <Compile Include="..\Realtime\Public\LCIMException.cs">
+      <Link>Realtime\LCIMException.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\link.xml">
