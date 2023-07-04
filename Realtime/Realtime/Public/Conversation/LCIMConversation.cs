@@ -491,6 +491,10 @@ namespace LeanCloud.Realtime {
         }
 
         internal void MergeFrom(Dictionary<string, object> conv) {
+            if (conv == null) {
+                return;
+            }
+
             foreach (KeyValuePair<string, object> kv in conv) {
                 if (kv.Key == "objectId") {
                     Id = kv.Value as string;

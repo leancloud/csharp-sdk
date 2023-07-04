@@ -76,6 +76,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 } else {
                     conversation = new LCIMConversation(Client);
                 }
+                conversation.MergeFrom(properties);
                 Client.ConversationDict[convId] = conversation;
             }
             // 合并请求数据

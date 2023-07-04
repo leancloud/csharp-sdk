@@ -66,6 +66,11 @@ namespace LeanCloud.Realtime.Internal.Controller {
             message.Id = ack.Uid;
             message.SentTimestamp = ack.T;
             message.FromClientId = Client.Id;
+
+            if (ack.HasCode) {
+                throw new LCIMException(ack.Code, ack.Reason, ack.AppCode, ack.AppMsg);
+            }
+
             return message;
         }
 
