@@ -82,6 +82,7 @@ namespace LeanCloud.Engine {
         public static Dictionary<string, MethodInfo> Functions = new Dictionary<string, MethodInfo>();
         public static Dictionary<string, MethodInfo> ClassHooks = new Dictionary<string, MethodInfo>();
         public static Dictionary<string, MethodInfo> UserHooks = new Dictionary<string, MethodInfo>();
+        public static Dictionary<string, MethodInfo> RTMHooks = new Dictionary<string, MethodInfo>();
 
         /// <summary>
         /// Initializes the engine with the given services.
@@ -158,7 +159,7 @@ namespace LeanCloud.Engine {
                 .Where(m => m.GetCustomAttribute<LCEngineFunctionAttribute>() != null)
                 .ToDictionary(mi => mi.GetCustomAttribute<LCEngineFunctionAttribute>().FunctionName);
 
-            assembly.GetTypes()
+            RTMHooks = assembly.GetTypes()
                 .SelectMany(t => t.GetMethods())
                 .Where(m => m.GetCustomAttribute<LCEngineRealtimeHookAttribute>() != null)
                 .ToDictionary(mi => {
@@ -193,10 +194,6 @@ namespace LeanCloud.Engine {
                         default:
                             throw new Exception($"Error hook type: {attr.HookType}");
                     }
-                })
-                .ToList()
-                .ForEach(item => {
-                    Functions.TryAdd(item.Key, item.Value);
                 });
 
             services.AddCors(options => {
@@ -279,6 +276,7 @@ namespace LeanCloud.Engine {
             functions.AddRange(Functions.Keys);
             functions.AddRange(ClassHooks.Keys);
             functions.AddRange(UserHooks.Keys);
+            functions.AddRange(RTMHooks.Keys);
             foreach (string func in functions) {
                 LCLogger.Debug(func);
             }
