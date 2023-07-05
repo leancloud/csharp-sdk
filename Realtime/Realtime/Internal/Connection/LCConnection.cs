@@ -179,9 +179,11 @@ namespace LeanCloud.Realtime.Internal.Connection {
                             // 错误
                             ErrorCommand error = command.ErrorMessage;
                             int code = error.Code;
-                            string detail = error.Detail;
+                            string reason = error.Reason;
+                            int appCode = error.AppCode;
+                            string appMsg = error.AppMsg;
                             // 包装成异常抛出
-                            LCException exception = new LCException(code, detail);
+                            LCIMException exception = new LCIMException(code, reason, appCode, appMsg);
                             tcs.TrySetException(exception);
                         } else {
                             tcs.TrySetResult(command);
