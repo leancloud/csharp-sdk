@@ -21,11 +21,13 @@ var searchData=
   ['and_18',['And',['../classLeanCloud_1_1Storage_1_1LCQuery.html#addc62431aa7ae8e53213f22e5a8016d7',1,'LeanCloud::Storage::LCQuery']]],
   ['apnsteamid_19',['APNsTeamId',['../classLeanCloud_1_1Push_1_1LCPush.html#a1b31a0b58fcb6c626662badfc1ee2ccf',1,'LeanCloud::Push::LCPush']]],
   ['apnstopic_20',['APNsTopic',['../classLeanCloud_1_1Push_1_1LCPush.html#a6a5c4fd2ce03e14cfd93ac9eb7fb45f1',1,'LeanCloud::Push::LCPush']]],
-  ['appid_21',['AppId',['../classLeanCloud_1_1Play_1_1Client.html#abb9fed8c566c90c42d4b2f2516f33724',1,'LeanCloud::Play::Client']]],
-  ['appkey_22',['AppKey',['../classLeanCloud_1_1Play_1_1Client.html#a8288ceed0ad32380500caa88ecc63ee3',1,'LeanCloud::Play::Client']]],
-  ['asmainaccount_23',['AsMainAccount',['../classLeanCloud_1_1Storage_1_1LCUserAuthDataLoginOption.html#ae65049c682702298bf5cb9f65f878838',1,'LeanCloud::Storage::LCUserAuthDataLoginOption']]],
-  ['associateauthdata_24',['AssociateAuthData',['../classLeanCloud_1_1Storage_1_1LCUser.html#a1178cde2245be24e0af6d283ac2d61e4',1,'LeanCloud::Storage::LCUser']]],
-  ['associateauthdataandunionid_25',['AssociateAuthDataAndUnionId',['../classLeanCloud_1_1Storage_1_1LCUser.html#a0e18ccee80e976c0978d0e96b6865782',1,'LeanCloud::Storage::LCUser']]],
-  ['audiomessagetype_26',['AudioMessageType',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#aa299e46ca00e4207d23887182b90daad',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
-  ['authdata_27',['AuthData',['../classLeanCloud_1_1Storage_1_1LCUser.html#ad8f3c4ca6292f25d2e4d234f411bf87c',1,'LeanCloud::Storage::LCUser']]]
+  ['appcode_21',['AppCode',['../classLeanCloud_1_1Realtime_1_1LCIMException.html#a9f8603a748787bec903536fec8ac9576',1,'LeanCloud::Realtime::LCIMException']]],
+  ['appid_22',['AppId',['../classLeanCloud_1_1Play_1_1Client.html#abb9fed8c566c90c42d4b2f2516f33724',1,'LeanCloud::Play::Client']]],
+  ['appkey_23',['AppKey',['../classLeanCloud_1_1Play_1_1Client.html#a8288ceed0ad32380500caa88ecc63ee3',1,'LeanCloud::Play::Client']]],
+  ['appmessage_24',['AppMessage',['../classLeanCloud_1_1Realtime_1_1LCIMException.html#ad1a9b45d1e2d020243337c1534cb3144',1,'LeanCloud::Realtime::LCIMException']]],
+  ['asmainaccount_25',['AsMainAccount',['../classLeanCloud_1_1Storage_1_1LCUserAuthDataLoginOption.html#ae65049c682702298bf5cb9f65f878838',1,'LeanCloud::Storage::LCUserAuthDataLoginOption']]],
+  ['associateauthdata_26',['AssociateAuthData',['../classLeanCloud_1_1Storage_1_1LCUser.html#a1178cde2245be24e0af6d283ac2d61e4',1,'LeanCloud::Storage::LCUser']]],
+  ['associateauthdataandunionid_27',['AssociateAuthDataAndUnionId',['../classLeanCloud_1_1Storage_1_1LCUser.html#a0e18ccee80e976c0978d0e96b6865782',1,'LeanCloud::Storage::LCUser']]],
+  ['audiomessagetype_28',['AudioMessageType',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#aa299e46ca00e4207d23887182b90daad',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
+  ['authdata_29',['AuthData',['../classLeanCloud_1_1Storage_1_1LCUser.html#ad8f3c4ca6292f25d2e4d234f411bf87c',1,'LeanCloud::Storage::LCUser']]]
 ];
