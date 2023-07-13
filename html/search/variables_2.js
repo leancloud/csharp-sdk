@@ -5,6 +5,5 @@ var searchData=
   ['clientblockconversations_2',['ClientBlockConversations',['../classLeanCloud_1_1Realtime_1_1LCIMSignatureAction.html#acd1ac23a642c297828b9cdaa2fca8b18',1,'LeanCloud::Realtime::LCIMSignatureAction']]],
   ['clientunblockconversations_3',['ClientUnblockConversations',['../classLeanCloud_1_1Realtime_1_1LCIMSignatureAction.html#a71bdd1bada5e8983ee6f4839e5a5be68',1,'LeanCloud::Realtime::LCIMSignatureAction']]],
   ['conversationblockclients_4',['ConversationBlockClients',['../classLeanCloud_1_1Realtime_1_1LCIMSignatureAction.html#a1aebd4baeb2a73aef82b8e3a6abb1429',1,'LeanCloud::Realtime::LCIMSignatureAction']]],
-  ['conversationunblockclients_5',['ConversationUnblockClients',['../classLeanCloud_1_1Realtime_1_1LCIMSignatureAction.html#a1446176b0ae49cf35558f24a1a95d880',1,'LeanCloud::Realtime::LCIMSignatureAction']]],
-  ['currentuserkey_6',['CurrentUserKey',['../classLeanCloud_1_1Engine_1_1LCEngineRequestContext.html#a43a05e88cc9a5b6d35a78198bcafba96',1,'LeanCloud::Engine::LCEngineRequestContext']]]
+  ['conversationunblockclients_5',['ConversationUnblockClients',['../classLeanCloud_1_1Realtime_1_1LCIMSignatureAction.html#a1446176b0ae49cf35558f24a1a95d880',1,'LeanCloud::Realtime::LCIMSignatureAction']]]
 ];
