@@ -1,85 +1,32 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using LeanCloud.Storage;
+﻿using LeanCloud.Storage;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace LeanCloud.Engine {
-    /// <summary>
-    /// LCEngineRequestContext provides the context of engine request.
-    /// </summary>
     public class LCEngineRequestContext {
-        public const string RemoteAddressKey = "__remoteAddressKey";
-        public const string SessionTokenKey = "__sessionToken";
-        public const string CurrentUserKey = "__currentUser";
+        private static readonly string SESSION_HEADER_KEY = "x-lc-session";
+        private static readonly string REAL_IP_HEADER_KEY = "x-real-ip";
+        private static readonly string FORWARD_FOR_HEADER_KEY = "x-forwarded-for";
 
-        private static ThreadLocal<Dictionary<string, object>> requestContext = new ThreadLocal<Dictionary<string, object>>();
+        public string RemoteAddress { get; set; }
+        public string SessionToken { get; set; }
+        public LCUser CurrentUser { get; set; }
 
-        public static void Init() {
-            if (requestContext.IsValueCreated) {
-                requestContext.Value.Clear();
-            }
-            requestContext.Value = new Dictionary<string, object>();
-        }
-
-        public static void Set(string key, object value) {
-            if (!requestContext.IsValueCreated) {
-                requestContext.Value = new Dictionary<string, object>();
-            }
-            requestContext.Value[key] = value;
-        }
-
-        public static object Get(string key) {
-            if (!requestContext.IsValueCreated) {
-                return null;
-            }
-            return requestContext.Value[key];
-        }
-
-        /// <summary>
-        /// The remote address of this request.
-        /// </summary>
-        public static string RemoteAddress {
-            get {
-                object remoteAddress = Get(RemoteAddressKey);
-                if (remoteAddress != null) {
-                    return remoteAddress as string;
-                }
-                return null;
-            }
-            set {
-                Set(RemoteAddressKey, value);
+        public LCEngineRequestContext(HttpRequest request) {
+            RemoteAddress = GetIP(request);
+            if (request.Headers.TryGetValue(SESSION_HEADER_KEY, out StringValues session)) {
+                SessionToken = session;
             }
         }
 
-        /// <summary>
-        /// The session token of this request.
-        /// </summary>
-        public static string SessionToken {
-            get {
-                object sessionToken = Get(SessionTokenKey);
-                if (sessionToken != null) {
-                    return sessionToken as string;
-                }
-                return null;
+        static string GetIP(HttpRequest request) {
+            if (request.Headers.TryGetValue(REAL_IP_HEADER_KEY, out StringValues ip)) {
+                return ip.ToString();
             }
-            set {
-                Set(SessionTokenKey, value);
+            if (request.Headers.TryGetValue(FORWARD_FOR_HEADER_KEY, out StringValues forward)) {
+                return forward.ToString();
             }
-        }
-
-        /// <summary>
-        /// The user of this request.
-        /// </summary>
-        public static LCUser CurrentUser {
-            get {
-                object currentUser = Get(CurrentUserKey);
-                if (currentUser != null) {
-                    return currentUser as LCUser;
-                }
-                return null;
-            }
-            set {
-                Set(CurrentUserKey, value);
-            }
+            return request.HttpContext.Connection.RemoteIpAddress.ToString();
         }
     }
 }

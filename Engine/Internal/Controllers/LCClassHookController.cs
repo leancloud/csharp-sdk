@@ -42,17 +42,18 @@ namespace LeanCloud.Engine {
                         obj.DisableAfterHook();
                     }
 
-                    LCEngine.InitRequestContext(Request);
+                    LCEngineRequestContext context = new LCEngineRequestContext(Request);
 
                     LCUser user = null;
                     if (data.TryGetValue("user", out object userObj) &&
                         userObj != null) {
                         user = new LCUser();
                         user.Merge(LCObjectData.Decode(userObj as Dictionary<string, object>));
-                        LCEngineRequestContext.CurrentUser = user;
+                        context.CurrentUser = user;
                     }
 
-                    LCObject result = await LCEngine.Invoke(mi, new object[] { obj }) as LCObject;
+                    object[] ps = ParseParameters(mi, context, obj);
+                    LCObject result = await LCEngine.Invoke(mi, ps) as LCObject;
                     if (result != null) {
                         Dictionary<string, object> dict = LCEncoder.EncodeLCObject(result, true) as Dictionary<string, object>;
                         dict.Remove("__type");
@@ -61,9 +62,10 @@ namespace LeanCloud.Engine {
                     }
                 }
                 return body;
-            } catch (LCException e) {
-                return StatusCode(400, LCEngine.ConvertException(e));
+            } catch (LCEngineException e) {
+                return StatusCode(e.Status, LCEngine.ConvertException(e));
             } catch (Exception e) {
+                LCEngine.LogException($"{className}/{hookName}", e);
                 return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
@@ -85,6 +87,20 @@ namespace LeanCloud.Engine {
                 default:
                     throw new Exception($"Error hook name: {hookName}");
             }
+        }
+
+        private static object[] ParseParameters(MethodInfo mi, LCEngineRequestContext context, LCObject obj) {
+            List<object> ps = new List<object>();
+
+            foreach (ParameterInfo pi in mi.GetParameters()) {
+                if (pi.ParameterType == typeof(LCEngineRequestContext)) {
+                    ps.Add(context);
+                } else {
+                    ps.Add(obj);
+                }
+            }
+
+            return ps.ToArray();
         }
     }
 }

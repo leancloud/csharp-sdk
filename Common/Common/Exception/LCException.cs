@@ -15,9 +15,5 @@ namespace LeanCloud {
         public LCException(int code, string message) : base(message) {
             Code = code;
         }
-
-        public override string ToString() {
-            return $"{Code} - {Message}";
-        }
     }
 }

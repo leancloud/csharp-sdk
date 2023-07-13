@@ -82,6 +82,7 @@ namespace LeanCloud.Engine {
         public static Dictionary<string, MethodInfo> Functions = new Dictionary<string, MethodInfo>();
         public static Dictionary<string, MethodInfo> ClassHooks = new Dictionary<string, MethodInfo>();
         public static Dictionary<string, MethodInfo> UserHooks = new Dictionary<string, MethodInfo>();
+        public static Dictionary<string, MethodInfo> RTMHooks = new Dictionary<string, MethodInfo>();
 
         /// <summary>
         /// Initializes the engine with the given services.
@@ -158,7 +159,7 @@ namespace LeanCloud.Engine {
                 .Where(m => m.GetCustomAttribute<LCEngineFunctionAttribute>() != null)
                 .ToDictionary(mi => mi.GetCustomAttribute<LCEngineFunctionAttribute>().FunctionName);
 
-            assembly.GetTypes()
+            RTMHooks = assembly.GetTypes()
                 .SelectMany(t => t.GetMethods())
                 .Where(m => m.GetCustomAttribute<LCEngineRealtimeHookAttribute>() != null)
                 .ToDictionary(mi => {
@@ -193,10 +194,6 @@ namespace LeanCloud.Engine {
                         default:
                             throw new Exception($"Error hook type: {attr.HookType}");
                     }
-                })
-                .ToList()
-                .ForEach(item => {
-                    Functions.TryAdd(item.Key, item.Value);
                 });
 
             services.AddCors(options => {
@@ -254,26 +251,6 @@ namespace LeanCloud.Engine {
             return dict;
         }
 
-        internal static void InitRequestContext(HttpRequest request) {
-            LCEngineRequestContext.Init();
-
-            LCEngineRequestContext.RemoteAddress = GetIP(request);
-
-            if (request.Headers.TryGetValue("x-lc-session", out StringValues session)) {
-                LCEngineRequestContext.SessionToken = session;
-            }
-        }
-
-        internal static string GetIP(HttpRequest request) {
-            if (request.Headers.TryGetValue("x-real-ip", out StringValues ip)) {
-                return ip.ToString();
-            }
-            if (request.Headers.TryGetValue("x-forwarded-for", out StringValues forward)) {
-                return forward.ToString();
-            }
-            return request.HttpContext.Connection.RemoteIpAddress.ToString();
-        }
-
         internal static void CheckMasterKey(HttpRequest request) {
             if (!request.Headers.TryGetValue(LCMasterKeyName, out StringValues masterKey)) {
                 throw new Exception("No master key");
@@ -299,6 +276,7 @@ namespace LeanCloud.Engine {
             functions.AddRange(Functions.Keys);
             functions.AddRange(ClassHooks.Keys);
             functions.AddRange(UserHooks.Keys);
+            functions.AddRange(RTMHooks.Keys);
             foreach (string func in functions) {
                 LCLogger.Debug(func);
             }
@@ -309,17 +287,21 @@ namespace LeanCloud.Engine {
         }
 
         internal static object ConvertException(Exception e) {
-            LCLogger.Error(e);
-            if (e is LCException lcEx) {
+            if (e is LCEngineException engineEx) {
                 return new Dictionary<string, object> {
-                    { "code", lcEx.Code },
-                    { "error", lcEx.Message }
+                    { "code", engineEx.Code },
+                    { "error", engineEx.Message }
                 };
             }
             return new Dictionary<string, object> {
                 { "code", 1 },
                 { "error", e.Message }
             };
+        }
+
+        internal static void LogException(string funcName, Exception e) {
+            int responseCode = e is LCEngineException engineEx? engineEx.Status : 500;
+            LCLogger.Error($"Leangine: /{funcName} : {responseCode}: {e}");
         }
     }
 }

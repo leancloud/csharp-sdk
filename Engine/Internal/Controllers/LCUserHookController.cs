@@ -42,10 +42,11 @@ namespace LeanCloud.Engine {
                 LCEngine.CheckHookKey(Request);
 
                 if (UserHooks.TryGetValue(LCEngine.OnAuthData, out MethodInfo mi)) {
-                    LCEngine.InitRequestContext(Request);
+                    LCEngineRequestContext context = new LCEngineRequestContext(Request);
 
                     Dictionary<string, object> dict = LCEngine.Decode(body);
-                    object result = await LCEngine.Invoke(mi, new object[] { dict["authData"] });
+                    object[] ps = ParseParameters(mi, context, dict["authData"]);
+                    object result = await LCEngine.Invoke(mi, ps);
                     if (result != null) {
                         return new Dictionary<string, object> {
                             { "result", result }
@@ -53,9 +54,10 @@ namespace LeanCloud.Engine {
                     }
                 }
                 return body;
-            } catch (LCException e) {
-                return StatusCode(400, LCEngine.ConvertException(e));
+            } catch (LCEngineException e) {
+                return StatusCode(e.Status, LCEngine.ConvertException(e));
             } catch (Exception e) {
+                LCEngine.LogException("_User/onAuthData", e);
                 return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
@@ -68,27 +70,27 @@ namespace LeanCloud.Engine {
                 LCEngine.CheckHookKey(Request);
 
                 if (UserHooks.TryGetValue(hookKey, out MethodInfo mi)) {
-                    LCEngine.InitRequestContext(Request);
-
+                    LCEngineRequestContext context = new LCEngineRequestContext(Request);
                     Dictionary<string, object> dict = LCEngine.Decode(body);
-                    return await Invoke(mi, dict);
+                    return await Invoke(mi, context, dict);
                 }
                 return body;
-            } catch (LCException e) {
-                return StatusCode(400, LCEngine.ConvertException(e));
+            } catch (LCEngineException e) {
+                return StatusCode(e.Status, LCEngine.ConvertException(e));
             } catch (Exception e) {
+                LCEngine.LogException(hookKey, e);
                 return StatusCode(500, LCEngine.ConvertException(e));
             }
         }
 
-        private static async Task<object> Invoke(MethodInfo mi, Dictionary<string, object> dict) {
+        private static async Task<object> Invoke(MethodInfo mi, LCEngineRequestContext context, Dictionary<string, object> dict) {
             LCObjectData objectData = LCObjectData.Decode(dict["object"] as Dictionary<string, object>);
             objectData.ClassName = "_User";
-
             LCObject user = LCObject.Create("_User");
             user.Merge(objectData);
 
-            LCObject result = await LCEngine.Invoke(mi, new object[] { user }) as LCObject;
+            object[] ps = ParseParameters(mi, context, user);
+            LCObject result = await LCEngine.Invoke(mi, ps) as LCObject;
             if (result != null) {
                 Dictionary<string, object> ret = LCEncoder.EncodeLCObject(result, true) as Dictionary<string, object>;
                 dict.Remove("__type");
@@ -97,6 +99,22 @@ namespace LeanCloud.Engine {
             } else {
                 return dict;
             }
+        }
+
+        private static object[] ParseParameters(MethodInfo mi, LCEngineRequestContext context, object param) {
+            List<object> ps = new List<object>();
+
+            foreach (ParameterInfo pi in mi.GetParameters()) {
+                if (pi.ParameterType == typeof(LCEngineRequestContext)) {
+                    ps.Add(context);
+                } else if (pi.ParameterType == param.GetType()) {
+                    ps.Add(param);
+                } else {
+                    throw new ArgumentException($"{pi.Name} must be instance of {param.GetType()}.");
+                }
+            }
+
+            return ps.ToArray();
         }
     }
 }

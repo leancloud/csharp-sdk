@@ -73,5 +73,16 @@ namespace Storage.Test {
             Assert.AreEqual(ex.Code, 1);
             Assert.AreEqual(ex.Message, "Hello, exception");
         }
+
+        [Test]
+        public async Task Session() {
+            LCUser user = await LCUser.Login(TestPhone, TestPhone);
+            string result = await LCCloud.Run<string>("session");
+            Assert.AreEqual(result, user.SessionToken);
+
+            await LCUser.Logout();
+            result = await LCCloud.Run<string>("session");
+            Assert.AreEqual(result, string.Empty);
+        }
     }
 }
