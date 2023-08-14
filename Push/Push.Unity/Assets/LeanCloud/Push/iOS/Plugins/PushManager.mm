@@ -50,7 +50,7 @@ const char* ON_RECEIVE_MESSAGE = "OnReceiveMessage";
                 NSData* jsonData = [NSJSONSerialization dataWithJSONObject:deviceInfo options:NSJSONWritingPrettyPrinted error:&error];
                 if (!error) {
                     NSString* json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                    NSLog(json);
+                    NSLog(@"%@", json);
                     UnitySendMessage(PUSH_BRIDGE, ON_REGISTER_PUSH, [json UTF8String]);
                 }
             }
@@ -147,6 +147,15 @@ const char* ON_RECEIVE_MESSAGE = "OnReceiveMessage";
 #else
     return nil;
 #endif
+}
+
+- (void)setNotificationPresentationOption:(NSInteger)option {
+    [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+    self.option = (UNNotificationPresentationOptions) option;
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+    completionHandler(self.option);
 }
 
 @end

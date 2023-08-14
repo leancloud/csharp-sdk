@@ -25,6 +25,12 @@ public class PushDemo : MonoBehaviour {
 
     public InputField pushDataInputField;
 
+    public Toggle badgeToggle;
+    public Toggle soundToggle;
+    public Toggle alertToggle;
+    public Toggle listToggle;
+    public Toggle bannerToggle;
+
     private void Awake() {
         LCLogger.LogDelegate = (level, message) => {
             string fullLog = $"LEANCLOUD: {message}";
@@ -133,5 +139,28 @@ public class PushDemo : MonoBehaviour {
         foreach (KeyValuePair<string, object> kv in launchData) {
             Debug.Log($"{kv.Key} : {kv.Value}");
         }
+    }
+
+    public void OnSetNotificationPresentOptionClicked() {
+#if UNITY_IOS
+        LCIOSNotificationPresentationOption option = LCIOSNotificationPresentationOption.None;
+        if (badgeToggle.isOn) {
+            option |= LCIOSNotificationPresentationOption.Badge;
+        }
+        if (soundToggle.isOn) {
+            option |= LCIOSNotificationPresentationOption.Sound;
+        }
+        if (alertToggle.isOn) {
+            option |= LCIOSNotificationPresentationOption.Alert;
+        }
+        if (listToggle.isOn) {
+            option |= LCIOSNotificationPresentationOption.List;
+        }
+        if (bannerToggle.isOn) {
+            option |= LCIOSNotificationPresentationOption.Banner;
+        }
+        Debug.Log($"option: {option}");
+        LCIOSPushManager.SetNotificationPresentationOption(option);
+#endif
     }
 }

@@ -10,6 +10,9 @@ public class LCIOSPushManager {
 
     [DllImport("__Internal")]
     private static extern void _SetIconBadgeNumber(int number);
+
+    [DllImport("__Internal")]
+    private static extern void _LCSDKSetNotificationPresentationOption(int option);
 #endif
 
     public static void RegisterIOSPush(string teamId) {
@@ -27,6 +30,12 @@ public class LCIOSPushManager {
     public static void SetIconBadgeNumber(int number) {
 #if UNITY_IOS
         _SetIconBadgeNumber(number);
+#endif
+    }
+
+    public static void SetNotificationPresentationOption(LCIOSNotificationPresentationOption option) {
+#if UNITY_IOS
+        _LCSDKSetNotificationPresentationOption((int) option);
 #endif
     }
 }

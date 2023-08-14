@@ -6,14 +6,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UserNotifications/UserNotifications.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PushManager : NSObject
+@interface PushManager : NSObject<UNUserNotificationCenterDelegate>
 
 @property(nonatomic, strong) NSString *teamId;
 
 @property(nonatomic, strong) NSDictionary *launchPushData;
+
+@property(nonatomic) UNNotificationPresentationOptions option;
 
 + (instancetype)sharedInstance;
 
@@ -22,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)getLaunchData:(NSString *)callbackId;
 
 - (void)setIconBadgeNumber:(NSInteger)number;
+
+- (void)setNotificationPresentationOption:(NSInteger)option;
 
 @end
 

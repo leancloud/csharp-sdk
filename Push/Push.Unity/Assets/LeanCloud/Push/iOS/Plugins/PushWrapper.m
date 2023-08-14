@@ -20,3 +20,7 @@ void _GetLaunchData(const char* callbackId) {
 void _SetIconBadgeNumber(int number) {
     [[PushManager sharedInstance] setIconBadgeNumber: number];
 }
+
+void _LCSDKSetNotificationPresentationOption(int option) {
+    [[PushManager sharedInstance] setNotificationPresentationOption:option];
+}
