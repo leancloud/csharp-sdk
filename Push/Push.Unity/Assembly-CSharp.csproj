@@ -66,6 +66,7 @@
     <Compile Include="Assets/LeanCloud/Push/Runtime/LCPushBridge.cs" />
     <Compile Include="Assets/LeanCloud/Push/Android/VIVO/LCVIVOPushManager.cs" />
     <Compile Include="Assets/LeanCloud/Push/Android/LCAndroidPushManager.cs" />
+    <Compile Include="Assets/LeanCloud/Push/iOS/LCIOSNotificationPresentationOption.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
