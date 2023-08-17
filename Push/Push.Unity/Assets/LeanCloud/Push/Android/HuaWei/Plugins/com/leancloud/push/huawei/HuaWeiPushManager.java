@@ -20,6 +20,7 @@ public class HuaWeiPushManager {
                     String appId = AGConnectServicesConfig.fromContext(UnityPlayer.currentActivity).getString("client/app_id");
                     Log.i(Utils.TAG, "app id: " + appId);
                     String regId = HmsInstanceId.getInstance(UnityPlayer.currentActivity).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
+                    Log.i(Utils.TAG, "reg id: " + regId);
                     Utils.sendDeviceInfo("HMS", regId);
 
                     HmsMessaging.getInstance(UnityPlayer.currentActivity).turnOnPush().addOnCompleteListener(new OnCompleteListener<Void>() {

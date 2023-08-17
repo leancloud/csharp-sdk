@@ -59,6 +59,9 @@ public class Utils {
     }
 
     public static void sendDeviceInfo(String vendor, String regId) {
+        if (Utils.isNullOrEmpty(regId)) {
+            return;
+        }
         Map<String, Object> deviceInfo = new HashMap<>();
         deviceInfo.put("deviceType", "android");
         deviceInfo.put("vendor", vendor);
