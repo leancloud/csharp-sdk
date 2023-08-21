@@ -6,6 +6,9 @@ apply plugin: 'com.android.library'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // OPPO
+    implementation(name: 'com.heytap.msp_3.1.0', ext: 'aar')
+    implementation 'commons-codec:commons-codec:1.6'
     // 华为
     implementation 'com.huawei.hms:push:6.1.0.300'
     // 魅族

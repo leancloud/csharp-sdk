@@ -20,7 +20,7 @@ public class OPPOPushManager {
         }
         Context context = UnityPlayer.currentActivity.getApplicationContext();
         HeytapPushManager.init(context, true);
-        if (!HeytapPushManager.isSupportPush()) {
+        if (!HeytapPushManager.isSupportPush(context)) {
             Log.e(Utils.TAG, "This device doesn't support OPPO push.");
             return;
         }
@@ -52,6 +52,11 @@ public class OPPOPushManager {
                     @Override
                     public void onGetNotificationStatus(int i, int i1) {
 
+                    }
+
+                    @Override
+                    public void onError(int i, String s) {
+                        Log.e(Utils.TAG, "OPPO register error: " + i + ", " + s);
                     }
                 });
         HeytapPushManager.requestNotificationPermission();
