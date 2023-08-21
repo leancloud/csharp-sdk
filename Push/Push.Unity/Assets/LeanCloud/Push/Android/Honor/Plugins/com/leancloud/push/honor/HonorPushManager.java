@@ -9,6 +9,6 @@ import com.unity3d.player.UnityPlayer;
 
 public class HonorPushManager {
     public static void registerHonorPush() {
-        HonorPushClient.getInstance().init(UnityPlayer.currentActivity, true);
+        HonorPushClient.getInstance().init(UnityPlayer.currentActivity.getApplicationContext(), true);
     }
 }
