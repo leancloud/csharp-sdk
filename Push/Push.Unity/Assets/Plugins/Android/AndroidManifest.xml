@@ -101,7 +101,8 @@
             android:value="100241969"/>
 
         <!-- 魅族 -->
-        <receiver android:name="com.leancloud.push.meizu.MeiZuMessageReceiver">
+        <receiver android:name="com.leancloud.push.meizu.MeiZuMessageReceiver"
+            android:exported="false">
             <intent-filter>
                 <!-- 接收 push 消息 -->
                 <action android:name="com.meizu.flyme.push.intent.MESSAGE" />
@@ -118,15 +119,27 @@
 
         <!-- FCM -->
         <service
-        android:name="com.leancloud.push.fcm.FCMMessageService"
-        android:exported="false">
-        <intent-filter>
-            <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-        </intent-filter>
+            android:name="com.leancloud.push.fcm.FCMMessageService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
         </service>
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"
             android:value="false" />
+
+        <!-- 荣耀 -->
+        <service
+            android:name="com.leancloud.push.honor.HonorMsgService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.hihonor.push.action.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="com.hihonor.push.app_id"
+            android:value="104414258" />
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

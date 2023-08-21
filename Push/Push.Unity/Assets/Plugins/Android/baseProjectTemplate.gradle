@@ -7,6 +7,8 @@ allprojects {
             jcenter()
             // 配置HMS Core SDK的Maven仓地址。
             maven {url 'https://developer.huawei.com/repo/'}
+            // 配置 honor SDK 仓库地址
+            maven {url 'https://developer.hihonor.com/repo'}
         }
 
         dependencies {
@@ -20,6 +22,8 @@ allprojects {
             classpath 'com.huawei.agconnect:agcp:1.4.2.300'
             // FCM
             classpath 'com.google.gms:google-services:4.3.8'  // Google Services plugin
+            // honor
+            classpath 'com.hihonor.mcs:asplugin:2.0.0'
         }
     }
 
@@ -30,6 +34,8 @@ allprojects {
             dirs "${project(':unityLibrary').projectDir}/libs"
         }
         maven {url 'https://developer.huawei.com/repo/'}
+        // honor
+        maven {url 'https://developer.hihonor.com/repo'}
     }
 }
 
