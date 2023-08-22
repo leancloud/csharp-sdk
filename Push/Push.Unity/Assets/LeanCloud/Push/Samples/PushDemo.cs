@@ -69,6 +69,7 @@ public class PushDemo : MonoBehaviour {
             LCIOSPushManager.SetIconBadgeNumber(0);
         } else if (Application.platform == RuntimePlatform.Android) {
             string deviceModel = SystemInfo.deviceModel.ToLower();
+            Debug.Log($"Device: {deviceModel}");
             if (deviceModel.Contains("huawei")) {
                 LCHuaWeiPushManager.RegisterHuaWeiPush();
             } else if (deviceModel.Contains("oppo")) {
@@ -77,6 +78,8 @@ public class PushDemo : MonoBehaviour {
                 LCVIVOPushManager.RegisterVIVOPush();
             } else if (deviceModel.Contains("meizu")) {
                 LCMeiZuPushManager.RegisterMeiZuPush(MEIZU_APP_ID, MEIZU_APP_KEY);
+            } else if (deviceModel.Contains("honor")) {
+                LCHonorPushManager.RegisterHonorPush();
             } else /*if (deviceModel.Contains("xiaomi"))*/ {
                 // 其他的厂商可以尝试注册小米推送
                 LCXiaoMiPushManager.RegisterXiaoMiPush(XIAOMI_APP_ID, XIAOMI_APP_KEY);
