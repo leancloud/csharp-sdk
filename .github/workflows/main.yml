@@ -42,7 +42,8 @@ jobs:
     - run: |
         cd ./Push/Push.Unity
         echo "Assets/Plugins.meta" >> metaList
-        find Assets/Plugins/ -name \*.meta >> metaList
+        echo "Assets/Plugins/Android.meta" >> metaList
+        find Assets/Plugins/Android/ -name \*.meta >> metaList
     - uses: pCYSl5EDgo/create-unitypackage@master
       with:
         project-folder: ./Push/Push.Unity
