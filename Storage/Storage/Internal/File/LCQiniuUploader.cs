@@ -54,7 +54,9 @@ namespace LeanCloud.Storage.Internal.File {
         }
 
         internal async Task Upload(Action<long, long> onProgress) {
-            string encodedObjectName = Uri.EscapeUriString(Convert.ToBase64String(Encoding.UTF8.GetBytes(key)));
+            string encodedObjectName = Convert.ToBase64String(Encoding.UTF8.GetBytes(key))
+                .Replace("+", "-")
+                .Replace("/", "_");
 
             HttpClient client = new HttpClient();
 
