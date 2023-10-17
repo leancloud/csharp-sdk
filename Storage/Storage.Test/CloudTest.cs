@@ -63,7 +63,7 @@ namespace Storage.Test {
         [Test]
         public void CatchLCException() {
             LCException ex = Assert.CatchAsync<LCException>(() => LCCloud.Run("lcexception"));
-            Assert.AreEqual(ex.Code, 123);
+            Assert.AreEqual(ex.Code, 1);
             Assert.AreEqual(ex.Message, "Runtime exception");
         }
 
@@ -72,6 +72,13 @@ namespace Storage.Test {
             LCException ex = Assert.CatchAsync<LCException>(() => LCCloud.Run("exception"));
             Assert.AreEqual(ex.Code, 1);
             Assert.AreEqual(ex.Message, "Hello, exception");
+        }
+
+        [Test]
+        public void CatchEngineException() {
+            LCException ex = Assert.CatchAsync<LCException>(() => LCCloud.Run("engineException"));
+            Assert.AreEqual(ex.Code, 111);
+            Assert.AreEqual(ex.Message, "Engine exception");
         }
 
         [Test]

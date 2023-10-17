@@ -20,12 +20,14 @@ namespace LeanCloud.Storage.Internal {
             });
 
             // 注册 LeanCloud 内部子类化类型
-            LCObject.RegisterSubclass(LCUser.CLASS_NAME, () => new LCUser());
-            LCObject.RegisterSubclass(LCRole.CLASS_NAME, () => new LCRole());
-            LCObject.RegisterSubclass(LCFile.CLASS_NAME, () => new LCFile());
-            LCObject.RegisterSubclass(LCStatus.CLASS_NAME, () => new LCStatus());
-            LCObject.RegisterSubclass(LCFriendshipRequest.CLASS_NAME, () => new LCFriendshipRequest());
-            LCObject.RegisterSubclass(LCInstallation.CLASS_NAME, () => new LCInstallation());
+            LCObject.RegisterSubclass(LCUser.CLASS_NAME, () => new LCUser(), LCUser.ENDPOINT);
+            LCObject.RegisterSubclass(LCRole.CLASS_NAME, () => new LCRole(), LCRole.ENDPOINT);
+            LCObject.RegisterSubclass(LCFile.CLASS_NAME, () => new LCFile(), LCFile.ENDPOINT);
+            LCObject.RegisterSubclass(LCStatus.CLASS_NAME, () => new LCStatus(), LCStatus.ENDPOINT);
+            LCObject.RegisterSubclass(LCFriendshipRequest.CLASS_NAME, () => new LCFriendshipRequest(), LCFriendshipRequest.ENDPOINT);
+            LCObject.RegisterSubclass(LCInstallation.CLASS_NAME, () => new LCInstallation(), LCInstallation.ENDPOINT);
+            LCObject.RegisterSubclass("_Follower", () => new LCObject("_Follower"), "followers");
+            LCObject.RegisterSubclass("_Followee", () => new LCObject("_Followee"), "followees");
         }
     }
 }

@@ -6,18 +6,18 @@ namespace LeanCloud.Storage.Internal.Object {
             get;
         }
 
-        internal Type Type {
-            get;
-        }
-
         internal Func<LCObject> Constructor {
             get;
         }
 
-        internal LCSubclassInfo(string className, Type type, Func<LCObject> constructor) {
+        internal string Endpoint {
+            get;
+        }
+
+        internal LCSubclassInfo(string className, Func<LCObject> constructor, string endpoint = null) {
             ClassName = className;
-            Type = type;
             Constructor = constructor;
+            Endpoint = endpoint;
         }
     }
 }

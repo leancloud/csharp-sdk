@@ -381,7 +381,7 @@ namespace LeanCloud.Storage {
                 await SaveBatches(batches);
             }
 
-            string path = ObjectId == null ? $"classes/{ClassName}" : $"classes/{ClassName}/{ObjectId}";
+            string path = ObjectId == null ? GetClassEndpoint(ClassName) : $"{GetClassEndpoint(ClassName)}/{ObjectId}";
             Dictionary<string, object> queryParams = new Dictionary<string, object>();
             if (fetchWhenSave) {
                 queryParams["fetchWhenSave"] = true.ToString().ToLower();
@@ -424,7 +424,7 @@ namespace LeanCloud.Storage {
             if (ObjectId == null) {
                 return;
             }
-            string path = $"classes/{ClassName}/{ObjectId}";
+            string path = $"{GetClassEndpoint(ClassName)}/{ObjectId}";
             await LCCore.HttpClient.Delete(path);
         }
 
@@ -465,7 +465,7 @@ namespace LeanCloud.Storage {
             if (includes != null) {
                 queryParams["include"] = string.Join(",", includes);
             }
-            string path = $"classes/{ClassName}/{ObjectId}";
+            string path = $"{GetClassEndpoint(ClassName)}/{ObjectId}";
             Dictionary<string, object> response = await LCCore.HttpClient.Get<Dictionary<string, object>>(path, queryParams: queryParams);
             LCObjectData objectData = LCObjectData.Decode(response);
             Merge(objectData);
@@ -521,9 +521,8 @@ namespace LeanCloud.Storage {
         /// <typeparam name="T">The LCObject subclass type to register.</typeparam>
         /// <param name="className">The className on server.</param>
         /// <param name="constructor">The constructor for creating an object.</param>
-        public static void RegisterSubclass<T>(string className, Func<T> constructor) where T : LCObject {
-            Type classType = typeof(T);
-            LCSubclassInfo subclassInfo = new LCSubclassInfo(className, classType, constructor);
+        public static void RegisterSubclass<T>(string className, Func<T> constructor, string endpoint = null) where T : LCObject {
+            LCSubclassInfo subclassInfo = new LCSubclassInfo(className, constructor, endpoint);
             subclassNameDict[className] = subclassInfo;
         }
 
@@ -608,6 +607,14 @@ namespace LeanCloud.Storage {
                     estimatedData[key] = value;
                 }
             }
+        }
+
+        public static string GetClassEndpoint(string className) {
+            if (subclassNameDict.TryGetValue(className, out LCSubclassInfo subclassInfo) &&
+                !string.IsNullOrEmpty(subclassInfo.Endpoint)) {
+                return subclassInfo.Endpoint;
+            }
+            return $"classes/{className}";
         }
     }
 }

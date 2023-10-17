@@ -5,6 +5,7 @@ using LeanCloud.Common;
 namespace LeanCloud.Storage {
     public class LCInstallation : LCObject {
         public const string CLASS_NAME = "_Installation";
+        public const string ENDPOINT = "installations";
 
         private const string DEVICE_DATA = ".devicedata";
 

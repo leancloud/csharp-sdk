@@ -4,6 +4,7 @@
     /// </summary>
     public class LCRole : LCObject {
         public const string CLASS_NAME = "_Role";
+        public const string ENDPOINT = "roles";
 
         /// <summary>
         /// The name of a LCRole.
