@@ -5,6 +5,7 @@
     /// </summary>
     public class LCFriendshipRequest : LCObject {
         public const string CLASS_NAME = "_FriendshipRequest";
+        public const string ENDPOINT = "friendshiprequests";
 
         public const int STATUS_PENDING = 0x01;
         public const int STATUS_ACCEPTED = 0x02;

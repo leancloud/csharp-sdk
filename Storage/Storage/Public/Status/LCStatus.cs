@@ -12,6 +12,7 @@ namespace LeanCloud.Storage {
     /// </summary>
     public class LCStatus : LCObject {
         public const string CLASS_NAME = "_Status";
+        public const string ENDPOINT = "statuses";
 
         /// Public, shown on followees' timeline.
         public const string InboxTypeDefault = "default";

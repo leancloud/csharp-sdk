@@ -22,7 +22,9 @@ namespace LeanCloud.Storage {
 
         private string endpoint;
 
-        public string Endpoint => string.IsNullOrEmpty(endpoint) ? $"classes/{ClassName}" : endpoint;
+        public string Endpoint => !string.IsNullOrEmpty(endpoint) ?
+            endpoint :
+            LCObject.GetClassEndpoint(ClassName);
 
         public LCCompositionalCondition Condition {
             get; internal set;
@@ -421,7 +423,7 @@ namespace LeanCloud.Storage {
             if (string.IsNullOrEmpty(objectId)) {
                 throw new ArgumentNullException(nameof(objectId));
             }
-            string path = $"classes/{ClassName}/{objectId}";
+            string path = $"{LCObject.GetClassEndpoint(ClassName)}/{objectId}";
             Dictionary<string, object> queryParams = null;
             string includes = Condition.BuildIncludes();
             if (!string.IsNullOrEmpty(includes)) {

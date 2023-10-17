@@ -19,7 +19,7 @@ namespace Storage.Test {
 
         async Task<LCFriendshipRequest> GetRequest() {
             LCUser user = await LCUser.GetCurrent();
-            LCQuery<LCFriendshipRequest> query = new LCQuery<LCFriendshipRequest>("_FriendshipRequest")
+            LCQuery<LCFriendshipRequest> query = new LCQuery<LCFriendshipRequest>(LCFriendshipRequest.CLASS_NAME)
                 .WhereEqualTo("friend", user)
                 .WhereEqualTo("status", "pending");
             return await query.First();

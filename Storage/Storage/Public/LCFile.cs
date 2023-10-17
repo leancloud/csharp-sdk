@@ -14,6 +14,7 @@ namespace LeanCloud.Storage {
     /// </summary>
     public class LCFile : LCObject {
         public const string CLASS_NAME = "_File";
+        public const string ENDPOINT = "files";
 
         private const string METADATA_SIZE_KEY = "size";
         private const string METADATA_SUM_KEY = "_checksum";
@@ -197,7 +198,7 @@ namespace LeanCloud.Storage {
             if (string.IsNullOrEmpty(ObjectId)) {
                 return;
             }
-            string path = $"files/{ObjectId}";
+            string path = $"{GetClassEndpoint(ClassName)}/{ObjectId}";
             await LCCore.HttpClient.Delete(path);
         }
 

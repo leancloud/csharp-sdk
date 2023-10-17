@@ -12,6 +12,7 @@ namespace LeanCloud.Storage {
     /// </summary>
     public class LCUser : LCObject {
         public const string CLASS_NAME = "_User";
+        public const string ENDPOINT = "users";
 
         private const string USER_DATA = ".userdata";
         private const string ANONYMOUS_DATA = ".anonymousdata";
