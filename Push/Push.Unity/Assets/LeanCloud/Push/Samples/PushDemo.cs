@@ -17,8 +17,8 @@ public class PushDemo : MonoBehaviour {
     public const string OPPO_APP_KEY = "95d0685734ad470c9b4e3df6d537d562";
     public const string OPPO_APP_SECRET = "58d84d82a0a14aa1b52e66e3224c35a3";
 
-    public const string MEIZU_APP_ID = "";
-    public const string MEIZU_APP_KEY = "";
+    public const string MEIZU_APP_ID = "146951";
+    public const string MEIZU_APP_KEY = "304015a4ef864d05a56e863b7582eeb8";
 
     public Text deviceInfoText;
     public Text launchDataText;
