@@ -5,8 +5,8 @@
   "description": "This is leancloud Play package",
   "unity": "2019.1",
   "dependencies": {
-    "com.leancloud.storage": "https://github.com/leancloud/csharp-sdk-upm.git#storage-__VERSION__",
-    "com.leancloud.realtime": "https://github.com/leancloud/csharp-sdk-upm.git#realtime-__VERSION__"
+    "com.leancloud.storage": "__VERSION__",
+    "com.leancloud.realtime": "__VERSION__"
   },
   "keywords": ["LeanCloud", "Play"],
   "author": {
