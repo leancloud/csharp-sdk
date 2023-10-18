@@ -13,7 +13,7 @@ var searchData=
   ['reconnectandrejoin_10',['ReconnectAndRejoin',['../classLeanCloud_1_1Play_1_1Client.html#a38d4b29e0e6569cc946f78a567b4c7b0',1,'LeanCloud::Play::Client']]],
   ['refreshsessiontoken_11',['RefreshSessionToken',['../classLeanCloud_1_1Storage_1_1LCUser.html#a62615aeb8fbb56201fb4466e5ae4d1d5',1,'LeanCloud::Storage::LCUser']]],
   ['register_3c_20t_20_3e_12',['Register&lt; T &gt;',['../classLeanCloud_1_1Realtime_1_1LCIMTypedMessage.html#a961a281799f0778509751cd85c0b3098',1,'LeanCloud::Realtime::LCIMTypedMessage']]],
-  ['registersubclass_3c_20t_20_3e_13',['RegisterSubclass&lt; T &gt;',['../classLeanCloud_1_1Storage_1_1LCObject.html#a83a3c315dac5342e1cf8840f984a5070',1,'LeanCloud::Storage::LCObject']]],
+  ['registersubclass_3c_20t_20_3e_13',['RegisterSubclass&lt; T &gt;',['../classLeanCloud_1_1Storage_1_1LCObject.html#aacfd4d184703c52b41374745b83fb507',1,'LeanCloud::Storage::LCObject']]],
   ['registertype_14',['RegisterType',['../classLeanCloud_1_1Play_1_1CodecUtils.html#a195c3db09e10e7a5a92859fa7d5e0073',1,'LeanCloud::Play::CodecUtils']]],
   ['rejoinroom_15',['RejoinRoom',['../classLeanCloud_1_1Play_1_1Client.html#a5890524c2b6cd4b73db0ca2439226118',1,'LeanCloud::Play::Client']]],
   ['remoteaddress_16',['RemoteAddress',['../classLeanCloud_1_1Engine_1_1LCEngineRequestContext.html#accc1782d171dd6bb0cef585a550d4b03',1,'LeanCloud::Engine::LCEngineRequestContext']]],
