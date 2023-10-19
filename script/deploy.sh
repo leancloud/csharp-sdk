@@ -111,7 +111,7 @@ sh ./script/deploy-upm.sh $upmStoragePath $storageTag $version
 sh ./script/deploy-upm.sh $upmRealtimePath $realtimeTag $version
 sh ./script/deploy-upm.sh $upmPlayPath $playTag $version
  
-发布 NPMJS
+# 发布 NPMJS
 sh ./script/deploy-npm.sh $NPMJS_REGISTRY $NPMJS_TOKEN $upmStoragePath
 sh ./script/deploy-npm.sh $NPMJS_REGISTRY $NPMJS_TOKEN $upmRealtimePath
 sh ./script/deploy-npm.sh $NPMJS_REGISTRY $NPMJS_TOKEN $upmPlayPath
