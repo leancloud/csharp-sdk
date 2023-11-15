@@ -521,7 +521,9 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 .Select(conv => conv.Cid);
             Dictionary<string, LCIMConversation> conversationDict = (await Client.GetConversationList(convIds))
                 .ToDictionary(item => item.Id);
-            ReadOnlyCollection<LCIMConversation> conversations = unread.Convs.Select(conv => {
+            ReadOnlyCollection<LCIMConversation> conversations = unread.Convs
+                .Where(conv => conversationDict.ContainsKey(conv.Cid))
+                .Select(conv => {
                 // 设置对话中的未读数据
                 LCIMConversation conversation = conversationDict[conv.Cid];
                 conversation.Unread = conv.Unread;
