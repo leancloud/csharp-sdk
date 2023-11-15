@@ -3,25 +3,21 @@
 namespace LeanCloud.Play {
     internal static class Utils {
         internal static Client NewClient(string userId) {
-            // 华东节点，开发版本
-            var appId = "FQr8l8LLvdxIwhMHN77sNluX-9Nh9j0Va";
-            var appKey = "MJSm46Uu6LjF5eNmqfbuUmt6";
-            var playServer = "https://fqr8l8ll.lc-cn-e1-shared.com";
+            // 华北节点
+            var appId = "ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz";
+            var appKey = "NUKmuRbdAhg1vrb2wexYo1jo";
+            var playServer = "https://ikggdre2.lc-cn-n1-shared.com";
             return new Client(appId, appKey, userId, playServer: playServer);
         }
 
         internal static Client NewNorthChinaClient(string userId) {
-            // 华东节点，开发版本
-            var appId = "g2b0X6OmlNy7e4QqVERbgRJR-gzGzoHsz";
-            var appKey = "CM91rNV8cPVHKraoFQaopMVT";
-            var playServer = "https://g2b0x6om.lc-cn-n1-shared.com";
-            return new Client(appId, appKey, userId, playServer: playServer);
+            return NewClient(userId);
         }
 
         internal static Client NewUSClient(string userId) {
-            // 华东节点，开发版本
-            var appId = "yR48IPheWK2by2dfouYtlzTU-MdYXbMMI";
-            var appKey = "gw3bfkG2EAuN8e9ft5y9kPMq";
+            // 海外节点
+            var appId = "ldCRr8t23k3ydo7FxmJlKQmn-MdYXbMMI";
+            var appKey = "GwQDHkmsQTSF2ZXWegzXio5F";
             return new Client(appId, appKey, userId);
         }
 

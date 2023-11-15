@@ -187,6 +187,7 @@ namespace LeanCloud.Play {
                 throw new Exception("You are not in lobby yet.");
             }
             await lobby.Leave();
+            lobby = null;
         }
 
         /// <summary>
