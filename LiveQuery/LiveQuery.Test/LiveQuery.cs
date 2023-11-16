@@ -154,8 +154,11 @@ namespace LiveQuery.Test {
             StringContent requestContent = new StringContent(content);
             requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             request.Content = requestContent;
-            HttpClient client = new HttpClient();
-            await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+            using (HttpClient client = new HttpClient()) {
+                await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                request.Dispose();
+            }
 
             await tcs.Task;
         }

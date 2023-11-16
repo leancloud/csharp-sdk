@@ -25,25 +25,27 @@ namespace LeanCloud.Realtime.Internal.Router {
             string server = await LCCore.AppRouter.GetRealtimeServer();
             string url = $"{server}/v1/route?appId={LCCore.AppId}&secure=1";
 
-            HttpRequestMessage request = new HttpRequestMessage {
-                RequestUri = new Uri(url),
-                Method = HttpMethod.Get
-            };
-            HttpClient client = new HttpClient();
-            LCHttpUtils.PrintRequest(client, request);
+            using (HttpClient client = new HttpClient()) {
+                HttpRequestMessage request = new HttpRequestMessage {
+                    RequestUri = new Uri(url),
+                    Method = HttpMethod.Get
+                };
 
-            Task<HttpResponseMessage> requestTask = client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            if (await Task.WhenAny(requestTask, Task.Delay(REQUEST_TIMEOUT)) != requestTask) {
-                throw new TimeoutException("Request timeout.");
+                LCHttpUtils.PrintRequest(client, request);
+
+                Task<HttpResponseMessage> requestTask = client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                if (await Task.WhenAny(requestTask, Task.Delay(REQUEST_TIMEOUT)) != requestTask) {
+                    throw new TimeoutException("Request timeout.");
+                }
+
+                HttpResponseMessage response = await requestTask;
+                request.Dispose();
+                string resultString = await response.Content.ReadAsStringAsync();
+                response.Dispose();
+                LCHttpUtils.PrintResponse(response, resultString);
+
+                rtmServer = JsonConvert.DeserializeObject<LCRTMServer>(resultString, LCJsonConverter.Default);
             }
-
-            HttpResponseMessage response = await requestTask;
-            request.Dispose();
-            string resultString = await response.Content.ReadAsStringAsync();
-            response.Dispose();
-            LCHttpUtils.PrintResponse(response, resultString);
-
-            rtmServer = JsonConvert.DeserializeObject<LCRTMServer>(resultString, LCJsonConverter.Default);
 
             return rtmServer;
         }

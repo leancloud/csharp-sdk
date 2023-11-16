@@ -47,20 +47,23 @@ namespace LeanCloud.Common {
             // 向 App Router 请求地址
             if (appServer == null || !appServer.IsValid) {
                 try {
-                    HttpRequestMessage request = new HttpRequestMessage {
-                        RequestUri = new Uri($"https://app-router.com/2/route?appId={appId}"),
-                        Method = HttpMethod.Get
-                    };
-                    HttpClient client = new HttpClient();
-                    LCHttpUtils.PrintRequest(client, request);
-                    HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                    request.Dispose();
+                    
+                    using (HttpClient client = new HttpClient()) {
+                        HttpRequestMessage request = new HttpRequestMessage {
+                            RequestUri = new Uri($"https://app-router.com/2/route?appId={appId}"),
+                            Method = HttpMethod.Get
+                        };
 
-                    string resultString = await response.Content.ReadAsStringAsync();
-                    response.Dispose();
-                    LCHttpUtils.PrintResponse(response, resultString);
+                        LCHttpUtils.PrintRequest(client, request);
+                        HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                        request.Dispose();
 
-                    appServer = JsonConvert.DeserializeObject<LCAppServer>(resultString, LCJsonConverter.Default);
+                        string resultString = await response.Content.ReadAsStringAsync();
+                        response.Dispose();
+                        LCHttpUtils.PrintResponse(response, resultString);
+
+                        appServer = JsonConvert.DeserializeObject<LCAppServer>(resultString, LCJsonConverter.Default);
+                    }
                 } catch (Exception e) {
                     LCLogger.Error(e);
                     // 拉取服务地址失败后，使用国际节点的默认服务地址
