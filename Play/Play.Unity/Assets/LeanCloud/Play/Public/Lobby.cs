@@ -82,6 +82,7 @@ namespace LeanCloud.Play {
         }
 
         internal async Task Leave() {
+            state = State.Leaving;
             try {
                 await lobbyConn.LeaveLobby();
             } finally {
@@ -92,6 +93,7 @@ namespace LeanCloud.Play {
         internal async Task Close() {
             try {
                 await lobbyConn.Close();
+                state = State.Closed;
             } catch (Exception e) {
                 LCLogger.Error(e.Message);
             }
