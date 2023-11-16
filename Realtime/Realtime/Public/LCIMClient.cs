@@ -452,6 +452,10 @@ namespace LeanCloud.Realtime {
                 LCLogger.Error(e);
                 // 重连成功，但 session/open 失败
                 OnClose?.Invoke(e.Code, e.Message);
+            } catch (Exception e) {
+                LCLogger.Error(e);
+                // 重连成功，但 session/open 失败
+                OnClose?.Invoke(-1, e.Message);
             }
         }
         
