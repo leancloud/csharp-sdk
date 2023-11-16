@@ -58,20 +58,20 @@ namespace LeanCloud.Storage.Internal.File {
                 .Replace("+", "-")
                 .Replace("/", "_");
 
-            HttpClient client = new HttpClient();
+            using (HttpClient client = new HttpClient()) {
+                Uri uri = new Uri(uploadUrl);
+                client.DefaultRequestHeaders.Host = uri.Host;
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("UpToken", token);
 
-            Uri uri = new Uri(uploadUrl);
-            client.DefaultRequestHeaders.Host = uri.Host;
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("UpToken", token);
+                // 1. 初始化任务，请求 upload id
+                string uploadId = await RequestUploadId(client, encodedObjectName);
 
-            // 1. 初始化任务，请求 upload id
-            string uploadId = await RequestUploadId(client, encodedObjectName);
+                // 2. 分块上传数据
+                List<QiniuPart> parts = await UploadBlocks(client, encodedObjectName, uploadId, onProgress);
 
-            // 2. 分块上传数据
-            List<QiniuPart> parts = await UploadBlocks(client, encodedObjectName, uploadId, onProgress);
-
-            // 3. 完成文件上传
-            await FinishUpload(client, encodedObjectName, uploadId, parts);
+                // 3. 完成文件上传
+                await FinishUpload(client, encodedObjectName, uploadId, parts);
+            }
         }
 
         async Task<string> RequestUploadId(HttpClient client, string encodedObjectName) {

@@ -28,22 +28,24 @@ namespace LeanCloud.Storage.Internal.File {
                 Method = HttpMethod.Put,
                 Content = content
             };
-            HttpClient client = new HttpClient();
-            request.Headers.CacheControl = new CacheControlHeaderValue {
-                Public = true,
-                MaxAge = TimeSpan.FromMilliseconds(31536000)
-            };
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-            LCHttpUtils.PrintRequest(client, request);
-            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-            request.Dispose();
 
-            string resultString = await response.Content.ReadAsStringAsync();
-            response.Dispose();
-            LCHttpUtils.PrintResponse(response, resultString);
+            using (HttpClient client = new HttpClient()) {
+                request.Headers.CacheControl = new CacheControlHeaderValue {
+                    Public = true,
+                    MaxAge = TimeSpan.FromMilliseconds(31536000)
+                };
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+                LCHttpUtils.PrintRequest(client, request);
+                HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                request.Dispose();
 
-            if (!response.IsSuccessStatusCode) {
-                throw new Exception(resultString);
+                string resultString = await response.Content.ReadAsStringAsync();
+                response.Dispose();
+                LCHttpUtils.PrintResponse(response, resultString);
+
+                if (!response.IsSuccessStatusCode) {
+                    throw new Exception(resultString);
+                }
             }
         }
     }
