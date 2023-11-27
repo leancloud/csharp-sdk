@@ -37,8 +37,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
             Closed,
         }
 
-        private const int SEND_TIMEOUT = 10000;
-
         private const int MAX_RECONNECT_TIMES = 10;
 
         private const int RECONNECT_INTERVAL = 10000;
@@ -146,12 +144,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 LCLogger.Debug($"{id} => {FormatCommand(command)}");
             }
             byte[] bytes = command.ToByteArray();
-            Task sendTask = ws.Send(bytes);
-            if (await Task.WhenAny(sendTask, Task.Delay(SEND_TIMEOUT)) == sendTask) {
-                await sendTask;
-            } else {
-                throw new TimeoutException("Send request");
-            }
+            await ws.Send(bytes);
         }
 
         private void Disconnect() {
