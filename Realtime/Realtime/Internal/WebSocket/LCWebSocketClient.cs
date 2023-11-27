@@ -54,6 +54,10 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
             using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(CONNECT_TIMEOUT))) {
                 try {
                     await ws.ConnectAsync(new Uri(server), cts.Token);
+                    if (ws.State != WebSocketState.Open) {
+                        // .NET ClientWebSocket 可能在即使连接成功后，状态依然是 CLOSED，所以要先判断，否则会影响后续启动发送/接收监听
+                        throw new Exception($"ClientWebSocket connected invalid state: {ws.State}");
+                    }
                     LCLogger.Debug($"Connected WebSocket: {server}");
                     // 开启发送和接收
                     _ = StartSend();
@@ -116,6 +120,11 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                                 try {
                                     await ws.SendAsync(sendTask.Bytes, sendTask.MessageType, true, cts.Token);
                                     sendTask.Tcs.TrySetResult(null);
+                                } catch (NullReferenceException e) {
+                                    // .NET ClientWebSocket 内部错误，[issue](https://github.com/dotnet/runtime/issues/47582)，转化成更清楚的异常信息
+                                    Exception ex = new Exception("ClientWebSocket inner exception", e);
+                                    sendTask.Tcs.TrySetException(ex);
+                                    throw ex;
                                 } catch (OperationCanceledException) {
                                     TimeoutException te = new TimeoutException("Send timeout");
                                     sendTask.Tcs.TrySetException(te);
