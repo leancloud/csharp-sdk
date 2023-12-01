@@ -76,10 +76,18 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                 try {
                     await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cts.Token);
                 } catch (Exception e) {
-                    LCLogger.Error(e);
+                    LCLogger.Error($"CLOSE EXCEPTION: {e}");
                 } finally {
-                    ws.Abort();
-                    ws.Dispose();
+                    try {
+                        ws.Abort();
+                    } finally {
+
+                    }
+                    try {
+                        ws.Dispose();
+                    } finally {
+
+                    }
                     LCLogger.Debug("Closed WebSocket");
                 }
             }
@@ -138,7 +146,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     }
                 }
             } catch (Exception e) {
-                LCLogger.Error(e);
+                LCLogger.Error($"SEND EXCEPTION: {e}");
                 HandleExceptionClose();
             }
         }
@@ -191,12 +199,17 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         private void HandleExceptionClose() {
             try {
                 ws.Abort();
+            } catch (Exception e) {
+                LCLogger.Error($"HANDLE_EXCEPTION_CLOSE Abort: {e}");
+            } 
+
+            try {
                 ws.Dispose();
             } catch (Exception e) {
-                LCLogger.Error(e);
-            } finally {
-                OnClose?.Invoke();
+                LCLogger.Error($"HANDLE_EXCEPTION_CLOSE Dispose: {e}");
             }
+
+            OnClose?.Invoke();
         }
     }
 }

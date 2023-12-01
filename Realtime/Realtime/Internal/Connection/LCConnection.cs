@@ -95,10 +95,18 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 LCRTMServer rtmServer = await router.GetServer();
                 try {
                     LCLogger.Debug($"Primary Server");
+                    ws = new LCWebSocketClient {
+                        OnMessage = OnMessage,
+                        OnClose = OnDisconnect
+                    };
                     await ws.Connect(rtmServer.Primary, SUB_PROTOCOL);
                 } catch (Exception e) {
                     LCLogger.Error(e);
                     LCLogger.Debug($"Secondary Server");
+                    ws = new LCWebSocketClient {
+                        OnMessage = OnMessage,
+                        OnClose = OnDisconnect
+                    };
                     await ws.Connect(rtmServer.Secondary, SUB_PROTOCOL);
                 }
                 // 启动心跳
