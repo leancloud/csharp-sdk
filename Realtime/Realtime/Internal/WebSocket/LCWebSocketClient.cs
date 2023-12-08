@@ -70,8 +70,10 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
         public async Task Close() {
             LCLogger.Debug("Closing WebSocket");
+
             OnMessage = null;
             OnClose = null;
+
             using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(CLOSE_TIMEOUT))) {
                 try {
                     await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cts.Token);
@@ -89,6 +91,15 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
                     }
                     LCLogger.Debug("Closed WebSocket");
+                }
+            }
+
+            // 取消缓存的发送队列
+            if (sendQueue != null) {
+                while (sendQueue.Count > 0) {
+                    if (sendQueue.TryDequeue(out SendTask sendTask)) {
+                        sendTask.Tcs.TrySetCanceled();
+                    }
                 }
             }
         }
@@ -197,18 +208,6 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
         }
 
         private void HandleExceptionClose() {
-            try {
-                ws.Abort();
-            } catch (Exception e) {
-                LCLogger.Error($"HANDLE_EXCEPTION_CLOSE Abort: {e}");
-            } 
-
-            try {
-                ws.Dispose();
-            } catch (Exception e) {
-                LCLogger.Error($"HANDLE_EXCEPTION_CLOSE Dispose: {e}");
-            }
-
             OnClose?.Invoke();
         }
     }

@@ -7,6 +7,7 @@ using LC.Google.Protobuf;
 using LeanCloud.Realtime.Internal.Router;
 using LeanCloud.Realtime.Internal.WebSocket;
 using LeanCloud.Realtime.Internal.Protocol;
+using System.Diagnostics;
 
 namespace LeanCloud.Realtime.Internal.Connection {
     /// <summary>
@@ -70,10 +71,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
 
             heartBeat = new LCRTMHeartBeat(this, OnDisconnect);
             router = new LCRTMRouter();
-            ws = new LCWebSocketClient {
-                OnMessage = OnMessage,
-                OnClose = OnDisconnect
-            };
+            
             idToClients = new Dictionary<string, LCIMClient>();
             state = State.None;
         }
@@ -93,20 +91,16 @@ namespace LeanCloud.Realtime.Internal.Connection {
             state = State.Connecting;
             try {
                 LCRTMServer rtmServer = await router.GetServer();
+                ws = new LCWebSocketClient {
+                    OnMessage = OnMessage,
+                    OnClose = OnDisconnect
+                };
                 try {
                     LCLogger.Debug($"Primary Server");
-                    ws = new LCWebSocketClient {
-                        OnMessage = OnMessage,
-                        OnClose = OnDisconnect
-                    };
                     await ws.Connect(rtmServer.Primary, SUB_PROTOCOL);
                 } catch (Exception e) {
                     LCLogger.Error(e);
                     LCLogger.Debug($"Secondary Server");
-                    ws = new LCWebSocketClient {
-                        OnMessage = OnMessage,
-                        OnClose = OnDisconnect
-                    };
                     await ws.Connect(rtmServer.Secondary, SUB_PROTOCOL);
                 }
                 // 启动心跳
@@ -119,6 +113,10 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         internal async Task<GenericCommand> SendRequest(GenericCommand request) {
+            if (state != State.Open) {
+                throw new Exception($"Connection invalid state: {state}");
+            }
+
             if (IsIdempotentCommand(request)) {
                 GenericCommand sendingReq = requestToResponses.Keys.FirstOrDefault(item => {
                     // TRICK 除了 I 其他字段相等
@@ -148,6 +146,10 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         internal async Task SendCommand(GenericCommand command) {
+            if (state != State.Open) {
+                throw new Exception($"Connection invalid state: {state}");
+            }
+
             if (LCLogger.LogDelegate != null) {
                 LCLogger.Debug($"{id} => {FormatCommand(command)}");
             }
@@ -156,10 +158,17 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         private void Disconnect() {
-            defaultClientId = null;
             state = State.Closed;
-            heartBeat.Stop();
+
+            defaultClientId = null;
             _ = ws.Close();
+            heartBeat.Stop();
+            // 取消掉等待中的请求
+            foreach (KeyValuePair<GenericCommand, TaskCompletionSource<GenericCommand>> kv in requestToResponses) {
+                kv.Value.TrySetCanceled();
+            }
+            requestToResponses.Clear();
+            
             foreach (LCIMClient client in idToClients.Values) {
                 client.HandleDisconnected();
             }
@@ -216,6 +225,13 @@ namespace LeanCloud.Realtime.Internal.Connection {
         }
 
         private void OnDisconnect() {
+            if (state != State.Open) {
+                // DEBUG
+                StackTrace st = new StackTrace(true);
+                LCLogger.Error($"Unexpected OnDisconnect {st}");
+                return;
+            }
+
             Disconnect();
             _ = Reconnect();
         }
@@ -223,12 +239,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal void Reset() {
             Disconnect();
             // 重新创建连接组件
-            heartBeat = new LCRTMHeartBeat(this, OnDisconnect);
             router = new LCRTMRouter();
-            ws = new LCWebSocketClient {
-                OnMessage = OnMessage,
-                OnClose = OnDisconnect
-            };
             _ = Reconnect();
         }
 
@@ -255,8 +266,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
                 if (reconnectCount < MAX_RECONNECT_TIMES) {
                     // 重连成功
                     LCLogger.Debug("Reconnected");
-                    ws.OnMessage = OnMessage;
-                    ws.OnClose = OnDisconnect;
                     foreach (LCIMClient client in idToClients.Values) {
                         client.HandleReconnected();
                     }
