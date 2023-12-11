@@ -52,7 +52,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
 
         private LCRTMRouter router;
 
-        private LCHeartBeat heartBeat;
+        private LCRTMHeartBeat heartBeat;
 
         private LCWebSocketClient ws;
 
@@ -69,7 +69,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
             this.id = id;
             requestToResponses = new Dictionary<GenericCommand, TaskCompletionSource<GenericCommand>>(new RequestAndResponseComparer());
 
-            heartBeat = new LCRTMHeartBeat(this, OnDisconnect);
+            heartBeat = new LCRTMHeartBeat(this);
             router = new LCRTMRouter();
             
             idToClients = new Dictionary<string, LCIMClient>();
@@ -104,7 +104,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     await ws.Connect(rtmServer.Secondary, SUB_PROTOCOL);
                 }
                 // 启动心跳
-                heartBeat.Start();
+                heartBeat.Start(OnDisconnect);
                 state = State.Open;
             } catch (Exception e) {
                 state = State.Closed;
