@@ -90,7 +90,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
             try {
                 await connection.SendCommand(command);
             } catch (Exception e) {
-                LCLogger.Error(e);
+                LCLogger.Warn($"Ping exception: {e}");
             }
         }
     }

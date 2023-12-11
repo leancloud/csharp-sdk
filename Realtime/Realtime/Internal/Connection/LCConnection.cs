@@ -99,7 +99,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
                     LCLogger.Debug($"Primary Server");
                     await ws.Connect(rtmServer.Primary, SUB_PROTOCOL);
                 } catch (Exception e) {
-                    LCLogger.Error(e);
+                    LCLogger.Warn($"Connect {rtmServer.Primary} exception: {e}");
                     LCLogger.Debug($"Secondary Server");
                     await ws.Connect(rtmServer.Secondary, SUB_PROTOCOL);
                 }
@@ -256,10 +256,8 @@ namespace LeanCloud.Realtime.Internal.Connection {
                         break;
                     } catch (Exception e) {
                         reconnectCount++;
-                        if (LCLogger.LogDelegate != null) {
-                            LCLogger.Error(e);
-                            LCLogger.Debug($"Reconnect after {RECONNECT_INTERVAL}ms");
-                        }
+                        LCLogger.Warn($"Connect exception: {e}");
+                        LCLogger.Debug($"Reconnect after {RECONNECT_INTERVAL}ms");
                         await Task.Delay(RECONNECT_INTERVAL);
                     }
                 }
