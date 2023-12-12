@@ -20,6 +20,7 @@
     <Folder Include="Public\Message\" />
     <Folder Include="Public\Result\" />
     <Folder Include="Public\Signature\" />
+    <Folder Include="Internal\Connection\State\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common\Common.csproj" />
@@ -27,5 +28,8 @@
     <ProjectReference Include="..\..\Libs\Google.Protobuf\LC.Google.Protobuf.csproj">
       <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Internal\Connection\State\" />
   </ItemGroup>
 </Project>

@@ -143,6 +143,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
                             using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(SEND_TIMEOUT))) {
                                 try {
+                                    // 即使断网，Send 操作也很快返回，并没有遇到过超时情况
                                     await ws.SendAsync(sendTask.Bytes, sendTask.MessageType, true, cts.Token);
                                     sendTask.Tcs.TrySetResult(null);
                                 } catch (NullReferenceException e) {
