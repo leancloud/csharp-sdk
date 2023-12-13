@@ -31,11 +31,17 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
 
         private ConcurrentQueue<SendTask> sendQueue;
 
+        internal readonly string Id;
+
+        public LCWebSocketClient() {
+            Id = Guid.NewGuid().ToString();
+        }
+
         public async Task Connect(string server,
             string subProtocol = null,
             Dictionary<string, string> headers = null,
             TimeSpan keepAliveInterval = default) {
-            LCLogger.Debug($"Connecting WebSocket: {server}");
+            LCLogger.Debug($"{Id} Connecting WebSocket: {server}");
             
             ws = new ClientWebSocket();
             ws.Options.SetBuffer(RECV_BUFFER_SIZE, SEND_BUFFER_SIZE);
@@ -58,20 +64,20 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     await ws.ConnectAsync(new Uri(server), cts.Token);
                     if (ws.State != WebSocketState.Open) {
                         // .NET ClientWebSocket 可能在即使连接成功后，状态依然是 CLOSED，所以要先判断，否则会影响后续启动发送/接收监听
-                        throw new Exception($"ClientWebSocket connected invalid state: {ws.State}");
+                        throw new Exception($"{Id} ClientWebSocket connected invalid state: {ws.State}");
                     }
-                    LCLogger.Debug($"Connected WebSocket: {server}");
+                    LCLogger.Debug($"{Id} Connected WebSocket: {server}");
                     // 开启发送和接收
                     _ = StartSend();
                     _ = StartReceive();
                 } catch (OperationCanceledException) {
-                    throw new TimeoutException("Connect timeout");
+                    throw new TimeoutException($"{Id} Connect timeout");
                 } 
             }
         }
 
         public async Task Close() {
-            LCLogger.Debug("Closing WebSocket");
+            LCLogger.Debug($"{Id} Closing WebSocket");
 
             OnMessage = null;
             OnClose = null;
@@ -84,20 +90,20 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                         await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Acknowledging Close", cts.Token);
                     } 
                 } catch (Exception e) {
-                    LCLogger.Warn($"WebSocket close exception: {e}");
+                    LCLogger.Warn($"{Id} WebSocket close exception: {e}");
                     try {
                         ws.Abort();
                     } catch (Exception ae) {
-                        LCLogger.Warn($"WebSocket abort exception: {ae}");
+                        LCLogger.Warn($"{Id} WebSocket abort exception: {ae}");
                     }
                 }
 
                 try {
                     ws.Dispose();
                 } catch (Exception e) {
-                    LCLogger.Warn($"WebSocket dispose exception: {e}");
+                    LCLogger.Warn($"{Id} WebSocket dispose exception: {e}");
                 }
-                LCLogger.Debug("Closed WebSocket");
+                LCLogger.Debug($"{Id} Closed WebSocket");
             }
 
             // 取消缓存的发送队列
@@ -138,7 +144,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                         if (sendQueue.TryDequeue(out SendTask sendTask)) {
                             if (ws.State != WebSocketState.Open) {
                                 // 增加额外判断，避免 .NET 内部异常 NPE
-                                throw new Exception($"Error WebSocket state: {ws.State}");
+                                throw new Exception($"{Id} Error WebSocket state: {ws.State}");
                             }
 
                             using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(SEND_TIMEOUT))) {
@@ -164,7 +170,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                     }
                 }
             } catch (Exception e) {
-                LCLogger.Warn($"WebSocket send exception: {e}");
+                LCLogger.Warn($"{Id} WebSocket send exception: {e}");
                 HandleExceptionClose();
             }
         }
@@ -177,14 +183,14 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                 while (ws.State == WebSocketState.Open) {
                     WebSocketReceiveResult result = await ws.ReceiveAsync(new ArraySegment<byte>(recvBuffer), default);
                     if (result.MessageType == WebSocketMessageType.Close) {
-                        LCLogger.Debug($"Receive Closed: {result.CloseStatus}");
+                        LCLogger.Debug($"{Id} Receive Closed: {result.CloseStatus}");
                         if (ws.State == WebSocketState.CloseReceived) {
                             // 如果是服务端主动关闭，则挥手关闭，并认为是断线
                             using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(CLOSE_TIMEOUT))) {
                                 try {
                                     await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Acknowledging Close", cts.Token);
                                 } catch (Exception e) {
-                                    LCLogger.Warn($"WebSocket close exception: {e}");
+                                    LCLogger.Warn($"{Id} WebSocket close exception: {e}");
                                 } finally {
                                     HandleExceptionClose();
                                 }
@@ -209,7 +215,7 @@ namespace LeanCloud.Realtime.Internal.WebSocket {
                 }
             } catch (Exception e) {
                 // 客户端网络异常
-                LCLogger.Warn($"WebSocket receive exception: {e}");
+                LCLogger.Warn($"{Id} WebSocket receive exception: {e}");
                 HandleExceptionClose();
             }
         }

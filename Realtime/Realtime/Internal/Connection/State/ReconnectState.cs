@@ -24,6 +24,7 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
                 // 重连策略
                 while (reconnectCount < MAX_RECONNECT_TIMES) {
                     if (cancellationTokenSource.Token.IsCancellationRequested) {
+                        LCLogger.Debug("Cancel Reconnect 1");
                         break;
                     }
 
@@ -41,13 +42,14 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
 
                 // 如果取消
                 if (cancellationTokenSource.Token.IsCancellationRequested) {
+                    LCLogger.Debug("Cancel Reconnect 2");
                     break;
                 }
 
                 if (reconnectCount < MAX_RECONNECT_TIMES) {
                     // 重连成功
-                    LCLogger.Debug("Reconnected");
-                    connection.TranslateTo(LCConnection.State.Connected);
+                    LCLogger.Debug($"Reconnected: {connection.ws.Id}");
+                    connection.TransitTo(LCConnection.State.Connected);
                     connection.HandleReconnected();
                     break;
                 } else {
@@ -58,15 +60,15 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
         }
 
         public override void Pause() {
-            connection.TranslateTo(LCConnection.State.Paused);
-
             cancellationTokenSource.Cancel();
+
+            connection.TransitTo(LCConnection.State.Paused);
         }
 
         public override void Close() {
-            connection.TranslateTo(LCConnection.State.Init);
-
             cancellationTokenSource.Cancel();
+
+            connection.TransitTo(LCConnection.State.Init);
         }
 
         #endregion

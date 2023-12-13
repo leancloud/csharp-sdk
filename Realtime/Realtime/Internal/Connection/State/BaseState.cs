@@ -50,15 +50,18 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
                     return;
                 }
 
-                connection.ws = new LCWebSocketClient();
+                // 局部变量，避免异步过程中共用
+                LCWebSocketClient ws = new LCWebSocketClient();
                 try {
                     LCLogger.Debug($"Primary Server");
-                    await connection.ws.Connect(rtmServer.Primary, SUB_PROTOCOL);
+                    await ws.Connect(rtmServer.Primary, SUB_PROTOCOL);
 
                     if (cancellationToken.IsCancellationRequested) {
-                        _ = connection.ws.Close();
+                        _ = ws.Close();
                         return;
                     }
+
+                    connection.ws = ws;
                 } catch (Exception e) {
                     if (cancellationToken.IsCancellationRequested) {
                         return;
@@ -66,12 +69,14 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
 
                     LCLogger.Warn($"Connect {rtmServer.Primary} exception: {e}");
                     LCLogger.Debug($"Secondary Server");
-                    await connection.ws.Connect(rtmServer.Secondary, SUB_PROTOCOL);
+                    await ws.Connect(rtmServer.Secondary, SUB_PROTOCOL);
 
                     if (cancellationToken.IsCancellationRequested) {
-                        _ = connection.ws.Close();
+                        _ = ws.Close();
                         return;
                     }
+
+                    connection.ws = ws;
                 }
             } catch (Exception e) {
                 throw e;

@@ -21,11 +21,6 @@ namespace LeanCloud.Realtime.Internal.Connection {
         // 默认 Client id
         internal string defaultClientId;
 
-        internal InitState initState;
-        internal ConnectedState connectedState;
-        internal ReconnectState reconnectState;
-        internal PausedState pausedState;
-
         public enum State {
             Init,
             Connected,
@@ -42,12 +37,7 @@ namespace LeanCloud.Realtime.Internal.Connection {
             
             idToClients = new Dictionary<string, LCIMClient>();
 
-            initState = new InitState(this);
-            connectedState = new ConnectedState(this);
-            reconnectState = new ReconnectState(this);
-            pausedState = new PausedState(this);
-
-            currentState = initState;
+            currentState = new InitState(this);
         }
 
         internal void Register(LCIMClient client) {
@@ -85,11 +75,9 @@ namespace LeanCloud.Realtime.Internal.Connection {
             currentState.Resume();
         }
 
-        internal void TranslateTo(State state) {
-            LCLogger.Debug($"RTM Connection translates to {state}");
-            if (currentState != null) {
-                currentState.Exit();
-            }
+        internal void TransitTo(State state) {
+            LCLogger.Debug($"RTM Connection transits from {currentState.GetType().Name} to {state}");
+            currentState.Exit();
             switch (state) {
                 case State.Init:
                     currentState = new InitState(this);

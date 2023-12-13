@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using LeanCloud.Realtime.Internal.Protocol;
 using LC.Google.Protobuf;
+using LeanCloud.Realtime.Internal.WebSocket;
 
 namespace LeanCloud.Realtime.Internal.Connection.State {
     // 请求/应答比对，即 I 相等
@@ -25,7 +26,10 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
 
         internal int requestI = 1;
 
+        private readonly LCWebSocketClient ws;
+
         public ConnectedState(LCConnection connection) : base(connection) {
+            ws = connection.ws;
         }
 
         #region State Event
@@ -33,15 +37,15 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
         public override void Enter() {
             requestToResponses = new Dictionary<GenericCommand, TaskCompletionSource<GenericCommand>>(new RequestAndResponseComparer());
             // 设置回调
-            connection.ws.OnMessage = OnMessage;
-            connection.ws.OnClose = OnDisconnect;
+            ws.OnMessage = OnMessage;
+            ws.OnClose = OnDisconnect;
             // 启动心跳
             heartBeat = new LCRTMHeartBeat(connection);
             heartBeat.Start(OnDisconnect);
         }
 
         public override void Exit() {
-            _ = connection.ws.Close();
+            _ = ws.Close();
 
             heartBeat.Stop();
 
@@ -86,17 +90,17 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
         public override async Task SendCommand(GenericCommand command) {
             LCLogger.Debug($"{connection.id} => {FormatCommand(command)}");
             byte[] bytes = command.ToByteArray();
-            await connection.ws.Send(bytes);
+            await ws.Send(bytes);
         }
 
         public override void Pause() {
-            connection.TranslateTo(LCConnection.State.Paused);
+            connection.TransitTo(LCConnection.State.Paused);
 
             connection.HandleDisconnected();
         }
 
         public override void Close() {
-            connection.TranslateTo(LCConnection.State.Init);
+            connection.TransitTo(LCConnection.State.Init);
         }
 
         #endregion
@@ -136,7 +140,7 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
                         // 针对连接的消息
                         // 重置 Router 并断线重连
                         connection.router = new Router.LCRTMRouter();
-                        connection.TranslateTo(LCConnection.State.Reconnect);
+                        connection.TransitTo(LCConnection.State.Reconnect);
                     } else {
                         // 通知
                         string peerId = command.HasPeerId ? command.PeerId : connection.defaultClientId;
@@ -153,7 +157,7 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
 
         private void OnDisconnect() {
             // 断开重连
-            connection.TranslateTo(LCConnection.State.Reconnect);
+            connection.TransitTo(LCConnection.State.Reconnect);
 
             connection.HandleDisconnected();
         }
