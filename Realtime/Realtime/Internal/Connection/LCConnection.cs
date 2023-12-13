@@ -26,6 +26,13 @@ namespace LeanCloud.Realtime.Internal.Connection {
         internal ReconnectState reconnectState;
         internal PausedState pausedState;
 
+        public enum State {
+            Init,
+            Connected,
+            Reconnect,
+            Paused
+        }
+
         private BaseState currentState;
 
         internal LCConnection(string id) {
@@ -78,21 +85,35 @@ namespace LeanCloud.Realtime.Internal.Connection {
             currentState.Resume();
         }
 
-        public void TranslateTo(BaseState state) {
+        internal void TranslateTo(State state) {
+            LCLogger.Debug($"RTM Connection translates to {state}");
             if (currentState != null) {
                 currentState.Exit();
             }
-            currentState = state;
+            switch (state) {
+                case State.Init:
+                    currentState = new InitState(this);
+                    break;
+                case State.Connected:
+                    currentState = new ConnectedState(this);
+                    break;
+                case State.Reconnect:
+                    currentState = new ReconnectState(this);
+                    break;
+                case State.Paused:
+                    currentState = new PausedState(this);
+                    break;
+            }
             currentState.Enter();
         }
 
-        public void HandleDisconnected() {
+        internal void HandleDisconnected() {
             foreach (LCIMClient client in idToClients.Values) {
                 client.HandleDisconnected();
             }
         }
 
-        public void HandleReconnected() {
+        internal void HandleReconnected() {
             foreach (LCIMClient client in idToClients.Values) {
                 client.HandleReconnected();
             }

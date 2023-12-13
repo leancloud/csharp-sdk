@@ -9,27 +9,27 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
 
         private const int RECONNECT_INTERVAL = 10000;
 
-        private CancellationTokenSource cts;
+        private readonly CancellationTokenSource cancellationTokenSource;
 
         public ReconnectState(LCConnection connection) : base(connection) {
-
+            cancellationTokenSource = new CancellationTokenSource();
         }
 
         #region State Event
 
         public override async void Enter() {
             // 处理取消
-            cts = new CancellationTokenSource();
-            while (!cts.IsCancellationRequested) {
+            while (!cancellationTokenSource.Token.IsCancellationRequested) {
                 int reconnectCount = 0;
                 // 重连策略
                 while (reconnectCount < MAX_RECONNECT_TIMES) {
-                    if (cts.IsCancellationRequested) {
+                    if (cancellationTokenSource.Token.IsCancellationRequested) {
                         break;
                     }
+
                     try {
                         LCLogger.Debug($"Reconnecting... {reconnectCount}");
-                        await ConnectInternal();
+                        await ConnectInternal(cancellationTokenSource.Token);
                         break;
                     } catch (Exception e) {
                         reconnectCount++;
@@ -40,18 +40,14 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
                 }
 
                 // 如果取消
-                if (cts.IsCancellationRequested) {
-                    if (reconnectCount < MAX_RECONNECT_TIMES) {
-                        // 如果重试次数小于最大重试次数，说明连接成功了，则需要关闭 WebSocket
-                        _ = connection.ws.Close();
-                    }
+                if (cancellationTokenSource.Token.IsCancellationRequested) {
                     break;
                 }
 
                 if (reconnectCount < MAX_RECONNECT_TIMES) {
                     // 重连成功
                     LCLogger.Debug("Reconnected");
-                    connection.TranslateTo(connection.connectedState);
+                    connection.TranslateTo(LCConnection.State.Connected);
                     connection.HandleReconnected();
                     break;
                 } else {
@@ -62,9 +58,15 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
         }
 
         public override void Pause() {
-            connection.TranslateTo(connection.pausedState);
+            connection.TranslateTo(LCConnection.State.Paused);
 
-            cts.Cancel();
+            cancellationTokenSource.Cancel();
+        }
+
+        public override void Close() {
+            connection.TranslateTo(LCConnection.State.Init);
+
+            cancellationTokenSource.Cancel();
         }
 
         #endregion

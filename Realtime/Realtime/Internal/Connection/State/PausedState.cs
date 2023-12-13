@@ -7,7 +7,7 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
         #region State Event
 
         public override void Resume() {
-            connection.TranslateTo(connection.reconnectState);
+            connection.TranslateTo(LCConnection.State.Reconnect);
         }
 
         #endregion

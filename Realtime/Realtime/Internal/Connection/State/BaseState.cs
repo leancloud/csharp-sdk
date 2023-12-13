@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using LeanCloud.Realtime.Internal.Protocol;
 using LeanCloud.Realtime.Internal.Router;
@@ -42,17 +43,35 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
             LCLogger.Warn($"Close on invalid state: {GetType().Name}");
         }
 
-        protected async Task ConnectInternal() {
+        protected async Task ConnectInternal(CancellationToken cancellationToken) {
             try {
                 LCRTMServer rtmServer = await connection.router.GetServer();
+                if (cancellationToken.IsCancellationRequested) {
+                    return;
+                }
+
                 connection.ws = new LCWebSocketClient();
                 try {
                     LCLogger.Debug($"Primary Server");
                     await connection.ws.Connect(rtmServer.Primary, SUB_PROTOCOL);
+
+                    if (cancellationToken.IsCancellationRequested) {
+                        _ = connection.ws.Close();
+                        return;
+                    }
                 } catch (Exception e) {
+                    if (cancellationToken.IsCancellationRequested) {
+                        return;
+                    }
+
                     LCLogger.Warn($"Connect {rtmServer.Primary} exception: {e}");
                     LCLogger.Debug($"Secondary Server");
                     await connection.ws.Connect(rtmServer.Secondary, SUB_PROTOCOL);
+
+                    if (cancellationToken.IsCancellationRequested) {
+                        _ = connection.ws.Close();
+                        return;
+                    }
                 }
             } catch (Exception e) {
                 throw e;

@@ -16,9 +16,9 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
                 return;
             }
 
-            connectTask = ConnectInternal();
+            connectTask = ConnectInternal(default);
             await connectTask;
-            connection.TranslateTo(connection.connectedState);
+            connection.TranslateTo(LCConnection.State.Connected);
         }
 
         #endregion

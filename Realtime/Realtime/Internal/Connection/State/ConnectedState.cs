@@ -40,6 +40,18 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
             heartBeat.Start(OnDisconnect);
         }
 
+        public override void Exit() {
+            _ = connection.ws.Close();
+
+            heartBeat.Stop();
+
+            // 取消掉等待中的请求
+            foreach (KeyValuePair<GenericCommand, TaskCompletionSource<GenericCommand>> kv in requestToResponses) {
+                kv.Value.TrySetCanceled();
+            }
+            requestToResponses.Clear();
+        }
+
         public override Task Connect() {
             return Task.FromResult(true);
         }
@@ -78,17 +90,13 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
         }
 
         public override void Pause() {
-            connection.TranslateTo(connection.pausedState);
-
-            CloseConnection();
+            connection.TranslateTo(LCConnection.State.Paused);
 
             connection.HandleDisconnected();
         }
 
         public override void Close() {
-            connection.TranslateTo(connection.initState);
-
-            CloseConnection();
+            connection.TranslateTo(LCConnection.State.Init);
         }
 
         #endregion
@@ -128,7 +136,7 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
                         // 针对连接的消息
                         // 重置 Router 并断线重连
                         connection.router = new Router.LCRTMRouter();
-                        connection.TranslateTo(connection.reconnectState);
+                        connection.TranslateTo(LCConnection.State.Reconnect);
                     } else {
                         // 通知
                         string peerId = command.HasPeerId ? command.PeerId : connection.defaultClientId;
@@ -145,24 +153,12 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
 
         private void OnDisconnect() {
             // 断开重连
-            connection.TranslateTo(connection.reconnectState);
-
-            CloseConnection();
+            connection.TranslateTo(LCConnection.State.Reconnect);
 
             connection.HandleDisconnected();
         }
 
         #endregion
-
-        private void CloseConnection() {
-            _ = connection.ws.Close();
-
-            // 取消掉等待中的请求
-            foreach (KeyValuePair<GenericCommand, TaskCompletionSource<GenericCommand>> kv in requestToResponses) {
-                kv.Value.TrySetCanceled();
-            }
-            requestToResponses.Clear();
-        }
 
         private static string FormatCommand(GenericCommand command) {
             StringBuilder sb = new StringBuilder($"{command.Cmd}");
