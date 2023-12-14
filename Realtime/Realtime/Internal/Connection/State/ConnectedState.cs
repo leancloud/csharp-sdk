@@ -6,6 +6,7 @@ using System.Linq;
 using LeanCloud.Realtime.Internal.Protocol;
 using LC.Google.Protobuf;
 using LeanCloud.Realtime.Internal.WebSocket;
+using LeanCloud.Realtime.Internal.Router;
 
 namespace LeanCloud.Realtime.Internal.Connection.State {
     // 请求/应答比对，即 I 相等
@@ -144,7 +145,7 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
                     } else if (command.Cmd == CommandType.Goaway) {
                         // 针对连接的消息
                         // 重置 Router 并断线重连
-                        connection.router = new Router.LCRTMRouter();
+                        connection.router.Reset();
                         connection.TransitTo(LCConnection.State.Reconnect);
                     } else {
                         // 通知

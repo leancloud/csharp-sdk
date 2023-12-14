@@ -54,7 +54,7 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
                     break;
                 } else {
                     // 重置 Router，继续尝试重连
-                    connection.router = new LCRTMRouter();
+                    connection.router.Reset();
                 }
             }
         }
