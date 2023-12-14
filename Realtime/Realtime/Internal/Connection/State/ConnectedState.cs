@@ -88,9 +88,14 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
         }
 
         public override async Task SendCommand(GenericCommand command) {
-            LCLogger.Debug($"{connection.id} => {FormatCommand(command)}");
+            if (LCLogger.LogDelegate != null) {
+                LCLogger.Debug($"{connection.id} => {FormatCommand(command)}");
+            }
             byte[] bytes = command.ToByteArray();
             await ws.Send(bytes);
+            if (LCLogger.LogDelegate != null) {
+                LCLogger.Debug($"Send completed: {FormatCommand(command)}");
+            }
         }
 
         public override void Pause() {
