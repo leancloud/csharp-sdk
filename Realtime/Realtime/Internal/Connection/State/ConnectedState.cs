@@ -21,16 +21,17 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
     }
 
     public class ConnectedState : BaseState {
-        internal Dictionary<GenericCommand, TaskCompletionSource<GenericCommand>> requestToResponses;
+        private Dictionary<GenericCommand, TaskCompletionSource<GenericCommand>> requestToResponses;
 
-        internal LCRTMHeartBeat heartBeat;
+        private int requestI = 1;
 
-        internal int requestI = 1;
+        private readonly LCRTMHeartBeat heartBeat;
 
         private readonly LCWebSocketClient ws;
 
         public ConnectedState(LCConnection connection) : base(connection) {
             ws = connection.ws;
+            heartBeat = new LCRTMHeartBeat(connection);
         }
 
         #region State Event
@@ -41,7 +42,6 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
             ws.OnMessage = OnMessage;
             ws.OnClose = OnDisconnect;
             // 启动心跳
-            heartBeat = new LCRTMHeartBeat(connection);
             heartBeat.Start(OnDisconnect);
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace LeanCloud.Realtime.Internal.Connection.State {
     public class InitState : BaseState {
@@ -16,9 +17,14 @@ namespace LeanCloud.Realtime.Internal.Connection.State {
                 return;
             }
 
-            connectTask = ConnectInternal(default);
-            await connectTask;
-            connection.TransitTo(LCConnection.State.Connected);
+            try {
+                connectTask = ConnectInternal(default);
+                await connectTask;
+                connection.TransitTo(LCConnection.State.Connected);
+            } catch (Exception e) {
+                connectTask = null;
+                throw e;
+            }
         }
 
         #endregion
