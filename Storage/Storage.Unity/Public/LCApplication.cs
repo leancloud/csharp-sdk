@@ -1,4 +1,5 @@
-﻿using LeanCloud.Common;
+﻿using System;
+using LeanCloud.Common;
 using LeanCloud.Storage.Internal;
 using LeanCloud.Storage.Internal.Persistence;
 
@@ -16,6 +17,13 @@ namespace LeanCloud {
             get => LCCore.UseMasterKey;
             set {
                 LCCore.UseMasterKey = value;
+            }
+        }
+
+        public static TimeSpan RequestTimeout {
+            get => LCCore.RequestTimeout;
+            set {
+                LCCore.RequestTimeout = value;
             }
         }
 
