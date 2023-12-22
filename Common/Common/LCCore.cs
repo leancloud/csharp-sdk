@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace LeanCloud.Common {
     /// <summary>
@@ -37,6 +36,11 @@ namespace LeanCloud.Common {
 
         public static bool UseMasterKey {
             get; set;
+        }
+
+        public static TimeSpan RequestTimeout {
+            get => HttpClient.Timeout;
+            set { HttpClient.Timeout = value; }
         }
 
         public static PersistenceController PersistenceController {
