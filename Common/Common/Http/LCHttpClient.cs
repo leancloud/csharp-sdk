@@ -42,8 +42,8 @@ namespace LeanCloud.Common {
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("X-LC-Id", appId);
 
-            // 设置默认超时时间 10s
-            client.Timeout = TimeSpan.FromSeconds(10);
+            // 设置默认超时时间 20s
+            client.Timeout = TimeSpan.FromSeconds(20);
 
             md5 = MD5.Create();
         }
