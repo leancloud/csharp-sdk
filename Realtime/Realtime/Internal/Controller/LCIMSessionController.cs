@@ -121,7 +121,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
                 case OpType.Closed: {
                         Connection.UnRegister(Client);
                         SessionCommand command = notification.SessionMessage;
-                        Client.OnClose(command.Code, command.Reason);
+                        Client.HandleClosed(command.Code, command.Reason);
                     }
                     break;
                 default:

@@ -11,43 +11,47 @@ namespace LeanCloud.Realtime.Internal.Router {
 
         private LCRTMServer rtmServer;
 
+        private readonly HttpClient httpClient;
+
         public LCRTMRouter() {
+            httpClient = new HttpClient {
+                Timeout = TimeSpan.FromMilliseconds(REQUEST_TIMEOUT)
+            };
         }
 
         public async Task<LCRTMServer> GetServer() {
-            if (rtmServer == null || !rtmServer.IsValid) {
-                await Fetch();
+            if (rtmServer != null && rtmServer.IsValid) {
+                return rtmServer;
             }
-            return rtmServer;
+            return await Fetch();
         }
 
         async Task<LCRTMServer> Fetch() {
             string server = await LCCore.AppRouter.GetRealtimeServer();
             string url = $"{server}/v1/route?appId={LCCore.AppId}&secure=1";
 
-            using (HttpClient client = new HttpClient()) {
-                HttpRequestMessage request = new HttpRequestMessage {
-                    RequestUri = new Uri(url),
-                    Method = HttpMethod.Get
-                };
+            HttpRequestMessage request = new HttpRequestMessage {
+                RequestUri = new Uri(url),
+                Method = HttpMethod.Get
+            };
 
-                LCHttpUtils.PrintRequest(client, request);
+            LCHttpUtils.PrintRequest(httpClient, request);
 
-                Task<HttpResponseMessage> requestTask = client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                if (await Task.WhenAny(requestTask, Task.Delay(REQUEST_TIMEOUT)) != requestTask) {
-                    throw new TimeoutException("Request timeout.");
-                }
+            HttpResponseMessage response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            request.Dispose();
 
-                HttpResponseMessage response = await requestTask;
-                request.Dispose();
-                string resultString = await response.Content.ReadAsStringAsync();
-                response.Dispose();
-                LCHttpUtils.PrintResponse(response, resultString);
+            string resultString = await response.Content.ReadAsStringAsync();
+            response.Dispose();
 
-                rtmServer = JsonConvert.DeserializeObject<LCRTMServer>(resultString, LCJsonConverter.Default);
-            }
+            LCHttpUtils.PrintResponse(response, resultString);
+
+            rtmServer = JsonConvert.DeserializeObject<LCRTMServer>(resultString, LCJsonConverter.Default);
 
             return rtmServer;
+        }
+
+        public void Reset() {
+            rtmServer = null;
         }
     }
 }

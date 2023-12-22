@@ -439,23 +439,41 @@ namespace LeanCloud.Realtime {
         }
 
         internal void HandleDisconnected() {
-            OnPaused?.Invoke();
+            try {
+                OnPaused?.Invoke();
+            } catch (Exception e) {
+                LCLogger.Warn($"There are uncatched OnPaused exception: {e}");
+            }
         }
 
         internal async void HandleReconnected() {
             try {
                 // 打开 Session
                 await SessionController.Reopen();
-                // 回调用户
-                OnResume?.Invoke();
             } catch (LCException e) {
                 LCLogger.Error(e);
                 // 重连成功，但 session/open 失败
-                OnClose?.Invoke(e.Code, e.Message);
+                HandleClosed(e.Code, e.Message);
+                return;
             } catch (Exception e) {
                 LCLogger.Error(e);
                 // 重连成功，但 session/open 失败
-                OnClose?.Invoke(-1, e.Message);
+                HandleClosed(-1, e.Message);
+                return;
+            }
+
+            try {
+                OnResume?.Invoke();
+            } catch (Exception e) {
+                LCLogger.Warn($"There are uncatched OnResume exception: {e}");
+            }
+        }
+
+        internal void HandleClosed(int code, string message) {
+            try {
+                OnClose?.Invoke(code, message);
+            } catch (Exception e) {
+                LCLogger.Warn($"There are uncatched OnClose exception: {e}");
             }
         }
         
