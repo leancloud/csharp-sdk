@@ -75,11 +75,21 @@ namespace LeanCloud.Realtime {
             get; internal set;
         }
 
+        private LCIMMessage _lastMessage;
+
         /// <summary>
         /// The last message in this conversation.
         /// </summary>
         public LCIMMessage LastMessage {
-            get; internal set;
+            get {
+                return _lastMessage;
+            }
+            internal set {
+                _lastMessage = value;
+                if (_lastMessage?.SentAt != null) {
+                    LastMessageAt = _lastMessage.SentAt;
+                }
+            }
         }
 
         /// <summary>
@@ -93,6 +103,13 @@ namespace LeanCloud.Realtime {
         /// The last updated date of this conversation.
         /// </summary>
         public DateTime UpdatedAt {
+            get; internal set;
+        }
+
+        /// <summary>
+        /// The date of the last message.
+        /// </summary>
+        public DateTime LastMessageAt {
             get; internal set;
         }
 
@@ -508,6 +525,8 @@ namespace LeanCloud.Realtime {
                     CreatedAt = createdAt.ToLocalTime();
                 } else if (kv.Key == "updatedAt" && kv.Value is DateTime updatedAt) {
                     UpdatedAt = updatedAt.ToLocalTime();
+                } else if (kv.Key == "lm" && kv.Value is DateTime lastMessageAt) {
+                    LastMessageAt = lastMessageAt.ToLocalTime();
                 } else if (kv.Key == "c") {
                     CreatorId = kv.Value as string;
                 } else if (kv.Key == "m") {

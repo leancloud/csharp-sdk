@@ -398,7 +398,7 @@ namespace LeanCloud.Realtime.Internal.Controller {
             List<object> convs = JsonConvert.DeserializeObject<List<object>>(results.Data,
                 LCJsonConverter.Default);
             return convs.Select(item => {
-                Dictionary<string, object> conv = item as Dictionary<string, object>;
+                Dictionary<string, object> conv = LCDecoder.Decode(item) as Dictionary<string, object>;
                 string convId = conv["objectId"] as string;
                 if (!Client.ConversationDict.TryGetValue(convId, out LCIMConversation conversation)) {
                     // 解析是哪种类型的对话

@@ -28,6 +28,7 @@ namespace Realtime.Test {
             Assert.Greater(conversations.Count, 0);
             foreach (LCIMConversation conversation in conversations) {
                 Assert.True(conversation.MemberIds.Contains(clientId));
+                Assert.Greater(conversation.LastMessageAt, System.DateTime.UnixEpoch);
             }
         }
 
