@@ -39,6 +39,13 @@ Unity 用户在编译完成后，请将 XX-Unity 工程中 Debug/Release 的 dll
 其他 .Net 平台用户使用 XX 工程即可。
 （XX 指 Storage，Realtime，LiveQuery 等）
 
+## 测试
+
+- Install .NET SDK 3.1 and 5.0 (use `dotnet --list-sdks` to list all installed versions).
+- Run `dotnet test` in a .sln/.csproj dir.
+
+ARM arch Mac users can install x64 arch .NET SDK via https://github.com/isen-ng/homebrew-dotnet-sdk-versions and use `dotnetx64`` instead.
+
 ## 项目结构
 
 由于 Unity 平台并不是标准的 .Net Standard 2.0，所以在每个服务下单独拆分出了 XX-Unity 工程，源码和主工程是一致的，只是在依赖库方面有些区别。后面也可能针对 Unity 平台做些相关支持。
