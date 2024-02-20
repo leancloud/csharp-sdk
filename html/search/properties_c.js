@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['object_0',['Object',['../classLeanCloud_1_1Storage_1_1LCStatistic.html#a87cc7e83b4e47018a619bdf7ddcfc4bd',1,'LeanCloud.Storage.LCStatistic.Object()'],['../classLeanCloud_1_1Storage_1_1LCRanking.html#a2d921230376d83afdb5df2f7daab77c7',1,'LeanCloud.Storage.LCRanking.Object()']]],
+  ['object_0',['object',['../classLeanCloud_1_1Storage_1_1LCStatistic.html#a87cc7e83b4e47018a619bdf7ddcfc4bd',1,'LeanCloud.Storage.LCStatistic.Object'],['../classLeanCloud_1_1Storage_1_1LCRanking.html#a2d921230376d83afdb5df2f7daab77c7',1,'LeanCloud.Storage.LCRanking.Object']]],
   ['objectid_1',['ObjectId',['../classLeanCloud_1_1Storage_1_1LCObject.html#abe1a90849883390e3cc8e7e01b615f12',1,'LeanCloud::Storage::LCObject']]],
   ['onblocked_2',['OnBlocked',['../classLeanCloud_1_1Realtime_1_1LCIMClient.html#a4a86f726a78a0adb72e2d77e221aeeed',1,'LeanCloud::Realtime::LCIMClient']]],
   ['onclose_3',['OnClose',['../classLeanCloud_1_1Realtime_1_1LCIMClient.html#a68d8c70ee663c04eda40a8ab4e0764d1',1,'LeanCloud::Realtime::LCIMClient']]],
@@ -23,7 +23,7 @@ var searchData=
   ['onresume_20',['OnResume',['../classLeanCloud_1_1Realtime_1_1LCIMClient.html#af0fad68b90a4fbc84db5260ad2abb1f0',1,'LeanCloud::Realtime::LCIMClient']]],
   ['onunblocked_21',['OnUnblocked',['../classLeanCloud_1_1Realtime_1_1LCIMClient.html#ab662821108452c9f9bbd4ed35af5aa6f',1,'LeanCloud::Realtime::LCIMClient']]],
   ['onunreadmessagescountupdated_22',['OnUnreadMessagesCountUpdated',['../classLeanCloud_1_1Realtime_1_1LCIMClient.html#a43f65913197430d5f3ccc9ae1387fc50',1,'LeanCloud::Realtime::LCIMClient']]],
-  ['open_23',['Open',['../classLeanCloud_1_1Play_1_1LobbyRoom.html#a65fdb18565b986d27e898cf4ceb4ce4c',1,'LeanCloud.Play.LobbyRoom.Open()'],['../classLeanCloud_1_1Play_1_1Room.html#a2c064ddb1f6b7d74465534cda6450fea',1,'LeanCloud.Play.Room.Open()'],['../classLeanCloud_1_1Play_1_1RoomOptions.html#afe891cb9e1e4985e190d5019ef134fa0',1,'LeanCloud.Play.RoomOptions.Open()']]],
+  ['open_23',['open',['../classLeanCloud_1_1Play_1_1LobbyRoom.html#a65fdb18565b986d27e898cf4ceb4ce4c',1,'LeanCloud.Play.LobbyRoom.Open'],['../classLeanCloud_1_1Play_1_1Room.html#a2c064ddb1f6b7d74465534cda6450fea',1,'LeanCloud.Play.Room.Open'],['../classLeanCloud_1_1Play_1_1RoomOptions.html#afe891cb9e1e4985e190d5019ef134fa0',1,'LeanCloud.Play.RoomOptions.Open']]],
   ['order_24',['Order',['../classLeanCloud_1_1Storage_1_1LCLeaderboard.html#a9e1099931ecf4b6e2e84b7181cb47d03',1,'LeanCloud::Storage::LCLeaderboard']]],
   ['origin_25',['Origin',['../classLeanCloud_1_1Storage_1_1LCGeoPoint.html#a2fd073147d05facabcea3cadfa0a1a4a',1,'LeanCloud::Storage::LCGeoPoint']]]
 ];

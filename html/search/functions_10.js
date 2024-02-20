@@ -1,7 +1,7 @@
 var searchData=
 [
   ['radiansto_0',['RadiansTo',['../classLeanCloud_1_1Storage_1_1LCGeoPoint.html#a1b91ccfe3401c49da89d487bb49978d9',1,'LeanCloud::Storage::LCGeoPoint']]],
-  ['read_1',['Read',['../classLeanCloud_1_1Realtime_1_1LCIMChatRoom.html#a3211fbcd86aec583ce70f918f259f8ea',1,'LeanCloud.Realtime.LCIMChatRoom.Read()'],['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a5ef40ee4e3362156b70cc9e792ef6c47',1,'LeanCloud.Realtime.LCIMConversation.Read()']]],
+  ['read_1',['read',['../classLeanCloud_1_1Realtime_1_1LCIMChatRoom.html#a3211fbcd86aec583ce70f918f259f8ea',1,'LeanCloud.Realtime.LCIMChatRoom.Read()'],['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a5ef40ee4e3362156b70cc9e792ef6c47',1,'LeanCloud.Realtime.LCIMConversation.Read()']]],
   ['recallmessage_2',['RecallMessage',['../classLeanCloud_1_1Realtime_1_1LCIMConversation.html#a58ac100cb8d22c72915b38d66609dbef',1,'LeanCloud::Realtime::LCIMConversation']]],
   ['reconnectandrejoin_3',['ReconnectAndRejoin',['../classLeanCloud_1_1Play_1_1Client.html#a38d4b29e0e6569cc946f78a567b4c7b0',1,'LeanCloud::Play::Client']]],
   ['refreshsessiontoken_4',['RefreshSessionToken',['../classLeanCloud_1_1Storage_1_1LCUser.html#a62615aeb8fbb56201fb4466e5ae4d1d5',1,'LeanCloud::Storage::LCUser']]],
@@ -9,7 +9,7 @@ var searchData=
   ['registersubclass_3c_20t_20_3e_6',['RegisterSubclass&lt; T &gt;',['../classLeanCloud_1_1Storage_1_1LCObject.html#aacfd4d184703c52b41374745b83fb507',1,'LeanCloud::Storage::LCObject']]],
   ['registertype_7',['RegisterType',['../classLeanCloud_1_1Play_1_1CodecUtils.html#a195c3db09e10e7a5a92859fa7d5e0073',1,'LeanCloud::Play::CodecUtils']]],
   ['rejoinroom_8',['RejoinRoom',['../classLeanCloud_1_1Play_1_1Client.html#a5890524c2b6cd4b73db0ca2439226118',1,'LeanCloud::Play::Client']]],
-  ['remove_9',['Remove',['../classLeanCloud_1_1Play_1_1PlayArray.html#aacaca391b104afc37f4cd192f24147df',1,'LeanCloud.Play.PlayArray.Remove()'],['../classLeanCloud_1_1Play_1_1PlayObject.html#ac90db0f1e4a831eadf316b6b50103fdd',1,'LeanCloud.Play.PlayObject.Remove(KeyValuePair&lt; object, object &gt; item)'],['../classLeanCloud_1_1Play_1_1PlayObject.html#aff92419f9c5bbdd3d46e039c682bfb7d',1,'LeanCloud.Play.PlayObject.Remove(object key)'],['../classLeanCloud_1_1Storage_1_1LCObject.html#a5373585f50926a9cbefa6d4c617d6256',1,'LeanCloud.Storage.LCObject.Remove(string key, object value)']]],
+  ['remove_9',['remove',['../classLeanCloud_1_1Play_1_1PlayArray.html#aacaca391b104afc37f4cd192f24147df',1,'LeanCloud.Play.PlayArray.Remove()'],['../classLeanCloud_1_1Play_1_1PlayObject.html#ac90db0f1e4a831eadf316b6b50103fdd',1,'LeanCloud.Play.PlayObject.Remove(KeyValuePair&lt; object, object &gt; item)'],['../classLeanCloud_1_1Play_1_1PlayObject.html#aff92419f9c5bbdd3d46e039c682bfb7d',1,'LeanCloud.Play.PlayObject.Remove(object key)'],['../classLeanCloud_1_1Storage_1_1LCObject.html#a5373585f50926a9cbefa6d4c617d6256',1,'LeanCloud.Storage.LCObject.Remove(string key, object value)']]],
   ['removeall_10',['RemoveAll',['../classLeanCloud_1_1Storage_1_1LCObject.html#ab3cabba62598df4d8b53f1e629c37b4a',1,'LeanCloud::Storage::LCObject']]],
   ['removeat_11',['RemoveAt',['../classLeanCloud_1_1Play_1_1PlayArray.html#ad82344bde839e8897bf348290be566c5',1,'LeanCloud::Play::PlayArray']]],
   ['removeexpecteduserids_12',['RemoveExpectedUserIds',['../classLeanCloud_1_1Play_1_1Room.html#a21266e20aefd8b9e5cbb2ea0fac79b87',1,'LeanCloud::Play::Room']]],
