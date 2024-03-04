@@ -46,6 +46,60 @@
     <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\protocol\Messages.cs.meta">
       <Link>Internal\protocol\Messages.cs.meta</Link>
     </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\Common.cs.meta">
+      <Link>Internal\kcp2k\highlevel\Common.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\ErrorCode.cs.meta">
+      <Link>Internal\kcp2k\highlevel\ErrorCode.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\Extensions.cs.meta">
+      <Link>Internal\kcp2k\highlevel\Extensions.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpChannel.cs.meta">
+      <Link>Internal\kcp2k\highlevel\KcpChannel.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpClient.cs.meta">
+      <Link>Internal\kcp2k\highlevel\KcpClient.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpConfig.cs.meta">
+      <Link>Internal\kcp2k\highlevel\KcpConfig.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpHeader.cs.meta">
+      <Link>Internal\kcp2k\highlevel\KcpHeader.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpPeer.cs.meta">
+      <Link>Internal\kcp2k\highlevel\KcpPeer.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpServer.cs.meta">
+      <Link>Internal\kcp2k\highlevel\KcpServer.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpServerConnection.cs.meta">
+      <Link>Internal\kcp2k\highlevel\KcpServerConnection.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpState.cs.meta">
+      <Link>Internal\kcp2k\highlevel\KcpState.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\Log.cs.meta">
+      <Link>Internal\kcp2k\highlevel\Log.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\AckItem.cs.meta">
+      <Link>Internal\kcp2k\kcp\AckItem.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\AssemblyInfo.cs.meta">
+      <Link>Internal\kcp2k\kcp\AssemblyInfo.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Kcp.cs.meta">
+      <Link>Internal\kcp2k\kcp\Kcp.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Pool.cs.meta">
+      <Link>Internal\kcp2k\kcp\Pool.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Segment.cs.meta">
+      <Link>Internal\kcp2k\kcp\Segment.cs.meta</Link>
+    </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Utils.cs.meta">
+      <Link>Internal\kcp2k\kcp\Utils.cs.meta</Link>
+    </None>
     <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Room.cs.meta">
       <Link>Public\Room.cs.meta</Link>
     </None>
@@ -125,6 +179,60 @@
     </Compile>
     <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\protocol\Messages.cs">
       <Link>Internal\protocol\Messages.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\Common.cs">
+      <Link>Internal\kcp2k\highlevel\Common.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\ErrorCode.cs">
+      <Link>Internal\kcp2k\highlevel\ErrorCode.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\Extensions.cs">
+      <Link>Internal\kcp2k\highlevel\Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpChannel.cs">
+      <Link>Internal\kcp2k\highlevel\KcpChannel.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpClient.cs">
+      <Link>Internal\kcp2k\highlevel\KcpClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpConfig.cs">
+      <Link>Internal\kcp2k\highlevel\KcpConfig.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpHeader.cs">
+      <Link>Internal\kcp2k\highlevel\KcpHeader.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpPeer.cs">
+      <Link>Internal\kcp2k\highlevel\KcpPeer.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpServer.cs">
+      <Link>Internal\kcp2k\highlevel\KcpServer.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpServerConnection.cs">
+      <Link>Internal\kcp2k\highlevel\KcpServerConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\KcpState.cs">
+      <Link>Internal\kcp2k\highlevel\KcpState.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\highlevel\Log.cs">
+      <Link>Internal\kcp2k\highlevel\Log.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\AckItem.cs">
+      <Link>Internal\kcp2k\kcp\AckItem.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\AssemblyInfo.cs">
+      <Link>Internal\kcp2k\kcp\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Kcp.cs">
+      <Link>Internal\kcp2k\kcp\Kcp.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Pool.cs">
+      <Link>Internal\kcp2k\kcp\Pool.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Segment.cs">
+      <Link>Internal\kcp2k\kcp\Segment.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Utils.cs">
+      <Link>Internal\kcp2k\kcp\Utils.cs</Link>
     </Compile>
     <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\CodecUtils.cs">
       <Link>Public\CodecUtils.cs</Link>
