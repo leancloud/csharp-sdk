@@ -100,6 +100,9 @@
     <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Utils.cs.meta">
       <Link>Internal\kcp2k\kcp\Utils.cs.meta</Link>
     </None>
+    <None Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\KcpClientWrapper.cs.meta">
+      <Link>Internal\kcp2k\KcpClientWrapper.cs.meta</Link>
+    </None>
     <None Include="..\Play.Unity\Assets\LeanCloud\Play\Public\Room.cs.meta">
       <Link>Public\Room.cs.meta</Link>
     </None>
@@ -233,6 +236,9 @@
     </Compile>
     <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\kcp\Utils.cs">
       <Link>Internal\kcp2k\kcp\Utils.cs</Link>
+    </Compile>
+    <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Internal\kcp2k\KcpClientWrapper.cs">
+      <Link>Internal\kcp2k\KcpClientWrapper.cs</Link>
     </Compile>
     <Compile Include="..\Play.Unity\Assets\LeanCloud\Play\Public\CodecUtils.cs">
       <Link>Public\CodecUtils.cs</Link>
