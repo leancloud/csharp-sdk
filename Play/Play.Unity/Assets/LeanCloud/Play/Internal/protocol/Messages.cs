@@ -173,70 +173,70 @@ namespace LeanCloud.Play.Protocol {
             "cnJvckNvbW1hbmRIAEIGCgRib2R5IpMBCgdDb21tYW5kEj8KA2NtZBgBIAEo",
             "DjIyLmdhbWVfcHJvdG9idWZfbWVzc2FnZXMucHJvdG8ubWVzc2FnZXMuQ29t",
             "bWFuZFR5cGUSOQoCb3AYAiABKA4yLS5nYW1lX3Byb3RvYnVmX21lc3NhZ2Vz",
-            "LnByb3RvLm1lc3NhZ2VzLk9wVHlwZRIMCgRib2R5GAMgASgMKoEBCgtDb21t",
+            "LnByb3RvLm1lc3NhZ2VzLk9wVHlwZRIMCgRib2R5GAMgASgMKosBCgtDb21t",
             "YW5kVHlwZRILCgd1bmtub3duEAASCwoHc2Vzc2lvbhABEggKBGNvbnYQAhIK",
             "CgZkaXJlY3QQAxIJCgVlcnJvchAEEgkKBWxvYmJ5EAUSDQoJc3RhdGlzdGlj",
-            "EAYSCgoGZXZlbnRzEAcSBwoDYWNrEAgSCAoEZWNobxAJKoIGCgZPcFR5cGUS",
-            "CAoEbm9uZRAAEggKBG9wZW4QARIKCgZvcGVuZWQQAhIJCgVjbG9zZRADEgoK",
-            "BmNsb3NlZBAEEgkKBXN0YXJ0EB4SCwoHc3RhcnRlZBAfEg4KCmFkZF9yYW5k",
-            "b20QIBIQCgxyYW5kb21fYWRkZWQQIRIQCgxtYXRjaF9yYW5kb20QIhISCg5y",
-            "YW5kb21fbWF0Y2hlZBAjEgcKA2FkZBAkEgkKBWFkZGVkECUSEgoObWVtYmVy",
-            "c19qb2luZWQQJhISCg5tZW1iZXJzX29ubGluZRAnEgoKBnJlbW92ZRAoEgsK",
-            "B3JlbW92ZWQQKRIQCgxtZW1iZXJzX2xlZnQQKhITCg9tZW1iZXJzX29mZmxp",
-            "bmUQKxIYChR1cGRhdGVfbWFzdGVyX2NsaWVudBAsEhkKFW1hc3Rlcl9jbGll",
-            "bnRfdXBkYXRlZBAtEhkKFW1hc3Rlcl9jbGllbnRfY2hhbmdlZBAuEgoKBnVw",
-            "ZGF0ZRAvEgsKB3VwZGF0ZWQQMBISCg51cGRhdGVkX25vdGlmeRAxEhoKFnVw",
-            "ZGF0ZV9zeXN0ZW1fcHJvcGVydHkQMhIbChdzeXN0ZW1fcHJvcGVydHlfdXBk",
-            "YXRlZBAzEiIKHnN5c3RlbV9wcm9wZXJ0eV91cGRhdGVkX25vdGlmeRA0EhEK",
-            "DW9wZW5lZF9ub3RpZnkQNRILCgd2aXNpYmxlEDYSEgoOdmlzaWJsZV9ub3Rp",
-            "ZnkQNxIWChJ1cGRhdGVfcGxheWVyX3Byb3AQOBIXChNwbGF5ZXJfcHJvcF91",
-            "cGRhdGVkEDkSEAoMcGxheWVyX3Byb3BzEDoSCAoEa2ljaxA7EgoKBmtpY2tl",
-            "ZBA8EhEKDWtpY2tlZF9ub3RpY2UQPRIaChZ1cGRhdGVfaW50ZXJlc3RfZ3Jv",
-            "dXBzED4SGwoXaW50ZXJlc3RfZ3JvdXBzX3VwZGF0ZWQQQRINCglyb29tX2xp",
-            "c3QQZBIQCgxmaW5kX2ZyaWVuZHMQZRIRCg1mb3VuZF9mcmllbmRzEGZCGqoC",
-            "F0xlYW5DbG91ZC5QbGF5LlByb3RvY29sYgZwcm90bzM="));
+            "EAYSCgoGZXZlbnRzEAcSBwoDYWNrEAgSCAoEZWNobxAJEggKBGNvbm4QCiqC",
+            "BgoGT3BUeXBlEggKBG5vbmUQABIICgRvcGVuEAESCgoGb3BlbmVkEAISCQoF",
+            "Y2xvc2UQAxIKCgZjbG9zZWQQBBIJCgVzdGFydBAeEgsKB3N0YXJ0ZWQQHxIO",
+            "CgphZGRfcmFuZG9tECASEAoMcmFuZG9tX2FkZGVkECESEAoMbWF0Y2hfcmFu",
+            "ZG9tECISEgoOcmFuZG9tX21hdGNoZWQQIxIHCgNhZGQQJBIJCgVhZGRlZBAl",
+            "EhIKDm1lbWJlcnNfam9pbmVkECYSEgoObWVtYmVyc19vbmxpbmUQJxIKCgZy",
+            "ZW1vdmUQKBILCgdyZW1vdmVkECkSEAoMbWVtYmVyc19sZWZ0ECoSEwoPbWVt",
+            "YmVyc19vZmZsaW5lECsSGAoUdXBkYXRlX21hc3Rlcl9jbGllbnQQLBIZChVt",
+            "YXN0ZXJfY2xpZW50X3VwZGF0ZWQQLRIZChVtYXN0ZXJfY2xpZW50X2NoYW5n",
+            "ZWQQLhIKCgZ1cGRhdGUQLxILCgd1cGRhdGVkEDASEgoOdXBkYXRlZF9ub3Rp",
+            "ZnkQMRIaChZ1cGRhdGVfc3lzdGVtX3Byb3BlcnR5EDISGwoXc3lzdGVtX3By",
+            "b3BlcnR5X3VwZGF0ZWQQMxIiCh5zeXN0ZW1fcHJvcGVydHlfdXBkYXRlZF9u",
+            "b3RpZnkQNBIRCg1vcGVuZWRfbm90aWZ5EDUSCwoHdmlzaWJsZRA2EhIKDnZp",
+            "c2libGVfbm90aWZ5EDcSFgoSdXBkYXRlX3BsYXllcl9wcm9wEDgSFwoTcGxh",
+            "eWVyX3Byb3BfdXBkYXRlZBA5EhAKDHBsYXllcl9wcm9wcxA6EggKBGtpY2sQ",
+            "OxIKCgZraWNrZWQQPBIRCg1raWNrZWRfbm90aWNlED0SGgoWdXBkYXRlX2lu",
+            "dGVyZXN0X2dyb3VwcxA+EhsKF2ludGVyZXN0X2dyb3Vwc191cGRhdGVkEEES",
+            "DQoJcm9vbV9saXN0EGQSEAoMZmluZF9mcmllbmRzEGUSEQoNZm91bmRfZnJp",
+            "ZW5kcxBmQhqqAhdMZWFuQ2xvdWQuUGxheS5Qcm90b2NvbGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::LC.Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::LeanCloud.Play.Protocol.CommandType), typeof(global::LeanCloud.Play.Protocol.OpType), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.IntValue), global::LeanCloud.Play.Protocol.IntValue.Parser, new[]{ "Val" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomSystemProperty), global::LeanCloud.Play.Protocol.RoomSystemProperty.Parser, new[]{ "Open", "Visible", "ExpectMembers", "MaxMembers" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomMember), global::LeanCloud.Play.Protocol.RoomMember.Parser, new[]{ "Pid", "ActorId", "Attr", "Inactive" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.AppInfo), global::LeanCloud.Play.Protocol.AppInfo.Parser, new[]{ "AppCode", "AppMsg" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.ErrorInfo), global::LeanCloud.Play.Protocol.ErrorInfo.Parser, new[]{ "ReasonCode", "Detail", "AppInfo" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomOptions), global::LeanCloud.Play.Protocol.RoomOptions.Parser, new[]{ "Cid", "Visible", "Open", "EmptyRoomTtl", "PlayerTtl", "MaxMembers", "Flag", "PluginName", "Attr", "ExpectMembers", "LobbyAttrKeys", "Members", "MemberCount", "MasterActorId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.SessionOpenRequest), global::LeanCloud.Play.Protocol.SessionOpenRequest.Parser, new[]{ "AppId", "PeerId", "GameVersion", "SdkVersion", "ProtocolVersion", "T", "N", "S", "ConfigBitmap", "SessionToken" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.CreateRoomRequest), global::LeanCloud.Play.Protocol.CreateRoomRequest.Parser, new[]{ "RoomOptions" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.CreateRoomResponse), global::LeanCloud.Play.Protocol.CreateRoomResponse.Parser, new[]{ "RoomOptions", "Addr", "RoomCreated" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.JoinRoomRequest), global::LeanCloud.Play.Protocol.JoinRoomRequest.Parser, new[]{ "Rejoin", "RoomOptions", "ExpectAttr", "PiggybackPeerId", "CreateOnNotFound" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.JoinRoomResponse), global::LeanCloud.Play.Protocol.JoinRoomResponse.Parser, new[]{ "RoomOptions", "Addr" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.JoinRoomNotification), global::LeanCloud.Play.Protocol.JoinRoomNotification.Parser, new[]{ "Member" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.LeftRoomNotification), global::LeanCloud.Play.Protocol.LeftRoomNotification.Parser, new[]{ "ActorId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.KickMemberRequest), global::LeanCloud.Play.Protocol.KickMemberRequest.Parser, new[]{ "TargetActorId", "AppInfo" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.KickMemberResponse), global::LeanCloud.Play.Protocol.KickMemberResponse.Parser, new[]{ "TargetActorId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdatePropertyRequest), global::LeanCloud.Play.Protocol.UpdatePropertyRequest.Parser, new[]{ "TargetActorId", "ExpectAttr", "Attr" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdatePropertyResponse), global::LeanCloud.Play.Protocol.UpdatePropertyResponse.Parser, new[]{ "Attr", "ActorId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdatePropertyNotification), global::LeanCloud.Play.Protocol.UpdatePropertyNotification.Parser, new[]{ "Attr", "ActorId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateSysPropertyRequest), global::LeanCloud.Play.Protocol.UpdateSysPropertyRequest.Parser, new[]{ "ExpectSysAttr", "SysAttr" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateSysPropertyResponse), global::LeanCloud.Play.Protocol.UpdateSysPropertyResponse.Parser, new[]{ "SysAttr" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateSysPropertyNotification), global::LeanCloud.Play.Protocol.UpdateSysPropertyNotification.Parser, new[]{ "SysAttr" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateMasterClientRequest), global::LeanCloud.Play.Protocol.UpdateMasterClientRequest.Parser, new[]{ "MasterActorId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateMasterClientResponse), global::LeanCloud.Play.Protocol.UpdateMasterClientResponse.Parser, new[]{ "MasterActorId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateMasterClientNotification), global::LeanCloud.Play.Protocol.UpdateMasterClientNotification.Parser, new[]{ "MasterActorId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomNotification), global::LeanCloud.Play.Protocol.RoomNotification.Parser, new[]{ "InitByActor", "AppInfo", "ByMaster", "JoinRoom", "UpdateProperty", "UpdateSysProperty", "UpdateMasterClient", "LeftRoom" }, new[]{ "Notification" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.DirectCommand), global::LeanCloud.Play.Protocol.DirectCommand.Parser, new[]{ "Cached", "EventId", "ReceiverGroup", "CachingOption", "EventOptions", "ToActorIds", "Msg", "Timestamp", "FromActorId", "I", "InterestGroup" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.AckCommand), global::LeanCloud.Play.Protocol.AckCommand.Parser, new[]{ "Timestamp", "I" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.EventsRequest), global::LeanCloud.Play.Protocol.EventsRequest.Parser, new[]{ "Msg", "ActorId", "EventId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.EventsCommand), global::LeanCloud.Play.Protocol.EventsCommand.Parser, new[]{ "Events" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.InterestGroups), global::LeanCloud.Play.Protocol.InterestGroups.Parser, new[]{ "DisabledGroups", "EnabledGroups" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.JoinLobbyRequest), global::LeanCloud.Play.Protocol.JoinLobbyRequest.Parser, new[]{ "LobbyId" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomListCommand), global::LeanCloud.Play.Protocol.RoomListCommand.Parser, new[]{ "List" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.AppStatistic), global::LeanCloud.Play.Protocol.AppStatistic.Parser, new[]{ "CountOfRooms", "CountOfPlayersOnRouter", "CountOfPlayersInRooms", "CountOfPlayers" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.StatisticCommand), global::LeanCloud.Play.Protocol.StatisticCommand.Parser, new[]{ "AppStats" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.ErrorCommand), global::LeanCloud.Play.Protocol.ErrorCommand.Parser, new[]{ "ErrorInfo" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RequestMessage), global::LeanCloud.Play.Protocol.RequestMessage.Parser, new[]{ "I", "SessionOpen", "CreateRoom", "JoinRoom", "UpdateProperty", "UpdateSysProperty", "UpdateMasterClient", "KickMember", "Events", "InterestGroups", "JoinLobby" }, new[]{ "Request" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.ResponseMessage), global::LeanCloud.Play.Protocol.ResponseMessage.Parser, new[]{ "I", "ErrorInfo", "CreateRoom", "JoinRoom", "UpdateProperty", "UpdateSysProperty", "UpdateMasterClient", "KickMember", "Ack", "InterestGroups" }, new[]{ "Response" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.Body), global::LeanCloud.Play.Protocol.Body.Parser, new[]{ "Request", "Response", "Direct", "RoomNotification", "Events", "Statistic", "RoomList", "Error" }, new[]{ "Body" }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.Command), global::LeanCloud.Play.Protocol.Command.Parser, new[]{ "Cmd", "Op", "Body" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::LeanCloud.Play.Protocol.CommandType), typeof(global::LeanCloud.Play.Protocol.OpType), }, null, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.IntValue), global::LeanCloud.Play.Protocol.IntValue.Parser, new[]{ "Val" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomSystemProperty), global::LeanCloud.Play.Protocol.RoomSystemProperty.Parser, new[]{ "Open", "Visible", "ExpectMembers", "MaxMembers" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomMember), global::LeanCloud.Play.Protocol.RoomMember.Parser, new[]{ "Pid", "ActorId", "Attr", "Inactive" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.AppInfo), global::LeanCloud.Play.Protocol.AppInfo.Parser, new[]{ "AppCode", "AppMsg" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.ErrorInfo), global::LeanCloud.Play.Protocol.ErrorInfo.Parser, new[]{ "ReasonCode", "Detail", "AppInfo" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomOptions), global::LeanCloud.Play.Protocol.RoomOptions.Parser, new[]{ "Cid", "Visible", "Open", "EmptyRoomTtl", "PlayerTtl", "MaxMembers", "Flag", "PluginName", "Attr", "ExpectMembers", "LobbyAttrKeys", "Members", "MemberCount", "MasterActorId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.SessionOpenRequest), global::LeanCloud.Play.Protocol.SessionOpenRequest.Parser, new[]{ "AppId", "PeerId", "GameVersion", "SdkVersion", "ProtocolVersion", "T", "N", "S", "ConfigBitmap", "SessionToken" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.CreateRoomRequest), global::LeanCloud.Play.Protocol.CreateRoomRequest.Parser, new[]{ "RoomOptions" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.CreateRoomResponse), global::LeanCloud.Play.Protocol.CreateRoomResponse.Parser, new[]{ "RoomOptions", "Addr", "RoomCreated" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.JoinRoomRequest), global::LeanCloud.Play.Protocol.JoinRoomRequest.Parser, new[]{ "Rejoin", "RoomOptions", "ExpectAttr", "PiggybackPeerId", "CreateOnNotFound" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.JoinRoomResponse), global::LeanCloud.Play.Protocol.JoinRoomResponse.Parser, new[]{ "RoomOptions", "Addr" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.JoinRoomNotification), global::LeanCloud.Play.Protocol.JoinRoomNotification.Parser, new[]{ "Member" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.LeftRoomNotification), global::LeanCloud.Play.Protocol.LeftRoomNotification.Parser, new[]{ "ActorId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.KickMemberRequest), global::LeanCloud.Play.Protocol.KickMemberRequest.Parser, new[]{ "TargetActorId", "AppInfo" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.KickMemberResponse), global::LeanCloud.Play.Protocol.KickMemberResponse.Parser, new[]{ "TargetActorId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdatePropertyRequest), global::LeanCloud.Play.Protocol.UpdatePropertyRequest.Parser, new[]{ "TargetActorId", "ExpectAttr", "Attr" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdatePropertyResponse), global::LeanCloud.Play.Protocol.UpdatePropertyResponse.Parser, new[]{ "Attr", "ActorId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdatePropertyNotification), global::LeanCloud.Play.Protocol.UpdatePropertyNotification.Parser, new[]{ "Attr", "ActorId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateSysPropertyRequest), global::LeanCloud.Play.Protocol.UpdateSysPropertyRequest.Parser, new[]{ "ExpectSysAttr", "SysAttr" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateSysPropertyResponse), global::LeanCloud.Play.Protocol.UpdateSysPropertyResponse.Parser, new[]{ "SysAttr" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateSysPropertyNotification), global::LeanCloud.Play.Protocol.UpdateSysPropertyNotification.Parser, new[]{ "SysAttr" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateMasterClientRequest), global::LeanCloud.Play.Protocol.UpdateMasterClientRequest.Parser, new[]{ "MasterActorId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateMasterClientResponse), global::LeanCloud.Play.Protocol.UpdateMasterClientResponse.Parser, new[]{ "MasterActorId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.UpdateMasterClientNotification), global::LeanCloud.Play.Protocol.UpdateMasterClientNotification.Parser, new[]{ "MasterActorId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomNotification), global::LeanCloud.Play.Protocol.RoomNotification.Parser, new[]{ "InitByActor", "AppInfo", "ByMaster", "JoinRoom", "UpdateProperty", "UpdateSysProperty", "UpdateMasterClient", "LeftRoom" }, new[]{ "Notification" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.DirectCommand), global::LeanCloud.Play.Protocol.DirectCommand.Parser, new[]{ "Cached", "EventId", "ReceiverGroup", "CachingOption", "EventOptions", "ToActorIds", "Msg", "Timestamp", "FromActorId", "I", "InterestGroup" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.AckCommand), global::LeanCloud.Play.Protocol.AckCommand.Parser, new[]{ "Timestamp", "I" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.EventsRequest), global::LeanCloud.Play.Protocol.EventsRequest.Parser, new[]{ "Msg", "ActorId", "EventId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.EventsCommand), global::LeanCloud.Play.Protocol.EventsCommand.Parser, new[]{ "Events" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.InterestGroups), global::LeanCloud.Play.Protocol.InterestGroups.Parser, new[]{ "DisabledGroups", "EnabledGroups" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.JoinLobbyRequest), global::LeanCloud.Play.Protocol.JoinLobbyRequest.Parser, new[]{ "LobbyId" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RoomListCommand), global::LeanCloud.Play.Protocol.RoomListCommand.Parser, new[]{ "List" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.AppStatistic), global::LeanCloud.Play.Protocol.AppStatistic.Parser, new[]{ "CountOfRooms", "CountOfPlayersOnRouter", "CountOfPlayersInRooms", "CountOfPlayers" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.StatisticCommand), global::LeanCloud.Play.Protocol.StatisticCommand.Parser, new[]{ "AppStats" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.ErrorCommand), global::LeanCloud.Play.Protocol.ErrorCommand.Parser, new[]{ "ErrorInfo" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.RequestMessage), global::LeanCloud.Play.Protocol.RequestMessage.Parser, new[]{ "I", "SessionOpen", "CreateRoom", "JoinRoom", "UpdateProperty", "UpdateSysProperty", "UpdateMasterClient", "KickMember", "Events", "InterestGroups", "JoinLobby" }, new[]{ "Request" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.ResponseMessage), global::LeanCloud.Play.Protocol.ResponseMessage.Parser, new[]{ "I", "ErrorInfo", "CreateRoom", "JoinRoom", "UpdateProperty", "UpdateSysProperty", "UpdateMasterClient", "KickMember", "Ack", "InterestGroups" }, new[]{ "Response" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.Body), global::LeanCloud.Play.Protocol.Body.Parser, new[]{ "Request", "Response", "Direct", "RoomNotification", "Events", "Statistic", "RoomList", "Error" }, new[]{ "Body" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeanCloud.Play.Protocol.Command), global::LeanCloud.Play.Protocol.Command.Parser, new[]{ "Cmd", "Op", "Body" }, null, null, null, null)
           }));
     }
     #endregion
@@ -254,6 +254,7 @@ namespace LeanCloud.Play.Protocol {
     [pbr::OriginalName("events")] Events = 7,
     [pbr::OriginalName("ack")] Ack = 8,
     [pbr::OriginalName("echo")] Echo = 9,
+    [pbr::OriginalName("conn")] Conn = 10,
   }
 
   public enum OpType {
@@ -8400,7 +8401,7 @@ namespace LeanCloud.Play.Protocol {
 
     /// <summary>Field number for the "cmd" field.</summary>
     public const int CmdFieldNumber = 1;
-    private global::LeanCloud.Play.Protocol.CommandType cmd_ = 0;
+    private global::LeanCloud.Play.Protocol.CommandType cmd_ = global::LeanCloud.Play.Protocol.CommandType.Unknown;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::LeanCloud.Play.Protocol.CommandType Cmd {
       get { return cmd_; }
@@ -8411,7 +8412,7 @@ namespace LeanCloud.Play.Protocol {
 
     /// <summary>Field number for the "op" field.</summary>
     public const int OpFieldNumber = 2;
-    private global::LeanCloud.Play.Protocol.OpType op_ = 0;
+    private global::LeanCloud.Play.Protocol.OpType op_ = global::LeanCloud.Play.Protocol.OpType.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::LeanCloud.Play.Protocol.OpType Op {
       get { return op_; }
@@ -8453,8 +8454,8 @@ namespace LeanCloud.Play.Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Cmd != 0) hash ^= Cmd.GetHashCode();
-      if (Op != 0) hash ^= Op.GetHashCode();
+      if (Cmd != global::LeanCloud.Play.Protocol.CommandType.Unknown) hash ^= Cmd.GetHashCode();
+      if (Op != global::LeanCloud.Play.Protocol.OpType.None) hash ^= Op.GetHashCode();
       if (Body.Length != 0) hash ^= Body.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -8469,11 +8470,11 @@ namespace LeanCloud.Play.Protocol {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Cmd != 0) {
+      if (Cmd != global::LeanCloud.Play.Protocol.CommandType.Unknown) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Cmd);
       }
-      if (Op != 0) {
+      if (Op != global::LeanCloud.Play.Protocol.OpType.None) {
         output.WriteRawTag(16);
         output.WriteEnum((int) Op);
       }
@@ -8489,10 +8490,10 @@ namespace LeanCloud.Play.Protocol {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Cmd != 0) {
+      if (Cmd != global::LeanCloud.Play.Protocol.CommandType.Unknown) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Cmd);
       }
-      if (Op != 0) {
+      if (Op != global::LeanCloud.Play.Protocol.OpType.None) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Op);
       }
       if (Body.Length != 0) {
@@ -8509,10 +8510,10 @@ namespace LeanCloud.Play.Protocol {
       if (other == null) {
         return;
       }
-      if (other.Cmd != 0) {
+      if (other.Cmd != global::LeanCloud.Play.Protocol.CommandType.Unknown) {
         Cmd = other.Cmd;
       }
-      if (other.Op != 0) {
+      if (other.Op != global::LeanCloud.Play.Protocol.OpType.None) {
         Op = other.Op;
       }
       if (other.Body.Length != 0) {
