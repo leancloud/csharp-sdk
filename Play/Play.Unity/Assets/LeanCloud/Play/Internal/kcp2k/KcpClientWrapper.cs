@@ -36,6 +36,7 @@ namespace LeanCloud.Play.kcp2k
                 (error, reason) => { OnError(error, reason); },
                 kcpConfig
             );
+            LCLogger.Debug($"{Id} Kcp client init with config: {kcpConfig}");
         }
 
         public Task Connect(string address, ushort port)
@@ -44,6 +45,7 @@ namespace LeanCloud.Play.kcp2k
             {
                 throw new InvalidOperationException("Kcp client has closed, can't reconnect");
             }
+            LCLogger.Debug($"{Id} Kcp client connecting ...");
             connectTcs = new TaskCompletionSource<object>();
             kcpClient.Connect(address, port);
             _ = StartRunLoop();
@@ -58,6 +60,7 @@ namespace LeanCloud.Play.kcp2k
 
         private void OnData(ArraySegment<byte> bytes, KcpChannel channel)
         {
+            LCLogger.Debug($"{Id} Kcp client received data, bytes count: {bytes.Count}, channel: {channel}");
             byteBuffer = byteBuffer.Concat(bytes.ToArray()).ToArray();
             while (byteBuffer.Length > 3)
             {
@@ -125,14 +128,9 @@ namespace LeanCloud.Play.kcp2k
             }
         }
 
-        public void stop()
+        public void Stop()
         {
             shouldRunning = false;
-        }
-
-        public async Task Close()
-        {
-
         }
     }
 }

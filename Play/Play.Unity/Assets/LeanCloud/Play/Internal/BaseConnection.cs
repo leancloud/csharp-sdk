@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LC.Google.Protobuf;
 using LeanCloud.Realtime.Internal.WebSocket;
 using LeanCloud.Play.Protocol;
+using LeanCloud.Play.kcp2k;
 
 namespace LeanCloud.Play {
     public abstract class BaseConnection {
@@ -32,7 +33,8 @@ namespace LeanCloud.Play {
 
         private PlayHeartBeat heartBeat;
 
-        private LCWebSocketClient ws;
+        // private LCWebSocketClient ws;
+        private KcpClientWrapper kcp;
 
         private State state;
         // 可以在 connecting 状态时拿到 Task，并在重连成功后继续操作
@@ -57,7 +59,12 @@ namespace LeanCloud.Play {
             requestToResponses = new Dictionary<int, TaskCompletionSource<ResponseWrapper>>();
 
             heartBeat = new PlayHeartBeat(this, KeepAliveInterval, OnDisconnect);
-            ws = new LCWebSocketClient {
+            // ws = new LCWebSocketClient {
+            //     OnMessage = OnMessage,
+            //     OnClose = OnDisconnect
+            // };
+            kcp = new KcpClientWrapper
+            {
                 OnMessage = OnMessage,
                 OnClose = OnDisconnect
             };
@@ -81,7 +88,9 @@ namespace LeanCloud.Play {
                 string newServer = server.Replace("https://", "wss://").Replace("http://", "ws://");
                 int i = RequestI;
                 string url = GetFastOpenUrl(newServer, appId, gameVersion, userId, sessionToken);
-                await ws.Connect(url, SUB_PROTOCOL);
+                // await ws.Connect(url, SUB_PROTOCOL);
+                string[] parts = server.Split(':');
+                await kcp.Connect(parts[0], ushort.Parse(parts[1]));
                 messageQueue = new Queue<CommandWrapper>();
                 isMessageQueueRunning = true;
                 // 启动心跳
@@ -117,7 +126,8 @@ namespace LeanCloud.Play {
                 Body = body.ToByteString()
             };
             byte[] bytes = command.ToByteArray();
-            Task sendTask = ws.Send(bytes);
+            // Task sendTask = ws.Send(bytes);
+            Task sendTask = kcp.Send(bytes);
             if (await Task.WhenAny(sendTask, Task.Delay(SEND_TIMEOUT)) == sendTask) {
                 await sendTask;
             } else {
@@ -128,7 +138,7 @@ namespace LeanCloud.Play {
         internal void Disconnect() {
             state = State.Closed;
             heartBeat.Stop();
-            _ = ws.Close();
+            // _ = ws.Close();
         }
 
         private void OnMessage(byte[] bytes, int length) {
@@ -190,7 +200,9 @@ namespace LeanCloud.Play {
         internal async Task Close() {
             try {
                 heartBeat.Stop();
-                await ws.Close();
+                // await ws.Close();
+                await SendRequest(CommandType.Conn, OpType.Close, NewRequest());
+                kcp.Stop();
             } catch (Exception e) {
                 LCLogger.Error(e.Message);
             }
