@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -95,7 +96,7 @@ namespace LeanCloud.Play {
         [UnityTest, Timeout(40000)]
         public IEnumerator KeepAlive() {
             var f = false;
-            var roomName = "ct5_r";
+            var roomName = "ct5_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c = Utils.NewClient("ct5");
 
             c.Connect().OnSuccess(_ => {

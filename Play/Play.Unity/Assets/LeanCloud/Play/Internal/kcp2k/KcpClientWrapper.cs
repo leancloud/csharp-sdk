@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using LC.Newtonsoft.Json;
 
 namespace LeanCloud.Play.kcp2k
 {
@@ -36,7 +37,7 @@ namespace LeanCloud.Play.kcp2k
                 (error, reason) => { OnError(error, reason); },
                 kcpConfig
             );
-            LCLogger.Debug($"{Id} Kcp client init with config: {kcpConfig}");
+            LCLogger.Debug($"{Id} Kcp client init with config: {JsonConvert.SerializeObject(kcpConfig)}");
         }
 
         public Task Connect(string address, ushort port)
@@ -45,7 +46,7 @@ namespace LeanCloud.Play.kcp2k
             {
                 throw new InvalidOperationException("Kcp client has closed, can't reconnect");
             }
-            LCLogger.Debug($"{Id} Kcp client connecting ...");
+            LCLogger.Debug($"{Id} Kcp client connecting with {address}:{port}");
             connectTcs = new TaskCompletionSource<object>();
             kcpClient.Connect(address, port);
             _ = StartRunLoop();
@@ -61,25 +62,33 @@ namespace LeanCloud.Play.kcp2k
         private void OnData(ArraySegment<byte> bytes, KcpChannel channel)
         {
             LCLogger.Debug($"{Id} Kcp client received data, bytes count: {bytes.Count}, channel: {channel}");
-            byteBuffer = byteBuffer.Concat(bytes.ToArray()).ToArray();
-            while (byteBuffer.Length > 3)
-            {
-                int length = BitConverter.ToInt32(byteBuffer, 0);
-                if (4 + length > byteBuffer.Length)
-                {
-                    return;
-                }
-                byte[] message = new ArraySegment<byte>(byteBuffer, 4, length).ToArray();
-                OnMessage?.Invoke(message, length);
-                if (4 + length == byteBuffer.Length)
-                {
-                    byteBuffer = Array.Empty<byte>();
-                }
-                else
-                {
-                    byteBuffer = new ArraySegment<byte>(byteBuffer, 4 + length, byteBuffer.Length - (4 + length)).ToArray();
-                }
-            }
+            // byteBuffer = byteBuffer.Concat(bytes.ToArray()).ToArray();
+            // while (byteBuffer.Length > 3)
+            // {
+            //     byte[] lengthBytes = new ArraySegment<byte>(byteBuffer, 0, 4).ToArray();
+            //     if (BitConverter.IsLittleEndian) {
+            //         Array.Reverse(lengthBytes);
+            //     }
+            //     int length = BitConverter.ToInt32(lengthBytes, 0);
+            //     LCLogger.Debug($"{Id} Kcp client received data, data length: {length}, channel: {channel}");
+            //     if (4 + length > byteBuffer.Length)
+            //     {
+            //         return;
+            //     }
+            //     byte[] message = new ArraySegment<byte>(byteBuffer, 4, length).ToArray();
+            //     OnMessage?.Invoke(message, length);
+            //     if (4 + length == byteBuffer.Length)
+            //     {
+            //         byteBuffer = Array.Empty<byte>();
+            //     }
+            //     else
+            //     {
+            //         byteBuffer = new ArraySegment<byte>(byteBuffer, 4 + length, byteBuffer.Length - (4 + length)).ToArray();
+            //     }
+            // }
+            byte[] message = new ArraySegment<byte>(bytes.ToArray(), 4, bytes.Count - 4).ToArray();
+            LCLogger.Debug($"{Id} Kcp client received data, data length: {message.Length}, channel: {channel}");
+            OnMessage?.Invoke(message, message.Length);
         }
 
         private void OnDisconnected()
@@ -109,6 +118,7 @@ namespace LeanCloud.Play.kcp2k
 
         private async Task StartRunLoop()
         {
+            LCLogger.Debug($"{Id} Kcp client start run loop");
             while (shouldRunning)
             {
                 bool isSendQueueEmpty = sendQueue.IsEmpty;
@@ -116,7 +126,14 @@ namespace LeanCloud.Play.kcp2k
                 {
                     if (sendQueue.TryDequeue(out SendTask task))
                     {
-                        kcpClient.Send(task.Bytes, KcpChannel.Reliable);
+                        byte[] lengthBytes = BitConverter.GetBytes(task.Bytes.Count);
+                        if (BitConverter.IsLittleEndian)
+                        {
+                            Array.Reverse(lengthBytes);
+                        }
+                        byte[] bytes = lengthBytes.Concat(task.Bytes.ToArray()).ToArray();
+                        kcpClient.Send(new ArraySegment<byte>(bytes), KcpChannel.Reliable);
+                        LCLogger.Debug($"{Id} Kcp client send bytes {bytes.Length}");
                         task.Tcs.TrySetResult(null);
                     }
                 }

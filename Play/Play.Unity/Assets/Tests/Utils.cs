@@ -4,9 +4,9 @@ namespace LeanCloud.Play {
     internal static class Utils {
         internal static Client NewClient(string userId) {
             // 华北节点
-            var appId = "ikGGdRE2YcVOemAaRbgp1xGJ-gzGzoHsz";
-            var appKey = "NUKmuRbdAhg1vrb2wexYo1jo";
-            var playServer = "https://ikggdre2.lc-cn-n1-shared.com";
+            var appId = "6dQxWcEFfC9eMnLQw6IG4Vbm-vofoqvbj";
+            var appKey = "hEyVtlxRhcAxGNvHbnExpMBm";
+            var playServer = "https://6dqxwcef.api.uc-test1.lncldapi.com";
             return new Client(appId, appKey, userId, playServer: playServer);
         }
 

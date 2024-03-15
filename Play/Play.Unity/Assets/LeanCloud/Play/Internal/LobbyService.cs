@@ -21,7 +21,8 @@ namespace LeanCloud.Play {
 
         [JsonProperty("addr")]
         internal string Url {
-            get; set;
+            get { return "106.75.21.173:8007"; } 
+            set {}
         }
 
         [JsonProperty("roomCreated")]

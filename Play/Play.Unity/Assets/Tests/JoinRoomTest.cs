@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace LeanCloud.Play {
         [Order(0)]
         public IEnumerator JoinRoomByName() {
             var f = false;
-            var roomName = "jrt0_r";
+            var roomName = "jrt0_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("jrt0_0");
             var c1 = Utils.NewClient("jrt0_1");
 
@@ -75,7 +76,7 @@ namespace LeanCloud.Play {
         [Order(2)]
         public IEnumerator JoinWithExpectedUserIds() {
             var f = false;
-            var roomName = "jrt2_r";
+            var roomName = "jrt2_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("jrt2_0");
             var c1 = Utils.NewClient("jrt2_1");
             var c2 = Utils.NewClient("jrt2_2");
@@ -115,7 +116,7 @@ namespace LeanCloud.Play {
         [Order(3)]
         public IEnumerator JoinWithExpectedUserIdsFixBug() {
             var f = false;
-            var roomName = "jr9_r0";
+            var roomName = "jr9_r0" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("jr9_0");
             var c1 = Utils.NewClient("jr9_1");
             var c2 = Utils.NewClient("jr9_2");
@@ -156,7 +157,7 @@ namespace LeanCloud.Play {
         public IEnumerator MatchRandom() {
             var f = false;
 
-            var roomName = "jr8_r";
+            var roomName = "jr8_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("jr8_0");
             var c1 = Utils.NewClient("jr8_1");
             var c2 = Utils.NewClient("jr8_2");
@@ -211,7 +212,7 @@ namespace LeanCloud.Play {
         public IEnumerator LeaveRoom() {
             var f0 = false;
             var f1 = false;
-            var roomName = "jrt3_r";
+            var roomName = "jrt3_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("jrt3_0");
             var c1 = Utils.NewClient("jrt3_1");
 
@@ -244,7 +245,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator RejoinRoom() {
             var f = false;
-            var roomName = $"jrt4_r_{Random.Range(0, 1000000)}";
+            var roomName = $"jrt4_r_{UnityEngine.Random.Range(0, 1000000)}";
             var c0 = Utils.NewClient("jrt4_0");
             var c1 = Utils.NewClient("jrt4_1");
 
@@ -281,7 +282,7 @@ namespace LeanCloud.Play {
         [Timeout(20 * 1000)]
         public IEnumerator ReconnectAndRejoin() {
             var f = false;
-            var roomName = "jrt5_r";
+            var roomName = "jrt5_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("jrt5_0");
             var c1 = Utils.NewClient("jrt5_1");
 
@@ -313,7 +314,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator JoinRoomFailed() {
             var f = false;
-            var roomName = "jrt6_r";
+            var roomName = "jrt6_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c = Utils.NewClient("jrt6");
 
             c.Connect().OnSuccess(_ => {
@@ -336,7 +337,7 @@ namespace LeanCloud.Play {
         [Timeout(20 * 1000)]
         public IEnumerator JoinRandomWithMatchProperties() {
             var f = false;
-            var roomName = "jrt7_r";
+            var roomName = "jrt7_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("jrt7_0");
             var c1 = Utils.NewClient("jrt7_1");
             var c2 = Utils.NewClient("jrt7_2");
@@ -392,7 +393,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator CreateAfterJoinFailed() {
             var f = false;
-            var roomName = "jrt8_r";
+            var roomName = "jrt8_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("jrt8_0");
             c0.Connect().OnSuccess(_ => {
                 return c0.JoinRoom(roomName);
@@ -412,7 +413,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator RejoinClosedRoom() {
             var f = false;
-            var roomName = $"jrt9_r_{Random.Range(0, 1000000)}";
+            var roomName = $"jrt9_r_{UnityEngine.Random.Range(0, 1000000)}";
             var c0 = Utils.NewClient("jrt9_0");
             var c1 = Utils.NewClient("jrt9_1");
 

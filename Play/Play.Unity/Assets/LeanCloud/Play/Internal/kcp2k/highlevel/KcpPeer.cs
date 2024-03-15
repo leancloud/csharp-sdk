@@ -284,7 +284,7 @@ namespace LeanCloud.Play.kcp2k
         bool ReceiveNextReliable(out KcpHeaderReliable header, out ArraySegment<byte> message)
         {
             message = default;
-            header = KcpHeaderReliable.Ping;
+            header = KcpHeaderReliable.Data;
 
             int msgSize = kcp.PeekSize();
             if (msgSize <= 0) return false;
@@ -314,16 +314,16 @@ namespace LeanCloud.Play.kcp2k
             }
 
             // safely extract header. attackers may send values out of enum range.
-            byte headerByte = kcpMessageBuffer[0];
-            if (!KcpHeader.ParseReliable(headerByte, out header))
-            {
-                OnError(ErrorCode.InvalidReceive, $"{GetType()}: Receive failed to parse header: {headerByte} is not defined in {typeof(KcpHeaderReliable)}.");
-                Disconnect();
-                return false;
-            }
+            // byte headerByte = kcpMessageBuffer[0];
+            // if (!KcpHeader.ParseReliable(headerByte, out header))
+            // {
+            //     OnError(ErrorCode.InvalidReceive, $"{GetType()}: Receive failed to parse header: {headerByte} is not defined in {typeof(KcpHeaderReliable)}.");
+            //     Disconnect();
+            //     return false;
+            // }
 
             // extract content without header
-            message = new ArraySegment<byte>(kcpMessageBuffer, 1, msgSize - 1);
+            message = new ArraySegment<byte>(kcpMessageBuffer, 0, msgSize);
             lastReceiveTime = (uint)watch.ElapsedMilliseconds;
             return true;
         }
@@ -376,7 +376,7 @@ namespace LeanCloud.Play.kcp2k
             // detect common events & ping
             HandleTimeout(time);
             HandleDeadLink();
-            HandlePing(time);
+            // HandlePing(time);
             HandleChoked();
 
             // process all received messages
@@ -399,6 +399,7 @@ namespace LeanCloud.Play.kcp2k
                         if (message.Count > 0)
                         {
                             //Log.Warning($"Kcp recv msg: {BitConverter.ToString(message.Array, message.Offset, message.Count)}");
+                            LCLogger.Debug($"{time} TickIncoming_Authenticated 4 {message.Count}");
                             OnData(message, KcpChannel.Reliable);
                         }
                         // empty data = attacker, or something went wrong
@@ -426,24 +427,25 @@ namespace LeanCloud.Play.kcp2k
 
             try
             {
-                switch (state)
-                {
-                    case KcpState.Connected:
-                    {
-                        TickIncoming_Connected(time);
-                        break;
-                    }
-                    case KcpState.Authenticated:
-                    {
-                        TickIncoming_Authenticated(time);
-                        break;
-                    }
-                    case KcpState.Disconnected:
-                    {
-                        // do nothing while disconnected
-                        break;
-                    }
-                }
+                // switch (state)
+                // {
+                //     case KcpState.Connected:
+                //     {
+                //         TickIncoming_Connected(time);
+                //         break;
+                //     }
+                //     case KcpState.Authenticated:
+                //     {
+                //         TickIncoming_Authenticated(time);
+                //         break;
+                //     }
+                //     case KcpState.Disconnected:
+                //     {
+                //         // do nothing while disconnected
+                //         break;
+                //     }
+                // }
+                TickIncoming_Authenticated(time);
             }
             // TODO KcpConnection is IO agnostic. move this to outside later.
             catch (SocketException exception)
@@ -618,18 +620,18 @@ namespace LeanCloud.Play.kcp2k
         {
             // write channel header
             // from 0, with 1 byte
-            rawSendBuffer[0] = (byte)KcpChannel.Reliable;
+            // rawSendBuffer[0] = (byte)KcpChannel.Reliable;
 
             // write handshake cookie to protect against UDP spoofing.
             // from 1, with 4 bytes
-            Utils.Encode32U(rawSendBuffer, 1, cookie); // allocation free
+            // Utils.Encode32U(rawSendBuffer, 1, cookie); // allocation free
 
             // write data
             // from 5, with N bytes
-            Buffer.BlockCopy(data, 0, rawSendBuffer, 1+4, length);
+            Buffer.BlockCopy(data, 0, rawSendBuffer, 0, length);
 
             // IO send
-            ArraySegment<byte> segment = new ArraySegment<byte>(rawSendBuffer, 0, length + 1+4);
+            ArraySegment<byte> segment = new ArraySegment<byte>(rawSendBuffer, 0, length);
             RawSend(segment);
         }
 
@@ -645,14 +647,15 @@ namespace LeanCloud.Play.kcp2k
             }
 
             // write channel header
-            kcpSendBuffer[0] = (byte)header;
+            // kcpSendBuffer[0] = (byte)header;
 
             // write data (if any)
             if (content.Count > 0)
-                Buffer.BlockCopy(content.Array, content.Offset, kcpSendBuffer, 1, content.Count);
+                Buffer.BlockCopy(content.Array, content.Offset, kcpSendBuffer, 0, content.Count);
 
             // send to kcp for processing
-            int sent = kcp.Send(kcpSendBuffer, 0, 1 + content.Count);
+            int sent = kcp.Send(kcpSendBuffer, 0, content.Count);
+            LCLogger.Debug($"Kcp client send buffer {content.Count}");
             if (sent < 0)
             {
                 // GetType() shows Server/ClientConn instead of just Connection.
@@ -750,8 +753,8 @@ namespace LeanCloud.Play.kcp2k
             // they are sent immediately even if we close the connection after.
             // this way we don't need to keep the connection alive for a while.
             // (glenn fiedler method)
-            for (int i = 0; i < 5; ++i)
-                SendUnreliable(KcpHeaderUnreliable.Disconnect, default);
+            // for (int i = 0; i < 5; ++i)
+            //     SendUnreliable(KcpHeaderUnreliable.Disconnect, default);
         }
 
         // disconnect this connection

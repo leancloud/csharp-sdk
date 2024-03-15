@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -41,7 +42,7 @@ namespace LeanCloud.Play {
         [Order(1)]
         public IEnumerator CreateSimpleRoom() {
             var f = false;
-            var roomName = "crt1_r";
+            var roomName = "crt1_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c = Utils.NewClient("crt1");
             c.Connect().OnSuccess(_ => {
                 Debug.Log("connected");
@@ -64,7 +65,7 @@ namespace LeanCloud.Play {
         [Order(2)]
         public IEnumerator CreateCustomRoom() {
             var f = false;
-            var roomName = $"crt2_r_{Random.Range(0, 1000000)}";
+            var roomName = $"crt2_r_{UnityEngine.Random.Range(0, 1000000)}";
             var roomTitle = "LeanCloud Room";
             var c = Utils.NewClient(roomName);
             c.Connect().OnSuccess(_ => {
@@ -102,7 +103,7 @@ namespace LeanCloud.Play {
         [Order(3)]
         public IEnumerator MasterAndLocal() {
             var flag = false;
-            var roomName = "crt3_r";
+            var roomName = "crt3_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("crt3_0");
             var c1 = Utils.NewClient("crt3_1");
             c0.Connect().OnSuccess(_ => {
@@ -132,7 +133,7 @@ namespace LeanCloud.Play {
         [Order(4)]
         public IEnumerator CreateRoomFailed() {
             var f = false;
-            var roomName = "crt5_ r";
+            var roomName = "crt5_ r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c = Utils.NewClient("crt5");
             c.Connect().OnSuccess(_ => {
                 return c.CreateRoom(roomName);

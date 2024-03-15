@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -20,7 +21,7 @@ namespace LeanCloud.Play {
         public IEnumerator SetNewMaster() {
             var f0 = false;
             var f1 = false;
-            var roomName = "mt0_r";
+            var roomName = "mt0_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("mt0_0");
             var c1 = Utils.NewClient("mt0_1");
 
@@ -58,7 +59,7 @@ namespace LeanCloud.Play {
         public IEnumerator MasterLeave() {
             var f0 = false;
             var f1 = false;
-            var roomName = "mt1_r";
+            var roomName = "mt1_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("mt1_0");
             var c1 = Utils.NewClient("mt1_1");
 
@@ -95,7 +96,7 @@ namespace LeanCloud.Play {
         public IEnumerator FixMaster() {
             var f0 = false;
             var f1 = false;
-            var roomName = "mt2_r";
+            var roomName = "mt2_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("mt2_0");
             var c1 = Utils.NewClient("mt2_1");
 

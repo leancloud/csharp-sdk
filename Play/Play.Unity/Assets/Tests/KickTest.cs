@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -20,7 +21,7 @@ namespace LeanCloud.Play {
         public IEnumerator Kick() {
             var f1 = false;
             var f2 = false;
-            var roomName = "kt0_r";
+            var roomName = "kt0_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("kt0_0");
             var c1 = Utils.NewClient("kt0_1");
             var c2 = Utils.NewClient("kt0_2");
@@ -61,7 +62,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator KickWithMsg() {
             var flag = false;
-            var roomName = "kt1_r";
+            var roomName = "kt1_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("kt1_0");
             var c1 = Utils.NewClient("kt1_1");
             c0.Connect().OnSuccess(_ => {

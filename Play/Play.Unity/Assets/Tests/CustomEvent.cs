@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -20,7 +21,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator CustomEventWithReceiverGroup() {
             var f = false;
-            var roomName = "ce0_r";
+            var roomName = "ce0_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("ce0_0");
             var c1 = Utils.NewClient("ce0_1");
 
@@ -59,7 +60,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator CustomEventWithTargetIds() {
             var f = false;
-            var roomName = "ce1_r";
+            var roomName = "ce1_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("ce1_0");
             var c1 = Utils.NewClient("ce1_1");
 
@@ -100,7 +101,7 @@ namespace LeanCloud.Play {
         public IEnumerator SimpleEvent() {
             var f0 = false;
             var f1 = false;
-            var roomName = "ce2_r";
+            var roomName = "ce2_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("ce2_0");
             var c1 = Utils.NewClient("ce2_1");
 

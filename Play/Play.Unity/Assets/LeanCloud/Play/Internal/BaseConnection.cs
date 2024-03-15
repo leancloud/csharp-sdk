@@ -85,10 +85,11 @@ namespace LeanCloud.Play {
         internal async Task ConnectInternal() {
             state = State.Connecting;
             try {
-                string newServer = server.Replace("https://", "wss://").Replace("http://", "ws://");
-                int i = RequestI;
-                string url = GetFastOpenUrl(newServer, appId, gameVersion, userId, sessionToken);
+                // string newServer = server.Replace("https://", "wss://").Replace("http://", "ws://");
+                // int i = RequestI;
+                // string url = GetFastOpenUrl(newServer, appId, gameVersion, userId, sessionToken);
                 // await ws.Connect(url, SUB_PROTOCOL);
+                LCLogger.Debug($"ConnectInternal {server}");
                 string[] parts = server.Split(':');
                 await kcp.Connect(parts[0], ushort.Parse(parts[1]));
                 messageQueue = new Queue<CommandWrapper>();
@@ -96,6 +97,21 @@ namespace LeanCloud.Play {
                 // 启动心跳
                 heartBeat.Start();
                 state = State.Open;
+                var request = NewRequest();
+                request.SessionOpen = new SessionOpenRequest
+                {
+                    AppId = appId,
+                    PeerId = userId,
+                    GameVersion = gameVersion,
+                    SessionToken = sessionToken,
+                    ProtocolVersion = Config.ProtocolVersion,
+                    SdkVersion = Config.SDKVersion,
+                };
+                var resp = await SendRequest(CommandType.Session, OpType.Open, request);
+                if (resp.Cmd != CommandType.Session && resp.Op != OpType.Opened)
+                {
+                    throw new Exception("session not opened");
+                }
             } catch (Exception e) {
                 state = State.Closed;
                 throw e;
@@ -120,11 +136,24 @@ namespace LeanCloud.Play {
             if (LCLogger.LogDelegate != null) {
                 LCLogger.Debug($"{userId} => {FormatCommand(cmd, op, body)}");
             }
-            var command = new Command {
-                Cmd = cmd,
-                Op = op,
-                Body = body.ToByteString()
-            };
+            Command command;
+            if (body == null)
+            {
+                command = new Command
+                {
+                    Cmd = cmd,
+                    Op = op,
+                };
+            }
+            else
+            {
+                command = new Command
+                {
+                    Cmd = cmd,
+                    Op = op,
+                    Body = body.ToByteString()
+                };
+            }
             byte[] bytes = command.ToByteArray();
             // Task sendTask = ws.Send(bytes);
             Task sendTask = kcp.Send(bytes);
@@ -154,6 +183,9 @@ namespace LeanCloud.Play {
                 if (command.Cmd == CommandType.Echo) {
                     // 心跳应答
                     heartBeat.Pong();
+                } else if (command.Cmd == CommandType.Conn && command.Op == OpType.Closed) {
+                    kcp.Stop();
+                    OnDisconnect();
                 } else {
                     if (isMessageQueueRunning) {
                         HandleCommand(cmd, op, body);
@@ -201,7 +233,8 @@ namespace LeanCloud.Play {
             try {
                 heartBeat.Stop();
                 // await ws.Close();
-                await SendRequest(CommandType.Conn, OpType.Close, NewRequest());
+                await SendCommand(CommandType.Conn, OpType.Close, null);
+                await Task.Delay(1000);
                 kcp.Stop();
             } catch (Exception e) {
                 LCLogger.Error(e.Message);

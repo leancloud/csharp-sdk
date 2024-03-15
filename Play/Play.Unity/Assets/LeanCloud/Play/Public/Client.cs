@@ -527,9 +527,6 @@ namespace LeanCloud.Play {
             GameVersion = null;
             lobbyService = null;
 
-            Room = null;
-            lobby = null;
-
             // 事件解注册
             OnLobbyRoomListUpdated = null;
             OnPlayerRoomJoined = null;
@@ -544,11 +541,16 @@ namespace LeanCloud.Play {
             OnDisconnected = null;
             OnError = null;
 
+            LCLogger.Debug("Client close ...");
             if (lobby != null) {
+                LCLogger.Debug("Client lobby close ...");
                 await lobby.Close();
+                lobby = null;
             }
             if (Room != null) {
+                LCLogger.Debug("Client room close ...");
                 await Room.Close();
+                Room = null;
             }
         }
     }

@@ -131,7 +131,8 @@ namespace LeanCloud.Play.kcp2k
             // immediately send a hello message to the server.
             // server will call OnMessage and add the new connection.
             // note that this still has cookie=0 until we receive the server's hello.
-            SendHello();
+            // SendHello();
+            OnAuthenticated();
         }
 
         // io - input.
@@ -172,6 +173,7 @@ namespace LeanCloud.Play.kcp2k
 
             try
             {
+                LCLogger.Debug($"Kcp client raw send data {data.Count}");
                 socket.SendNonBlocking(data);
             }
             catch (SocketException e)
@@ -204,55 +206,56 @@ namespace LeanCloud.Play.kcp2k
         public void RawInput(ArraySegment<byte> segment)
         {
             // ensure valid size: at least 1 byte for channel + 4 bytes for cookie
-            if (segment.Count <= 5) return;
+            // if (segment.Count <= 5) return;
 
             // parse channel
             // byte channel = segment[0]; ArraySegment[i] isn't supported in some older Unity Mono versions
-            byte channel = segment.Array[segment.Offset + 0];
+            // byte channel = segment.Array[segment.Offset + 0];
 
             // server messages always contain the security cookie.
             // parse it, assign if not assigned, warn if suddenly different.
-            Utils.Decode32U(segment.Array, segment.Offset + 1, out uint messageCookie);
-            if (messageCookie == 0)
-            {
-                Log.Error($"[KCP] Client: received message with cookie=0, this should never happen. Server should always include the security cookie.");
-            }
+            // Utils.Decode32U(segment.Array, segment.Offset + 1, out uint messageCookie);
+            // if (messageCookie == 0)
+            // {
+            //     Log.Error($"[KCP] Client: received message with cookie=0, this should never happen. Server should always include the security cookie.");
+            // }
 
-            if (cookie == 0)
-            {
-                cookie = messageCookie;
-                Log.Info($"[KCP] Client: received initial cookie: {cookie}");
-            }
-            else if (cookie != messageCookie)
-            {
-                Log.Warning($"[KCP] Client: dropping message with mismatching cookie: {messageCookie} expected: {cookie}.");
-                return;
-            }
+            // if (cookie == 0)
+            // {
+            //     cookie = messageCookie;
+            //     Log.Info($"[KCP] Client: received initial cookie: {cookie}");
+            // }
+            // else if (cookie != messageCookie)
+            // {
+            //     Log.Warning($"[KCP] Client: dropping message with mismatching cookie: {messageCookie} expected: {cookie}.");
+            //     return;
+            // }
 
             // parse message
-            ArraySegment<byte> message = new ArraySegment<byte>(segment.Array, segment.Offset + 1+4, segment.Count - 1-4);
+            // ArraySegment<byte> message = new ArraySegment<byte>(segment.Array, segment.Offset + 1+4, segment.Count - 1-4);
 
-            switch (channel)
-            {
-                case (byte)KcpChannel.Reliable:
-                {
-                    OnRawInputReliable(message);
-                    break;
-                }
-                case (byte)KcpChannel.Unreliable:
-                {
-                    OnRawInputUnreliable(message);
-                    break;
-                }
-                default:
-                {
-                    // invalid channel indicates random internet noise.
-                    // servers may receive random UDP data.
-                    // just ignore it, but log for easier debugging.
-                    Log.Warning($"[KCP] Client: invalid channel header: {channel}, likely internet noise");
-                    break;
-                }
-            }
+            // switch (channel)
+            // {
+            //     case (byte)KcpChannel.Reliable:
+            //     {
+            //         OnRawInputReliable(message);
+            //         break;
+            //     }
+            //     case (byte)KcpChannel.Unreliable:
+            //     {
+            //         OnRawInputUnreliable(message);
+            //         break;
+            //     }
+            //     default:
+            //     {
+            //         // invalid channel indicates random internet noise.
+            //         // servers may receive random UDP data.
+            //         // just ignore it, but log for easier debugging.
+            //         Log.Warning($"[KCP] Client: invalid channel header: {channel}, likely internet noise");
+            //         break;
+            //     }
+            // }
+            OnRawInputReliable(segment);
         }
 
         // process incoming messages. should be called before updating the world.

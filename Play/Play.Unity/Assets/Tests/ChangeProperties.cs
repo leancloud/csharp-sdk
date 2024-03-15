@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -18,7 +19,7 @@ namespace LeanCloud.Play {
 
         [UnityTest]
         public IEnumerator ChangeRoomProperties() {
-            var roomName = "cp0_r";
+            var roomName = "cp0_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var f0 = false;
             var f1 = false;
             var c0 = Utils.NewClient("cp0_0");
@@ -61,7 +62,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator ChangeRoomPropertiesWithCAS() {
             var f = false;
-            var roomName = "cp1_r";
+            var roomName = "cp1_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c = Utils.NewClient("cp1");
 
             c.Connect().OnSuccess(_ => {
@@ -95,7 +96,7 @@ namespace LeanCloud.Play {
         public IEnumerator ChangePlayerProperties() {
             var f0 = false;
             var f1 = false;
-            var roomName = "cp2_r";
+            var roomName = "cp2_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("cp2_0");
             var c1 = Utils.NewClient("cp2_1");
             c0.Connect().OnSuccess(_ => {
@@ -147,7 +148,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator ChangePlayerPropertiesWithCAS() {
             var f = false;
-            var roomName = "cp3_r";
+            var roomName = "cp3_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c = Utils.NewClient("cp3");
             c.Connect().OnSuccess(_ => {
                 return c.CreateRoom(roomName);
@@ -179,7 +180,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator GetPlayerPropertiesWhenJoinRoom() {
             var f = false;
-            var roomName = "cp4_r";
+            var roomName = "cp4_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("cp4_0");
             var c1 = Utils.NewClient("cp4_1");
 
@@ -210,7 +211,7 @@ namespace LeanCloud.Play {
         [UnityTest]
         public IEnumerator ChangePropertiesWithSameValue() {
             var f = false;
-            var roomName = "cp5_r";
+            var roomName = "cp5_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c = Utils.NewClient("cp5");
             var props = new PlayObject {
                 { "ready", true }
@@ -239,7 +240,7 @@ namespace LeanCloud.Play {
         public IEnumerator SetNullProperty() {
             var f0 = false;
             var f1 = false;
-            var roomName = "cp6_r";
+            var roomName = "cp6_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c = Utils.NewClient("cp6");
 
             c.Connect().OnSuccess(_ => {

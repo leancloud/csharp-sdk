@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -21,7 +22,7 @@ namespace LeanCloud.Play {
             var f0 = false;
             var f1 = false;
 
-            var roomName = "mq0_r";
+            var roomName = "mq0_r" + Guid.NewGuid().ToString().Substring(0, 8);
             var c0 = Utils.NewClient("mq0_0");
             var c1 = Utils.NewClient("mq1_1");
 
